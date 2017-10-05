@@ -1,0 +1,49 @@
+﻿Imports System.Data.SqlClient
+Imports System.Data
+
+Partial Class CreateUseruc
+    Inherits System.Web.UI.UserControl
+    Protected Sub CreateUserWizard1_CreatedUser(ByVal sender As Object, ByVal e As System.EventArgs) Handles CreateUserWizard1.CreatedUser
+
+        Dim selectedrole As DropDownList = CreateUserWizardStep1.ContentTemplateContainer.FindControl("UserRole")
+        Roles.AddUserToRole(CreateUserWizard1.UserName, selectedrole.SelectedItem.Value)
+        'this is from http://www.4guysfromrolla.com/articles/070506-1.aspx
+        Dim UserNameTextBox As TextBox
+        UserNameTextBox = CreateUserWizardStep1.ContentTemplateContainer.FindControl("UserName")
+        Dim DataSource As SqlDataSource
+        DataSource = CreateUserWizardStep1.ContentTemplateContainer.FindControl("InsertExtraInfo")
+        Dim User As MembershipUser
+        User = Membership.GetUser(UserNameTextBox.Text)
+        Dim UserGuid As Object
+        UserGuid = User.ProviderUserKey()
+        Dim guid As String = UserGuid.ToString()
+
+        DataSource.InsertParameters.Add("UserID", UserGuid.ToString())
+        DataSource.Insert()
+
+    End Sub
+
+    Sub BindRolesData()
+        'Dim SqlDataSource1 As New SqlDataSource()
+        'SqlDataSource1.ID = "SqlDataSource1"
+        Dim RoleName As DropDownList
+        RoleName = CreateUserWizardStep1.ContentTemplateContainer.FindControl("UserRole")
+        'SqlDataSource1.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("userstring").ConnectionString
+        'SqlDataSource1.SelectCommand = "SELECT [RoleName] FROM [vw_aspnet_Roles]"
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("userstring").ConnectionString
+        Dim con As New SqlConnection(connectionString)
+        Dim cmd As New SqlCommand("SELECT [RoleName] FROM [vw_aspnet_Roles]", con)
+        con.Open()
+        Dim da As New SqlDataAdapter(cmd)
+        Dim dt As New DataTable()
+        da.Fill(dt)
+        RoleName.DataSource = dt
+        RoleName.DataBind()
+        RoleName.DataValueField = "RoleName"
+        RoleName.DataBind()
+        con.Close()
+    End Sub
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        BindRolesData()
+    End Sub
+End Class
