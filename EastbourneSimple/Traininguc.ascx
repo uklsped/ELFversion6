@@ -26,13 +26,7 @@
                     <asp:TextBox ID="StateTextBox" runat="server"></asp:TextBox>
                     <asp:RadioButtonList ID="RadioButtonList1" CausesValidation="false" runat="server"
                         AutoPostBack="True">
-                       <asp:ListItem Value="1" Enabled = "false"> Go To Engineering Run up</asp:ListItem>
-                       <asp:ListItem Value="2" Enabled="false">Requires Pre-Clinical Run up</asp:ListItem>
-                       <asp:ListItem Value="3" Enabled="False">Hand Back to Clinical</asp:ListItem>
-                       <asp:ListItem Value="4" Enabled="False">Go to Planned Maintenance</asp:ListItem>
-                       <asp:ListItem Value="5" Enabled = "false">Go To Repair</asp:ListItem>
-                       <%--<asp:ListItem Value="6" Enabled = "false">Go To Physics QA</asp:ListItem>--%>
-                       <asp:ListItem Value="102">End of Day</asp:ListItem>
+                      
 
                     </asp:RadioButtonList>
                 </asp:TableCell>
