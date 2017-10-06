@@ -143,11 +143,14 @@ Partial Class ErunupUserControl
         'Dim Imagecheck As CheckBoxList
         Dim strScript As String = "<script>"
         'Imagecheck = FindControl("Imaging")
-
+        'added for non-LA linac in MachineState
+        Dim usergroupselected As Integer = 2
+        Dim Reason As Integer = 2
         '1 or 7 is engineering tab or emergency run up tab
         If tabcontrol = "1" Or "7" Then
             'DavesCode.Reuse.ReturnApplicationState(tabcontrol)
             Dim grdview As GridView = FindControl("Gridview1")
+            Dim grdviewI As GridView = FindControl("GridViewImage")
             Dim Textboxcomment As TextBox = FindControl("CommentBox")
             Dim Comment As String = Textboxcomment.Text
             If Action = "Confirm" Then
@@ -155,21 +158,11 @@ Partial Class ErunupUserControl
                 Application(repairstate) = 1
                 Application(LinacFlag) = "Clinical"
                 Valid = True
-                 Dim cb As CheckBox
-                    Select MachineName
-
-                    Case "LA1", "LA2", "LA3"
-                        cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBoxImage"), CheckBox)
-                        iView = cb.Checked
-                        'added E1 and LA6 for eastbourne 4/7/17
-                    Case "LA4", "E1", "E2"
-                        cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBoxImage"), CheckBox)
-                        iView = cb.Checked
-                        cb = CType(GridViewImage.Rows(1).FindControl("RowLevelCheckBoxImage"), CheckBox)
-                        XVI = cb.Checked
-                End Select
                 DavesCode.Reuse.CommitRunup(grdview, LinacName, tablabel, username, Comment, Valid, False, False)
-            DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
+                'inserted to make same as LA linac step without having to activate pre-clin tab
+                DavesCode.Reuse.MachineState(Username, usergroupselected, MachineName, Reason, False)
+                DavesCode.Reuse.ReturnImaging(iView,XVI,grdviewI, LinacName)
+            DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView,XVI, Valid, False)
             Application(appstate) = Nothing
             HttpContext.Current.Application(BoxChanged) = Nothing
             Application(tabstate) = String.Empty

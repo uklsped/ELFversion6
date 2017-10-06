@@ -1031,6 +1031,7 @@ Namespace DavesCode
         End Function
         'Used
         Public Shared Function CommitPreClin(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal Imgchk1 As Boolean, ByVal Imgchk2 As Boolean, ByVal Valid As Boolean, ByVal Fault As Boolean) As String
+            'Public Shared Function CommitPreClin(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal GridViewI As GridView, ByVal Valid As Boolean, ByVal Fault As Boolean) As String
             Dim LogOutStatusID As String
             Dim LogInStatusID As String
             Dim time As DateTime
@@ -1048,7 +1049,7 @@ Namespace DavesCode
             Dim textbox As String = TextBoxp
             Dim conn As SqlConnection
             Dim SqlDataSource1 As New SqlDataSource()
-
+            Dim cb As CheckBox
             Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
             "connectionstring").ConnectionString
             Dim commHAuthID As SqlCommand
@@ -1118,6 +1119,7 @@ Namespace DavesCode
                 End If
             End If
             'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
+                                                      
             'This writes the clinicalhandover table - doesn't have the user in it
 
             Dim commaccept As SqlCommand
@@ -1630,6 +1632,22 @@ Namespace DavesCode
             archive.ExecuteNonQuery()
             conn.Close()
 
+        End Sub
+
+        Public Shared Sub ReturnImaging(ByRef iView As Boolean, ByRef XVi As Boolean, ByVal GridViewImage As GridView, ByVal MachineName As String)
+            Dim cb As CheckBox
+            Select MachineName
+
+                Case "LA1", "LA2", "LA3"
+                    cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBoxImage"), CheckBox)
+                    iView = cb.Checked
+                        'added E1 and LA6 for eastbourne 4/7/17
+                Case Else
+                    cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBoxImage"), CheckBox)
+                    iView = cb.Checked
+                    cb = CType(GridViewImage.Rows(1).FindControl("RowLevelCheckBoxImage"), CheckBox)
+                    XVI = cb.Checked
+            End Select
         End Sub
 
     End Class

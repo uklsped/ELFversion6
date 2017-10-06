@@ -102,27 +102,28 @@ Partial Class Preclinusercontrol
             Imagecheck = FindControl("Imaging")
             Dim strScript As String = "<script>"
             Dim Action As String = Application(actionstate)
+            Dim grdviewI As GridView = FindControl("GridViewImage")
             'this changed 21 aug to allow to move on to other states so suspstate is made to be suspended
             Application(appstate) = Nothing
             'Application(suspstate) = 1
             If Action = "Confirm" Then
                 Application(LinacFlag) = "Clinical"
                 Valid = True
+                'Replaced by ReturnImaging so not repeated in two places - erunupusercontroleast
+                'Dim cb As CheckBox
+                '    Select MachineName
 
-                Dim cb As CheckBox
-                    Select MachineName
-
-                    Case "LA1", "LA2", "LA3"
-                        cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
-                        iView = cb.Checked
-                        'added E1 and LA6 for eastbourne 4/7/17
-                    Case "LA4", "E1", "E2"
-                        cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
-                        iView = cb.Checked
-                        cb = CType(GridViewImage.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
-                        XVI = cb.Checked
-                End Select
-
+                '    Case "LA1", "LA2", "LA3"
+                '        cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                '        iView = cb.Checked
+                '        'added E1 and LA6 for eastbourne 4/7/17
+                '    Case "LA4", "E1", "E2"
+                '        cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                '        iView = cb.Checked
+                '        cb = CType(GridViewImage.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                '        XVI = cb.Checked
+                'End Select
+                DavesCode.Reuse.ReturnImaging(iView,XVI,grdviewI, LinacName)
                 DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
                 Dim returnstring As String = MachineName + "page.aspx?tabref=3"
                 'DavesCode.Reuse.ReturnApplicationState(Tabused)
