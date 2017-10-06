@@ -38,27 +38,32 @@ Partial Class Traininguc
         'Now find which user group is logged on
         'removed references to physics QA tab 31 March 2016
         'Removed these commands for E1 and E2
-        'RadioButtonList1.Items.FindByValue(1).Enabled = False
-        'RadioButtonList1.Items.FindByValue(2).Enabled = False
-        'RadioButtonList1.Items.FindByValue(3).Enabled = False
+        'If MachineName Like "LA?" Then
+        '         RadioButtonList1.Items.FindByValue(2).Enabled = False
+        '    End If
+        ' RadioButtonList1.Items.FindByValue(1).Enabled = False
+        ' RadioButtonList1.Items.FindByValue(3).Enabled = False
         'RadioButtonList1.Items.FindByValue(4).Enabled = False
         'RadioButtonList1.Items.FindByValue(5).Enabled = False
         'RadioButtonList1.Items.FindByValue(6).Enabled = False
+
         'This is what sets buttons now with addition of E1 and E2
-         If MachineName Like "LA?" Then
-                RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up","1", False))
-                RadioButtonList1.Items.Add(New ListItem("Requires Pre-Clinical Run up","2", False))
-                RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical","3", False))
-                RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance","4", False))
-                RadioButtonList1.Items.Add(New ListItem("Go To Repair","5", False))
-                RadioButtonList1.Items.Add(New ListItem("End of Day","102", False))
+        If Not IsPostBack Then
+            If MachineName Like "LA?" Then
+                RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+                RadioButtonList1.Items.Add(New ListItem("Requires Pre-Clinical Run up", "2", False))
+                RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+                RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
+                RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
             Else
-                RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up","1", False))
-                RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical","3", False))
-                RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance","4", False))
-                RadioButtonList1.Items.Add(New ListItem("Go To Repair","5", False))
-                RadioButtonList1.Items.Add(New ListItem("End of Day","102", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+                RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+                RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
+                RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
             End If
+        End If
 
         DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
         If Application(suspstate) = 1 Then
@@ -80,7 +85,6 @@ Partial Class Traininguc
                 'If lastusergroup = 4 Then
                 '    RadioButtonList1.Items.FindByValue(6).Enabled = True
                 'End If
-
 
         ElseIf (laststate = "Engineering Approved") Then
                 If MachineName Like "LA?" Then
@@ -288,7 +292,20 @@ Partial Class Traininguc
         'Not used?
         'DavesCode.Reuse.GetLastTech(MachineName, 8, laststate, lastuser, lastusergroup)
         If Not IsPostBack Then
-           
+            'If MachineName Like "LA?" Then
+            '    RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+            '    RadioButtonList1.Items.Add(New ListItem("Requires Pre-Clinical Run up", "2", False))
+            '    RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+            '    RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
+            '    RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
+            '    RadioButtonList1.Items.Add(New ListItem("End of Day", "102", False))
+            'Else
+            '    RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+            '    RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+            '    RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
+            '    RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
+            '    RadioButtonList1.Items.Add(New ListItem("End of Day", "102", False))
+            'End If
             If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
                 Textboxcomment.Text = Application(BoxChanged).ToString
             Else
