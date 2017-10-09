@@ -59,7 +59,10 @@ Partial Class WebUserControl2
             If Not cb.Checked Or (cb.Checked And usergroupselected = 4) Then
                 If Not Me.Parent.FindControl("RadioButtonlist1") Is Nothing Then
                     Repairlist = Me.Parent.FindControl("RadioButtonlist1")
+                    'modified for E1 etc that don't have pre-clin now 9/10/17
+                    If MachineName Like "LA?" then
                     Repairlist.Items.FindByValue(2).Enabled = False
+                    End If
                     Repairlist.Items.FindByValue(3).Enabled = False
                     If Not Repairlist.Items.FindByValue(4) Is Nothing Then
                         Repairlist.Items.FindByValue(4).Enabled = False
@@ -199,7 +202,10 @@ Partial Class WebUserControl2
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         wcbutton.Text = "Update Modality"
+        Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         WriteDatauc1.Visible = True
+        ForceFocus(wctext)
+        
         'The event handler stuff used to be done here
 
     End Sub
@@ -246,5 +252,11 @@ Partial Class WebUserControl2
                 End If
             End If
         End If
+    End Sub
+
+    'Add force focus 9/10/17
+     Private Sub ForceFocus(ByVal ctrl As Control)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
+        ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 End Class
