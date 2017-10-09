@@ -4,7 +4,7 @@
 
 
 
-<%@ Register src="ErunupUserControl.ascx" tagname="ErunupUserControl" tagprefix="uc1" %>
+<%@ Register src="ErunupUserControlEast.ascx" tagname="ErunupUserControlEast" tagprefix="uc1" %>
 <%@ Register src="Preclinusercontrol.ascx" tagname="Preclinusercontrol" tagprefix="uc2" %>
 <%@ Register src="ClinicalUserControl.ascx" tagname="ClinicalUserControl" tagprefix="uc3" %>
 
@@ -270,6 +270,7 @@
     <input id="inpHide" type="hidden" runat="server" value="9" />
         <br />
 
+
     
 
     <asp:UpdatePanel ID="UpdatePanel2" runat="server">
@@ -315,7 +316,7 @@ E2 Status
 <asp:Button ID="TabButton1" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent1" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "E2"  Tabby="1" UserReason = "1" visible="false" />
-<uc1:ErunupUserControl ID="ErunupUserControl1" LinacName="E2" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server"  />
+<uc1:ErunupUserControlEast ID="ErunupUserControl1" LinacName="E2" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server"  />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -333,7 +334,7 @@ E2 Status
 <%--  This is the Pre-clinical tab  --%>    
         
         
-<asp:TabPanel ID="TabPanel2" runat="server" HeaderText="E2 Pre-clinical Runup" >
+<asp:TabPanel ID="TabPanel2" runat="server" hidden="true" Enabled="false">
         <ContentTemplate>
 <asp:UpdatePanel ID="updatemod2" runat="server" >
 <ContentTemplate>
@@ -424,7 +425,7 @@ E2 Status
 </ContentTemplate>
 </asp:TabPanel>
 
-<asp:TabPanel ID="TabPanel7" runat="server" HeaderText="E2 Emergency Runup" DynamicContextKey='Emerunup' CssClass="ajax__tab_header">
+<asp:TabPanel ID="TabPanel7" runat="server"  DynamicContextKey='Emerunup' CssClass="ajax__tab_header" Hidden="true" enabled="false">
      <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel7" runat="server">
 <ContentTemplate>
@@ -432,7 +433,7 @@ E2 Status
 <ContentTemplate><asp:Button ID="TabButton7" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent7" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "E2"  Tabby="7" UserReason = "9" visible="false" />
-<uc1:ErunupUserControl ID="ErunupUserControl2" LinacName="E2" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />
+<uc1:ErunupUserControlEast ID="ErunupUserControl2" LinacName="E2" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>

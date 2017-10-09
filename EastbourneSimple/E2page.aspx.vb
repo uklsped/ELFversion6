@@ -86,8 +86,7 @@ Partial Public Class E2page
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
 
-        mpContentPlaceHolder =
-                    CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
             AddHandler wctrl.UserApproved, AddressOf UserApprovedEvent
@@ -347,7 +346,11 @@ Partial Public Class E2page
                         TabPanel4.Enabled = "true"
                         TabPanel5.Enabled = "true"
                         'TabPanel6.Enabled = "true"
+                        'added 9/10/17
+                        If EquipmentID Like "LA_" Then
                         TabPanel7.Enabled = "true"
+                            TabPanel7.HeaderText = EquipmentID + " Emergency Runup"
+                            End If
                         TabPanel8.Enabled = "True"
 
 
@@ -1074,7 +1077,7 @@ Partial Public Class E2page
         Statelabel.Text = message
     End Sub
 
-    
+   
     Public Shared Sub CloseMessage()
         'DavesCode.Reuse.CloseBrowser()
         'Need to put in a check here to see if is a fault because hidden field not refreshed in writeauc
