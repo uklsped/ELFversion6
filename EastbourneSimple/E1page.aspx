@@ -424,7 +424,7 @@ E1 Status
 </ContentTemplate>
 </asp:TabPanel>
 
-<asp:TabPanel ID="TabPanel7" runat="server" HeaderText="E1 Emergency Runup" DynamicContextKey='Emerunup' CssClass="ajax__tab_header" Hidden="true" enabled="false">
+<asp:TabPanel ID="TabPanel7" runat="server"  DynamicContextKey='Emerunup' CssClass="ajax__tab_header" Hidden="true" enabled="false">
      <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel7" runat="server">
 <ContentTemplate>
