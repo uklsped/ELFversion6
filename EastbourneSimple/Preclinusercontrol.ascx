@@ -187,7 +187,7 @@ function DoClose() {
                     <asp:TemplateField>  
                              
             <ItemTemplate>
-            <asp:CheckBox runat="server" ID="RowlevelCheckBox" AutoPostBack="true"  
+            <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" AutoPostBack="true"  
                     OncheckedChanged="checked"/>
             </ItemTemplate>
                       </asp:TemplateField>
