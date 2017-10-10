@@ -1108,7 +1108,7 @@ Namespace DavesCode
                         LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 102, LinacName, 2)
                     Else
                         'added for E1 and E2
-                        If LinacName = "E1" Or "E2" Then
+                        If LinacName = "E1" Or LinacName="E2" Then
                              LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 7, LinacName, 1)
                             Else
                             LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Engineering Approved", 5, 7, LinacName, 2)

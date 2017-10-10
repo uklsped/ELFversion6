@@ -495,7 +495,7 @@ Partial Class Preclinusercontrol
         'Dim tclcontainer As TabContainer
         For Each grv As GridViewRow In GridViewImage.Rows
 
-            Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
+            Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBoxImage"), CheckBox)
             If checktick.Checked = True Then
                 counter = counter + 1
             End If
