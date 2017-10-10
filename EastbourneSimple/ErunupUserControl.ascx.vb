@@ -283,8 +283,7 @@ Partial Class ErunupUserControl
             Dim comm As SqlCommand
             Dim reader As SqlDataReader
             Dim count As Integer = 0
-            Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
+            Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString1)
             If tablabel = 1 Then
                 'added imaging
