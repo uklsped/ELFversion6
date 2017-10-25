@@ -293,7 +293,14 @@ Partial Class ClinicalUserControl
                 'added 16march
                 Dim colnum As Integer = dv.Table.Columns.Count - 1
                 For count As Integer = 0 To dv.Table.Columns.Count - 1
-                    energy = CType(dv.Table.Rows(0)(count), Integer)
+                    'This will fail if for some reason the value n dv.Table.Rows(0)(count) is null
+                    'so check for null and if it is put energy = 0
+                    If IsDBNull(dv.Table.Rows(0)(count)) Then
+                        energy = 0
+                        Else
+                        energy = CType(dv.Table.Rows(0)(count), Integer)
+                    End If
+                    
                     Select Case energy
                         Case -1
                             headerRow.Cells(count).BackColor = System.Drawing.Color.Green
@@ -364,8 +371,8 @@ Partial Class ClinicalUserControl
         'the distinct takes care of when suspended returns via pre-clinical because then there are two pre ids for one runup id
         'Dim query As String = "Select distinct handoverID, MV6, MV10, MeV6, MeV8, " & _
         '                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) as lastrecord from HandoverEnergies where linac=@linac)"
-
-        Dim query As String = "Select distinct handoverID, MV6, MV6FFF, MV10,MV10FFF, MeV4, MeV6, MeV8, " & _
+        'Added isnull as per energy displayuc
+        Dim query As String = "Select distinct handoverID, MV6, ISNULL(MV6FFF, 0) as ""MV6FFF"", MV10 ,ISNULL(MV10FFF, 0) as ""MV10FFF"",ISNULL(MeV4,0) as ""MeV4"", MeV6, MeV8, " & _
                           "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)"
 
         SqlDataSource1 = QuerySqlConnection(MachineName, query)
