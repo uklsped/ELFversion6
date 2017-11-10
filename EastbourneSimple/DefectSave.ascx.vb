@@ -14,12 +14,12 @@ Partial Class DefectSave
             MachineName = value
         End Set
     End Property
-    Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
+    'Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
         'AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
 
 
-    End Sub
+    'End Sub
 
     Public Sub UpDateDefectsEventHandler()
         BindDefectData()
@@ -96,7 +96,6 @@ Partial Class DefectSave
             conn.Close()
         Finally
             DropDownListEnergy.SelectedIndex = -1
-            'DropDownListArea.SelectedIndex = -1
             AreaBox.Text = String.Empty
             PatientIDBox.Text = String.Empty
             TextBox2.Text = String.Empty
@@ -151,7 +150,7 @@ Partial Class DefectSave
             newFault = False
             SetFaults(newFault)
             AddEnergyItem()
-        End If
+            End If
         'WriteDatauc1 no longer used 23/11/16
         'Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         'wctrl.LinacName = MachineName
@@ -173,6 +172,7 @@ Partial Class DefectSave
         End If
     End Sub
     Private Sub SetFaults(ByVal newfault As Boolean)
+        Dim LinacType As String
         Dim selectCommand As Boolean = newfault
         Dim Faults As New DataTable()
         Dim conn As SqlConnection
@@ -184,8 +184,17 @@ Partial Class DefectSave
             comm = New SqlCommand("SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' and IncidentID = (Select max(IncidentID) from  [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE') order by ConcessionNumber", conn)
             comm.Parameters.AddWithValue("@Linac", MachineName)
         Else
-            comm = New SqlCommand("SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' order by ConcessionNumber", conn)
+            'Modified 10/11/17 because defects are now in DefectTable not hard wired in to page
+            'comm = New SqlCommand("SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' order by ConcessionNumber", conn)
+            'comm.Parameters.AddWithValue("@Linac", MachineName)
+            If MachineName Like "LA%" Then
+                LinacType = "O"
+                Else
+                LinacType = "BE"
+            End If
+            comm = New SqlCommand(" SELECT  Defect as Fault, IncidentID From [DefectTable] where linacType in('A',@LinacType) and Active = 'True' UNION SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' order by IncidentID", conn)
             comm.Parameters.AddWithValue("@Linac", MachineName)
+            comm.Parameters.AddWithValue("@LinacType", LinacType)
         End If
 
         conn.Open()
@@ -203,10 +212,6 @@ Partial Class DefectSave
     Private Sub BindDefectData()
 
         Dim SqlDataSource1 As New SqlDataSource()
-
-        'This was when most recent fault was displayed
-        'Dim query As String = "SELECT * FROM [RadRFlt] where RRFId = (Select Max(RRFId) as mancount from RadRFlt where linac=@linac)"
-        'Dim query As String = "SELECT Cast(DefectTime as Time) as DefectTime, Defect, DefectComment FROM [RadRFlt] where Cast(DefectTime as Date) = Cast(GetDate() as Date) and linac=@linac order by DefectTime desc"
         Dim query As String = "SELECT RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as DefectTime, ConcessionNumber, Description FROM [ReportFault] where Cast(DateReported as Date) = Cast(GetDate() as Date) and linac=@linac and ConcessionNumber != '' order by DateReported desc"
         SqlDataSource1 = QuerySqlConnection(MachineName, query)
         GridView1.DataSource = SqlDataSource1
@@ -237,7 +242,6 @@ Partial Class DefectSave
         Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
         "connectionstring").ConnectionString
 
-        'DropDownListArea.SelectedIndex = -1
         incidentIDstring = Defect.SelectedItem.Value
         Dim result As ListItem
         result = Defect.Items.FindByValue(incidentIDstring)
@@ -245,46 +249,63 @@ Partial Class DefectSave
         index = Defect.Items.IndexOf(result)
         If Integer.TryParse(incidentIDstring, incidentID) Then
             HiddenField1.Value = incidentID
-            If incidentID > 0 Then
-                conn1 = New SqlConnection(connectionString)
-                'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
-                comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
-                comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                comm1.Parameters("@incidentID").Value = incidentID
-                conn1.Open()
-                Dim sqlresult As Object = comm1.ExecuteScalar()
-                If sqlresult Is Nothing Then
-                    AreaBox.Text = String.Empty
-                    'DropDownListArea.SelectedIndex = -1
+            'Modified 10/1117 because of use of defect table
+            'If incidentID > 0 Then
+            '    conn1 = New SqlConnection(connectionString)
+            '    'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
+            '    comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
+            '    comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+            '    comm1.Parameters("@incidentID").Value = incidentID
+            '    conn1.Open()
+            '    Dim sqlresult As Object = comm1.ExecuteScalar()
+            '    If sqlresult Is Nothing Then
+            '        AreaBox.Text = String.Empty
+            '        'DropDownListArea.SelectedIndex = -1
 
+            '    Else
+            '        AreaBox.Text = sqlresult.ToString
+            '        'DropDownListArea.SelectedValue = sqlresult.ToString
+            '        'DropDownListArea.Enabled = False
+            '    End If
+            '    conn1.Close()
+            'Else
+            '    
+            '    'If incidentID = -10 Or incidentID = -13 Then
+            '    '    AreaBox.Text = "iView"
+            '    '    'DropDownListArea.SelectedValue = "iView"
+            '    '    'DropDownListArea.Enabled = False
+            '    '    'Modified 21/11/2016 to automatically add Area
+            '    'ElseIf incidentID = -14 Then
+            '    '    AreaBox.Text = "XVI"
+            '    '    'DropDownListArea.SelectedValue = "XVI"
+            '    '    'DropDownListArea.Enabled = False
+            '    'Else
+            '    '    AreaBox.Text = "Machine"
+            '    '    'DropDownListArea.SelectedValue = "Machine"
+            '    '    'DropDownListArea.Enabled = False
+            '    'End If
+
+            'End If
+            conn1 = New SqlConnection(connectionString)
+            If incidentID > 0 Then
+                comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
                 Else
-                    AreaBox.Text = sqlresult.ToString
-                    'DropDownListArea.SelectedValue = sqlresult.ToString
-                    'DropDownListArea.Enabled = False
-                End If
-                conn1.Close()
-            Else
-                If incidentID = -10 Or incidentID = -13 Then
-                    AreaBox.Text = "iView"
-                    'DropDownListArea.SelectedValue = "iView"
-                    'DropDownListArea.Enabled = False
-                    'Modified 21/11/2016 to automatically add Area
-                ElseIf incidentID = -14 Then
-                    AreaBox.Text = "XVI"
-                    'DropDownListArea.SelectedValue = "XVI"
-                    'DropDownListArea.Enabled = False
-                Else
-                    AreaBox.Text = "Machine"
-                    'DropDownListArea.SelectedValue = "Machine"
-                    'DropDownListArea.Enabled = False
-                End If
+                comm1 = New SqlCommand("SELECT Area from DefectTable where incidentID=@incidentID", conn1)
             End If
+            comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+            comm1.Parameters("@incidentID").Value = incidentID
+            conn1.Open()
+            Dim sqlresult As Object = comm1.ExecuteScalar()
+            If sqlresult Is Nothing Then
+                AreaBox.Text = String.Empty
+            Else
+                AreaBox.Text = sqlresult.ToString
+            End If
+            conn1.Close()
 
         Else
             HiddenField1.Value = -1000
-            'DropDownListArea.SelectedIndex = -1
             AreaBox.Text = String.Empty
-
         End If
 
     End Sub
@@ -304,7 +325,7 @@ Partial Class DefectSave
             Case "LA4"
                 Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
                 ConstructEnergylist(Energy1)
-            Case "E1", "E2"
+            Case "E1", "E2", "B1"
                 Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
                 ConstructEnergylist(Energy1)
             Case Else
@@ -324,13 +345,11 @@ Partial Class DefectSave
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
         Defect.SelectedIndex = -1
         AreaBox.Text = String.Empty
-        'DropDownListArea.SelectedIndex = -1
         DropDownListEnergy.SelectedIndex = -1
         TextBox2.Text = Nothing
         TextBox3.Text = Nothing
         TextBox4.Text = Nothing
         PatientIDBox.Text = Nothing
-        'DropDownListArea.Enabled = True
-
+        
     End Sub
 End Class

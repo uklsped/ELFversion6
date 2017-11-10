@@ -47,7 +47,7 @@
                                    <asp:DropDownList ID="Defect" runat="server" AutoPostBack="true" 
                                        AppendDataBoundItems="True" DataValueField="IncidentID" DateTextField ="Fault">
                                     <asp:ListItem>Select</asp:ListItem>                           
-                                    <asp:ListItem Value="-1">2T Error</asp:ListItem>
+                                   <%-- <asp:ListItem Value="-1">2T Error</asp:ListItem>
                                     <asp:ListItem Value="-2">2R Error</asp:ListItem>
                                     <asp:ListItem Value="-3">DOSE RATE MON</asp:ListItem>
                                     <asp:ListItem Value="-4">D1 RLY OFF</asp:ListItem>
@@ -61,7 +61,7 @@
                                     <asp:ListItem Value="-12">DOSE DIFF</asp:ListItem>
                                     <asp:ListItem Value="-13">IVIEW FAULT</asp:ListItem>
                                     <asp:ListItem Value="-14">XVI FAULT</asp:ListItem>
-                                    <asp:ListItem Value="-15">DAILY QA3 WARNING</asp:ListItem>
+                                    <asp:ListItem Value="-15">DAILY QA3 WARNING</asp:ListItem>--%>
                                     </asp:DropDownList>
                                     </ContentTemplate>
                                    </asp:UpdatePanel>
