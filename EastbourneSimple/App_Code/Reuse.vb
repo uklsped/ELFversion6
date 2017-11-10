@@ -731,7 +731,7 @@ Namespace DavesCode
                             cb = CType(GridView1.Rows(8).FindControl("RowLevelCheckBox"), CheckBox)
                             comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MeV20").Value = cb.Checked
-                        Case "E1", "E2"
+                        Case "E1", "E2", "B1"
                             cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
                             comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MV6").Value = cb.Checked
@@ -1108,7 +1108,7 @@ Namespace DavesCode
                         LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 102, LinacName, 2)
                     Else
                         'added for E1 and E2
-                        If LinacName = "E1" Or LinacName="E2" Then
+                        If LinacName = "E1" Or LinacName="E2" Or LinacName = "B1" Then
                              LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 7, LinacName, 1)
                             Else
                             LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Engineering Approved", 5, 7, LinacName, 2)

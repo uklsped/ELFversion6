@@ -442,7 +442,7 @@ Partial Class faultPage
                 Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
                 ConstructEnergylist(Energy1)
                 'Added 6/7/17
-            Case "E1", "E2"
+            Case "E1", "E2", "B1"
                 Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
                 ConstructEnergylist(Energy1)
             Case Else

@@ -32,6 +32,7 @@ Partial Class AtlasEnergyViewuc
 
         Dim machine As String
         ' Inserted this extra step because LA3 licence has been re-allocated to E1. 10/7/17
+        'Needs to change forf E2 and B1
         If MachineName = "E1" Then
             machine = 3
         Else

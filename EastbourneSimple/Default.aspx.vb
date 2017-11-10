@@ -35,7 +35,7 @@ Partial Class _Default
             'Dim answer As Integer = CInt(Application(loadedstring))
             'If CInt(Application(loadedstring)) <> 1 Then
             Select Case machinepage
-                Case "LA1", "LA2", "LA3", "LA4", "E1", "E2"
+                Case "LA1", "LA2", "LA3", "LA4", "E1", "E2", "B1"
                     'Application(loadedstring) = 1
 
                     'Dim smtpClient As SmtpClient = New SmtpClient()

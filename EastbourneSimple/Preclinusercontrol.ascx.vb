@@ -267,7 +267,7 @@ Partial Class Preclinusercontrol
                         GridView2.Columns(index).Visible = False
                     Next
                     GridView2.Columns(3).Visible = True
-                Case "E1", "E2"
+                Case "E1", "E2", "B1"
 
                     For index As Integer = 11 To 12
                         GridView2.Columns(index).Visible = False
