@@ -157,6 +157,7 @@ Partial Class DefectSave
         BindDefectData()
     End Sub
     Public Sub ResetDefectDropDown(ByVal incidentid As String)
+        
         Dim result As ListItem
         Dim newFault As Boolean
 
@@ -196,8 +197,8 @@ Partial Class DefectSave
             comm.Parameters.AddWithValue("@Linac", MachineName)
             comm.Parameters.AddWithValue("@LinacType", LinacType)
         End If
-
-        conn.Open()
+        'Don't need to open https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/populating-a-dataset-from-a-dataadapter
+        'conn.Open()
         Dim da As New SqlDataAdapter(comm)
         da.Fill(Faults)
 
