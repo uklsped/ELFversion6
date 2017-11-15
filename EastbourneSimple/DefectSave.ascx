@@ -39,7 +39,7 @@
                        <div style ="width:401px">
                            Record Repeat Fault<br />
                            <span class = "redcolor"> * Mandatory Field </span><br />
-                       <table style="width:401px;" align="left">
+                       <table style="width:401px;" >
                            <tr>
                                <td class="style1">
                                    <asp:UpdatePanel ID="UpdatePanelDefectlist" runat="server" UpdateMode="Conditional"><ContentTemplate>
@@ -80,7 +80,7 @@
             </td>
             </tr>
             </table>--%>
-  <table style="width:401px;" align="left">                    
+  <table style="width:401px;" >                    
         <tr>
             <td class="style3">
                 Area:
@@ -157,7 +157,7 @@
                                
 
                                </td>
-                               <td align="left">
+                               <td >
                                   
  <asp:Button ID="ClearButton" runat="server" Text="Clear" CausesValidation="False" CssClass="buttonmargin" />
                                
