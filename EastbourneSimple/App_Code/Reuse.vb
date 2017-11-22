@@ -1225,7 +1225,7 @@ Namespace DavesCode
                 conn.Close()
             End If
             'Moved If Breakdown after this section, checking and writing treatment table to here because it needs to be checked both for breakdown and if recover button operated.
-            'It's only if there is a breakdown or recover that there will be a null entry for treatmentstoptime
+            'It's only if there is a breakdown or recover that there will be a null entry for treatmentstoptime Not true 22/11/17
 
             commHAuthID = New SqlCommand("select treatmentid, treatmentstoptime from treatmenttable where treatmentid = (select max(treatmentID) from treatmentTable where linac=@linac)", conn)
             commHAuthID.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
@@ -1552,7 +1552,58 @@ Namespace DavesCode
             reader.Close()
             conn.Close()
             Return nowstatus
+        End Function
 
+        Public Shared Function GetLastTime(ByVal linac As String, ByVal index As Integer) As String
+            Dim time As DateTime
+            time = Now().Date
+            Dim PreviousState As Integer = index
+            Dim reader As SqlDataReader
+            Dim nowstatus As String = "Error"
+            Dim linacName As String = linac
+            Dim conn As SqlConnection
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            "connectionstring").ConnectionString
+            'Dim Machinestatus As SqlCommand
+            Dim StatusNow As SqlCommand
+            Dim oldtime As DateTime
+            Dim activity As String = ""
+            conn = New SqlConnection(connectionString)
+
+            If PreviousState = 0 Then
+
+                'StatusNow = New SqlCommand("SELECT dateadd(dd,0, datediff(dd,0,datetime)) FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+
+                StatusNow = New SqlCommand("SELECT datetime, userreason FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            Else
+                'This doesn't work it just gets penultimate record irrespective of linac
+                'StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
+                'from http://stackoverflow.com/questions/8198962/taking-the-second-last-row-with-only-one-select-in-sql-server
+                StatusNow = New SqlCommand("SELECT TOP 1 * From (select Top 2 * from (select * from [LinacStatus] where linac=@linac) as a ORDER BY a.stateid DESC)  as x ORDER BY x.stateid", conn)
+
+            End If
+            StatusNow.Parameters.AddWithValue("@linac", linacName)
+            conn.Open()
+            reader = StatusNow.ExecuteReader()
+
+            If reader.Read() Then
+                oldtime = reader.Item("datetime")
+                oldtime = oldtime.Date
+                'oldtime = oldtime.Date.AddDays(-1)
+                activity = reader.Item("userreason")
+                If activity = "102" Then
+                    nowstatus = "Ignore"
+                ElseIf time = oldtime Then
+                    nowstatus = "Ignore"
+                Else
+                    nowstatus = "EndDay"
+                End If
+            Else
+                nowstatus = "Error"
+            End If
+            reader.Close()
+            conn.Close()
+            Return nowstatus
         End Function
 
         Public Shared Function GetLastTech(ByVal linac As String, ByVal index As Integer, ByRef lastState As String, ByRef lastusername As String, ByRef lastusergroup As Integer) As Integer

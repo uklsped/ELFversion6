@@ -30,7 +30,7 @@ Partial Class _Default
             Response.Redirect("NonMachinepage.aspx")
         Else
             Dim machinepage As String = Request.QueryString("machinekey")
-            Dim returnstring As String = machinepage + "page.aspx"
+            Dim returnstring As String = machinepage + "page.aspx?loadup=1"
             'Dim loadedstring As String = machinepage + "loaded"
             'Dim answer As Integer = CInt(Application(loadedstring))
             'If CInt(Application(loadedstring)) <> 1 Then

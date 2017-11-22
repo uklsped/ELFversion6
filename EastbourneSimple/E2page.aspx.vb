@@ -46,6 +46,7 @@ Partial Public Class E2page
     Private recover As String = Nothing
     Private lsctrl As LinacStatusuc
     Private RegistrationState As String = "regstateE2"
+    Private loadup As String = Nothing
 
 
 
@@ -203,7 +204,7 @@ Partial Public Class E2page
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
         AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
-
+        Dim ResetDay As String = Nothing
 
 
 
@@ -239,6 +240,20 @@ Partial Public Class E2page
         'DavesCode.Reuse.ReturnApplicationState("First Start")
 
         If Not IsPostBack Then
+            'added 16/11/17 to check for end of day
+            If Not Request.QueryString("loadup") Is Nothing Then
+                loadup = Request.QueryString("loadup").ToString
+                ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
+                Select Case ResetDay
+                    Case "Ignore"
+                        'Do nothing
+                    Case "EndDay"
+                        EndofDayElf(ResetDay)
+                    Case "Error"
+                        'Do nothing
+                End Select
+            End If
+
             Dim userIP As String = DavesCode.Reuse.GetIPAddress()
             Label5.Text = userIP
             ' 20 April handle direct open to repair page
@@ -1098,7 +1113,16 @@ Partial Public Class E2page
     End Sub
 
     Protected Sub Timer1_Tick(sender As Object, e As System.EventArgs) Handles Timer1.Tick
+        'modified to handle browser being closed without end of day or equivalent 16/11/17
         Dim HoursSinceMidnight As Double = Date.Now.Subtract(Date.Today).TotalHours
+        Label1.Text = "Hours since midnight " & _
+           HoursSinceMidnight
+        If HoursSinceMidnight < 3 Then
+            EndofDayElf("Timer")
+        End If
+    End Sub
+
+        Protected Sub EndofDayElf(ByVal Caller As String)
         Dim returnstring As String = EquipmentID + "page.aspx"
         Dim mrucontrol As UserControl
         Dim mpreccontrol As UserControl
@@ -1114,8 +1138,6 @@ Partial Public Class E2page
         Dim Comment As String
         Dim Logoffuser As String = "System"
         Dim Breakdown As Boolean
-        Label1.Text = "Hours since midnight " & _
-           HoursSinceMidnight
         Dim lastState As String
         Dim activetab As String
         Dim suspendnull As String = Nothing
@@ -1128,7 +1150,7 @@ Partial Public Class E2page
         Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
         "connectionstring").ConnectionString
 
-        If HoursSinceMidnight < 3 Then
+
             lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
             conn = New SqlConnection(connectionString1)
             comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
@@ -1171,7 +1193,8 @@ Partial Public Class E2page
                         grdview = mrucontrol.FindControl("Gridview1")
                         Commentbox = mrucontrol.FindControl("CommentBox")
                         Comment = Commentbox.Text
-                        DavesCode.Reuse.CommitRunup(grdview, EquipmentID, activetab, Logoffuser, Comment, False, Breakdown, False)
+                     'blank grid view 17/11/17
+                        DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
                     Case 2
                         mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
                         Commentbox = mpreccontrol.FindControl("CommentBox")
@@ -1194,7 +1217,11 @@ Partial Public Class E2page
                         'mrepcontrol.RemoteLockElf()
                         If Breakdown Then
                             'This means there are still open faults
+                           If Caller = "EndDay" Then
+                            WriteRecovery()
+                        Else
                             mrepcontrol.RemoteLockElf(False)
+                        End If
                         Else
                             If lastState = "Fault" Then
                                 'This means there were open faults but they have been closed so need to close them off.
@@ -1236,10 +1263,6 @@ Partial Public Class E2page
             End If
             'This is in the wrong place because it redirects even if there is a fault and this confuses the system
             'Response.Redirect(returnstring)
-
-        End If
-
-
 
     End Sub
 

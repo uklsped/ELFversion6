@@ -46,7 +46,7 @@ Partial Public Class LA2page
     Private recover As String = Nothing
     Private lsctrl As LinacStatusuc
     Private RegistrationState As String = "regstateLA2"
-
+    Private loadup As String = Nothing
 
 
     Protected Sub Update_ReturnButtons()
@@ -86,9 +86,7 @@ Partial Public Class LA2page
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
 
-        mpContentPlaceHolder = _
-                    CType(Master.FindControl("ContentPlaceHolder1"),  _
-                    ContentPlaceHolder)
+        mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
             AddHandler wctrl.UserApproved, AddressOf UserApprovedEvent
@@ -107,8 +105,7 @@ Partial Public Class LA2page
         If tabcontrol = "EndDay" Then
 
             mpContentPlaceHolder = _
-                CType(Master.FindControl("ContentPlaceHolder1"),  _
-                ContentPlaceHolder)
+                CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
             If Not mpContentPlaceHolder Is Nothing Then
                 wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
                 wctrl.Visible = False
@@ -207,7 +204,7 @@ Partial Public Class LA2page
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
         AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
-
+        Dim ResetDay As String = Nothing
 
 
 
@@ -243,6 +240,20 @@ Partial Public Class LA2page
         'DavesCode.Reuse.ReturnApplicationState("First Start")
 
         If Not IsPostBack Then
+             'added 16/11/17 to check for end of day
+            If Not Request.QueryString("loadup") Is Nothing Then
+                loadup = Request.QueryString("loadup").ToString
+                ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
+                Select Case ResetDay
+                    Case "Ignore"
+                        'Do nothing
+                    Case "EndDay"
+                        EndofDayElf(ResetDay)
+                    Case "Error"
+                        'Do nothing
+                End Select
+            End If
+
             Dim userIP As String = DavesCode.Reuse.GetIPAddress()
             Label5.Text = userIP
             ' 20 April handle direct open to repair page
@@ -350,7 +361,11 @@ Partial Public Class LA2page
                         TabPanel4.Enabled = "true"
                         TabPanel5.Enabled = "true"
                         'TabPanel6.Enabled = "true"
+                        'added 9/10/17
+                        If EquipmentID Like "LA_" Then
                         TabPanel7.Enabled = "true"
+                            TabPanel7.HeaderText = EquipmentID + " Emergency Runup"
+                            End If
                         TabPanel8.Enabled = "True"
 
 
@@ -468,8 +483,7 @@ Partial Public Class LA2page
         mpContentPlaceHolder = _
         CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
-            tabcontainer1 = CType(mpContentPlaceHolder. _
-                FindControl("tcl"), TabContainer)
+            tabcontainer1 = CType(mpContentPlaceHolder.FindControl("tcl"), TabContainer)
             If Not tabcontainer1 Is Nothing Then
                 Dim panelcontrol As TabPanel = tabcontainer1.FindControl("TabPanel0")
                 linacstatusuc = panelcontrol.FindControl("Linacstatusuc1")
@@ -561,7 +575,7 @@ Partial Public Class LA2page
                         'This should autorecover
                         WriteRecovery()
                     End If
-
+                   
                 End If
             End If
 
@@ -848,9 +862,9 @@ Partial Public Class LA2page
                 Application(activetabstate) = tabActive
 
             End If
-
+        
         End If
-
+        
     End Sub
     Public Sub AcceptOKnosigpass(ByVal Task As Integer, ByVal user As String, ByVal usergroup As Integer)
         Dim output As String
@@ -1030,8 +1044,7 @@ Partial Public Class LA2page
         'EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         Dim mpContentPlaceHolder As ContentPlaceHolder
         mpContentPlaceHolder = _
-            CType(Master.FindControl("ContentPlaceHolder1"),  _
-            ContentPlaceHolder)
+            CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             Dim lastState As String
             lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
