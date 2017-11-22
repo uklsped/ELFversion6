@@ -104,8 +104,7 @@ Partial Public Class LA2page
         Dim Action As String = Application(actionstate)
         If tabcontrol = "EndDay" Then
 
-            mpContentPlaceHolder = _
-                CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+            mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
             If Not mpContentPlaceHolder Is Nothing Then
                 wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
                 wctrl.Visible = False
@@ -480,8 +479,7 @@ Partial Public Class LA2page
         Dim lastusergroup As Integer = 0
 
         Page = Me.Page
-        mpContentPlaceHolder = _
-        CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             tabcontainer1 = CType(mpContentPlaceHolder.FindControl("tcl"), TabContainer)
             If Not tabcontainer1 Is Nothing Then
@@ -1043,8 +1041,7 @@ Partial Public Class LA2page
 
         'EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         Dim mpContentPlaceHolder As ContentPlaceHolder
-        mpContentPlaceHolder = _
-            CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             Dim lastState As String
             lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
@@ -1094,7 +1091,6 @@ Partial Public Class LA2page
         Statelabel.Text = message
     End Sub
 
-    <WebMethod()> _
     Public Shared Sub CloseMessage()
         'DavesCode.Reuse.CloseBrowser()
         'Need to put in a check here to see if is a fault because hidden field not refreshed in writeauc
@@ -1115,7 +1111,16 @@ Partial Public Class LA2page
     End Sub
 
     Protected Sub Timer1_Tick(sender As Object, e As System.EventArgs) Handles Timer1.Tick
+        'modified to handle browser being closed without end of day or equivalent 16/11/17
         Dim HoursSinceMidnight As Double = Date.Now.Subtract(Date.Today).TotalHours
+        Label1.Text = "Hours since midnight " & _
+           HoursSinceMidnight
+        If HoursSinceMidnight < 3 Then
+            EndofDayElf("Timer")
+        End If
+    End Sub
+
+        Protected Sub EndofDayElf(ByVal Caller As String)
         Dim returnstring As String = EquipmentID + "page.aspx"
         Dim mrucontrol As UserControl
         Dim mpreccontrol As UserControl
@@ -1131,21 +1136,17 @@ Partial Public Class LA2page
         Dim Comment As String
         Dim Logoffuser As String = "System"
         Dim Breakdown As Boolean
-        Label1.Text = "Hours since midnight " & _
-           HoursSinceMidnight
         Dim lastState As String
         Dim activetab As String
         Dim suspendnull As String = Nothing
         Dim repairstatenull As String = Nothing
-
         Dim NumOpen As Integer
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader As SqlDataReader
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
-        "connectionstring").ConnectionString
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
-        If HoursSinceMidnight < 3 Then
+        
             lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
             conn = New SqlConnection(connectionString1)
             comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
@@ -1188,7 +1189,8 @@ Partial Public Class LA2page
                         grdview = mrucontrol.FindControl("Gridview1")
                         Commentbox = mrucontrol.FindControl("CommentBox")
                         Comment = Commentbox.Text
-                        DavesCode.Reuse.CommitRunup(grdview, EquipmentID, activetab, Logoffuser, Comment, False, Breakdown, False)
+                        'blank grid view 17/11/17
+                        DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
                     Case 2
                         mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
                         Commentbox = mpreccontrol.FindControl("CommentBox")
@@ -1215,7 +1217,11 @@ Partial Public Class LA2page
                         Else
                             If lastState = "Fault" Then
                                 'This means there were open faults but they have been closed so need to close them off.
-                                mrepcontrol.WriteFaultIDTable()
+                                   If Caller = "EndDay" Then
+                            WriteRecovery()
+                        Else
+                            mrepcontrol.RemoteLockElf(False)
+                        End If
                             End If
                             DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 5, Breakdown, suspendnull, repairstatenull, False)
                         End If
@@ -1253,10 +1259,6 @@ Partial Public Class LA2page
             End If
             'This is in the wrong place because it redirects even if there is a fault and this confuses the system
             'Response.Redirect(returnstring)
-
-        End If
-
-
 
     End Sub
 
