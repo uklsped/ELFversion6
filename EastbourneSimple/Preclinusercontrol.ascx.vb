@@ -667,12 +667,12 @@ Partial Class Preclinusercontrol
                 'Same fix as Engineering run up energies 4/7/17
                 If Not IsDBNull(reader.Item("Approved")) Then
                     If Not reader.Item("Approved") Then
-                        Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBox"), CheckBox)
+                        Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBoxImage"), CheckBox)
                         cb.Enabled = False
                         cb.Visible = False
                     End If
                 Else
-                    Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBox"), CheckBox)
+                    Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBoxImage"), CheckBox)
                     cb.Enabled = False
                     cb.Visible = False
                 End If
