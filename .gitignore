@@ -241,3 +241,5 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /EastbourneSimple/2015listing.txt
+/EastbourneSimple/diff.txt
+/EastbourneSimple/nov23list.txt
