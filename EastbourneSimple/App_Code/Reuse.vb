@@ -1589,7 +1589,7 @@ Namespace DavesCode
             If reader.Read() Then
                 oldtime = reader.Item("datetime")
                 oldtime = oldtime.Date
-                'oldtime = oldtime.Date.AddDays(-1)
+                'oldtime = oldtime.Date.AddDays(-1) test line
                 activity = reader.Item("userreason")
                 If activity = "102" Then
                     nowstatus = "Ignore"
