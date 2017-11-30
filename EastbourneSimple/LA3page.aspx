@@ -104,6 +104,9 @@
     <asp:UpdatePanel ID="UpdatePanel8" runat="server"><ContentTemplate>
     <div>
     <%--<asp:Label ID="Label2" runat="server" Text="Label"></asp:Label>--%>
+         <table style="width: 100%;">
+            <tr>
+                <td>
     <asp:Label ID="CurrentStateLabel" runat="server" Text="Current Linac State: " 
             Height="50px" Width="1200px"  Font-Size="XX-Large" BackColor="White" 
             ForeColor="Black"></asp:Label>
@@ -114,6 +117,23 @@
 <asp:Label ID="UserGroupLabel" runat="server" Text="" Height="40px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
 <asp:Label ID="Label4" runat="server" Text="ELF IP Address: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
 <asp:Label ID="Label5" runat="server" Text="" Height="40px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
+                     </td>
+                <td>
+                    
+                </td>
+                <td>
+                    <asp:Image id="Image2" runat="server"
+            ImageUrl="~/Images/bsuh_logo.gif" Width="250" Height="74"
+            AlternateText="BSUH Linacs" />
+                    <br>
+            </br>
+             <asp:Image id="Image1" runat="server"
+            ImageUrl="~/Images/if_elf_62126.png" Width="100px" Height="100px"
+            AlternateText="ELF" />
+            <asp:Label ID="Label15" runat="server" Text="Software Version 4.0"></asp:Label>
+                </td>
+            </tr>
+                   </table>
 <%--This is an instrumentation label associated with updatehiddenLAfield--%>
 <%--<asp:Label ID="Application1Label" runat="server" Text="Current Application value: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
 --%>
