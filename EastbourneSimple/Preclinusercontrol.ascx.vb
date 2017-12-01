@@ -424,9 +424,7 @@ Partial Class Preclinusercontrol
     Private Sub BindGridview2()
         Dim SqlDateSourceGridView As New SqlDataSource()
         'Dim query As String = "CREATE TABLE #Users (Username varchar(25),name varchar(50)) insert into #users select u.UserName, (f.FirstName +' ' + f.LastName) as name from ElfMembers.[C:\20ELF\APP_DATA\ASPNETDB.MDF].dbo.aspnet_users u  join ElfMembers.[C:\20Elf\app_data\aspnetdb.mdf].dbo.FirstLastName f on u.UserId = f.UserID  select *, (select distinct u.name from #users u left outer join handoverenergies h1 on h1.LogInName = u.username where h1.LogInName = h.LogInName) as 'Accepted By', (select distinct u.name from #users u left outer join handoverenergies h1 on h1.LogOutName = u.username where h1.LogOutName = h.LogOutName) as 'Approved By' from [C:\20ELF\APP_DATA\PHYSICSENERGY.MDF].dbo.handoverenergies h where h.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
-        Dim query As String = "select HandoverId, MV6,ISNULL(MV6FFF, 0) as ""MV6FFF"",MV10,ISNULL(MV10FFF, 0) as ""MV10FFF"",ISNULL(MeV4,0) as ""MeV4"", MEV6" & _
-        ", MEV8, MeV10, MeV12, MeV15, MeV18, MeV20, Comment, LogOutName, LogOutDate, linac, LogInDate, Duration, LogInStatusID, Approved, LogInName, LogOutStatusID" & _
-        " From handoverenergies Where handoverid = (Select Max(handoverid) As mancount from [handoverenergies] where linac=@linac)"
+        Dim query As String = "select HandoverId, MV6,ISNULL(MV6FFF, 0) as ""MV6FFF"",MV10,ISNULL(MV10FFF, 0) as ""MV10FFF"",ISNULL(MeV4,0) as ""MeV4"", MEV6, MEV8, MeV10, MeV12, MeV15, MeV18, MeV20, Comment, LogOutName, LogOutDate, linac, LogInDate, Duration, LogInStatusID, Approved, LogInName, LogOutStatusID From handoverenergies Where handoverid = (Select Max(handoverid) As mancount from [handoverenergies] where linac=@linac)"
         SqlDateSourceGridView = QuerySqlConnection(MachineName, query)
         GridView2.DataSource = SqlDateSourceGridView
         GridView2.DataBind()
@@ -443,8 +441,7 @@ Partial Class Preclinusercontrol
         Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
         'This query has to be changed to accommodate E1 and LA6
-        comm = New SqlCommand("Select  MV6, MV6FFF, MV10, MV10FFF, MeV4, MeV6, MeV8, " & _
-                                  "MeV10, MeV12, MeV15, MeV18, MeV20 from HandoverEnergies where HandoverID  = (Select max(HandoverID) As lastrecord from HandoverEnergies where linac=@linac)", conn)
+        comm = New SqlCommand("Select  MV6, MV6FFF, MV10, MV10FFF, MeV4, MeV6, MeV8, MeV10, MeV12, MeV15, MeV18, MeV20 from HandoverEnergies where HandoverID  = (Select max(HandoverID) As lastrecord from HandoverEnergies where linac=@linac)", conn)
         comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
         comm.Parameters("@linac").Value = MachineName
         If headerRow.RowType = DataControlRowType.Header Then

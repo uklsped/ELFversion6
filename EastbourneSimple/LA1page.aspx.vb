@@ -1215,15 +1215,15 @@ Partial Public Class LA1page
                         'mrepcontrol.RemoteLockElf()
                         If Breakdown Then
                             'This means there are still open faults
-                            If Caller = "EndDay" Then
+                            mrepcontrol.RemoteLockElf(False)
+                        Else
+                            If lastState = "Fault" Then
+                                'This means there were open faults but they have been closed so need to close them off.
+                                   If Caller = "EndDay" Then
                             WriteRecovery()
                         Else
                             mrepcontrol.RemoteLockElf(False)
                         End If
-                        Else
-                            If lastState = "Fault" Then
-                                'This means there were open faults but they have been closed so need to close them off.
-                                mrepcontrol.WriteFaultIDTable()
                             End If
                             DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 5, Breakdown, suspendnull, repairstatenull, False)
                         End If
