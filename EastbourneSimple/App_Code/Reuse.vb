@@ -777,8 +777,14 @@ Namespace DavesCode
                             cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
                             comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
                             comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MV10").Value = False
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
                             comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MeV6").Value = False
                             comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
@@ -798,10 +804,15 @@ Namespace DavesCode
                             cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
                             comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
                             cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
                             comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MV10").Value = cb.Checked
-
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
                             comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MeV6").Value = False
 
