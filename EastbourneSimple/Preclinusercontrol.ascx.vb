@@ -694,68 +694,68 @@ Partial Class Preclinusercontrol
 
         End Try
     End Sub
+    'This sub is no longer used. commented out 4/10/17 Falls over because imaging handled differently now.
+    'Protected Sub checked(ByVal sender As Object, ByVal e As System.EventArgs)
 
-    Protected Sub checked(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    Dim check As CheckBox = sender
 
-        Dim check As CheckBox = sender
-
-        'Dim SqlDataSource1 As New SqlDataSource()
-        'SqlDataSource1.ID = "SqlDataSource1"
-        'SqlDataSource1.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+    '    'Dim SqlDataSource1 As New SqlDataSource()
+    '    'SqlDataSource1.ID = "SqlDataSource1"
+    '    'SqlDataSource1.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
 
 
-        'SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac= @linac and EnergyID in (29,30,31,32,33)"
+    '    'SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac= @linac and EnergyID in (29,30,31,32,33)"
 
-        'SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-        'SqlDataSource1.SelectParameters.Add("linac", MachineName)
+    '    'SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+    '    'SqlDataSource1.SelectParameters.Add("linac", MachineName)
 
-        'GridViewImage.DataSource = SqlDataSource1
-        'GridViewImage.DataBind()
+    '    'GridViewImage.DataSource = SqlDataSource1
+    '    'GridViewImage.DataBind()
 
-        Dim conn As SqlConnection
-        Dim comm As SqlCommand
-        Dim reader As SqlDataReader
-        Dim count As Integer = 0
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        conn = New SqlConnection(connectionString1)
-        comm = New SqlCommand("SELECT Energy, Approved FROM physicsenergies where linac=@linac and Energy in ('iView','XVI')", conn)
+    '    Dim conn As SqlConnection
+    '    Dim comm As SqlCommand
+    '    Dim reader As SqlDataReader
+    '    Dim count As Integer = 0
+    '    Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+    '    conn = New SqlConnection(connectionString1)
+    '    comm = New SqlCommand("SELECT Energy, Approved FROM physicsenergies where linac=@linac and Energy in ('iView','XVI')", conn)
 
-        comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-        comm.Parameters("@linac").Value = MachineName
-        Try
-            conn.Open()
-            reader = comm.ExecuteReader()
-            While reader.Read()
-                'This will fall over if approved is null so needs error handling
-                If Not reader.Item("Approved") Then
-                    Dim strScript As String
-                    Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBox"), CheckBox)
-                    If cb.Checked Then
-                        cb.Checked = False
-                        If reader.Item("Energy") = "iview" Then
+    '    comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+    '    comm.Parameters("@linac").Value = MachineName
+    '    Try
+    '        conn.Open()
+    '        reader = comm.ExecuteReader()
+    '        While reader.Read()
+    '            'This will fall over if approved is null so needs error handling
+    '            If Not reader.Item("Approved") Then
+    '                Dim strScript As String
+    '                Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBox"), CheckBox)
+    '                If cb.Checked Then
+    '                    cb.Checked = False
+    '                    If reader.Item("Energy") = "iview" Then
 
-                            strScript = "<script>alert('iView is not available. See Concession');</script>"
-                            'strScript += "alert('This imaging modality has been disabled by Physics. See Concession');"
-                            'strScript += "</script>"
-                        Else
-                            strScript = "<script>alert('XVI is not available. See Concession');</script>"
-                        End If
+    '                        strScript = "<script>alert('iView is not available. See Concession');</script>"
+    '                        'strScript += "alert('This imaging modality has been disabled by Physics. See Concession');"
+    '                        'strScript += "</script>"
+    '                    Else
+    '                        strScript = "<script>alert('XVI is not available. See Concession');</script>"
+    '                    End If
 
-                        ScriptManager.RegisterStartupScript(LogOff, Me.GetType(), "JSCR", strScript.ToString(), False)
-                    End If
-                    Else
-                        'check.Checked = True
-                        'BindGridViewImage()
-                    End If
+    '                    ScriptManager.RegisterStartupScript(LogOff, Me.GetType(), "JSCR", strScript.ToString(), False)
+    '                End If
+    '                Else
+    '                    'check.Checked = True
+    '                    'BindGridViewImage()
+    '                End If
 
-                    count = count + 1
-            End While
-            reader.Close()
-        Finally
-            conn.Close()
+    '                count = count + 1
+    '        End While
+    '        reader.Close()
+    '    Finally
+    '        conn.Close()
 
-        End Try
-    End Sub
+    '    End Try
+    'End Sub
     'This Sub is no longer used Commented out 2/10/17
     'Private Sub BindGridViewImage()
     '    Dim SqlDataSource1 As New SqlDataSource()

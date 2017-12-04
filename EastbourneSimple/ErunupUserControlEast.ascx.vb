@@ -617,52 +617,5 @@ Partial Class ErunupUserControl
             WriteDatauc1.Visible = True
             ForceFocus(wctext)
     End Sub
-    Protected Sub checkedimage(ByVal sender As Object, ByVal e As System.EventArgs)
-
-        Dim check As CheckBox = sender
-
-
-        Dim conn As SqlConnection
-        Dim comm As SqlCommand
-        Dim reader As SqlDataReader
-        Dim count As Integer = 0
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        conn = New SqlConnection(connectionString1)
-        comm = New SqlCommand("SELECT Energy, Approved FROM physicsenergies where linac=@linac and Energy in ('iView','XVI')", conn)
-
-        comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-        comm.Parameters("@linac").Value = MachineName
-        Try
-            conn.Open()
-            reader = comm.ExecuteReader()
-            While reader.Read()
-                'This will fall over if approved is null so needs error handling
-                If Not reader.Item("Approved") Then
-                    Dim strScript As String
-                    Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBoxImage"), CheckBox)
-                    If cb.Checked Then
-                        cb.Checked = False
-                        If reader.Item("Energy") = "iview" Then
-
-                            strScript = "<script>alert('iView is not available. See Concession');</script>"
-
-                        Else
-                            strScript = "<script>alert('XVI is not available. See Concession');</script>"
-                        End If
-
-                        ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                    End If
-                    Else
-                        'check.Checked = True
-                        'BindGridViewImage()
-                    End If
-
-                    count = count + 1
-            End While
-            reader.Close()
-        Finally
-            conn.Close()
-
-        End Try
-    End Sub
+   
 End Class

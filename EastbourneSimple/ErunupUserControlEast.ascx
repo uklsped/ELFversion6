@@ -165,8 +165,8 @@
                     <asp:TemplateField>  
                              
             <ItemTemplate>
-            <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" AutoPostBack="true"  
-                   OncheckedChanged="checkedimage" />
+            <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" />
+
             </ItemTemplate>
                       </asp:TemplateField>
             </Columns>
