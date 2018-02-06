@@ -69,15 +69,15 @@ Partial Class ViewCommentsuc
                 'Open connection to the database
                 Select Case CommentType
                     Case "pm"
-                        comm = New SqlCommand("Select * from PMTable where linac=@linac and LogOutDate between @StartDate and @StopDate", conn)
+                        comm = New SqlCommand("Select * from AuxTable where linac=@linac and LogOutDate between @StartDate and @StopDate and Tab=4", conn)
                     Case "rp"
-                        comm = New SqlCommand("Select * from RepairTable where linac=@linac and LogOutDate between @StartDate and @StopDate", conn)
+                        comm = New SqlCommand("Select * from AuxTable where linac=@linac and LogOutDate between @StartDate and @StopDate and Tab=5", conn)
                     Case "er"
                         comm = New SqlCommand("Select * from HandoverEnergies where linac=@linac and LogOutDate between @StartDate and @StopDate", conn)
                     Case "pcr"
                         comm = New SqlCommand("Select * from ClinicalHandover where linac=@linac and LogOutDate between @StartDate and @StopDate", conn)
                     Case "pqa"
-                        comm = New SqlCommand("Select * from PQATable where linac=@linac and LogOutDate between @StartDate and @StopDate", conn)
+                        comm = New SqlCommand("Select * from AuxTable where linac=@linac and LogOutDate between @StartDate and @StopDate and Tab=6", conn)
 
                 End Select
                 comm.Parameters.Add("@Linac", Data.SqlDbType.NVarChar)
