@@ -94,7 +94,7 @@ Partial Public Class E2page
             'lsctrl = CType(mpContentPlaceHolder.FindControl("LinacStatusuc1"), LinacStatusuc)
             'AddHandler lsctrl.ResetTab, AddressOf LaunchTab
         End If
-        AddHandler E2page.NoApprove, AddressOf ClinicalApprovedEvent
+        AddHandler NoApprove, AddressOf ClinicalApprovedEvent
 
 
     End Sub

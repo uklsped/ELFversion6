@@ -93,7 +93,7 @@ Partial Public Class LA3page
             'lsctrl = CType(mpContentPlaceHolder.FindControl("LinacStatusuc1"), LinacStatusuc)
             'AddHandler lsctrl.ResetTab, AddressOf LaunchTab
         End If
-        AddHandler LA3page.NoApprove, AddressOf ClinicalApprovedEvent
+        AddHandler NoApprove, AddressOf ClinicalApprovedEvent
 
 
     End Sub
