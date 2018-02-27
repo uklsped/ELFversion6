@@ -104,10 +104,10 @@
     <asp:UpdatePanel ID="UpdatePanel8" runat="server"><ContentTemplate>
     <div>
     <%--<asp:Label ID="Label2" runat="server" Text="Label"></asp:Label>--%>
-        <table style="width: 100%;">
+         <table style="width: 100%;">
             <tr>
                 <td>
-                    <asp:Label ID="CurrentStateLabel" runat="server" Text="Current Linac State: " 
+    <asp:Label ID="CurrentStateLabel" runat="server" Text="Current Linac State: " 
             Height="50px" Width="1200px"  Font-Size="XX-Large" BackColor="White" 
             ForeColor="Black"></asp:Label>
 <asp:Label ID="Statelabel" runat="server" Text="" Height="50px" Width="1200px"  Font-Size="XX-Large" BackColor="White" ForeColor="Black"></asp:Label>

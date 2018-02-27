@@ -1567,7 +1567,7 @@ Namespace DavesCode
 
         Public Shared Function GetLastTime(ByVal linac As String, ByVal index As Integer) As String
             Dim time As DateTime
-            time = Now().Date
+            time = Now()
             Dim PreviousState As Integer = index
             Dim reader As SqlDataReader
             Dim nowstatus As String = "Error"
@@ -1577,15 +1577,40 @@ Namespace DavesCode
             "connectionstring").ConnectionString
             'Dim Machinestatus As SqlCommand
             Dim StatusNow As SqlCommand
+            Dim ResetDayCom As SqlCommand
             Dim oldtime As DateTime
             Dim activity As String = ""
+            Dim StateID As String = ""
+            Dim oldDayofyear As Integer
+            Dim newDayofyear As Integer
+            Dim Status As String = ""
+            Dim AppState As Integer = 100
+            Dim LogOn As String
+            Dim LiveTab As String
+            Dim SuspValue As String
+            Dim RunupVal As String
+
+            LogOn = "LogOn" + linacName
+            LiveTab = "ActTab" + linacName
+            SuspValue = "Suspended" + linacName
+            RunupVal = "rppTab" + linacName
+
             conn = New SqlConnection(connectionString)
+
+
+
+            If (Not HttpContext.Current.Application(LogOn) Is Nothing) Then
+                AppState = CInt(HttpContext.Current.Application(LogOn))
+            End If
+
+
 
             If PreviousState = 0 Then
 
                 'StatusNow = New SqlCommand("SELECT dateadd(dd,0, datediff(dd,0,datetime)) FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
 
-                StatusNow = New SqlCommand("SELECT datetime, userreason FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+                'StatusNow = New SqlCommand("SELECT stateid, datetime, userreason FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+                StatusNow = New SqlCommand("SELECT TOP 1 stateid, state, datetime, userreason FROM [LinacStatus] where linac=@linac order by StateID desc", conn)
             Else
                 'This doesn't work it just gets penultimate record irrespective of linac
                 'StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
@@ -1597,22 +1622,70 @@ Namespace DavesCode
             conn.Open()
             reader = StatusNow.ExecuteReader()
 
+
+
             If reader.Read() Then
                 oldtime = reader.Item("datetime")
-                oldtime = oldtime.Date
+                activity = reader.Item("userreason")
+                StateID = reader.Item("StateID")
+                Status = reader.Item("State")
+
+                oldDayofyear = oldtime.DayOfYear
+                newDayofyear = time.DayOfYear
                 'oldtime = oldtime.Date.AddDays(-1) test line
                 activity = reader.Item("userreason")
                 If activity = "102" Then
                     nowstatus = "Ignore"
-                ElseIf time = oldtime Then
-                    nowstatus = "Ignore"
-                Else
+                ElseIf Not newDayofyear = oldDayofyear Then
                     nowstatus = "EndDay"
+                ElseIf newDayofyear = oldDayofyear Then
+                    nowstatus = "Ignore"
                 End If
             Else
                 nowstatus = "Error"
             End If
             reader.Close()
+            conn.Close()
+            If AppState = 100 Then
+                Select Case activity
+                    Case 101, 102, 7
+                        HttpContext.Current.Application(LogOn) = 0
+                    Case Else
+                        HttpContext.Current.Application(LogOn) = 1
+                        HttpContext.Current.Application(LiveTab) = activity
+
+                End Select
+                Select Case Status
+                    Case "Suspended"
+                        HttpContext.Current.Application(SuspValue) = 1
+                    Case "Engineering Approved"
+                        HttpContext.Current.Application(RunupVal) = 1
+
+                End Select
+            End If
+
+
+
+            ResetDayCom = New SqlCommand("INSERT INTO ResetDay (StateID, State, ApplicationState, Activity, OldDayofYear, newDayofYear,nowstatus, Linac) VALUES (@StateID, @State, @ApplicationState, @Activity, @OldDayofYear, @newDayofYear,@nowstatus, @Linac)", conn)
+            ResetDayCom.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
+            ResetDayCom.Parameters("@StateID").Value = StateID
+            ResetDayCom.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
+            ResetDayCom.Parameters("@State").Value = Status
+            ResetDayCom.Parameters.Add("@ApplicationState", System.Data.SqlDbType.Int)
+            ResetDayCom.Parameters("@ApplicationState").Value = Appstate
+            ResetDayCom.Parameters.Add("@Activity", System.Data.SqlDbType.Int)
+            ResetDayCom.Parameters("@Activity").Value = activity
+            ResetDayCom.Parameters.Add("@OldDayofYear", System.Data.SqlDbType.Int)
+            ResetDayCom.Parameters("@OldDayofYear").Value = oldDayofyear
+            ResetDayCom.Parameters.Add("@newDayofYear", System.Data.SqlDbType.Int)
+            ResetDayCom.Parameters("@newDayofYear").Value = newDayofyear
+            ResetDayCom.Parameters.Add("@nowstatus", System.Data.SqlDbType.NVarChar, 10)
+            ResetDayCom.Parameters("@nowstatus").Value = nowstatus
+            ResetDayCom.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            ResetDayCom.Parameters("@linac").Value = linacName
+
+            conn.Open()
+            ResetDayCom.ExecuteNonQuery()
             conn.Close()
             Return nowstatus
         End Function
