@@ -1172,8 +1172,7 @@ Partial Public Class LA2page
                 End If
             End If
 
-        Label2.Text = "Last state " &
-            lastState
+        Label2.Text = "Last state " + lastState
 
         If Application(appstate) = 1 Then
                 'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
