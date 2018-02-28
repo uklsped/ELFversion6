@@ -75,14 +75,14 @@ Partial Public Class E1page
 
     End Sub
 
-    Protected Property ActiveTabIndex() As Integer
-        Get
-            Return If(ViewState("ActiveTabIndex") IsNot Nothing, Convert.ToInt32(ViewState("ActiveTabIndex")), 0)
-        End Get
-        Set(ByVal value As Integer)
-            ViewState("ActiveTabIndex") = value
-        End Set
-    End Property
+    'Protected Property ActiveTabIndex() As Integer
+    '    Get
+    '        Return If(ViewState("ActiveTabIndex") IsNot Nothing, Convert.ToInt32(ViewState("ActiveTabIndex")), 0)
+    '    End Get
+    '    Set(ByVal value As Integer)
+    '        ViewState("ActiveTabIndex") = value
+    '    End Set
+    'End Property
 
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
@@ -242,11 +242,11 @@ Partial Public Class E1page
         If Not IsPostBack Then
             'added 16/11/17 to check for end of day
             If Not Request.QueryString("loadup") Is Nothing Then
-                loadup = Request.QueryString("loadup").ToString
+
                 ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
                 Select Case ResetDay
                     Case "Ignore"
-                        'Do nothing
+                        'Ignore
                     Case "EndDay"
                         EndofDayElf(ResetDay)
                     Case "Error"
@@ -1115,8 +1115,7 @@ Partial Public Class E1page
     Protected Sub Timer1_Tick(sender As Object, e As System.EventArgs) Handles Timer1.Tick
         'modified to handle browser being closed without end of day or equivalent 16/11/17
         Dim HoursSinceMidnight As Double = Date.Now.Subtract(Date.Today).TotalHours
-        Label1.Text = "Hours since midnight " & _
-           HoursSinceMidnight
+        Label1.Text = "Hours since midnight " + HoursSinceMidnight
         If HoursSinceMidnight < 3 Then
             EndofDayElf("Timer")
         End If
@@ -1147,11 +1146,10 @@ Partial Public Class E1page
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader As SqlDataReader
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
-        "connectionstring").ConnectionString
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
 
-            lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
+        lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
             conn = New SqlConnection(connectionString1)
             comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
             comm.Parameters.AddWithValue("@linac", EquipmentID)
@@ -1167,83 +1165,81 @@ Partial Public Class E1page
                 End If
             End If
 
-            Label2.Text = "Last state " & _
-            lastState
+        Label2.Text = "Last state " + lastState
+        If Application(appstate) = 1 Then
+            'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
+            'Dim tabActive As String
+            activetab = Application(activetabstate)
+            'tabActive = CType(Session.Item("ActiveTabIdx"), Integer)
+            tcl.ActiveTabIndex = activetab
+            'This is superfluous
+            'If Not Breakdown Then and was also breaking application states
+            '    suspstate = Nothing
+            '    repairstate = Nothing
+            'End If
+            Label3.Text = "Tab is " + activetab
+            Select Case activetab
+                Case 1, 7
+                    If activetab = 1 Then
+                        mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
+                    Else
+                        mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
+                    End If
 
-            If Application(appstate) = 1 Then
-                'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
-                'Dim tabActive As String
-                activetab = Application(activetabstate)
-                'tabActive = CType(Session.Item("ActiveTabIdx"), Integer)
-                tcl.ActiveTabIndex = activetab
-                'This is superfluous
-                'If Not Breakdown Then and was also breaking application states
-                '    suspstate = Nothing
-                '    repairstate = Nothing
-                'End If
-                Label3.Text = "Tab is " + activetab
-                Select Case activetab
-                    Case 1, 7
-                        If activetab = 1 Then
-                            mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
-                        Else
-                            mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
-                        End If
-
-                        grdview = mrucontrol.FindControl("Gridview1")
-                        Commentbox = mrucontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                     'blank grid view 17/11/17
-                        DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
-                    Case 2
-                        mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
-                        Commentbox = mpreccontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        DavesCode.Reuse.CommitPreClin(EquipmentID, Logoffuser, Comment, False, False, False, Breakdown)
-                    Case 3
-                        mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                        DavesCode.Reuse.CommitClinical(EquipmentID, Logoffuser, Breakdown)
+                    grdview = mrucontrol.FindControl("Gridview1")
+                    Commentbox = mrucontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    'blank grid view 17/11/17
+                    DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
+                Case 2
+                    mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
+                    Commentbox = mpreccontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    DavesCode.Reuse.CommitPreClin(EquipmentID, Logoffuser, Comment, False, False, False, Breakdown)
+                Case 3
+                    mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                    DavesCode.Reuse.CommitClinical(EquipmentID, Logoffuser, Breakdown)
                         'Next line not used because commitclinical modified to remove two step process of suspended then log off
                         'DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 0)
-                    Case 4
-                        mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
-                        Commentbox = mplancontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 4, Breakdown, suspendnull, repairstatenull, False)
-                    Case 5
-                        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
-                        Commentbox = mrepcontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        'mrepcontrol.RemoteLockElf()
-                        If Breakdown Then
-                            'This means there are still open faults
-                           If Caller = "EndDay" Then
+                Case 4
+                    mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+                    Commentbox = mplancontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 4, Breakdown, suspendnull, repairstatenull, False)
+                Case 5
+                    mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
+                    Commentbox = mrepcontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    'mrepcontrol.RemoteLockElf()
+                    If Breakdown Then
+                        'This means there are still open faults
+                        If Caller = "EndDay" Then
                             WriteRecovery()
                         Else
                             mrepcontrol.RemoteLockElf(False)
                         End If
-                        Else
-                            If lastState = "Fault" Then
-                                'This means there were open faults but they have been closed so need to close them off.
-                                mrepcontrol.WriteFaultIDTable()
-                            End If
-                            DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 5, Breakdown, suspendnull, repairstatenull, False)
+                    Else
+                        If lastState = "Fault" Then
+                            'This means there were open faults but they have been closed so need to close them off.
+                            mrepcontrol.WriteFaultIDTable()
                         End If
+                        DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 5, Breakdown, suspendnull, repairstatenull, False)
+                    End If
 
-                    Case 6
-                        mphysicscontrol = tcl.ActiveTab.FindControl(physicscontrolID)
-                        Commentbox = mphysicscontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 6, Breakdown, suspendnull, repairstatenull, False)
-                    Case 8
-                        mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
-                        Commentbox = mtrainingcontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 8, Breakdown, suspendnull, repairstatenull, False)
+                Case 6
+                    mphysicscontrol = tcl.ActiveTab.FindControl(physicscontrolID)
+                    Commentbox = mphysicscontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 6, Breakdown, suspendnull, repairstatenull, False)
+                Case 8
+                    mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
+                    Commentbox = mtrainingcontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 8, Breakdown, suspendnull, repairstatenull, False)
 
-                End Select
-            Else
-                If Breakdown = False Then
+            End Select
+        Else
+            If Breakdown = False Then
                     'this is to make sure that equivalent of end of day happens
                     'Only want this to happen if repairstate or suspended but no one is logged on.
                     If Application(suspstate) = 1 Or Application(repairstate) = 1 Then

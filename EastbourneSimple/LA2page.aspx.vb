@@ -1122,8 +1122,7 @@ Partial Public Class LA2page
     Protected Sub Timer1_Tick(sender As Object, e As System.EventArgs) Handles Timer1.Tick
         'modified to handle browser being closed without end of day or equivalent 16/11/17
         Dim HoursSinceMidnight As Double = Date.Now.Subtract(Date.Today).TotalHours
-        Label1.Text = "Hours since midnight " & _
-           HoursSinceMidnight
+        Label1.Text = "Hours since midnight " + HoursSinceMidnight
         If HoursSinceMidnight < 3 Then
             EndofDayElf("Timer")
         End If

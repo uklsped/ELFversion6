@@ -74,14 +74,14 @@ Partial Public Class LA3page
 
     End Sub
 
-    Protected Property ActiveTabIndex() As Integer
-        Get
-            Return If(ViewState("ActiveTabIndex") IsNot Nothing, Convert.ToInt32(ViewState("ActiveTabIndex")), 0)
-        End Get
-        Set(ByVal value As Integer)
-            ViewState("ActiveTabIndex") = value
-        End Set
-    End Property
+    'Protected Property ActiveTabIndex() As Integer
+    '    Get
+    '        Return If(ViewState("ActiveTabIndex") IsNot Nothing, Convert.ToInt32(ViewState("ActiveTabIndex")), 0)
+    '    End Get
+    '    Set(ByVal value As Integer)
+    '        ViewState("ActiveTabIndex") = value
+    '    End Set
+    'End Property
 
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
@@ -239,13 +239,19 @@ Partial Public Class LA3page
         'DavesCode.Reuse.ReturnApplicationState("First Start")
 
         If Not IsPostBack Then
-             'added 16/11/17 to check for end of day
+            'Dim loadstate As String = Application("LA3loaded")
+            'If loadstate = "Albert" Then
+            'Statelabel.Text = loadstate
+            'End If
+
+            'added 16/11/17 to check for end of day
             If Not Request.QueryString("loadup") Is Nothing Then
-                loadup = Request.QueryString("loadup").ToString
+
                 ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
+
                 Select Case ResetDay
                     Case "Ignore"
-                        'Do nothing
+                        'Ignore
                     Case "EndDay"
                         EndofDayElf(ResetDay)
                     Case "Error"
@@ -255,6 +261,7 @@ Partial Public Class LA3page
 
             Dim userIP As String = DavesCode.Reuse.GetIPAddress()
             Label5.Text = userIP
+            'Label5.Text = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
             ' 20 April handle direct open to repair page
 
             If Not Request.QueryString("recovered") Is Nothing Then
@@ -362,9 +369,9 @@ Partial Public Class LA3page
                         'TabPanel6.Enabled = "true"
                         'added 9/10/17
                         If EquipmentID Like "LA_" Then
-                        TabPanel7.Enabled = "true"
+                            TabPanel7.Enabled = "true"
                             TabPanel7.HeaderText = EquipmentID + " Emergency Runup"
-                            End If
+                        End If
                         TabPanel8.Enabled = "True"
 
 
@@ -441,7 +448,9 @@ Partial Public Class LA3page
 
                 End Select
             End If
+
         End If
+
     End Sub
 
 
@@ -573,7 +582,7 @@ Partial Public Class LA3page
                         'This should autorecover
                         WriteRecovery()
                     End If
-                   
+
                 End If
             End If
 
@@ -860,9 +869,9 @@ Partial Public Class LA3page
                 Application(activetabstate) = tabActive
 
             End If
-        
+
         End If
-        
+
     End Sub
     Public Sub AcceptOKnosigpass(ByVal Task As Integer, ByVal user As String, ByVal usergroup As Integer)
         Dim output As String
@@ -1091,7 +1100,6 @@ Partial Public Class LA3page
         Statelabel.Text = message
     End Sub
 
-   
     Public Shared Sub CloseMessage()
         'DavesCode.Reuse.CloseBrowser()
         'Need to put in a check here to see if is a fault because hidden field not refreshed in writeauc
@@ -1112,10 +1120,9 @@ Partial Public Class LA3page
     End Sub
 
     Protected Sub Timer1_Tick(sender As Object, e As System.EventArgs) Handles Timer1.Tick
-         'modified to handle browser being closed without end of day or equivalent 16/11/17
+        'modified to handle browser being closed without end of day or equivalent 16/11/17
         Dim HoursSinceMidnight As Double = Date.Now.Subtract(Date.Today).TotalHours
-        Label1.Text = "Hours since midnight " & _
-           HoursSinceMidnight
+        Label1.Text = "Hours since midnight " + HoursSinceMidnight
         If HoursSinceMidnight < 3 Then
             EndofDayElf("Timer")
         End If
@@ -1141,14 +1148,13 @@ Partial Public Class LA3page
         Dim activetab As String
         Dim suspendnull As String = Nothing
         Dim repairstatenull As String = Nothing
-
         Dim NumOpen As Integer
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader As SqlDataReader
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
-        "connectionstring").ConnectionString
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
+        
             lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
             conn = New SqlConnection(connectionString1)
             comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
@@ -1165,10 +1171,9 @@ Partial Public Class LA3page
                 End If
             End If
 
-            Label2.Text = "Last state " & _
-            lastState
+        Label2.Text = "Last state " + lastState
 
-            If Application(appstate) = 1 Then
+        If Application(appstate) = 1 Then
                 'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
                 'Dim tabActive As String
                 activetab = Application(activetabstate)
@@ -1217,9 +1222,9 @@ Partial Public Class LA3page
                             'This means there are still open faults
                              If Caller = "EndDay" Then
                             WriteRecovery()
-                        Else
+                            Else
                             mrepcontrol.RemoteLockElf(False)
-                        End If
+                            End If
                         Else
                             If lastState = "Fault" Then
                                 'This means there were open faults but they have been closed so need to close them off.
@@ -1262,7 +1267,6 @@ Partial Public Class LA3page
             'This is in the wrong place because it redirects even if there is a fault and this confuses the system
             'Response.Redirect(returnstring)
 
-                
     End Sub
 
     Protected Sub RestoreButton_Click(sender As Object, e As System.EventArgs) Handles RestoreButton.Click

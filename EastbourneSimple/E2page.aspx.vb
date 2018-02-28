@@ -242,11 +242,11 @@ Partial Public Class E2page
         If Not IsPostBack Then
             'added 16/11/17 to check for end of day
             If Not Request.QueryString("loadup") Is Nothing Then
-                loadup = Request.QueryString("loadup").ToString
+
                 ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
                 Select Case ResetDay
                     Case "Ignore"
-                        'Do nothing
+                        'Ignore
                     Case "EndDay"
                         EndofDayElf(ResetDay)
                     Case "Error"
@@ -1115,8 +1115,7 @@ Partial Public Class E2page
     Protected Sub Timer1_Tick(sender As Object, e As System.EventArgs) Handles Timer1.Tick
         'modified to handle browser being closed without end of day or equivalent 16/11/17
         Dim HoursSinceMidnight As Double = Date.Now.Subtract(Date.Today).TotalHours
-        Label1.Text = "Hours since midnight " & _
-           HoursSinceMidnight
+        Label1.Text = "Hours since midnight " + HoursSinceMidnight
         If HoursSinceMidnight < 3 Then
             EndofDayElf("Timer")
         End If
@@ -1147,11 +1146,10 @@ Partial Public Class E2page
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader As SqlDataReader
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
-        "connectionstring").ConnectionString
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
 
-            lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
+        lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
             conn = New SqlConnection(connectionString1)
             comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
             comm.Parameters.AddWithValue("@linac", EquipmentID)
@@ -1167,10 +1165,9 @@ Partial Public Class E2page
                 End If
             End If
 
-            Label2.Text = "Last state " & _
-            lastState
+        Label2.Text = "Last state " + lastState
 
-            If Application(appstate) = 1 Then
+        If Application(appstate) = 1 Then
                 'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
                 'Dim tabActive As String
                 activetab = Application(activetabstate)
