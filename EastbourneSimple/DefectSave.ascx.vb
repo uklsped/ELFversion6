@@ -188,9 +188,9 @@ Partial Class DefectSave
             'Modified 10/11/17 because defects are now in DefectTable not hard wired in to page
             'comm = New SqlCommand("SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' order by ConcessionNumber", conn)
             'comm.Parameters.AddWithValue("@Linac", MachineName)
-            If MachineName Like "LA%" Then
+            If MachineName Like "LA?" Then
                 LinacType = "O"
-                Else
+            Else
                 LinacType = "BE"
             End If
             comm = New SqlCommand(" SELECT  Defect as Fault, IncidentID From [DefectTable] where linacType in('A',@LinacType) and Active = 'True' UNION SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' order by IncidentID", conn)
