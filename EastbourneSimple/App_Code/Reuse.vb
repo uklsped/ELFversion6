@@ -1584,7 +1584,7 @@ Namespace DavesCode
             Dim oldDayofyear As Integer
             Dim newDayofyear As Integer
             Dim Status As String = ""
-            Dim AppState As Integer = 100
+            Dim AppState As Integer = 100 ' this is set to 100 to detect if Appstate is null later.
             Dim LogOn As String
             Dim LiveTab As String
             Dim SuspValue As String
@@ -1646,6 +1646,8 @@ Namespace DavesCode
             End If
             reader.Close()
             conn.Close()
+            'This line checks to see if Appstate was null, if it was it will still be 100 from the start of the sub.
+            'If it is null then the application states are reset depending on the last entry in the database.
             If AppState = 100 Then
                 Select Case activity
                     Case 101, 102, 7
@@ -1665,7 +1667,7 @@ Namespace DavesCode
             End If
 
 
-
+            'this an instrumentation table it could be removed at a later update.
             ResetDayCom = New SqlCommand("INSERT INTO ResetDay (StateID, State, ApplicationState, Activity, OldDayofYear, newDayofYear,nowstatus, Linac) VALUES (@StateID, @State, @ApplicationState, @Activity, @OldDayofYear, @newDayofYear,@nowstatus, @Linac)", conn)
             ResetDayCom.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
             ResetDayCom.Parameters("@StateID").Value = StateID
