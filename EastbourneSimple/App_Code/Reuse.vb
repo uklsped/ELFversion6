@@ -1650,7 +1650,7 @@ Namespace DavesCode
             'If it is null then the application states are reset depending on the last entry in the database.
             If AppState = 100 Then
                 Select Case activity
-                    Case 101, 102, 7
+                    Case 101, 102, 7, 103
                         HttpContext.Current.Application(LogOn) = 0
                     Case Else
                         HttpContext.Current.Application(LogOn) = 1
