@@ -1438,7 +1438,12 @@ Namespace DavesCode
             comm.Parameters("@StatusID").Value = LinacStateID
 
             conn.Open()
-            comm.ExecuteNonQuery()
+            Try
+                comm.ExecuteNonQuery()
+            Catch ex As Exception
+                'Continue
+            End Try
+
             conn.Close()
         End Sub
 
@@ -1668,7 +1673,9 @@ Namespace DavesCode
 
 
             'this an instrumentation table it could be removed at a later update.
-            ResetDayCom = New SqlCommand("INSERT INTO ResetDay (StateID, State, ApplicationState, Activity, OldDayofYear, newDayofYear,nowstatus, Linac) VALUES (@StateID, @State, @ApplicationState, @Activity, @OldDayofYear, @newDayofYear,@nowstatus, @Linac)", conn)
+            ResetDayCom = New SqlCommand("INSERT INTO ResetDay (DateCreated,StateID, State, ApplicationState, Activity, OldDayofYear, newDayofYear,nowstatus, Linac) VALUES (@DateCreated,@StateID, @State, @ApplicationState, @Activity, @OldDayofYear, @newDayofYear,@nowstatus, @Linac)", conn)
+            ResetDayCom.Parameters.Add("@DateCreated", System.Data.SqlDbType.DateTime)
+            ResetDayCom.Parameters("@DateCreated").Value = time
             ResetDayCom.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
             ResetDayCom.Parameters("@StateID").Value = StateID
             ResetDayCom.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
