@@ -1653,49 +1653,51 @@ Namespace DavesCode
             conn.Close()
             'This line checks to see if Appstate was null, if it was it will still be 100 from the start of the sub.
             'If it is null then the application states are reset depending on the last entry in the database.
-            If AppState = 100 Then
-                Select Case activity
-                    Case 101, 102, 7, 103
-                        HttpContext.Current.Application(LogOn) = 0
-                    Case Else
-                        HttpContext.Current.Application(LogOn) = 1
-                        HttpContext.Current.Application(LiveTab) = activity
+            If nowstatus IsNot "Error" Then
+                If AppState = 100 Then
+                    Select Case activity
+                        Case 101, 102, 7, 103
+                            HttpContext.Current.Application(LogOn) = 0
+                        Case Else
+                            HttpContext.Current.Application(LogOn) = 1
+                            HttpContext.Current.Application(LiveTab) = activity
 
-                End Select
-                Select Case Status
-                    Case "Suspended"
-                        HttpContext.Current.Application(SuspValue) = 1
-                    Case "Engineering Approved"
-                        HttpContext.Current.Application(RunupVal) = 1
+                    End Select
+                    Select Case Status
+                        Case "Suspended"
+                            HttpContext.Current.Application(SuspValue) = 1
+                        Case "Engineering Approved"
+                            HttpContext.Current.Application(RunupVal) = 1
 
-                End Select
+                    End Select
+                End If
+
+
+                'this an instrumentation table it could be removed at a later update.
+                ResetDayCom = New SqlCommand("INSERT INTO ResetDay (DateCreated,StateID, State, ApplicationState, Activity, OldDayofYear, newDayofYear,nowstatus, Linac) VALUES (@DateCreated,@StateID, @State, @ApplicationState, @Activity, @OldDayofYear, @newDayofYear,@nowstatus, @Linac)", conn)
+                ResetDayCom.Parameters.Add("@DateCreated", System.Data.SqlDbType.DateTime)
+                ResetDayCom.Parameters("@DateCreated").Value = time
+                ResetDayCom.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
+                ResetDayCom.Parameters("@StateID").Value = StateID
+                ResetDayCom.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
+                ResetDayCom.Parameters("@State").Value = Status
+                ResetDayCom.Parameters.Add("@ApplicationState", System.Data.SqlDbType.Int)
+                ResetDayCom.Parameters("@ApplicationState").Value = AppState
+                ResetDayCom.Parameters.Add("@Activity", System.Data.SqlDbType.Int)
+                ResetDayCom.Parameters("@Activity").Value = activity
+                ResetDayCom.Parameters.Add("@OldDayofYear", System.Data.SqlDbType.Int)
+                ResetDayCom.Parameters("@OldDayofYear").Value = oldDayofyear
+                ResetDayCom.Parameters.Add("@newDayofYear", System.Data.SqlDbType.Int)
+                ResetDayCom.Parameters("@newDayofYear").Value = newDayofyear
+                ResetDayCom.Parameters.Add("@nowstatus", System.Data.SqlDbType.NVarChar, 10)
+                ResetDayCom.Parameters("@nowstatus").Value = nowstatus
+                ResetDayCom.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                ResetDayCom.Parameters("@linac").Value = linacName
+
+                conn.Open()
+                ResetDayCom.ExecuteNonQuery()
+                conn.Close()
             End If
-
-
-            'this an instrumentation table it could be removed at a later update.
-            ResetDayCom = New SqlCommand("INSERT INTO ResetDay (DateCreated,StateID, State, ApplicationState, Activity, OldDayofYear, newDayofYear,nowstatus, Linac) VALUES (@DateCreated,@StateID, @State, @ApplicationState, @Activity, @OldDayofYear, @newDayofYear,@nowstatus, @Linac)", conn)
-            ResetDayCom.Parameters.Add("@DateCreated", System.Data.SqlDbType.DateTime)
-            ResetDayCom.Parameters("@DateCreated").Value = time
-            ResetDayCom.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
-            ResetDayCom.Parameters("@StateID").Value = StateID
-            ResetDayCom.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
-            ResetDayCom.Parameters("@State").Value = Status
-            ResetDayCom.Parameters.Add("@ApplicationState", System.Data.SqlDbType.Int)
-            ResetDayCom.Parameters("@ApplicationState").Value = Appstate
-            ResetDayCom.Parameters.Add("@Activity", System.Data.SqlDbType.Int)
-            ResetDayCom.Parameters("@Activity").Value = activity
-            ResetDayCom.Parameters.Add("@OldDayofYear", System.Data.SqlDbType.Int)
-            ResetDayCom.Parameters("@OldDayofYear").Value = oldDayofyear
-            ResetDayCom.Parameters.Add("@newDayofYear", System.Data.SqlDbType.Int)
-            ResetDayCom.Parameters("@newDayofYear").Value = newDayofyear
-            ResetDayCom.Parameters.Add("@nowstatus", System.Data.SqlDbType.NVarChar, 10)
-            ResetDayCom.Parameters("@nowstatus").Value = nowstatus
-            ResetDayCom.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            ResetDayCom.Parameters("@linac").Value = linacName
-
-            conn.Open()
-            ResetDayCom.ExecuteNonQuery()
-            conn.Close()
             Return nowstatus
         End Function
 

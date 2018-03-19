@@ -32,11 +32,13 @@ Partial Class AtlasEnergyViewuc
 
         Dim machine As String
         ' Inserted this extra step because LA3 licence has been re-allocated to E1. 10/7/17
-        'Needs to change for B1
+        'This is in machine table in atlas
         If MachineName = "E1" Then
             machine = 3
-        ElseIf MachineName = "E2"
+        ElseIf MachineName = "E2" Then
             machine = 5
+        ElseIf MachineName = "B1" Then
+            machine = 6
         Else
             'This next step strips out the machine number because that's what atlas uses beware that the energies database needs the full machine name
             machine = MachineName.Last
