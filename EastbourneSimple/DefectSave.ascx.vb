@@ -14,12 +14,13 @@ Partial Class DefectSave
             MachineName = value
         End Set
     End Property
-    'Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
+    Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
-        'AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
+        'Added back in 26/3/18 see SPR
+        AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
 
 
-    'End Sub
+    End Sub
 
     Public Sub UpDateDefectsEventHandler()
         BindDefectData()
@@ -28,7 +29,84 @@ Partial Class DefectSave
 
     'No need to pass any references now or to have if statements. Analysis 23/11/16
 
-    'Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
+    Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
+        Dim Action As String = Application(actionstate)
+        Dim Energy As String
+        Dim incidentID As String
+
+        If Tabused = "Defect" Then
+            Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
+            wctrl.Visible = False
+            If Action = "Confirm" Then
+                Dim time As DateTime
+                time = Now
+
+                Energy = DropDownListEnergy.SelectedItem.Text
+                If Energy = "Select" Then
+                    Energy = ""
+                End If
+
+                incidentID = HiddenField1.Value
+
+                Dim conn As SqlConnection
+
+                Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+                "connectionstring").ConnectionString
+
+                Dim commfault As SqlCommand
+
+                conn = New SqlConnection(connectionString)
+
+                commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " &
+                                           "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
+                commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
+                commfault.Parameters("@Description").Value = TextBox4.Text
+                commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
+                'userinfo is redundant. Replace with string.empty 23/11/16
+                'commfault.Parameters("@ReportedBy").Value = String.Empty
+                commfault.Parameters("@ReportedBy").Value = Userinfo
+                commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
+                commfault.Parameters("@DateReported").Value = time
+                commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
+                'Area now is text box. 23/11/16
+                'commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.ToString
+                commfault.Parameters("@Area").Value = AreaBox.Text
+                commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
+                commfault.Parameters("@Energy").Value = Energy
+                commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
+                commfault.Parameters("@GantryAngle").Value = TextBox2.Text
+                commfault.Parameters.Add("@CollimatorAngle", System.Data.SqlDbType.NVarChar, 3)
+                commfault.Parameters("@CollimatorAngle").Value = TextBox3.Text
+                commfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+                commfault.Parameters("@Linac").Value = MachineName
+                commfault.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
+                commfault.Parameters("@IncidentID").Value = incidentID
+                commfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.VarChar, 7)
+                commfault.Parameters("@BSUHID").Value = PatientIDBox.Text
+                commfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
+                commfault.Parameters("@ConcessionNumber").Value = Defect.SelectedItem.ToString
+                Try
+                    conn.Open()
+                    commfault.ExecuteNonQuery()
+                    conn.Close()
+                Finally
+                    DropDownListEnergy.SelectedIndex = -1
+                    AreaBox.Text = String.Empty
+                    PatientIDBox.Text = String.Empty
+                    TextBox2.Text = String.Empty
+                    TextBox3.Text = String.Empty
+                    TextBox4.Text = String.Empty
+                    conn.Close()
+
+                End Try
+
+
+                'End If
+                Defect.SelectedIndex = -1
+                BindDefectData()
+            End If
+        End If
+    End Sub
     Protected Sub UserApprovedEvent()
         'Doesn't get here via Writedatauc now but directly from save button March 2016
         'Dim Action As String = Application(actionstate)
@@ -113,13 +191,14 @@ Partial Class DefectSave
     End Sub
     Protected Sub SaveDefectButton_Click(sender As Object, e As System.EventArgs) Handles SaveDefectButton.Click
         'No need for reference to WriteDatauc if no signature - March 2016
-        'Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
-        'Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+        'Back in 26/03/2108
+        Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
+        Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim strScript As String = "<script>"
         Page.Validate("defect")
         If Page.IsValid Then
             If Defect.SelectedItem.Text = "Select" Then
-                'wctrl.Visible = False
+                wctrl.Visible = False
                 strScript += "alert('Please select a fault');"
                 strScript += "</script>"
                 ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
@@ -129,14 +208,23 @@ Partial Class DefectSave
                 '    strScript += "alert('Please select an Area');"
                 '    strScript += "</script>"
                 '    ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+            ElseIf Defect.SelectedItem.Text = "RAD RESET" Then
+                If TextBox4.Text = "" Then
+                    wctrl.Visible = False
+                    strScript += "alert('Please complete the Fault Description');"
+                    strScript += "</script>"
+                    ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                Else
+                    wcbutton.Text = "Saving RAD RESET"
+                    Application(actionstate) = "Confirm"
+                    wctrl.Visible = True
+                End If
             Else
 
-                'wcbutton.Text = "Saving Repeat Fault"
-                Application(actionstate) = "Confirm"
-                ' wctrl.Visible = True
                 'Now just call User Approved Even March 2016
                 'UserApprovedEvent("Defect", "")
-                UserApprovedEvent()
+                Application(actionstate) = "Confirm"
+                UserApprovedEvent("Defect", "")
             End If
         End If
 
@@ -152,8 +240,9 @@ Partial Class DefectSave
             AddEnergyItem()
             End If
         'WriteDatauc1 no longer used 23/11/16
-        'Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-        'wctrl.LinacName = MachineName
+        'Added back in for RAD RESET 26/3/18 SEE SPR
+        Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
+        wctrl.LinacName = MachineName
         BindDefectData()
     End Sub
     Public Sub ResetDefectDropDown(ByVal incidentid As String)
@@ -300,6 +389,7 @@ Partial Class DefectSave
             If sqlresult Is Nothing Then
                 AreaBox.Text = String.Empty
             Else
+
                 AreaBox.Text = sqlresult.ToString
             End If
             conn1.Close()

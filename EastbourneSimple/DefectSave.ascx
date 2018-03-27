@@ -1,7 +1,8 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="DefectSave.ascx.vb" Inherits="DefectSave" %>
 <%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="asp" %>
-<%--No need now for WriteDatauc Analysis 23/11/16
-                 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>--%>
+<%--No need now for WriteDatauc Analysis 23/11/16 --%>
+<%--Added back in 26/03/18 --%>
+                 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
            
 
            
@@ -32,7 +33,9 @@
                      }
                  </style>
 <asp:HiddenField ID="HiddenField1" Value="" runat="server" />
-<%-- NO requirement 23/11/16 <uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11"  Tabby="Defect"  WriteName="Defect" visible="false"  runat="server" />--%>
+<%-- NO requirement 23/11/16 --%>
+<%-- Added back in 26/03/18 --%>
+<uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11"  Tabby="Defect"  WriteName="Defect" visible="false"  runat="server" />
 
                  <%--<asp:TableCell ID="c2" runat="server" HorizontalAlign="left" Width="250px">Radiographer Cleared Fault <br />--%>
                  
@@ -87,14 +90,17 @@
                 <%--comment out 21/11/16 to replace with text box
                  <span class = "redcolor"> * </span><br /> </td>--%>
             <td class="style4">
-           <%-- <asp:DropDownList ID="DropDownListArea" runat="server">
-                <asp:ListItem>Select</asp:ListItem>
-                <asp:ListItem>Machine</asp:ListItem>
-                <asp:ListItem>iView</asp:ListItem>
+                <%--<asp:UpdatePanel ID="UpdatePanelArea" runat="server" UpdateMode="Conditional"><ContentTemplate>
+           <asp:DropDownList ID="DropDownListArea" runat="server" Visible ="false">
+                <asp:ListItem >Select</asp:ListItem>
+                <asp:ListItem >Machine</asp:ListItem>
+                <asp:ListItem >iView</asp:ListItem>
                 <asp:ListItem>XVI</asp:ListItem>
                 <asp:ListItem>IT</asp:ListItem>
                 <asp:ListItem>Other</asp:ListItem>
-            </asp:DropDownList>--%>
+            </asp:DropDownList>
+                     </ContentTemplate>
+                                   </asp:UpdatePanel>--%>
     <asp:TextBox ID="AreaBox" runat="server" Text="" readonly="true" EnableViewState="False"></asp:TextBox>
             </td>
         </tr>
