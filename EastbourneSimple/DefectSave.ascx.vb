@@ -683,10 +683,6 @@ Partial Class DefectSave
             bcommand.Parameters("@incidentID").Value = LastIncident
 
             conn.Open()
-            commtrack.ExecuteNonQuery()
-
-            'commfault.ExecuteNonQuery()
-
 
             Dim exists As Integer
             exists = bcommand.ExecuteScalar()
