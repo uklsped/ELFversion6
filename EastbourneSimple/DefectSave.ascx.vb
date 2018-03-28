@@ -68,9 +68,10 @@ Partial Class DefectSave
                 commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
                 commfault.Parameters("@DateReported").Value = time
                 commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
-                'Area now is text box. 23/11/16
+                'Area now is text box. 23/11/16 Back to listarea 27/3/18
+                commfault.Parameters("@Area").Value = HiddenField2.Value
                 'commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.ToString
-                commfault.Parameters("@Area").Value = AreaBox.Text
+                'commfault.Parameters("@Area").Value = AreaBox.Text
                 commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
                 commfault.Parameters("@Energy").Value = Energy
                 commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
@@ -91,7 +92,9 @@ Partial Class DefectSave
                     conn.Close()
                 Finally
                     DropDownListEnergy.SelectedIndex = -1
-                    AreaBox.Text = String.Empty
+                    DropDownListArea.SelectedIndex = -1
+                    DropDownListArea.Enabled = False
+                    'AreaBox.Text = String.Empty
                     PatientIDBox.Text = String.Empty
                     TextBox2.Text = String.Empty
                     TextBox3.Text = String.Empty
@@ -151,9 +154,9 @@ Partial Class DefectSave
         commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
         commfault.Parameters("@DateReported").Value = time
         commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
-        'Area now is text box. 23/11/16
-        'commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.ToString
-        commfault.Parameters("@Area").Value = AreaBox.Text
+        'Area now is text box. 23/11/16. Back to dropdown 28/3/18
+        commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.ToString
+        'commfault.Parameters("@Area").Value = AreaBox.Text
         commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
         commfault.Parameters("@Energy").Value = Energy
         commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
@@ -174,7 +177,7 @@ Partial Class DefectSave
             conn.Close()
         Finally
             DropDownListEnergy.SelectedIndex = -1
-            AreaBox.Text = String.Empty
+            'AreaBox.Text = String.Empty
             PatientIDBox.Text = String.Empty
             TextBox2.Text = String.Empty
             TextBox3.Text = String.Empty
@@ -209,13 +212,20 @@ Partial Class DefectSave
                 '    strScript += "</script>"
                 '    ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
             ElseIf Defect.SelectedItem.Text = "RAD RESET" Then
-                If TextBox4.Text = "" Then
+                If DropDownListArea.SelectedItem.Text = "Select" Then
                     wctrl.Visible = False
-                    strScript += "alert('Please complete the Fault Description');"
+                    DropDownListArea.Enabled = True
+                    strScript += "alert('Please select an Area');"
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                Else
-                    wcbutton.Text = "Saving RAD RESET"
+                ElseIf TextBox4.Text = "" Then
+                    wctrl.Visible = False
+                        DropDownListArea.Enabled = True
+                        strScript += "alert('Please complete the Fault Description');"
+                        strScript += "</script>"
+                        ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                    Else
+                        wcbutton.Text = "Saving RAD RESET"
                     Application(actionstate) = "Confirm"
                     wctrl.Visible = True
                 End If
@@ -226,6 +236,7 @@ Partial Class DefectSave
                 Application(actionstate) = "Confirm"
                 UserApprovedEvent("Defect", "")
             End If
+
         End If
 
     End Sub
@@ -238,7 +249,8 @@ Partial Class DefectSave
             newFault = False
             SetFaults(newFault)
             AddEnergyItem()
-            End If
+
+        End If
         'WriteDatauc1 no longer used 23/11/16
         'Added back in for RAD RESET 26/3/18 SEE SPR
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
@@ -267,7 +279,7 @@ Partial Class DefectSave
         Dim Faults As New DataTable()
         Dim conn As SqlConnection
         Dim comm As SqlCommand
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
         "connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
         If newfault Then
@@ -298,6 +310,28 @@ Partial Class DefectSave
 
 
     End Sub
+    'Not used - for if areas are in table
+    Protected Sub SetArea()
+
+        Dim Areas As New DataTable()
+        Dim conn As SqlConnection
+        Dim comm As SqlCommand
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
+        "connectionstring").ConnectionString
+        conn = New SqlConnection(connectionString1)
+
+        comm = New SqlCommand("SELECT AreaID, Area FROM [AreaTable] order by AreaID", conn)
+
+        'Don't need to open https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/populating-a-dataset-from-a-dataadapter
+        'conn.Open()
+        Dim at As New SqlDataAdapter(comm)
+        at.Fill(Areas)
+
+        DropDownListArea.DataSource = Areas
+        DropDownListArea.DataTextField = "Area"
+        DropDownListArea.DataValueField = "AreaID"
+        DropDownListArea.DataBind()
+    End Sub
 
     Private Sub BindDefectData()
 
@@ -324,12 +358,14 @@ Partial Class DefectSave
     End Function
 
     Protected Sub Defect_SelectedIndexChanged(sender As Object, e As System.EventArgs) Handles Defect.SelectedIndexChanged
+        Dim radreset As String = "Undefined"
         Dim incidentIDstring As String = ""
         Dim incidentID As Integer
         Dim conn1 As SqlConnection
         Dim comm1 As SqlCommand
         Dim Region As String = ""
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+        Dim Queryreturn As String = ""
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
         "connectionstring").ConnectionString
 
         incidentIDstring = Defect.SelectedItem.Value
@@ -338,6 +374,7 @@ Partial Class DefectSave
         Dim index As Integer
         index = Defect.Items.IndexOf(result)
         If Integer.TryParse(incidentIDstring, incidentID) Then
+            DropDownListArea.SelectedIndex = -1
             HiddenField1.Value = incidentID
             'Modified 10/1117 because of use of defect table
             'If incidentID > 0 Then
@@ -379,7 +416,7 @@ Partial Class DefectSave
             conn1 = New SqlConnection(connectionString)
             If incidentID > 0 Then
                 comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
-                Else
+            Else
                 comm1 = New SqlCommand("SELECT Area from DefectTable where incidentID=@incidentID", conn1)
             End If
             comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
@@ -387,16 +424,31 @@ Partial Class DefectSave
             conn1.Open()
             Dim sqlresult As Object = comm1.ExecuteScalar()
             If sqlresult Is Nothing Then
-                AreaBox.Text = String.Empty
+                'AreaBox.Text = String.Empty
+                DropDownListArea.SelectedValue = "Select"
             Else
+                Queryreturn = sqlresult.ToString
+                If Queryreturn = radreset Then
+                    DropDownListArea.Enabled = True
+                    DropDownListArea.SelectedValue = "Select"
 
-                AreaBox.Text = sqlresult.ToString
+                    'UpdatePanelArea.Update()
+                    'all set
+                Else
+                    DropDownListArea.SelectedItem.Text = sqlresult.ToString
+                    HiddenField2.Value = sqlresult.ToString
+                    DropDownListArea.Enabled = False
+                    'UpdatePanelArea.Update()
+                    'AreaBox.Text = sqlresult.ToString
+                End If
             End If
+
             conn1.Close()
 
         Else
             HiddenField1.Value = -1000
-            AreaBox.Text = String.Empty
+            'AreaBox.Text = String.Empty
+            DropDownListArea.SelectedIndex = -1
         End If
 
     End Sub
@@ -435,12 +487,26 @@ Partial Class DefectSave
 
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
         Defect.SelectedIndex = -1
-        AreaBox.Text = String.Empty
+        'AreaBox.Text = String.Empty
+        DropDownListArea.SelectedIndex = -1
         DropDownListEnergy.SelectedIndex = -1
         TextBox2.Text = Nothing
         TextBox3.Text = Nothing
         TextBox4.Text = Nothing
         PatientIDBox.Text = Nothing
-        
+        'UpdatePanelArea.Update()
+
+    End Sub
+    Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
+
+        'incidentIDstring = Defect.SelectedItem.Value
+        'Dim result As ListItem
+        'result = Defect.Items.FindByValue(incidentIDstring)
+        'Dim index As Integer
+        'index = Defect.Items.IndexOf(result)
+        'If Integer.TryParse(incidentIDstring, incidentID) Then
+        '    DropDownListArea.SelectedIndex = -1
+        '    HiddenField1.Value = incidentID
+        HiddenField2.Value = DropDownListArea.SelectedValue.ToString
     End Sub
 End Class

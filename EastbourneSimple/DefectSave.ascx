@@ -33,6 +33,7 @@
                      }
                  </style>
 <asp:HiddenField ID="HiddenField1" Value="" runat="server" />
+<asp:HiddenField ID="HiddenField2" Value="" runat="server" />
 <%-- NO requirement 23/11/16 --%>
 <%-- Added back in 26/03/18 --%>
 <uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11"  Tabby="Defect"  WriteName="Defect" visible="false"  runat="server" />
@@ -83,25 +84,25 @@
             </td>
             </tr>
             </table>--%>
-  <table style="width:401px;" >                    
+  <table style="width:401px;" >
         <tr>
             <td class="style3">
                 Area:
                 <%--comment out 21/11/16 to replace with text box
                  <span class = "redcolor"> * </span><br /> </td>--%>
             <td class="style4">
-                <%--<asp:UpdatePanel ID="UpdatePanelArea" runat="server" UpdateMode="Conditional"><ContentTemplate>
-           <asp:DropDownList ID="DropDownListArea" runat="server" Visible ="false">
-                <asp:ListItem >Select</asp:ListItem>
-                <asp:ListItem >Machine</asp:ListItem>
-                <asp:ListItem >iView</asp:ListItem>
-                <asp:ListItem>XVI</asp:ListItem>
-                <asp:ListItem>IT</asp:ListItem>
-                <asp:ListItem>Other</asp:ListItem>
+                <%--<asp:UpdatePanel ID="UpdatePanelArea" runat="server" UpdateMode="Conditional" ><ContentTemplate>--%>
+           <asp:DropDownList ID="DropDownListArea" runat="server"  enabled ="false" enableviewstate="false">
+                <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
+                <asp:ListItem Text="Machine" Value="Machine"></asp:ListItem>
+                <asp:ListItem Text="iView" Value="iView"></asp:ListItem>
+                <asp:ListItem Text="XVI" Value="XVI"></asp:ListItem>
+                <asp:ListItem Text="IT" Value="IT"></asp:ListItem>
+                <asp:ListItem Text="Other" Value="Other"></asp:ListItem>
             </asp:DropDownList>
-                     </ContentTemplate>
+                     <%--</ContentTemplate>
                                    </asp:UpdatePanel>--%>
-    <asp:TextBox ID="AreaBox" runat="server" Text="" readonly="true" EnableViewState="False"></asp:TextBox>
+    <%--<asp:TextBox ID="AreaBox" runat="server" Text="" readonly="true" EnableViewState="False"></asp:TextBox>--%>
             </td>
         </tr>
         <tr>
