@@ -38,60 +38,61 @@ Partial Class DefectSave
             Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
             wctrl.Visible = False
             If Action = "Confirm" Then
-                Dim time As DateTime
-                time = Now
+                Writeradreset(Userinfo)
+                'Dim time As DateTime
+                'time = Now
 
-                Energy = DropDownListEnergy.SelectedItem.Text
-                If Energy = "Select" Then
-                    Energy = ""
-                End If
+                'Energy = DropDownListEnergy.SelectedItem.Text
+                'If Energy = "Select" Then
+                '    Energy = ""
+                'End If
 
-                incidentID = HiddenField1.Value
+                'incidentID = HiddenField1.Value
 
-                Dim conn As SqlConnection
+                'Dim conn As SqlConnection
 
-                Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-                "connectionstring").ConnectionString
+                'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+                '"connectionstring").ConnectionString
 
-                Dim commfault As SqlCommand
+                'Dim commfault As SqlCommand
 
-                conn = New SqlConnection(connectionString)
+                'conn = New SqlConnection(connectionString)
 
-                commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " &
-                                           "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
-                commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
-                commfault.Parameters("@Description").Value = TextBox4.Text
-                commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
-                'userinfo is redundant. Replace with string.empty 23/11/16
-                'commfault.Parameters("@ReportedBy").Value = String.Empty
-                commfault.Parameters("@ReportedBy").Value = Userinfo
-                commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
-                commfault.Parameters("@DateReported").Value = time
-                commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
-                'Area now is text box. 23/11/16 Back to listarea 27/3/18
-                commfault.Parameters("@Area").Value = HiddenField2.Value
-                'commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.ToString
-                'commfault.Parameters("@Area").Value = AreaBox.Text
-                commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
-                commfault.Parameters("@Energy").Value = Energy
-                commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
-                commfault.Parameters("@GantryAngle").Value = TextBox2.Text
-                commfault.Parameters.Add("@CollimatorAngle", System.Data.SqlDbType.NVarChar, 3)
-                commfault.Parameters("@CollimatorAngle").Value = TextBox3.Text
-                commfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
-                commfault.Parameters("@Linac").Value = MachineName
-                commfault.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
-                commfault.Parameters("@IncidentID").Value = incidentID
-                commfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.VarChar, 7)
-                commfault.Parameters("@BSUHID").Value = PatientIDBox.Text
-                commfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
-                commfault.Parameters("@ConcessionNumber").Value = Defect.SelectedItem.ToString
-                Try
-                    conn.Open()
-                    commfault.ExecuteNonQuery()
-                    conn.Close()
-                Finally
-                    DropDownListEnergy.SelectedIndex = -1
+                'commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " &
+                '                           "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
+                'commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
+                'commfault.Parameters("@Description").Value = TextBox4.Text
+                'commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
+                ''userinfo is redundant. Replace with string.empty 23/11/16
+                ''commfault.Parameters("@ReportedBy").Value = String.Empty
+                'commfault.Parameters("@ReportedBy").Value = Userinfo
+                'commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
+                'commfault.Parameters("@DateReported").Value = time
+                'commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
+                ''Area now is text box. 23/11/16 Back to listarea 27/3/18
+                'commfault.Parameters("@Area").Value = HiddenField2.Value
+                ''commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.ToString
+                ''commfault.Parameters("@Area").Value = AreaBox.Text
+                'commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
+                'commfault.Parameters("@Energy").Value = Energy
+                'commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
+                'commfault.Parameters("@GantryAngle").Value = TextBox2.Text
+                'commfault.Parameters.Add("@CollimatorAngle", System.Data.SqlDbType.NVarChar, 3)
+                'commfault.Parameters("@CollimatorAngle").Value = TextBox3.Text
+                'commfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+                'commfault.Parameters("@Linac").Value = MachineName
+                'commfault.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
+                'commfault.Parameters("@IncidentID").Value = incidentID
+                'commfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.VarChar, 7)
+                'commfault.Parameters("@BSUHID").Value = PatientIDBox.Text
+                'commfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
+                'commfault.Parameters("@ConcessionNumber").Value = Defect.SelectedItem.ToString
+                'Try
+                '    conn.Open()
+                '    commfault.ExecuteNonQuery()
+                '    conn.Close()
+                'Finally
+                DropDownListEnergy.SelectedIndex = -1
                     DropDownListArea.SelectedIndex = -1
                     DropDownListArea.Enabled = False
                     'AreaBox.Text = String.Empty
@@ -99,9 +100,9 @@ Partial Class DefectSave
                     TextBox2.Text = String.Empty
                     TextBox3.Text = String.Empty
                     TextBox4.Text = String.Empty
-                    conn.Close()
+                'conn.Close()
 
-                End Try
+                'End Try
 
 
                 'End If
@@ -499,14 +500,218 @@ Partial Class DefectSave
     End Sub
     Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
 
-        'incidentIDstring = Defect.SelectedItem.Value
-        'Dim result As ListItem
-        'result = Defect.Items.FindByValue(incidentIDstring)
-        'Dim index As Integer
-        'index = Defect.Items.IndexOf(result)
-        'If Integer.TryParse(incidentIDstring, incidentID) Then
-        '    DropDownListArea.SelectedIndex = -1
-        '    HiddenField1.Value = incidentID
         HiddenField2.Value = DropDownListArea.SelectedValue.ToString
+    End Sub
+
+    Protected Sub Writeradreset(ByVal UserInfo As String)
+        Dim time As DateTime
+        Dim Energy As String
+        Dim LastIncident As Integer
+        Dim LastFault As Integer
+        time = Now()
+        Dim conn As SqlConnection
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        Dim incidentfault As SqlCommand
+        Dim commfault As SqlCommand
+        Dim comm2 As SqlCommand
+        Dim concessionNumber As String
+        conn = New SqlConnection(connectionString)
+
+
+        If HiddenField1.Value = -21 Then
+            Dim logInStatusID As Integer = 0
+            Dim constateid As SqlCommand
+            constateid = New SqlCommand("SELECT stateid FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            constateid.Parameters.AddWithValue("@linac", MachineName)
+            Dim readers As SqlDataReader
+            conn.Open()
+            readers = constateid.ExecuteReader()
+
+            If readers.Read() Then
+                logInStatusID = readers.Item("stateid")
+            End If
+            readers.Close()
+            conn.Close()
+            incidentfault = New SqlCommand("INSERT INTO FaultIDTable (DateInserted, Linac, Status, originalFaultID, ConcessionNumber, StatusID) VALUES (@DateInserted, @Linac, @Status, @originalFaultID, @ConcessionNumber, @StatusID)", conn)
+            incidentfault.Parameters.Add("@DateInserted", System.Data.SqlDbType.DateTime)
+            incidentfault.Parameters("@DateInserted").Value = time
+            incidentfault.Parameters.Add("@Status", System.Data.SqlDbType.NVarChar, 20)
+            incidentfault.Parameters("@Status").Value = "Concession"
+            incidentfault.Parameters.Add("@originalFaultID", System.Data.SqlDbType.Int)
+            incidentfault.Parameters("@originalFaultID").Value = 0
+            incidentfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 10)
+            incidentfault.Parameters("@ConcessionNumber").Value = ""
+            incidentfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+            incidentfault.Parameters("@Linac").Value = MachineName
+            incidentfault.Parameters.Add("@StatusID", System.Data.SqlDbType.Int)
+            incidentfault.Parameters("@StatusID").Value = logInStatusID
+            conn.Open()
+            incidentfault.ExecuteNonQuery()
+            conn.Close()
+
+            Dim comm1 As SqlCommand
+            Dim reader1 As SqlDataReader
+
+            comm1 = New SqlCommand("Select IncidentID from FaultIDTable where IncidentId = (select max(IncidentId) from FaultIDTable where linac = @linac)", conn)
+            comm1.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+            comm1.Parameters("@Linac").Value = MachineName
+            conn.Open()
+            reader1 = comm1.ExecuteReader()
+            If reader1.Read() Then
+                LastIncident = reader1.Item("IncidentID")
+                reader1.Close()
+                conn.Close()
+            End If
+        End If
+        Energy = DropDownListEnergy.SelectedItem.Text
+        If Energy = "Select" Then
+            Energy = ""
+        End If
+        If LastIncident > 0 Then
+            concessionNumber = ""
+        Else
+            concessionNumber = Defect.SelectedItem.ToString
+        End If
+        commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber ) " &
+                                   "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
+        commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
+        commfault.Parameters("@Description").Value = TextBox4.Text
+        commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
+        commfault.Parameters("@ReportedBy").Value = UserInfo
+        commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
+        commfault.Parameters("@DateReported").Value = time
+        commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
+        commfault.Parameters("@Area").Value = HiddenField2.Value
+        commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
+        commfault.Parameters("@Energy").Value = Energy
+        commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
+        commfault.Parameters("@GantryAngle").Value = TextBox2.Text
+        commfault.Parameters.Add("@CollimatorAngle", System.Data.SqlDbType.NVarChar, 3)
+        commfault.Parameters("@CollimatorAngle").Value = TextBox3.Text
+        commfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+        commfault.Parameters("@Linac").Value = MachineName
+        commfault.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
+        commfault.Parameters("@IncidentID").Value = LastIncident
+        commfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.NVarChar, 7)
+        commfault.Parameters("@BSUHID").Value = PatientIDBox.Text
+         commfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
+        commfault.Parameters("@ConcessionNumber").Value = concessionNumber
+        Try
+
+            conn.Open()
+            commfault.ExecuteNonQuery()
+
+        Finally
+            conn.Close()
+
+        End Try
+        If LastIncident > 0 Then
+
+
+            'This reads the number of the newly created fault to put into the fault tracking database
+
+            comm2 = New SqlCommand("Select FaultID from ReportFault where FaultId = (select max(FaultId) from ReportFault where linac = @linac)", conn)
+            comm2.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+            comm2.Parameters("@Linac").Value = MachineName
+            conn.Open()
+            Dim reader2 As SqlDataReader
+            reader2 = comm2.ExecuteReader()
+            If reader2.Read() Then
+                LastFault = reader2.Item("FaultID")
+                reader2.Close()
+                conn.Close()
+            End If
+
+
+
+            Dim commtrack As SqlCommand
+            commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, IncidentID) " &
+                                       "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon, @Linac, @IncidentID)", conn)
+            commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
+            commtrack.Parameters("@Trackingcomment").Value = TextBox4.Text
+            commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
+            commtrack.Parameters("@AssignedTo").Value = "Unassigned"
+            commtrack.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
+            commtrack.Parameters("@Status").Value = "Concession"
+            commtrack.Parameters.Add("@LastupdatedBy", System.Data.SqlDbType.NVarChar, 50)
+            commtrack.Parameters("@LastupdatedBy").Value = UserInfo
+            commtrack.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
+            commtrack.Parameters("@Lastupdatedon").Value = time
+            commtrack.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+            commtrack.Parameters("@Linac").Value = MachineName
+            commtrack.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
+            commtrack.Parameters("@IncidentID").Value = LastIncident
+            Try
+                conn.Open()
+                commtrack.ExecuteNonQuery()
+
+
+            Finally
+                conn.Close()
+
+            End Try
+
+            'update incident table with fault id then don't need it in fault tracking table?
+
+            incidentfault = New SqlCommand("Update FaultIDTable SET originalFaultID=@originalFaultID where incidentID=@incidentID", conn)
+            incidentfault.Parameters.Add("@originalFaultID", Data.SqlDbType.Int)
+            incidentfault.Parameters("@originalFaultID").Value = LastFault
+            incidentfault.Parameters.Add("@incidentID", Data.SqlDbType.Int)
+            incidentfault.Parameters("@incidentID").Value = LastIncident
+            conn.Open()
+            incidentfault.ExecuteNonQuery()
+            conn.Close()
+
+            'from viewopenfaults
+            Dim commconcess As SqlCommand
+            commconcess = New SqlCommand("Insert into ConcessionTable (PreFix, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) " &
+            "VALUES (@PreFix, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) SELECT SCOPE_IDENTITY()", conn)
+            commconcess.Parameters.Add("@PreFix", System.Data.SqlDbType.NVarChar, 10)
+            commconcess.Parameters("@PreFix").Value = "ELF"
+            commconcess.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 20)
+            commconcess.Parameters("@ConcessionDescription").Value = TextBox4.Text
+            commconcess.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+            commconcess.Parameters("@incidentID").Value = LastIncident
+            commconcess.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+            commconcess.Parameters("@Linac").Value = MachineName
+            commconcess.Parameters.Add("@ConcessionActive", System.Data.SqlDbType.Bit)
+            commconcess.Parameters("@ConcessionActive").Value = 1
+            commconcess.Parameters.Add("@Action", System.Data.SqlDbType.NVarChar, 250)
+            commconcess.Parameters("@Action").Value = "Need to put one"
+            Dim bcommand = New SqlCommand("select count(*) from Concessiontable where incidentID=@incidentID", conn)
+            bcommand.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+            bcommand.Parameters("@incidentID").Value = LastIncident
+
+            conn.Open()
+            commtrack.ExecuteNonQuery()
+
+            'commfault.ExecuteNonQuery()
+
+
+            Dim exists As Integer
+            exists = bcommand.ExecuteScalar()
+
+            If exists = 0 Then
+                'commconcess.ExecuteNonQuery()
+                'from http://www.dotnetperls.com/string-format-vbnet
+                Dim obj As Object = commconcess.ExecuteScalar()
+                Dim value As Integer
+                value = CInt(obj)
+                Dim concessionnum As String = value.ToString("0000")
+                Dim builder As New StringBuilder
+                Dim Prefix As String = "ELF"
+                builder.Append(Prefix)
+                builder.Append(concessionnum)
+                Dim s As String = builder.ToString
+                commconcess = New SqlCommand("Update FaultIDTable SET ConcessionNumber=@ConcessionNumber WHERE IncidentID=@incidentID ", conn)
+                commconcess.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 10)
+                commconcess.Parameters("@ConcessionNumber").Value = s
+                commconcess.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                commconcess.Parameters("@incidentID").Value = LastIncident
+                commconcess.ExecuteNonQuery()
+                conn.Close()
+            End If
+        End If
+
     End Sub
 End Class
