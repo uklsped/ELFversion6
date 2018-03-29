@@ -1091,14 +1091,14 @@ Partial Class ViewOpenFaults
 
     Protected Sub confirmfault_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles confirmfault.Click
         'As a result of removing need for signature Writedatauc removed. March 2016
-        Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-        Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
-        Dim strScript As String = "<script>"
+        'Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
+        'Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+        'Dim strScript As String = "<script>"
 
-        wcbutton.Text = "Saving Repeat Fault"
+        'wcbutton.Text = "Saving Repeat Fault"
         Application(actionstate) = "Confirm"
-        wctrl.Visible = True
-        'UserApprovedEvent("Updatefault", "")
+        'wctrl.Visible = True
+        UserApprovedEvent("Updatefault", "")
 
     End Sub
     Protected Sub AddEnergyItem()
