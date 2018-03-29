@@ -102,7 +102,8 @@ Partial Class WriteDatauc
         Dim wctrl As WriteDatauc = CType(Me.Parent.FindControl("Writedatauc1"), WriteDatauc)
         If wctrl IsNot Nothing Then
             wctrl.Visible = False
-            If tablabel = "Admin" Then
+            'added to deal with clearing defect form if wrong user type 19/03/18
+            If (tablabel = "Admin") Or (tablabel = "Defect") Then
                 Application(actionstate) = "Cancel"
                 RaiseEvent UserApproved(tablabel, "dummy")
             End If

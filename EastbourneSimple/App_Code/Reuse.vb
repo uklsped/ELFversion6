@@ -380,8 +380,16 @@ Namespace DavesCode
                         Return False
                     End If
                     '104 is recovery and at the moment let anyone do that
-                Case 8, 10, 11, 102, 103, 104
+                    'change 11 to only allow rad to select RAD RESET in defect uc
+                Case 8, 10, 102, 103, 104
                     Return True
+
+                Case 11
+                    If usergroupselected = 3 Then
+                        Return True
+                    Else
+                        Return False
+                    End If
 
                 Case 100
                     If usergroupselected = 1 Then

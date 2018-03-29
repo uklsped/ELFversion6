@@ -149,6 +149,14 @@
               <asp:TextBox ID="TextBox4" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
               </td> 
         </tr>
+      <tr>
+          <td class="style2">
+              Rad Reset Action:
+          </td>
+          <td>
+              <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible ="true"></asp:TextBox>
+          </td>
+      </tr>
          <tr>
             <td class="style2">
                 Patient ID:</td>
