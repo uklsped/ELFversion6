@@ -586,6 +586,7 @@ Partial Class DefectSave
 
                 'need to write reportfault and faulttracking table again
                 WriteTracking(UserInfo, "Concession", LastIncident)
+                WriteRadAckFault(concessionnum, False, 0)
                 'From repair
                 Dim updatefault As SqlCommand
                 updatefault = New SqlCommand("UPDATE  FaultIDTable SET ReportClosed = @ReportClosed where IncidentID=@incidentID", conn)
@@ -686,6 +687,27 @@ Partial Class DefectSave
             commtrack.ExecuteNonQuery()
 
 
+        Finally
+            conn.Close()
+
+        End Try
+    End Sub
+
+    Protected Sub WriteRadAckFault(ByVal Concnumber As Integer, ByVal Ack As Boolean, ByVal StateID As Integer)
+        Dim conn As SqlConnection
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        conn = New SqlConnection(connectionString)
+        Dim commack As SqlCommand
+        commack = New SqlCommand("Insert into RadAckFault (StateID, ConcessID, Acknowledge) VALUES (@StateID, @ConcessID, @Acknowledge)", conn)
+        commack.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
+        commack.Parameters("@StateID").Value = StateID
+        commack.Parameters.Add("@ConcessID", Data.SqlDbType.Int)
+        commack.Parameters("@ConcessID").Value = Concnumber
+        commack.Parameters.Add("@Acknowledge", Data.SqlDbType.Bit)
+        commack.Parameters("@Acknowledge").Value = Ack
+        Try
+            conn.Open()
+            commack.ExecuteNonQuery()
         Finally
             conn.Close()
 
