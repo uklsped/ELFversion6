@@ -37,7 +37,7 @@ Partial Class faultPage
         Dim Action As String = Application(actionstate)
         Dim EnergyPicked As String
         If Tabused = "Report" Then
-            'DavesCode.Reuse.ReturnApplicationState("start of fault accept")
+
             Dim mpContentPlaceHolder As ContentPlaceHolder
             Dim grdview As GridView
 
@@ -84,7 +84,7 @@ Partial Class faultPage
                     'Have to now actually read the rows
                     reader.Read()
                     LinacStatusID = reader.Item("StatusID").ToString()
-                    'Application(appstate) = 1
+
                 Else
                     
                     Select Case reportTab
@@ -101,28 +101,12 @@ Partial Class faultPage
                             Application(suspstate) = 1
                         Case 4, 5, 6, 8
                             LinacStatusID = DavesCode.Reuse.WriteAuxTables(LinacID, Userinfo, comment, radio, reportTab, True, susstate, repstate, False)
-                            'Case 5
-                            '    'If Application(failstate) Is Nothing Then
-                            '    LinacStatusID = DavesCode.Reuse.WriteAuxTables(LinacID, Userinfo, comment, -1, reportTab, True, susstate, repstate, False)
-                            '    'Else
-                            '    'LinacStatusID = DavesCode.Reuse.GetLastTech(LinacID, 1, "", "", 2)
-                            '    'End If
+
                         Case Else
                             Application(failstate) = reportTab
                             LinacStatusID = DavesCode.Reuse.WriteAuxTables(LinacID, Userinfo, comment, radio, reportTab, True, susstate, repstate, False)
                     End Select
-                    'if fault is being reported from repair tab then don't want to reset possible previous states so check report tab first
-                    'Select Case reportTab
-                    '    Case 0
-                    '        'Do nothing
-                    '    Case 5
-                    '        If Application(failstate) Is Nothing Then
-                    '            Application(failstate) = reportTab
-                    '        End If
-                    '    Case Else
-                    '        Application(failstate) = reportTab
-                    'End Select
-                    'End If
+
                     Application(appstate) = Nothing
                 End If
                 reader.Close()
@@ -211,11 +195,12 @@ Partial Class faultPage
                     End Try
 
                     Dim commtrack As SqlCommand
-                    commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, IncidentID) " & _
+                commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, IncidentID) " &
                                                "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon, @Linac, @IncidentID)", conn)
-                    commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
-                    commtrack.Parameters("@Trackingcomment").Value = TextBox4.Text
-                    commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
+                'The tracking comment should be "" at this stage 11/04/18 not TextBox4.Text as that is fault description
+                commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
+                commtrack.Parameters("@Trackingcomment").Value = ""
+                commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
                     commtrack.Parameters("@AssignedTo").Value = "Unassigned"
                     commtrack.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
                     commtrack.Parameters("@Status").Value = "New"
@@ -248,10 +233,7 @@ Partial Class faultPage
                     incidentfault.ExecuteNonQuery()
                     conn.Close()
 
-                'Application(appstate) = Nothing
-                    'Application(suspstate) = Nothing
-                    'Application(repairstate) = Nothing
-                    Application(treatmentstate) = "Yes"
+                Application(treatmentstate) = "Yes"
                     'FailState is the flag that tells repair and view open faults which tab the fault was reported from
                     '18 April move this to page load to enable multiple faults from tab 0 after fault reported
                     'Application(failstate) = HiddenField1.Value
@@ -275,8 +257,8 @@ Partial Class faultPage
                 'Return where it came from now
                     Dim returnstring As String = LinacID + "page.aspx?pageref=Fault&Tabindex="
                     Response.Redirect(returnstring & reportTab & "&comment=" & comment)
-                    'Response.Redirect("LA1page.aspx?pageref=Fault&Tabindex=" & tab)
-        End If
+
+            End If
 
         End If
 
@@ -344,7 +326,6 @@ Partial Class faultPage
             Application(failstate) = Nothing
         End If
 
-        'Response.Redirect("LA1page.aspx?pageref=Fault&Tabindex=" & tab & "&comment=" & comment)
         If tab = "3" Then
             Application(returnclinical) = 1
         End If
