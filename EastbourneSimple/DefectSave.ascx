@@ -194,14 +194,14 @@
             <tr>
                <td style ="width:150px;text-align:center">Repeat Fault</td>
                <td style ="width:80px;text-align:center">Time</td>
-               <td style ="width:180px;text-align:center">Corrective Action</td>
+               <td style ="width:180px;text-align:center">Description</td>
                </tr></table></div>
                            <div style="width:400px"> <asp:UpdatePanel ID="UpdatePanel3" runat="server">
            <ContentTemplate>
            
         <div style ="height:150px; width:400px; overflow:auto;">
         <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" showheader="false"
-        DataKeyNames="ConcessionNumber" BackColor="White" Width="360px"
+        DataKeyNames="ConcessionNumber" BackColor="White" Width="400px"
         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4" 
         GridLines="Horizontal" Font-Size="smaller" >
         <RowStyle BackColor="White" ForeColor="#333333" />
