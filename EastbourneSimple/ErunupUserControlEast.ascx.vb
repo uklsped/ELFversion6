@@ -419,57 +419,82 @@ Partial Class ErunupUserControl
 
     End Sub
 
-    Protected Sub engHandoverButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles engHandoverButton.Click
-        'this shouldn't be here
-        'Dim lapage As Page
+    Protected Sub EngHandoverButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles engHandoverButton.Click
+        Dim strScript As String = "<script>"
+        'count if there are unacknowledged rad concessions first
+        Dim Radcount As Boolean
+        Radcount = ConfirmNoRadConcession()
+        If Radcount Then
+            Dim counter As Integer = 0
+            'Dim tclcontainer As TabContainer
+            For Each grv As GridViewRow In GridView1.Rows
 
-        'lapage = CType(Me.Parent.FindControl("LA3Page"), Page)
-        Dim counter As Integer = 0
-        'Dim tclcontainer As TabContainer
-        For Each grv As GridViewRow In GridView1.Rows
+                Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
+                If checktick.Checked = True Then
+                    counter = counter + 1
+                End If
+            Next
+            If counter <> 0 Then
+                'Inserted imaging check from preclinicaluser control
+                Dim icounter As Integer = 0
+                'Dim tclcontainer As TabContainer
+                For Each grv As GridViewRow In GridViewImage.Rows
 
-            Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
-            If checktick.Checked = True Then
-                counter = counter + 1
-            End If
-        Next
-        If counter <> 0 Then
-            'Inserted imaging check from preclinicaluser control
-        Dim icounter As Integer = 0
-        'Dim tclcontainer As TabContainer
-        For Each grv As GridViewRow In GridViewImage.Rows
+                    Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBoxImage"), CheckBox)
+                    If checktick.Checked = True Then
+                        icounter = icounter + 1
+                    End If
+                Next
+                If icounter <> 0 Then
+                    ConfirmExitEvent()
+                Else
+                    Dim cptrl As ConfirmPage = CType(FindControl("ConfirmPage1"), ConfirmPage)
+                    Dim cpbutton As Button = CType(cptrl.FindControl("AcceptOK"), Button)
+                    'Dim cptext As TextBox = CType(cptrl.FindControl("txtchkUserName"), TextBox)
+                    cpbutton.Text = "Confirm No Imaging"
+                    ConfirmPage1.Visible = True
+                    'ForceFocus(cptext)
 
-            Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBoxImage"), CheckBox)
-            If checktick.Checked = True Then
-                icounter = icounter + 1
-            End If
-        Next
-            If icounter <> 0 Then
-            ConfirmExitEvent()
+                End If
             Else
-            Dim cptrl As ConfirmPage = CType(FindControl("ConfirmPage1"), ConfirmPage)
-            Dim cpbutton As Button = CType(cptrl.FindControl("AcceptOK"), Button)
-            'Dim cptext As TextBox = CType(cptrl.FindControl("txtchkUserName"), TextBox)
-            cpbutton.Text = "Confirm No Imaging"
-            ConfirmPage1.Visible = True
-            'ForceFocus(cptext)
-
-        End If
+                strScript += "alert('Select at least one energy');"
+                strScript += "</script>"
+                ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+            End If
 
         Else
-            Dim strScript As String = "<script>"
-            strScript += "alert('Select at least one energy');"
+            strScript += "alert('There are unacknowledged Rad Concessions');"
             strScript += "</script>"
             ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
         End If
-
-        
-        
-
-
-        
-
     End Sub
+
+    Protected Function ConfirmNoRadConcession() As Boolean
+        Dim comm As SqlCommand
+        Dim conn As SqlConnection
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        Dim reader As SqlDataReader
+        Dim NumOpen As Integer
+        conn = New SqlConnection(connectionString)
+        comm = New SqlCommand("SELECT Count(*) as NumOpen From RadAckFault r Left outer join concessiontable c on r.Incidentid = c.Incidentid where r.Acknowledge = 'false' and linac=@linac", conn)
+        comm.Parameters.AddWithValue("@linac", MachineName)
+
+
+        conn.Open()
+        reader = comm.ExecuteReader()
+
+        If reader.Read() Then
+            NumOpen = reader.Item("NumOpen")
+            If NumOpen <> 0 Then 'there are open faults
+                Return False
+            Else
+                Return True
+            End If
+        Else
+            Return True
+
+        End If
+    End Function
 
     Protected Sub FaultPanelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles FaultPanelButton.Click
         Dim updatepanel3 As UpdatePanel = FindControl("updatepanel3")
@@ -609,13 +634,16 @@ Partial Class ErunupUserControl
 
     End Sub
     Protected Sub ConfirmExitEvent()
-       Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-            Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
-            Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-            wcbutton.Text = "Confirm Energies"
-            Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
-            WriteDatauc1.Visible = True
-            ForceFocus(wctext)
+        Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
+        Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+        Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+        wcbutton.Text = "Confirm Energies"
+        Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
+        WriteDatauc1.Visible = True
+        ForceFocus(wctext)
     End Sub
-   
+
+
+
+
 End Class

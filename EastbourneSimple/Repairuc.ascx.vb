@@ -320,6 +320,7 @@ Partial Class Repairuc
         CType(objDefect, DefectSave).LinacName = MachineName
         PlaceHolder4.Controls.Add(objDefect)
 
+
         Dim Textboxcomment As TextBox = FindControl("CommentBox")
         If Not IsPostBack Then
             If MachineName Like "LA?" Then

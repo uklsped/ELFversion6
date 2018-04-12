@@ -135,7 +135,7 @@ Partial Class ErunupUserControl
         Dim Action As String = Application(actionstate)
         Dim machinelabel As String = MachineName & "Page.aspx';"
         Dim username As String = Userinfo
-        Dim Valid As Boolean
+        Dim Valid As Boolean = False
         Dim Activity As String = "Logged Off"
 
         '1 or 7 is engineering tab or emergency run up tab
@@ -180,6 +180,34 @@ Partial Class ErunupUserControl
             ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
         End If
     End Sub
+
+    Protected Function ConfirmNoRadConcession() As Boolean
+        Dim comm As SqlCommand
+        Dim conn As SqlConnection
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        Dim reader As SqlDataReader
+        Dim NumOpen As Integer
+        conn = New SqlConnection(connectionString)
+        comm = New SqlCommand("SELECT Count(*) as NumOpen From RadAckFault r Left outer join concessiontable c on r.Incidentid = c.Incidentid where r.Acknowledge = 'false' and linac=@linac", conn)
+        comm.Parameters.AddWithValue("@linac", MachineName)
+
+
+        conn.Open()
+        reader = comm.ExecuteReader()
+
+        If reader.Read() Then
+            NumOpen = reader.Item("NumOpen")
+            If NumOpen <> 0 Then 'there are open faults
+                Return False
+            Else
+                Return True
+            End If
+        Else
+            Return True
+
+        End If
+    End Function
+
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         WaitButtons("Tech")
 
@@ -354,36 +382,29 @@ Partial Class ErunupUserControl
 
     End Sub
 
-    Protected Sub engHandoverButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles engHandoverButton.Click
-        'this shouldn't be here
-        'Dim lapage As Page
+    Protected Sub EngHandoverButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles engHandoverButton.Click
+        Dim strScript As String = "<script>"
+        Dim Radcount As Boolean
+        Radcount = ConfirmNoRadConcession()
+        If Radcount Then
+            Dim counter As Integer = 0
+            For Each grv As GridViewRow In GridView1.Rows
 
-        'lapage = CType(Me.Parent.FindControl("LA3Page"), Page)
-        Dim counter As Integer = 0
-        'Dim tclcontainer As TabContainer
-        For Each grv As GridViewRow In GridView1.Rows
-
-            Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
-            If checktick.Checked = True Then
-                counter = counter + 1
+                Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
+                If checktick.Checked = True Then
+                    counter = counter + 1
+                End If
+            Next
+            If counter <> 0 Then
+                ConfirmExitEvent()
+            Else
+                strScript += "alert('Select at least one energy');"
             End If
-        Next
-        If counter <> 0 Then
-
-            Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-            Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
-            Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-            wcbutton.Text = "Confirm Energies"
-            Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
-            WriteDatauc1.Visible = True
-            ForceFocus(wctext)
-
         Else
-            Dim strScript As String = "<script>"
-            strScript += "alert('Select at least one energy');"
-            strScript += "</script>"
-            ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+            strScript += "alert('There are unacknowledged Rad Concessions');"
         End If
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
 
     End Sub
 
@@ -523,5 +544,14 @@ Partial Class ErunupUserControl
 
         End Select
 
+    End Sub
+    Protected Sub ConfirmExitEvent()
+        Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
+        Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+        Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+        wcbutton.Text = "Confirm Energies"
+        Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
+        WriteDatauc1.Visible = True
+        ForceFocus(wctext)
     End Sub
 End Class

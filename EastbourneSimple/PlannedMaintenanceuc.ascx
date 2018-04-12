@@ -86,7 +86,7 @@
             <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
             </asp:TableCell>
                 <asp:TableCell ID="t2c1" runat="server">
-                    <asp:Button ID="Faultpanelbutton" runat="server" Text="View Open Faults" CausesValidation="false" />
+                    <asp:Button ID="Faultpanelbutton" runat="server" Text="View Open Faults" CausesValidation="false" Visible="false" />
                 </asp:TableCell>
                 <asp:TableCell ID="t2c2" runat="server">
                     <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" CausesValidation="false" />
@@ -99,7 +99,7 @@
     </asp:Panel>
 </div>
 <div id="left">
-    <asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="false" UpdateMode="Conditional">
+    <asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="true" UpdateMode="Conditional">
         <ContentTemplate>
             <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
         </ContentTemplate>

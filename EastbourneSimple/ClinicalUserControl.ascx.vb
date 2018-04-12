@@ -58,17 +58,24 @@ Partial Class ClinicalUserControl
     End Function
     Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
         If MachineName = EquipmentID Then
-            Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
+            Dim todayfault As TodayClosedFault = FindControl("Todaysfaults")
             todayfault.SetGrid()
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+            Todaydefect = FindControl("DefectDisplay")
             Todaydefect.ResetDefectDropDown(incidentID)
         End If
     End Sub
 
     Protected Sub Update_Defect(ByVal EquipmentID As String)
         If MachineName = EquipmentID Then
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+            Todaydefect = FindControl("DefectDisplay")
             Todaydefect.UpDateDefectsEventHandler()
+        End If
+    End Sub
+
+    Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
+        If MachineName = EquipmentID Then
+            Dim updatefault As ViewOpenFaults = PlaceHolder4.FindControl("ViewOpenFaults")
+            updatefault.RebindViewFault()
         End If
     End Sub
 
@@ -211,6 +218,7 @@ Partial Class ClinicalUserControl
         Dim lastState As String
         Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = MachineName
+        CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(objCon)
         PlaceHolder2.Visible = True
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
@@ -219,6 +227,8 @@ Partial Class ClinicalUserControl
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = MachineName
         PlaceHolder3.Controls.Add(objDefect)
+        AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
+        AddHandler CType(objDefect, DefectSave).UpdateViewFault, AddressOf Update_ViewOpenFaults
         'BindEnergyData()
 
         BindComments()

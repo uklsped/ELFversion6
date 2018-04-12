@@ -151,7 +151,7 @@
         </tr>
       <tr>
           <td class="style2">
-              Rad Reset Action:
+              Corrective Action:
           </td>
           <td>
               <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible ="true"></asp:TextBox>
@@ -185,16 +185,16 @@
                                <td class="style1">
                                
                                    <br />--%>
-                                   Today's Recorded Defects
+                                   Today's Repeat Faults
                                    <div style =" background-color:Green; 
         height:30px;width:400px; margin:0;padding:0">
         <table cellspacing="0" cellpadding = "0" rules="all" border="1" id="Table3" 
          style="font-family:Arial;font-size:10pt;width:400px;color:white;
          border-collapse:collapse;height:100%;">
             <tr>
-               <td style ="width:150px;text-align:center">Defect</td>
-               <td style ="width:80px;text-align:center">Defect Time</td>
-               <td style ="width:180px;text-align:center">Defect Comment</td>
+               <td style ="width:150px;text-align:center">Repeat Fault</td>
+               <td style ="width:80px;text-align:center">Time</td>
+               <td style ="width:180px;text-align:center">Corrective Action</td>
                </tr></table></div>
                            <div style="width:400px"> <asp:UpdatePanel ID="UpdatePanel3" runat="server">
            <ContentTemplate>

@@ -28,6 +28,12 @@
 <%@ Register src="WebUserControl2.ascx" tagname="WebUserControl2" tagprefix="uc10" %>
 
 
+<%@ Register src="RadFaultAckuc.ascx" tagname="RadFaultAckuc" tagprefix="uc11" %>
+
+
+<%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc12" %>
+
+
 <%--<%@ Register src="CommitData.ascx" tagname="CommitData" tagprefix="uc3" %>--%>
 
 
@@ -179,7 +185,10 @@
 <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
                <ContentTemplate>
                    <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
-                   <br></br>
+                   <br>
+                                  <uc11:RadFaultAckuc ID="RadFaultAckuc1" linacname="E1" runat="server" />
+
+                   </br>
                <asp:PlaceHolder ID="PlaceHolder5" runat="server">
                 </asp:PlaceHolder>
                 </ContentTemplate></asp:UpdatePanel>
@@ -192,7 +201,7 @@
          <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
          </asp:TableCell>
          <asp:TableCell ID="t2c1" runat="server" Width="160px" HorizontalAlign="Left">
-         <asp:Button ID="FaultPanelButton" runat="server" Text="View Open Faults" causesvalidation ="false"/>
+         <asp:Button ID="FaultPanelButton" runat="server" Text="View Open Faults" causesvalidation ="false" Visible="false"/>
                </asp:TableCell>
                <asp:TableCell ID="t2c2" runat="server" Width="50px">
                <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" width = "160px" causesvalidation="false"/>
@@ -213,10 +222,12 @@
            
         </div>         
 
-  <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="false">
+  <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true">
 <ContentTemplate>
     <asp:PlaceHolder ID="PlaceHolder3" runat="server">
     </asp:PlaceHolder>
+
+    
 
 </ContentTemplate> 
 </asp:UpdatePanel>
@@ -224,6 +235,7 @@
 <ContentTemplate>
     <asp:PlaceHolder ID="PlaceHolder6" runat="server">
     </asp:PlaceHolder>
+        
         </ContentTemplate>
         
 </asp:UpdatePanel>
@@ -259,77 +271,8 @@
      
  <uc5:ViewCommentsuc ID="ViewCommentsuc1"  LinacName="" CommentSort="er" runat="server" />
 </div>
-
-
-
-
-
+<asp:PlaceHolder ID="PlaceHolder7" runat="server">
+    <uc12:ConfirmPage ID="ConfirmPage1" runat="server" Visible="false" />
+    </asp:PlaceHolder>
 
             
-            
-
-
-
-        
- 
-
-            
-            
-
-
-
-        
- 
-
-            
-            
-
-
-
-        
- 
-
-            
-            
-
-
-
-        
- 
-
-
-
-
-
-
-            
-            
-
-
-
-        
- 
-
-            
-            
-
-
-
-        
- 
-
-            
-            
-
-
-
-        
- 
-
-            
-            
-
-
-
-        
- 

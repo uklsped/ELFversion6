@@ -46,6 +46,7 @@ Partial Class Planned_Maintenanceuc
         If MachineName = EquipmentID Then
             Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
             Todaydefect.UpDateDefectsEventHandler()
+
         End If
     End Sub
 

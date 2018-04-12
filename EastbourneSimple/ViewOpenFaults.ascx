@@ -66,6 +66,11 @@
                                 <asp:ButtonField ButtonType="Button" CommandName="View" Text="View Concession History" />
                                 <asp:ButtonField ButtonType="Button" CommandName="Faults" Text="View Faults" />
                                 <asp:ButtonField ButtonType="Button" CommandName="Log Fault" Text="Log Repeat Fault" />
+                            <asp:TemplateField>
+                            <ItemTemplate>
+            
+            </ItemTemplate>
+            </asp:TemplateField>
                         </Columns>
                         <FooterStyle BackColor="#5D7B9D" ForeColor="White" Font-Bold="True" />
                         <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
@@ -83,7 +88,7 @@
                     
                     </ContentTemplate>
                     <Triggers>
-<asp:AsyncPostBackTrigger ControlId="GridView1" EventName="SelectedIndexChanged" />
+<%--<asp:AsyncPostBackTrigger ControlId="GridView1" EventName="SelectedIndexChanged" />--%>
 </Triggers>
                   
                     </asp:UpdatePanel>

@@ -1,6 +1,8 @@
 ﻿'this disappears
 Imports System.Data.SqlClient
 Imports System.Data
+Imports System.Drawing
+
 Partial Class ViewOpenFaults
 
     Inherits System.Web.UI.UserControl
@@ -16,6 +18,7 @@ Partial Class ViewOpenFaults
     Private faultviewstate As String
     Private technicalstate As String
     Private faultstate As String
+    Private RadRow As DataTable
 
 
     Public Event UpDateDefect(ByVal EquipmentName As String, ByVal incidentID As String)
@@ -43,7 +46,6 @@ Partial Class ViewOpenFaults
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
         AddHandler WriteDatauc3.UserApproved, AddressOf UserApprovedEvent
         AddHandler ManyFaultGriduc.ShowFault, AddressOf NewFaultEvent
-        'AddHandler FaultGriduc1.ShowFault, AddressOf NewFaultEvent
         suspstate = "Suspended" + MachineName
         failstate = "FailState" + MachineName
         actionstate = "ActionState" + MachineName
@@ -56,8 +58,9 @@ Partial Class ViewOpenFaults
     End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-
+        RadRow = HighlightRow()
         bindGridView()
+
         If Not IsPostBack Then
             AddEnergyItem()
             'Application(techstate) = Nothing
@@ -77,7 +80,7 @@ Partial Class ViewOpenFaults
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader As SqlDataReader
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
         "connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
         'comm = New SqlCommand("select faultid from reportfault where linac=@linac and FaultStatus = 'New'", conn)
@@ -88,31 +91,11 @@ Partial Class ViewOpenFaults
             conn.Open()
             reader = comm.ExecuteReader() 'checks to see if there is a new fault - returns true or false if record read
             If reader.HasRows Then
-                'If reader.Read() Then
-                '    loadIncidentNumber = reader.Item("IncidentID")
-                '    openFaults = True
-                'End If
 
-                'If openFaults Then
-                'If loadIncidentNumber <> 0 Then 'If there is a new fault display just the new fault. Must have come from fault page
-                'SetFaultGrid(loadIncidentNumber)
-                'Dim faultgrid1 As FaultGriduc = CType(FindControl("FaultGriduc1"), FaultGriduc)
-                'faultgrid1.Incident = loadIncidentNumber
-                'faultgrid1.NewFault = True
-                ''faultgrid1.Update()
-
-                ''NewbindGridView()
                 Dim Manyfaultgrid As ManyFaultGriduc = CType(FindControl("ManyFaultGriduc"), ManyFaultGriduc)
                 Manyfaultgrid.MachineName = MachineName
                 Manyfaultgrid.NewFault = True
-                ' Set Repair page - this will never be exposed for other parent pages
-                'as a result of review on 6th august logging off with open fault is disabled
-                'Dim Repairlist As RadioButtonList 'Select log off with open fault if the page is closed with a new fault
-                'If Not Me.Parent.FindControl("RadioButtonlist1") Is Nothing Then
-                '    Repairlist = Me.Parent.FindControl("RadioButtonlist1")
-                '    Repairlist.Items(4).Enabled = True
-                '    Repairlist.Items(4).Selected = True
-                'End If
+
                 'This is to get the page that the fault was reported from - possibly a better way?
                 Application(laststate) = DavesCode.Reuse.GetLastState(MachineName, -1)
                 previousstate = Application(laststate)
@@ -148,15 +131,12 @@ Partial Class ViewOpenFaults
     '    CommandCell.Visible = True
     '    'from http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.buttonfield.commandname%28v=vs.110%29.aspx?cs-save-lang=1&cs-lang=vb#code-snippet-2
     'End Sub
-    Protected Sub NewFaultEvent(ByVal incident As String) 'Triggers if new fault and is selected via faultgriduc1
+    Protected Sub NewFaultEvent(ByVal incident As String) 'Triggers if new fault and is selected via Manyfaultgriduc1
         Dim IncidentID As String = incident
         SetupStatusTech(IncidentID)
         UpdatePanel5.Visible = True
         MultiView2.SetActiveView(statustech)
         MultiView1.SetActiveView(View1)
-        'FaultGriduc1.Visible = False
-        'ManyFaultGriduc.Visible = False
-        'ManyFaultGriduc.IncidentID = IncidentID
         Dim Manyfaultgrid As ManyFaultGriduc = CType(FindControl("ManyFaultGriduc"), ManyFaultGriduc)
         Manyfaultgrid.IncidentID = IncidentID
         Manyfaultgrid.NewFault = True
@@ -169,16 +149,18 @@ Partial Class ViewOpenFaults
     End Sub
 
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
+        Dim TRACKINGID As Integer = 0
         Dim Action As String = Application(actionstate)
         Dim Energy As String
         Dim incidentID As String
         Application(technicalstate) = Nothing
         SetViewFault(True)
+        'Update fault is for recording repeat fault
         If Tabused = "Updatefault" Then
             'As a result of removing the need for signatures references to WriteDatauc removed March 2016
             incidentID = Label2.Text
-            Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-            wctrl.Visible = False
+            'Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
+            'wctrl.Visible = False
 
 
             If Action = "Confirm" Then
@@ -195,7 +177,7 @@ Partial Class ViewOpenFaults
 
                 Dim conn As SqlConnection
 
-                Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+                Dim connectionString As String = ConfigurationManager.ConnectionStrings(
                 "connectionstring").ConnectionString
                 Dim incidentfault As SqlCommand
                 Dim commfault As SqlCommand
@@ -215,7 +197,7 @@ Partial Class ViewOpenFaults
                 conn.Close()
 
 
-                commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " & _
+                commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " &
                                            "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
                 commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
                 commfault.Parameters("@Description").Value = TextBox4.Text
@@ -259,6 +241,7 @@ Partial Class ViewOpenFaults
         ElseIf Tabused = "incident" Then
             incidentID = Label4.Text
             'This stops it popping up again when it shouldn't
+
             Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc3"), WriteDatauc)
             wctrl.Visible = False
 
@@ -284,7 +267,7 @@ Partial Class ViewOpenFaults
                 'ConcessiondescriptionBox.ReadOnly = True
                 'ConcessionNumberBox.ReadOnly = True
                 Dim conn As SqlConnection
-                Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
+                Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
                 "connectionstring").ConnectionString
                 conn = New SqlConnection(connectionString1)
                 Try
@@ -312,8 +295,8 @@ Partial Class ViewOpenFaults
                 End Try
                 If incidentID <> 0 Then
                     Dim commtrack As SqlCommand
-                    commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon,   linac, action, incidentID) " & _
-                                               "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon,  @linac, @action, @IncidentID)", conn)
+                    commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon,   linac, action, incidentID) " &
+                                               "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon,  @linac, @action, @IncidentID) SELECT SCOPE_IDENTITY()", conn)
                     commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
                     commtrack.Parameters("@Trackingcomment").Value = CommentBox1.Text
                     commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
@@ -353,7 +336,7 @@ Partial Class ViewOpenFaults
                     '"VALUES (@ConcessionNumber, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) Update FaultIDTable SET ConcessionNumber=@ConcessionNumber WHERE IncidentID=@incidentID ", conn)
                     'commconcess.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 10)
                     'commconcess.Parameters("@ConcessionNumber").Value = ConcessionNumber
-                    commconcess = New SqlCommand("Insert into ConcessionTable (PreFix, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) " & _
+                    commconcess = New SqlCommand("Insert into ConcessionTable (PreFix, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) " &
                     "VALUES (@PreFix, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) SELECT SCOPE_IDENTITY()", conn)
                     commconcess.Parameters.Add("@PreFix", System.Data.SqlDbType.NVarChar, 10)
                     commconcess.Parameters("@PreFix").Value = "ELF"
@@ -372,7 +355,12 @@ Partial Class ViewOpenFaults
                     bcommand.Parameters("@incidentID").Value = incidentID
                     Try
                         conn.Open()
-                        commtrack.ExecuteNonQuery()
+                        'Modified 10/4/18 to return trackingid for RadAckFault
+                        'commtrack.ExecuteNonQuery()
+
+                        Dim tobj As Object = commtrack.ExecuteScalar()
+                        'Dim LinacStatusIDs As String = obj.ToString()
+                        TRACKINGID = CInt(tobj)
 
                         'commfault.ExecuteNonQuery()
 
@@ -441,187 +429,137 @@ Partial Class ViewOpenFaults
                             conn.Close()
                         Finally
                             conn.Close()
-
+                            RaiseEvent UpDateDefect(MachineName, incidentID)
                         End Try
 
                     End If
-                    'This  puts  up the grid with all the faults but for now disable it and make the decision in the next bit
-                    'GridView1.Enabled = True
-                    'bindGridView()
-                    'This is where what happens depends on which control it's on
-                    'if we've got to here then reset buttons on master so that open fault is now not available or selected and relevant buttons are available
+                    'Write RadAckTable
 
-                    If TabName = "Tech" Then
-                        Dim lastusergroup As Integer
-                        Dim lastuser As String
-                        Dim NumOpen As Integer
-                        Dim Repairlist As RadioButtonList
-                        Dim StateTextBox As TextBox
-                        Dim comm As SqlCommand
-                        Dim reader As SqlDataReader
-                        comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
-                        comm.Parameters.AddWithValue("@linac", MachineName)
+                    'Only do this if Acknowledge is 0 ie not 1
+                    Dim AckCheck As New SqlCommand("SELECT Acknowledge FROM RadAckFault where IncidentID=@incidentID", conn)
+                    AckCheck.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                    AckCheck.Parameters("@incidentID").Value = incidentID
+                    conn.Open()
+                    Dim AckObj As Object = AckCheck.ExecuteScalar()
+                    Dim Acknowledge As Boolean
 
+                    Acknowledge = CBool(AckObj)
+                    conn.Close()
+                    If Not Acknowledge Then
+                        Dim UpdateRadAckTable As SqlCommand
+                        UpdateRadAckTable = New SqlCommand("Update RadAckFault Set TrackingID = @TrackingID, Acknowledge=@Acknowledge where IncidentID=@incidentID", conn)
+                        UpdateRadAckTable.Parameters.Add("@TrackingID", System.Data.SqlDbType.Int)
+                        UpdateRadAckTable.Parameters("@TrackingID").Value = TRACKINGID
+                        UpdateRadAckTable.Parameters.Add("@Acknowledge", Data.SqlDbType.Bit)
+                        UpdateRadAckTable.Parameters("@Acknowledge").Value = True
+                        UpdateRadAckTable.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                        UpdateRadAckTable.Parameters("@incidentID").Value = incidentID
                         conn.Open()
-                        reader = comm.ExecuteReader()
-                        If Not Me.Parent.FindControl("RadioButtonlist1") Is Nothing And Not Me.Parent.FindControl("StateTextBox") Is Nothing Then
-                            Repairlist = Me.Parent.FindControl("RadioButtonlist1")
-                            StateTextBox = Me.Parent.FindControl("StateTextBox")
-                            If reader.Read() Then
-                                NumOpen = reader.Item("NumOpen")
-                                If NumOpen <> 0 Then 'there are open faults
-                                    'after review of 6th august log off with open fault option is removed
-                                    'Repairlist.Items(4).Enabled = True
-                                    'Repairlist.Items(4).Selected = True
-                                    'FaultGriduc1.Visible = True
-                                    ManyFaultGriduc.NewFault = True
-                                    ManyFaultGriduc.MachineName = MachineName
-                                    ManyFaultGriduc.bindGridViewVEF()
-                                    ManyFaultGriduc.Visible = True
-                                    Application(technicalstate) = Nothing
-                                    Application(faultstate) = True
-                                Else
-                                    'But how does it know here to do this?
-                                    Dim lastState As String
-                                    'Dim fState As String
-                                    GridView1.Enabled = True
-                                    bindGridView()
-                                    Dim logbutton As Button
-                                    DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
-                                    lastState = DavesCode.Reuse.GetLastState(MachineName, 0)
-                                    Application(faultstate) = False
-                                    Repairlist.Items.FindByValue(1).Enabled = True
-                                    Repairlist.Items.FindByValue(4).Enabled = True
+                        UpdateRadAckTable.ExecuteNonQuery()
+                        conn.Close()
+                    End If
+                    RadRow = HighlightRow()
+                        bindGridView()
 
-                                    Repairlist.Items.FindByValue(8).Enabled = True
-                                    Repairlist.Items.FindByValue(102).Enabled = True
-                                    'deleted because no longer physics tab.
-                                    'If lastusergroup = 4 Then
-                                    '    Repairlist.Items.FindByValue(6).Enabled = True
-                                    'End If
-                                    'Repairlist.Items(4).Selected = False
-                                    'This next if check if got here via clinical suspend
-                                    StateTextBox.Text = "Linac Unauthorised"
-                                    'commented out 19 April
-                                    'If Application(suspstate) = 1 Then
-                                    '    Repairlist.Items.FindByValue(2).Enabled = True
-                                    '    Repairlist.Items.FindByValue(3).Enabled = True
-                                    '    StateTextBox.Text = "Suspended"
-                                    '    'End If
-                                    '    'Application("Failstate") = 0
-                                    '    'Select Case Application(failstate)
-                                    '    '    Case 2
-                                    '    '        Repairlist.Items.FindByValue(2).Enabled = True
-                                    '    '        StateTextBox.Text = "Engineering Approved"
-                                    '    '    Case 3
-                                    '    '        Repairlist.Items.FindByValue(2).Enabled = True
-                                    '    '        Repairlist.Items.FindByValue(3).Enabled = True
-                                    '    '        StateTextBox.Text = "Clinical - Not Treating"
-                                    '    '    Case Else
-                                    '    '        'StateTextBox.Text = "Linac Unauthorised"
-                                    '    'End Select
-                                    '    Dim rtab As String = Application(repairstate)
-                                    'ElseIf Application(repairstate) = 1 Then
-                                    '    Repairlist.Items.FindByValue(2).Enabled = True
-                                    '    StateTextBox.Text = "Engineering Approved"
-                                    'End If
+                        'This  puts  up the grid with all the faults but for now disable it and make the decision in the next bit
+                        'GridView1.Enabled = True
+                        'bindGridView()
+                        'This is where what happens depends on which control it's on
+                        'if we've got to here then reset buttons on master so that open fault is now not available or selected and relevant buttons are available
 
-                                    'If Application(failstate) IsNot Nothing Then
-                                    '    Select Case Application(failstate)
-                                    '        'case 0 is for when inbetween log ons look at last State
-                                    '        Case 0
-                                    '            Select Case lastState
-                                    '                Case "Engineering Approved"
-                                    '                    Repairlist.Items.FindByValue(2).Enabled = True
-                                    '                    StateTextBox.Text = "Engineering Approved"
-                                    '            End Select
-                                    '        Case 2
-                                    '            Repairlist.Items.FindByValue(2).Enabled = True
-                                    '            StateTextBox.Text = "Engineering Approved"
-                                    '        Case 3
-                                    '            Repairlist.Items.FindByValue(2).Enabled = True
-                                    '            Repairlist.Items.FindByValue(3).Enabled = True
-                                    '            StateTextBox.Text = "Clinical - Not Treating"
-                                    '        Case Else
-                                    '            'StateTextBox.Text = "Linac Unauthorised"
-                                    '    End Select
+                        If TabName = "Tech" Then
+                            Dim lastusergroup As Integer
+                            Dim lastuser As String
+                            Dim NumOpen As Integer
+                            Dim Repairlist As RadioButtonList
+                            Dim StateTextBox As TextBox
+                            Dim comm As SqlCommand
+                            Dim reader As SqlDataReader
+                            comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
+                            comm.Parameters.AddWithValue("@linac", MachineName)
 
-                                    If Application(suspstate) = 1 Then
-                                        If MachineName Like "LA?" Then
-                                        Repairlist.Items.FindByValue(2).Enabled = True
-                                        End If
-                                        Repairlist.Items.FindByValue(3).Enabled = True
-                                        StateTextBox.Text = "Suspended"
-                                        'End If
-                                        'Application("Failstate") = 0
-                                        Dim rtab As String = Application(repairstate)
-                                    ElseIf Application(repairstate) = 1 Then
-                                        If Application(failstate) = 3 Then
-                                            If MachineName Like "LA?" Then
-                                            Repairlist.Items.FindByValue(2).Enabled = True
-                                            End if
-                                            Repairlist.Items.FindByValue(3).Enabled = True
-                                            StateTextBox.Text = "Clinical - Not Treating"
-                                        Else
-                                            If MachineName Like "LA?" Then
-                                            Repairlist.Items.FindByValue(2).Enabled = True
-                                            StateTextBox.Text = "Engineering Approved"
-                                                Else
-                                                 Repairlist.Items.FindByValue(3).Enabled = True
-                                            StateTextBox.Text = "Clinical - Not Treating"
-                                                End If
-                                        End If
+                            conn.Open()
+                            reader = comm.ExecuteReader()
+                            If Not Me.Parent.FindControl("RadioButtonlist1") Is Nothing And Not Me.Parent.FindControl("StateTextBox") Is Nothing Then
+                                Repairlist = Me.Parent.FindControl("RadioButtonlist1")
+                                StateTextBox = Me.Parent.FindControl("StateTextBox")
+                                If reader.Read() Then
+                                    NumOpen = reader.Item("NumOpen")
+                                    If NumOpen <> 0 Then 'there are open faults
+
+                                        ManyFaultGriduc.NewFault = True
+                                        ManyFaultGriduc.MachineName = MachineName
+                                        ManyFaultGriduc.bindGridViewVEF()
+                                        ManyFaultGriduc.Visible = True
+                                        Application(technicalstate) = Nothing
+                                        Application(faultstate) = True
                                     Else
+                                        'But how does it know here to do this?
+                                        Dim lastState As String
+                                        'Dim fState As String
+                                        GridView1.Enabled = True
+                                        bindGridView()
+                                        Dim logbutton As Button
+                                        DavesCode.Reuse.GetLastTech(MachineName, 0, lastState, lastuser, lastusergroup)
+                                        lastState = DavesCode.Reuse.GetLastState(MachineName, 0)
+                                        Application(faultstate) = False
+                                        Repairlist.Items.FindByValue(1).Enabled = True
+                                        Repairlist.Items.FindByValue(4).Enabled = True
+
+                                        Repairlist.Items.FindByValue(8).Enabled = True
+                                        Repairlist.Items.FindByValue(102).Enabled = True
+
+                                        'This next if check if got here via clinical suspend
                                         StateTextBox.Text = "Linac Unauthorised"
-                                    End If
+
+                                        If Application(suspstate) = 1 Then
+                                            If MachineName Like "LA?" Then
+                                                Repairlist.Items.FindByValue(2).Enabled = True
+                                            End If
+                                            Repairlist.Items.FindByValue(3).Enabled = True
+                                            StateTextBox.Text = "Suspended"
+                                            'End If
+                                            'Application("Failstate") = 0
+                                            Dim rtab As String = Application(repairstate)
+                                        ElseIf Application(repairstate) = 1 Then
+                                            If Application(failstate) = 3 Then
+                                                If MachineName Like "LA?" Then
+                                                    Repairlist.Items.FindByValue(2).Enabled = True
+                                                End If
+                                                Repairlist.Items.FindByValue(3).Enabled = True
+                                                StateTextBox.Text = "Clinical - Not Treating"
+                                            Else
+                                                If MachineName Like "LA?" Then
+                                                    Repairlist.Items.FindByValue(2).Enabled = True
+                                                    StateTextBox.Text = "Engineering Approved"
+                                                Else
+                                                    Repairlist.Items.FindByValue(3).Enabled = True
+                                                    StateTextBox.Text = "Clinical - Not Treating"
+                                                End If
+                                            End If
+                                        Else
+                                            StateTextBox.Text = "Linac Unauthorised"
+                                        End If
 
 
-                                    'Repairlist.Items(0).Enabled = True
-                                    'Repairlist.Items(3).Enabled = True
-                                    'Repairlist.Items(4).Enabled = False
-                                    'Repairlist.Items(5).Enabled = True
-
-                                    'If Application(suspstate) = 1 Then
-                                    '    Repairlist.Items(1).Enabled = True
-                                    '    Repairlist.Items(2).Enabled = True
-                                    '    StateBox.Text = "Suspended"
-                                    'End If
-
-                                    'Select Case Application(failstate)
-                                    '    Case 2
-                                    '        Repairlist.Items(1).Enabled = True
-                                    '        StateBox.Text = "Engineering Approved"
-                                    '    Case 3
-                                    '        Repairlist.Items(1).Enabled = True
-                                    '        Repairlist.Items(2).Enabled = True
-                                    '        StateBox.Text = "Clinical - Not Treating"
-                                    '    Case Else
-
-                                    'End Select
-                                    'Dim rtab As String = Application(repairstate)
-                                    'If Application(repairstate) = 1 Then
-                                    '    Repairlist.Items(1).Enabled = True
-                                    '    StateBox.Text = "Engineering Approved"
-                                    'End If
-
-                                    If Not Me.Parent.FindControl("LogOffButton") Is Nothing Then
-                                        logbutton = Me.Parent.FindControl("LogOffButton")
-                                        logbutton.Enabled = False
+                                        If Not Me.Parent.FindControl("LogOffButton") Is Nothing Then
+                                            logbutton = Me.Parent.FindControl("LogOffButton")
+                                            logbutton.Enabled = False
+                                        End If
                                     End If
                                 End If
                             End If
+                            GridView1.Enabled = True
+                            bindGridView()
+                        Else
+                            GridView1.Enabled = True
+                            bindGridView()
                         End If
-                        GridView1.Enabled = True
-                        bindGridView()
+
                     Else
-                        GridView1.Enabled = True
-                        bindGridView()
-                    End If
+                        'Linac status now set by repair or other parent container
 
-                Else
-                    'Linac status now set by repair or other parent container
-
-                    strScript += "alert('Please select a fault or cancel action');"
+                        strScript += "alert('Please select a fault or cancel action');"
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(SaveAFault, Me.GetType(), "JSCR", strScript.ToString(), False)
                 End If
@@ -632,12 +570,13 @@ Partial Class ViewOpenFaults
             Else
                 BindTrackingGridTech(incidentID)
             End If
-            RaiseEvent UpDateDefect(MachineName, incidentID)
+
         End If
 
         GridView1.Columns(5).Visible = True
         GridView1.Columns(6).Visible = True
         GridView1.Columns(7).Visible = True
+
 
     End Sub
 
@@ -651,7 +590,6 @@ Partial Class ViewOpenFaults
 
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc3"), WriteDatauc)
         wctrl.Visible = False
-        'FaultGriduc1.Visible = True
         ManyFaultGriduc.Visible = True
         Application(technicalstate) = Nothing
         ManyFaultGriduc.bindGridViewVEF()
@@ -672,7 +610,7 @@ Partial Class ViewOpenFaults
         SqlDataSource2.ID = "SqlDataSource2"
         SqlDataSource2.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         'SqlDataSource2.SelectCommand = "select * from reportfault where linac=@linac and FaultStatus in('Open', 'Concession') order by faultid desc"
-        SqlDataSource2.SelectCommand = "select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, f.ConcessionNumber, f.linac, f.incidentid " & _
+        SqlDataSource2.SelectCommand = "select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, f.ConcessionNumber, f.linac, f.incidentid " &
             "from reportfault r left outer join FaultTracking t on r.incidentID=t.incidentID left outer join FaultIDTable f on f.incidentid=r.incidentid where f.status=t.status and f.Status in('Open', 'Concession') order by f.incidentid desc"
         SqlDataSource2.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource2.SelectParameters.Add("linac", MachineName)
@@ -691,34 +629,20 @@ Partial Class ViewOpenFaults
     Sub FaultGridView_RowCommand(ByVal sender As Object, ByVal e As GridViewCommandEventArgs)
 
         Dim IncidentID As String
+        ' Convert the row index stored in the CommandArgument
+        ' property to an Integer.
         Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+        ' Retrieve the row that contains the button clicked 
+        ' by the user from the Rows collection.
         Dim row As GridViewRow = GridView1.Rows(index)
+        IncidentID = Server.HtmlDecode(row.Cells(0).Text)
         Dim Region As String
         Region = ""
-        IncidentID = Server.HtmlDecode(row.Cells(0).Text)
         SetViewFault(False)
         ' If multiple buttons are used in a GridView control, use the
         ' CommandName property to determine which button was clicked.
         Select Case e.CommandName
             Case "View"
-                'faultID = CInt(GridView3.SelectedDataKey.Values("FaultID"))
-
-
-                'Panel2_ModalPopupExtender.Show()
-
-
-                ' Convert the row index stored in the CommandArgument
-                ' property to an Integer.
-                'Dim index As Integer = Convert.ToInt32(e.CommandArgument)
-
-                ' Retrieve the row that contains the button clicked 
-                ' by the user from the Rows collection.
-                'Dim row As GridViewRow = GridView3.Rows(index)
-                'faultID = Server.HtmlDecode(row.Cells(0).Text)
-                'incidentID = Server.HtmlDecode(row.Cells(0).Text)
-
-
-
                 Select Case TabNo
                     Case "1", "4", "5", "Tech"
                         SetupStatusTech(IncidentID)
@@ -732,35 +656,18 @@ Partial Class ViewOpenFaults
                         MultiView2.SetActiveView(statusother)
                 End Select
 
-
                 MultiView1.SetActiveView(View1)
 
                 GridView1.Enabled = False
                 UpdatePanel4.Visible = False
 
-
-
-                '        '' Create a new ListItem object for the contact in the row.     
-                '        'Dim item As New ListItem()
-                '        'item.Text = Server.HtmlDecode(row.Cells(2).Text) & " " & _
-                '        '  Server.HtmlDecode(row.Cells(3).Text)
-
-                '        '' If the contact is not already in the ListBox, add the ListItem 
-                '        '' object to the Items collection of the ListBox control. 
-                '        'If Not ContactsListBox.Items.Contains(item) Then
-
-                '        '    ContactsListBox.Items.Add(item)
-
-                '        'End If
             Case "Log Fault"
                 UpdatePanelRepeatFault.Visible = True
                 MultiView1.SetActiveView(UpdatefaultView)
 
                 GridView1.Enabled = False
-                'incidentID = Server.HtmlDecode(row.Cells(0).Text)
                 Label2.Text = IncidentID
-                AreaBox.Text = "Machine"
-
+                AreaBox.Text = ""
                 TextBox2.Text = ""
                 TextBox3.Text = ""
                 TextBox4.Text = ""
@@ -768,10 +675,8 @@ Partial Class ViewOpenFaults
                 Dim conn1 As SqlConnection
                 Dim comm1 As SqlCommand
 
-                Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+                Dim connectionString As String = ConfigurationManager.ConnectionStrings(
                 "connectionstring").ConnectionString
-
-
                 conn1 = New SqlConnection(connectionString)
                 'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
                 comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
@@ -783,8 +688,6 @@ Partial Class ViewOpenFaults
                 conn1.Close()
                 UpdatePanel4.Visible = False
             Case "Faults"
-                'Dim objCon As UserControl = Page.LoadControl("FaultGriduc.ascx")
-                'CType(objCon, FaultGriduc).Incident = IncidentID
                 Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
                 CType(objCon, ManyFaultGriduc).NewFault = False
                 CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
@@ -823,10 +726,6 @@ Partial Class ViewOpenFaults
             strScript += "alert('Please select a fault status or cancel action');"
             strScript += "</script>"
             ScriptManager.RegisterStartupScript(SaveAFault, Me.GetType(), "JSCR", strScript.ToString(), False)
-            'ElseIf faultstatus = "Concession" And ConcessionNumber = "" Then
-            '    strScript += "alert('Please Enter a Concession Number');"
-            '    strScript += "</script>"
-            '    ScriptManager.RegisterStartupScript(SaveAFault, Me.GetType(), "JSCR", strScript.ToString(), False)
         ElseIf faultstatus = "Concession" And ConcessionDescription = "" Then
             strScript += "alert('Please Enter a Concession Description');"
             strScript += "</script>"
@@ -855,7 +754,7 @@ Partial Class ViewOpenFaults
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader1 As SqlDataReader
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
         "connectionstring").ConnectionString
         conn = New SqlConnection(connectionString)
         comm = New SqlCommand("select Count(ConcessionNumber) as 'Count' from ConcessionTable where linac=@linac and ConcessionNumber = @ConcessionNumber", conn)
@@ -881,9 +780,7 @@ Partial Class ViewOpenFaults
     End Function
     Protected Sub SetupStatusTech(ByVal incidentID As String)
         Dim FaultDescription As New List(Of String)
-        'Dim objCon As UserControl = Page.LoadControl("FaultGriduc.ascx")
-        'CType(objCon, FaultGriduc).Incident = incidentID
-        ''PlaceHolderDisplayfault.Controls.Add(objCon)
+
         'Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
         'CType(objCon, ManyFaultGriduc).MachineName = MachineName
         'CType(objCon, ManyFaultGriduc).NewFault = True
@@ -899,10 +796,10 @@ Partial Class ViewOpenFaults
         Label4.Text = incidentID
         Dim conn As SqlConnection
         Dim comm As SqlCommand
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
         "connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
-        comm = New SqlCommand("select distinct f.status, ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, ISNULL(c.action, '') as Action, f.IncidentID " & _
+        comm = New SqlCommand("select distinct f.status, ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, ISNULL(c.action, '') as Action, f.IncidentID " &
         "from FaultIDTable f left outer join ConcessionTable c on f.ConcessionNumber=c.ConcessionNumber where f.incidentID = @incidentID", conn)
         comm.Parameters.AddWithValue("@incidentID", incidentID)
         Try
@@ -951,7 +848,7 @@ Partial Class ViewOpenFaults
         'comm = New SqlCommand("select FaultStatus  from reportfault where linac=@linac and FaultID = @FaultID", conn)
         'comm = New SqlCommand("select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, r.FaultStatus, r.Area, r.Energy, r.GantryAngle, r.CollimatorAngle,t.ConcessionNumber, t.concessiondescription, r.linac, t.IncidentID " & _
         '    "from reportfault r left outer join faulttracking t on r.FaultID=t.FaultID left outer join faultidtable f on f.incidentid=t.incidentid where r.linac=@linac and f.status=t.status and r.FaultID = @FaultID", conn)
-        comm = New SqlCommand("select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, r.Area, r.Energy, r.GantryAngle, r.CollimatorAngle, ISNULL (r.BSUHID, '') as BSUHID,ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, f.linac, f.IncidentID " & _
+        comm = New SqlCommand("select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, r.Area, r.Energy, r.GantryAngle, r.CollimatorAngle, ISNULL (r.BSUHID, '') as BSUHID,ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, f.linac, f.IncidentID " &
         "from reportfault r left outer join FaultIDTable f on f.OriginalFaultID = r.FaultID left outer join ConcessionTable c on f.ConcessionNumber=c.ConcessionNumber where f.linac=@linac and f.incidentID = @incidentID", conn)
         comm.Parameters.AddWithValue("@linac", MachineName)
         comm.Parameters.AddWithValue("@incidentID", incidentID)
@@ -1005,7 +902,7 @@ Partial Class ViewOpenFaults
             OriginalOpenDateBox.Text = ndate
             StatusLabel1.Text = FaultStatus
             OriginalPatientIDBox.Text = nbsuhid
-           
+
         Finally
             conn.Close()
         End Try
@@ -1016,7 +913,7 @@ Partial Class ViewOpenFaults
         Dim SqlDataSource2 As New SqlDataSource()
         SqlDataSource2.ID = "SqlDataSource2"
         SqlDataSource2.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " & _
+        SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " &
            "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber where f.linac=@linac and f.Status in('New') order by incidentid desc"
         'Open was added to allow use with singlemachinefaultuc it will only be appropriate for the repair page
         SqlDataSource2.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
@@ -1030,11 +927,11 @@ Partial Class ViewOpenFaults
         GridView1.PageIndex = e.NewPageIndex
         GridView1.DataBind()
     End Sub
-    Protected Sub bindGridView()
+    Sub bindGridView()
         Dim SqlDataSource2 As New SqlDataSource()
         SqlDataSource2.ID = "SqlDataSource2"
         SqlDataSource2.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " & _
+        SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " &
            "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber where f.linac=@linac and f.Status in('Concession') order by incidentid desc"
         'Open was added to f.status allow use with singlemachinefaultuc it will only be appropriate for the repair page. TAken out on 5/8/15
 
@@ -1047,6 +944,17 @@ Partial Class ViewOpenFaults
         GridView1.DataBind()
         CheckEmptyGrid(GridView1)
 
+
+
+
+
+
+
+
+
+
+
+
     End Sub
     Protected Sub BindTrackingGrid(ByVal incidentID As String)
         Dim incidentNumber As String = incidentID
@@ -1056,7 +964,7 @@ Partial Class ViewOpenFaults
         SqlDataSource3.ID = "SqlDataSource3"
         SqlDataSource3.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         'SqlDataSource3.SelectCommand = "select * from FaultTracking where linac=@linac and FaultID=@FaultID"
-        SqlDataSource3.SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, c.ConcessionNumber, t.linac, t.incidentID " & _
+        SqlDataSource3.SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, c.ConcessionNumber, t.linac, t.incidentID " &
             "from FaultTracking t left outer join ConcessionTable c on c.incidentID=t.incidentID where t.linac=@linac and t.incidentID=@incidentID order by trackingid asc"
         SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource3.SelectParameters.Add("linac", MachineName)
@@ -1069,8 +977,8 @@ Partial Class ViewOpenFaults
         Dim SqlDataSource3 As New SqlDataSource()
         SqlDataSource3.ID = "SqlDataSource3"
         SqlDataSource3.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        SqlDataSource3.SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " & _
-            "from FaultTracking t  where t.linac=@linac and t.incidentID=@incidentID"
+        SqlDataSource3.SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " &
+            "from FaultTracking t  where t.linac=@linac and t.incidentID=@incidentID order by t.TrackingID desc"
         SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource3.SelectParameters.Add("linac", MachineName)
         SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
@@ -1090,6 +998,7 @@ Partial Class ViewOpenFaults
     End Sub
 
     Protected Sub confirmfault_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles confirmfault.Click
+        'This is for recording repeat fault
         'As a result of removing need for signature Writedatauc removed. March 2016
         'Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         'Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
@@ -1117,7 +1026,7 @@ Partial Class ViewOpenFaults
             Case "LA4"
                 Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
                 ConstructEnergylist(Energy1)
-            Case "E1", "E2", "B1" 
+            Case "E1", "E2", "B1"
                 Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
                 ConstructEnergylist(Energy1)
             Case Else
@@ -1247,7 +1156,47 @@ Partial Class ViewOpenFaults
     End Sub
 
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
+
+    Public Sub RebindViewFault()
+
+        bindGridView()
+
+    End Sub
+
+    Protected Sub GridView1_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles GridView1.RowDataBound
+        Select Case TabNo
+            Case "1", "4", "5", "Tech"
+                Dim nincid As String = ""
+                If e.Row.RowType = DataControlRowType.DataRow Then
+                    Dim SelectRow As String = e.Row.Cells(0).Text.ToString
+                    If RadRow.Rows.Count > 0 Then
+                        For Each dataRow As DataRow In RadRow.Rows
+                            nincid = dataRow("incidentID")
+                            If SelectRow = nincid Then
+                                e.Row.BackColor = Color.FromName("#E56E94")
+                            End If
+                        Next
+                    End If
+                End If
+        End Select
+    End Sub
+    Protected Function HighlightRow() As DataTable
+        Dim conn As SqlConnection
+        Dim comm As SqlCommand
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        conn = New SqlConnection(connectionString1)
+        comm = New SqlCommand("SELECT r.IncidentID From [PhysicsEnergyDev].[dbo].[RadAckFault] r Left outer join [PhysicsEnergyDev].[dbo].concessiontable c on r.Incidentid = c.Incidentid where r.Acknowledge = 'false' and linac=@linac", conn)
+        comm.Parameters.AddWithValue("@linac", MachineName)
+        conn.Open()
+        Dim da As New SqlDataAdapter(comm)
+        Dim dt As New DataTable()
+        da.Fill(dt)
+        Return dt
+
+    End Function
+
+
 End Class

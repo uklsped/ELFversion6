@@ -76,6 +76,13 @@ Partial Class Preclinusercontrol
         End If
     End Sub
 
+    Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
+        If MachineName = EquipmentID Then
+            Dim updatefault As ViewOpenFaults = FindControl("ViewOpenFaults")
+            updatefault.RebindViewFault()
+        End If
+    End Sub
+
     Protected Sub ConfirmExitEvent()
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
@@ -181,6 +188,7 @@ Partial Class Preclinusercontrol
         Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = MachineName
         CType(objCon, ViewOpenFaults).TabName = "2"
+        CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
 
         Dim button1 As Button = FindControl("clinHandoverButton")
         Dim button2 As Button = FindControl("LogOff")
@@ -197,6 +205,8 @@ Partial Class Preclinusercontrol
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = MachineName
         PlaceHolder3.Controls.Add(objDefect)
+        AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
+        AddHandler CType(objDefect, DefectSave).UpdateViewFault, AddressOf Update_ViewOpenFaults
 
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = MachineName

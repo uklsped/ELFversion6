@@ -6,6 +6,8 @@ Partial Class DefectSave
     Private MachineName As String
     Private actionstate As String
     Private time As DateTime
+    Public Event UpDateDefect(ByVal EquipmentName As String, ByVal incidentID As String)
+    Public Event UpdateViewFault(ByVal EquipmentName As String)
 
     Public Property LinacName() As String
         Get
@@ -133,6 +135,7 @@ Partial Class DefectSave
         'Back in 26/03/2108
         Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+        Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         Dim strScript As String = "<script>"
         Page.Validate("defect")
         If Page.IsValid Then
@@ -170,6 +173,7 @@ Partial Class DefectSave
                         wcbutton.Text = "Saving RAD RESET"
                     Application(actionstate) = "Confirm"
                     wctrl.Visible = True
+                    ForceFocus(wctext)
                 End If
             Else
 
@@ -306,6 +310,7 @@ Partial Class DefectSave
         Dim incidentID As Integer
         Dim conn1 As SqlConnection
         Dim comm1 As SqlCommand
+        Dim comm2 As SqlCommand
         Dim Region As String = ""
         Dim Queryreturn As String = ""
         Dim connectionString As String = ConfigurationManager.ConnectionStrings(
@@ -319,51 +324,18 @@ Partial Class DefectSave
         If Integer.TryParse(incidentIDstring, incidentID) Then
             DropDownListArea.SelectedIndex = -1
             HiddenField1.Value = incidentID
-            'Modified 10/1117 because of use of defect table
-            'If incidentID > 0 Then
-            '    conn1 = New SqlConnection(connectionString)
-            '    'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
-            '    comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
-            '    comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-            '    comm1.Parameters("@incidentID").Value = incidentID
-            '    conn1.Open()
-            '    Dim sqlresult As Object = comm1.ExecuteScalar()
-            '    If sqlresult Is Nothing Then
-            '        AreaBox.Text = String.Empty
-            '        'DropDownListArea.SelectedIndex = -1
 
-            '    Else
-            '        AreaBox.Text = sqlresult.ToString
-            '        'DropDownListArea.SelectedValue = sqlresult.ToString
-            '        'DropDownListArea.Enabled = False
-            '    End If
-            '    conn1.Close()
-            'Else
-            '    
-            '    'If incidentID = -10 Or incidentID = -13 Then
-            '    '    AreaBox.Text = "iView"
-            '    '    'DropDownListArea.SelectedValue = "iView"
-            '    '    'DropDownListArea.Enabled = False
-            '    '    'Modified 21/11/2016 to automatically add Area
-            '    'ElseIf incidentID = -14 Then
-            '    '    AreaBox.Text = "XVI"
-            '    '    'DropDownListArea.SelectedValue = "XVI"
-            '    '    'DropDownListArea.Enabled = False
-            '    'Else
-            '    '    AreaBox.Text = "Machine"
-            '    '    'DropDownListArea.SelectedValue = "Machine"
-            '    '    'DropDownListArea.Enabled = False
-            '    'End If
-
-            'End If
             conn1 = New SqlConnection(connectionString)
             If incidentID > 0 Then
                 comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
+                comm2 = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn1)
             Else
                 comm1 = New SqlCommand("SELECT Area from DefectTable where incidentID=@incidentID", conn1)
             End If
+
             comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
             comm1.Parameters("@incidentID").Value = incidentID
+
             conn1.Open()
             Dim sqlresult As Object = comm1.ExecuteScalar()
             If sqlresult Is Nothing Then
@@ -375,16 +347,21 @@ Partial Class DefectSave
                     DropDownListArea.Enabled = True
                     DropDownListArea.SelectedValue = "Select"
 
-                    'UpdatePanelArea.Update()
-                    'all set
                 Else
                     DropDownListArea.SelectedItem.Text = sqlresult.ToString
                     HiddenField2.Value = sqlresult.ToString
                     DropDownListArea.Enabled = False
-                    'UpdatePanelArea.Update()
-                    'AreaBox.Text = sqlresult.ToString
+                    If incidentID > 0 Then
+                        comm2 = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn1)
+                        comm2.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                        comm2.Parameters("@incidentID").Value = incidentID
+                        Dim sqlresult1 As Object = comm2.ExecuteScalar()
+                        RadAct.Text = sqlresult1.ToString
+                        RadAct.ReadOnly = True
+                    End If
+
                 End If
-            End If
+                End If
 
             conn1.Close()
 
@@ -586,7 +563,7 @@ Partial Class DefectSave
 
                 'need to write reportfault and faulttracking table again
                 WriteTracking(UserInfo, "Concession", LastIncident)
-                WriteRadAckFault(concessionnum, False, 0)
+                WriteRadAckFault(LastIncident, False)
                 'From repair
                 Dim updatefault As SqlCommand
                 updatefault = New SqlCommand("UPDATE  FaultIDTable SET ReportClosed = @ReportClosed where IncidentID=@incidentID", conn)
@@ -605,11 +582,15 @@ Partial Class DefectSave
                 Finally
                     conn.Close()
                 End Try
+                BindDefectData()
             End If
         Else
             WriteReportFault(UserInfo, LastIncident, ConcessionNumber)
             BindDefectData()
         End If
+        RaiseEvent UpDateDefect(MachineName, LastIncident)
+        RaiseEvent UpdateViewFault(MachineName)
+
         ClearsForm()
 
 
@@ -669,7 +650,7 @@ Partial Class DefectSave
         commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, IncidentID) " &
                                    "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon, @Linac, @IncidentID)", conn)
         commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
-        commtrack.Parameters("@Trackingcomment").Value = TextBox4.Text
+        commtrack.Parameters("@Trackingcomment").Value = ""
         commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
         commtrack.Parameters("@AssignedTo").Value = "Unassigned"
         commtrack.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
@@ -693,16 +674,16 @@ Partial Class DefectSave
         End Try
     End Sub
 
-    Protected Sub WriteRadAckFault(ByVal Concnumber As Integer, ByVal Ack As Boolean, ByVal StateID As Integer)
+    Protected Sub WriteRadAckFault(ByVal LastIncident As Integer, ByVal Ack As Boolean)
         Dim conn As SqlConnection
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString)
         Dim commack As SqlCommand
-        commack = New SqlCommand("Insert into RadAckFault (StateID, ConcessID, Acknowledge) VALUES (@StateID, @ConcessID, @Acknowledge)", conn)
-        commack.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
-        commack.Parameters("@StateID").Value = StateID
-        commack.Parameters.Add("@ConcessID", Data.SqlDbType.Int)
-        commack.Parameters("@ConcessID").Value = Concnumber
+        commack = New SqlCommand("Insert into RadAckFault (IncidentID,TrackingID, Acknowledge) VALUES (@IncidentID,@TrackingID,@Acknowledge)", conn)
+        commack.Parameters.Add("@IncidentID", Data.SqlDbType.Int)
+        commack.Parameters("@IncidentID").Value = LastIncident
+        commack.Parameters.Add("@TrackingID", System.Data.SqlDbType.Int)
+        commack.Parameters("@TrackingID").Value = 0
         commack.Parameters.Add("@Acknowledge", Data.SqlDbType.Bit)
         commack.Parameters("@Acknowledge").Value = Ack
         Try
@@ -712,5 +693,10 @@ Partial Class DefectSave
             conn.Close()
 
         End Try
+    End Sub
+
+    Private Sub ForceFocus(ByVal ctrl As Control)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
+        ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 End Class
