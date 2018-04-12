@@ -28,9 +28,6 @@
 <%@ Register src="WebUserControl2.ascx" tagname="WebUserControl2" tagprefix="uc10" %>
 
 
-<%@ Register src="RadFaultAckuc.ascx" tagname="RadFaultAckuc" tagprefix="uc11" %>
-
-
 <%--<%@ Register src="CommitData.ascx" tagname="CommitData" tagprefix="uc3" %>--%>
 
 
@@ -204,9 +201,7 @@
 <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
                <ContentTemplate>
                    <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
-                   <br>
-                       <uc11:RadFaultAckuc ID="RadFaultAckuc1" linacname="E1" runat="server" />
-                   </br>
+                   
                <asp:PlaceHolder ID="PlaceHolder5" runat="server">
                 </asp:PlaceHolder>
                 </ContentTemplate></asp:UpdatePanel>

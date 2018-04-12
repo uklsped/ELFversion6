@@ -133,7 +133,7 @@
              <asp:Image id="ImagB1" runat="server"
             ImageUrl="~/Images/if_elf_62126.png" Width="100px" Height="100px"
             AlternateText="ELF" />
-            <asp:Label ID="Label15" runat="server" Text="Software Version 4.0"></asp:Label>
+            <asp:Label ID="Label15" runat="server" Text="Software Version 5.0"></asp:Label>
                 </td>
             </tr>
                    </table>
