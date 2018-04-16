@@ -65,7 +65,7 @@ Partial Class ManyFaultGriduc
             SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
             SqlDataSource4.SelectParameters.Add("linac", linac)
         Else
-            SqlDataSource4.SelectCommand = "select IncidentID, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by IncidentID desc"
+            SqlDataSource4.SelectCommand = "select IncidentID, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
             SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
             SqlDataSource4.SelectParameters.Add("incidentID", incidentNumber)
         End If
