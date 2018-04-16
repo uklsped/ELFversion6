@@ -28,9 +28,6 @@
 <%@ Register src="WebUserControl2.ascx" tagname="WebUserControl2" tagprefix="uc10" %>
 
 
-<%@ Register src="RadFaultAckuc.ascx" tagname="RadFaultAckuc" tagprefix="uc11" %>
-
-
 <%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc12" %>
 
 
@@ -186,7 +183,6 @@
                <ContentTemplate>
                    <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
                    <br>
-                                  <uc11:RadFaultAckuc ID="RadFaultAckuc1" linacname="E1" runat="server" />
 
                    </br>
                <asp:PlaceHolder ID="PlaceHolder5" runat="server">
