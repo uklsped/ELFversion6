@@ -19,6 +19,9 @@
     {
         height: 26px;
     }
+      
+    .cssPager span { background-color:#4f6b72; font-size:18px;}    
+      
 </style>
 
 <%--
@@ -49,6 +52,7 @@
                         onrowcommand="FaultGridView_RowCommand"
                         ForeColor="#333333" GridLines="None" EmptyDataText="No Data To Display" EmptyDataRowStyle-ForeColor="White" EmptyDataRowStyle-BackColor="Black" Font-Bold="True">
                         <RowStyle BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Center" />
+                        <PagerStyle CssClass="cssPager" />
                         <Columns>
                             <asp:BoundField DataField="incidentID" HeaderText="incidentID" InsertVisible="False" 
                                 ReadOnly="True" SortExpression="incidentID" />

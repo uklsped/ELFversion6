@@ -628,76 +628,78 @@ Partial Class ViewOpenFaults
 
     Sub FaultGridView_RowCommand(ByVal sender As Object, ByVal e As GridViewCommandEventArgs)
 
-        Dim IncidentID As String
-        ' Convert the row index stored in the CommandArgument
-        ' property to an Integer.
-        Dim index As Integer = Convert.ToInt32(e.CommandArgument)
-        ' Retrieve the row that contains the button clicked 
-        ' by the user from the Rows collection.
-        Dim row As GridViewRow = GridView1.Rows(index)
-        IncidentID = Server.HtmlDecode(row.Cells(0).Text)
-        Dim Region As String
-        Region = ""
-        SetViewFault(False)
-        ' If multiple buttons are used in a GridView control, use the
-        ' CommandName property to determine which button was clicked.
-        Select Case e.CommandName
-            Case "View"
-                Select Case TabNo
-                    Case "1", "4", "5", "Tech"
-                        SetupStatusTech(IncidentID)
-                        UpdatePanel5.Visible = True
-                        MultiView2.SetActiveView(statustech)
+        If Not e.CommandName = "Page" Then
+            Dim IncidentID As String
+            ' Convert the row index stored in the CommandArgument
+            ' property to an Integer.
+            Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+            ' Retrieve the row that contains the button clicked 
+            ' by the user from the Rows collection.
+            Dim row As GridViewRow = GridView1.Rows(index)
+            IncidentID = Server.HtmlDecode(row.Cells(0).Text)
+            Dim Region As String
+            Region = ""
+            SetViewFault(False)
+            ' If multiple buttons are used in a GridView control, use the
+            ' CommandName property to determine which button was clicked.
+            Select Case e.CommandName
+                Case "View"
+                    Select Case TabNo
+                        Case "1", "4", "5", "Tech"
+                            SetupStatusTech(IncidentID)
+                            UpdatePanel5.Visible = True
+                            MultiView2.SetActiveView(statustech)
 
-                    Case Else
-                        BindTrackingGrid(IncidentID)
-                        Hidefaults.Visible = True
-                        UpdatePanel1.Visible = True
-                        MultiView2.SetActiveView(statusother)
-                End Select
+                        Case Else
+                            BindTrackingGrid(IncidentID)
+                            Hidefaults.Visible = True
+                            UpdatePanel1.Visible = True
+                            MultiView2.SetActiveView(statusother)
+                    End Select
 
-                MultiView1.SetActiveView(View1)
+                    MultiView1.SetActiveView(View1)
 
-                GridView1.Enabled = False
-                UpdatePanel4.Visible = False
+                    GridView1.Enabled = False
+                    UpdatePanel4.Visible = False
 
-            Case "Log Fault"
-                UpdatePanelRepeatFault.Visible = True
-                MultiView1.SetActiveView(UpdatefaultView)
+                Case "Log Fault"
+                    UpdatePanelRepeatFault.Visible = True
+                    MultiView1.SetActiveView(UpdatefaultView)
 
-                GridView1.Enabled = False
-                Label2.Text = IncidentID
-                AreaBox.Text = ""
-                TextBox2.Text = ""
-                TextBox3.Text = ""
-                TextBox4.Text = ""
+                    GridView1.Enabled = False
+                    Label2.Text = IncidentID
+                    AreaBox.Text = ""
+                    TextBox2.Text = ""
+                    TextBox3.Text = ""
+                    TextBox4.Text = ""
 
-                Dim conn1 As SqlConnection
-                Dim comm1 As SqlCommand
+                    Dim conn1 As SqlConnection
+                    Dim comm1 As SqlCommand
 
-                Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-                "connectionstring").ConnectionString
-                conn1 = New SqlConnection(connectionString)
-                'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
-                comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
-                comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                comm1.Parameters("@incidentID").Value = IncidentID
-                conn1.Open()
-                Region = comm1.ExecuteScalar()
-                AreaBox.Text = Region
-                conn1.Close()
-                UpdatePanel4.Visible = False
-            Case "Faults"
-                Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-                CType(objCon, ManyFaultGriduc).NewFault = False
-                CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
-                PlaceHolder1.Controls.Add(objCon)
-                UpdatePanel2.Visible = True
-                MultiView1.SetActiveView(View2)
-                GridView1.Enabled = False
-                Hidefaults.Visible = True
-                UpdatePanel4.Visible = False
-        End Select
+                    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+                    "connectionstring").ConnectionString
+                    conn1 = New SqlConnection(connectionString)
+                    'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
+                    comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
+                    comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                    comm1.Parameters("@incidentID").Value = IncidentID
+                    conn1.Open()
+                    Region = comm1.ExecuteScalar()
+                    AreaBox.Text = Region
+                    conn1.Close()
+                    UpdatePanel4.Visible = False
+                Case "Faults"
+                    Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
+                    CType(objCon, ManyFaultGriduc).NewFault = False
+                    CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
+                    PlaceHolder1.Controls.Add(objCon)
+                    UpdatePanel2.Visible = True
+                    MultiView1.SetActiveView(View2)
+                    GridView1.Enabled = False
+                    Hidefaults.Visible = True
+                    UpdatePanel4.Visible = False
+            End Select
+        End If
         'UpdatePanel4.Visible = False
     End Sub
 
