@@ -301,8 +301,8 @@
                                 <asp:Label ID="ConcessiondescriptionLabel" runat="server" 
                                     Text="Concession Description"></asp:Label>
                                 <td>
-                                    <asp:TextBox ID="ConcessiondescriptionBox" runat="server" ReadOnly="True" 
-                                Visible="True" MaxLength="20"></asp:TextBox>
+                                    <asp:TextBox ID="ConcessiondescriptionBox" runat="server" ReadOnly="True" TextMode="MultiLine"
+                                Visible="True" MaxLength="250"></asp:TextBox>
                                 </td>
                             </td>
                         </tr>

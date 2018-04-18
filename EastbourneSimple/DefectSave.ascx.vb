@@ -37,7 +37,9 @@ Partial Class DefectSave
         'Dim Energy As String
         'Dim incidentID As String
         Dim ConcessionNumber As String = Defect.SelectedItem.ToString
-
+        If ConcessionNumber.Contains("ELF") Then
+            ConcessionNumber = Left(ConcessionNumber, 7)
+        End If
         If Tabused = "Defect" Then
             Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
             wctrl.Visible = False
@@ -48,88 +50,7 @@ Partial Class DefectSave
             End If
         End If
     End Sub
-    'Protected Sub UserApprovedEvent()
-    '    'Doesn't get here via Writedatauc now but directly from save button March 2016
-    '    'Dim Action As String = Application(actionstate)
-    '    Dim Energy As String
-    '    Dim incidentID As String
 
-    '    'If Tabused = "Defect" Then
-
-
-    '    ' Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
-    '    ' wctrl.Visible = False
-
-
-    '    'If Action = "Confirm" Then
-    '    'Dim time As DateTime
-    '    time = Now
-
-    '    Energy = DropDownListEnergy.SelectedItem.Text
-    '    If Energy = "Select" Then
-    '        Energy = ""
-    '    End If
-
-    '    incidentID = HiddenField1.Value
-
-    '    Dim conn As SqlConnection
-
-    '    Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
-    '    "connectionstring").ConnectionString
-
-    '    Dim commfault As SqlCommand
-
-    '    conn = New SqlConnection(connectionString)
-
-    '    commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " & _
-    '                               "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
-    '    commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
-    '    commfault.Parameters("@Description").Value = TextBox4.Text
-    '    commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
-    '    'userinfo is redundant. Replace with string.empty 23/11/16
-    '    commfault.Parameters("@ReportedBy").Value = String.Empty
-    '    'commfault.Parameters("@ReportedBy").Value = Userinfo
-    '    commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
-    '    commfault.Parameters("@DateReported").Value = time
-    '    commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
-    '    'Area now is text box. 23/11/16. Back to dropdown 28/3/18
-    '    commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.ToString
-    '    'commfault.Parameters("@Area").Value = AreaBox.Text
-    '    commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 10)
-    '    commfault.Parameters("@Energy").Value = Energy
-    '    commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
-    '    commfault.Parameters("@GantryAngle").Value = TextBox2.Text
-    '    commfault.Parameters.Add("@CollimatorAngle", System.Data.SqlDbType.NVarChar, 3)
-    '    commfault.Parameters("@CollimatorAngle").Value = TextBox3.Text
-    '    commfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
-    '    commfault.Parameters("@Linac").Value = MachineName
-    '    commfault.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
-    '    commfault.Parameters("@IncidentID").Value = incidentID
-    '    commfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.VarChar, 7)
-    '    commfault.Parameters("@BSUHID").Value = PatientIDBox.Text
-    '    commfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
-    '    commfault.Parameters("@ConcessionNumber").Value = Defect.SelectedItem.ToString
-    '    Try
-    '        conn.Open()
-    '        commfault.ExecuteNonQuery()
-    '        conn.Close()
-    '    Finally
-    '        DropDownListEnergy.SelectedIndex = -1
-    '        'AreaBox.Text = String.Empty
-    '        PatientIDBox.Text = String.Empty
-    '        TextBox2.Text = String.Empty
-    '        TextBox3.Text = String.Empty
-    '        TextBox4.Text = String.Empty
-    '        conn.Close()
-
-    '    End Try
-
-
-    '    'End If
-    '    Defect.SelectedIndex = -1
-    '    BindDefectData()
-    '    'End If
-    'End Sub
     Protected Sub SaveDefectButton_Click(sender As Object, e As System.EventArgs) Handles SaveDefectButton.Click
         'No need for reference to WriteDatauc if no signature - March 2016
         'Back in 26/03/2108
@@ -170,7 +91,7 @@ Partial Class DefectSave
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                 Else
-                        wcbutton.Text = "Saving RAD RESET"
+                    wcbutton.Text = "Saving RAD RESET"
                     Application(actionstate) = "Confirm"
                     wctrl.Visible = True
                     ForceFocus(wctext)

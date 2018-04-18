@@ -183,7 +183,8 @@ Partial Class ViewOpenFaults
                 conn = New SqlConnection(connectionString)
 
                 'this gets the relevant concession number and creates the entry for the report fault table that is used subsequently to create the defect table entries
-                comm = New SqlCommand("SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault FROM [ConcessionTable] where incidentID = @incidentID", conn)
+                'comm = New SqlCommand("SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault FROM [ConcessionTable] where incidentID = @incidentID", conn)
+                comm = New SqlCommand("SELECT ConcessionNumber FROM [ConcessionTable] where incidentID = @incidentID", conn)
                 comm.Parameters.AddWithValue("@incidentID", incidentID)
                 conn.Open()
                 'commstatus.ExecuteNonQuery()

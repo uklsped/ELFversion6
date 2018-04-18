@@ -34,6 +34,7 @@
                  </style>
 <asp:HiddenField ID="HiddenField1" Value="" runat="server" />
 <asp:HiddenField ID="HiddenField2" Value="" runat="server" />
+<asp:HiddenField ID="HiddenField3" Value="" runat="server" />
 <%-- NO requirement 23/11/16 --%>
 <%-- Added back in 26/03/18 --%>
 <uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11"  Tabby="Defect"  WriteName="Defect" visible="false"  runat="server" />
