@@ -1271,8 +1271,7 @@ Partial Public Class E1page
 
     'From http://www.pberblog.com/blog/set-focus-to-a-control-of-a-modalpopupextender-programmatically/
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
-        ctrl.ClientID + "').focus();}, 100);", True)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 
     Private Sub recoverbuttonscript()
@@ -1291,8 +1290,7 @@ Partial Public Class E1page
         Dim Radio As String = "101"
         Dim conn As SqlConnection
         Dim conActivity As SqlCommand
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim mpContentPlaceHolder As ContentPlaceHolder
         Dim grdview As GridView
         Dim breakdown As Boolean = False
@@ -1309,9 +1307,7 @@ Partial Public Class E1page
 
 
         breakdown = DavesCode.Reuse.CheckForOpenFault(EquipmentID)
-        mpContentPlaceHolder =
-        CType(FindControl("ContentPlaceHolder1"),
-        ContentPlaceHolder)
+        mpContentPlaceHolder = CType(FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             grdview = CType(mpContentPlaceHolder.FindControl("DummyGridview"), GridView)
         End If
@@ -1336,7 +1332,8 @@ Partial Public Class E1page
             Activity = 5
         End If
         'Added to fault-find when recover is used.
-        ReturnApplicationState(Activity, StateId)
+        'commented out 17/04/18
+        'ReturnApplicationState(Activity, StateId)
         'Need to cater for when there is a fault but for some reason the last state is not fault
         'so look for if there is an open fault and then set last state to fault and user reason to 5
 
@@ -1387,133 +1384,133 @@ Partial Public Class E1page
         Response.Redirect(returnstring)
 
     End Sub
+    'instrumentation code comment out 17/04/18
+    'Private Sub ReturnApplicationState(ByVal tab As String, ByVal StateId As Integer)
+    '    'Appdictionary.Add(11, "E1loaded")
+    '    Dim Appdictionary As New Dictionary(Of Integer, String) From {
+    '        {1, "StateE1"},
+    '        {2, "LogOnE1"},
+    '        {3, "SuspendedE1"},
+    '        {4, "ActionStateE1"},
+    '        {5, "rppTabE1"},
+    '        {6, "FailStateE1"},
+    '        {7, "ClinicalOnE1"},
+    '        {8, "TreatmentE1"},
+    '        {9, "ActTabE1"},
+    '        {10, "faultstateE1"},
+    '        {11, "EngBoxChanged"},
+    '        {12, "ReturnClinicalE1"}
+    '    }
+    '    Dim applications As New DataSet("Applicationlist")
+    '    Dim applicationTable As DataTable
+    '    Dim approw As DataRow
+    '    Dim dcID As DataColumn
 
-    Private Sub ReturnApplicationState(ByVal tab As String, ByVal StateId As Integer)
-        'Appdictionary.Add(11, "E1loaded")
-        Dim Appdictionary As New Dictionary(Of Integer, String) From {
-            {1, "StateE1"},
-            {2, "LogOnE1"},
-            {3, "SuspendedE1"},
-            {4, "ActionStateE1"},
-            {5, "rppTabE1"},
-            {6, "FailStateE1"},
-            {7, "ClinicalOnE1"},
-            {8, "TreatmentE1"},
-            {9, "ActTabE1"},
-            {10, "faultstateE1"},
-            {11, "EngBoxChanged"},
-            {12, "ReturnClinicalE1"}
-        }
-        Dim applications As New DataSet("Applicationlist")
-        Dim applicationTable As DataTable
-        Dim approw As DataRow
-        Dim dcID As DataColumn
-
-        'Try writing from list as well
-        'Dim v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13 As String
-
-
-        'stores.CaseSensitive = False
-        'stores.Namespace = "http://www.compubooks.com/stores"
-        'stores.Prefix = "cbkss"
-
-        ' Add the new table
-        applicationTable = applications.Tables.Add("Apps")
-
-        ' Define the columns
-        With applicationTable
-            .Columns.Add("StateE1", GetType(String))
-            .Columns.Add("LogOnE1", GetType(String))
-            .Columns.Add("SuspendedE1", GetType(String))
-            .Columns.Add("ActionStateE1", GetType(String))
-            .Columns.Add("rppTabE1", GetType(String))
-            .Columns.Add("FailStateE1", GetType(String))
-            .Columns.Add("ClinicalOnE1", GetType(String))
-            .Columns.Add("TreatmentE1", GetType(String))
-            .Columns.Add("ActTabE1", GetType(String))
-            .Columns.Add("faultstateE1", GetType(String))
-            .Columns.Add("EngBoxChanged", GetType(String))
-            .Columns.Add("ReturnClinicalE1", GetType(String))
-        End With
-
-        ' Create a new row
-        approw = applicationTable.NewRow
+    '    'Try writing from list as well
+    '    'Dim v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13 As String
 
 
-        ' Add it
-        applicationTable.Rows.Add(approw)
-        Dim appvals As New List(Of String) From {
-            tab
-        }
-        For Each iKey As Integer In Appdictionary.Keys
-            Dim value As String = Appdictionary(iKey)
+    '    'stores.CaseSensitive = False
+    '    'stores.Namespace = "http://www.compubooks.com/stores"
+    '    'stores.Prefix = "cbkss"
 
-            If (Not HttpContext.Current.Application(value) Is Nothing) Then
-                Dim myAppvalue As String = HttpContext.Current.Application(value).ToString
-                With approw
-                    .Item(value) = myAppvalue
-                    appvals.Add(myAppvalue)
-                End With
-            Else
-                With approw
-                    .Item(value) = Nothing
-                    appvals.Add("Nothing")
-                End With
-            End If
+    '    ' Add the new table
+    '    applicationTable = applications.Tables.Add("Apps")
 
-        Next
-        appvals.Add(EquipmentID)
-        appvals.Add(StateId)
-        Dim outputstring As String = String.Join(",", appvals)
-        Dim conn As SqlConnection
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
-        Dim Appstatus As SqlCommand
-        conn = New SqlConnection(connectionString)
+    '    ' Define the columns
+    '    With applicationTable
+    '        .Columns.Add("StateE1", GetType(String))
+    '        .Columns.Add("LogOnE1", GetType(String))
+    '        .Columns.Add("SuspendedE1", GetType(String))
+    '        .Columns.Add("ActionStateE1", GetType(String))
+    '        .Columns.Add("rppTabE1", GetType(String))
+    '        .Columns.Add("FailStateE1", GetType(String))
+    '        .Columns.Add("ClinicalOnE1", GetType(String))
+    '        .Columns.Add("TreatmentE1", GetType(String))
+    '        .Columns.Add("ActTabE1", GetType(String))
+    '        .Columns.Add("faultstateE1", GetType(String))
+    '        .Columns.Add("EngBoxChanged", GetType(String))
+    '        .Columns.Add("ReturnClinicalE1", GetType(String))
+    '    End With
 
-        Appstatus = New SqlCommand("INSERT INTO AppStatus (AppString) " &
-                        "VALUES (@outputstring)", conn)
-        Appstatus.Parameters.AddWithValue("@outputstring", outputstring)
-        conn.Open()
-        Appstatus.ExecuteNonQuery()
-        conn.Close()
-        Dim Appstate As New SqlCommand("INSERT INTO AppStates (TabLoaded,State,LogOn,Suspended,ActionState,rppTab,FailState,ClinicalOn,Treatment,ActTab,faultstate, loaded, ReturnClinical,StateID, Linac) " &
-                       "VALUES (@v1,@v2,@v3,@v4,@v5,@v6,@v7,@v8,@v9,@v10,@v11,@v12,@v13, @v14, @EquipmentID)", conn)
+    '    ' Create a new row
+    '    approw = applicationTable.NewRow
 
-        Appstate.Parameters.Add("@v1", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v1").Value = appvals(0)
-        Appstate.Parameters.Add("@v2", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v2").Value = appvals(1)
-        Appstate.Parameters.Add("@v3", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v3").Value = appvals(2)
-        Appstate.Parameters.Add("@v4", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v4").Value = appvals(3)
-        Appstate.Parameters.Add("@v5", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v5").Value = appvals(4)
-        Appstate.Parameters.Add("@v6", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v6").Value = appvals(5)
-        Appstate.Parameters.Add("@v7", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v7").Value = appvals(6)
-        Appstate.Parameters.Add("@v8", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v8").Value = appvals(7)
-        Appstate.Parameters.Add("@v9", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v9").Value = appvals(8)
-        Appstate.Parameters.Add("@v10", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v10").Value = appvals(9)
-        Appstate.Parameters.Add("@v11", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v11").Value = appvals(10)
-        Appstate.Parameters.Add("@v12", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v12").Value = appvals(11)
-        Appstate.Parameters.Add("@v13", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@v13").Value = appvals(12)
-        Appstate.Parameters.Add("@v14", System.Data.SqlDbType.Int)
-        Appstate.Parameters("@v14").Value = StateId
-        Appstate.Parameters.Add("@EquipmentID", System.Data.SqlDbType.NVarChar, 50)
-        Appstate.Parameters("@EquipmentID").Value = EquipmentID
-        conn.Open()
-        Appstate.ExecuteNonQuery()
-        conn.Close()
 
-    End Sub
+    '    ' Add it
+    '    applicationTable.Rows.Add(approw)
+    '    Dim appvals As New List(Of String) From {
+    '        tab
+    '    }
+    '    For Each iKey As Integer In Appdictionary.Keys
+    '        Dim value As String = Appdictionary(iKey)
+
+    '        If (Not HttpContext.Current.Application(value) Is Nothing) Then
+    '            Dim myAppvalue As String = HttpContext.Current.Application(value).ToString
+    '            With approw
+    '                .Item(value) = myAppvalue
+    '                appvals.Add(myAppvalue)
+    '            End With
+    '        Else
+    '            With approw
+    '                .Item(value) = Nothing
+    '                appvals.Add("Nothing")
+    '            End With
+    '        End If
+
+    '    Next
+    '    appvals.Add(EquipmentID)
+    '    appvals.Add(StateId)
+    '    Dim outputstring As String = String.Join(",", appvals)
+    '    Dim conn As SqlConnection
+    '    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+    '    "connectionstring").ConnectionString
+    '    Dim Appstatus As SqlCommand
+    '    conn = New SqlConnection(connectionString)
+
+    '    Appstatus = New SqlCommand("INSERT INTO AppStatus (AppString) " &
+    '                    "VALUES (@outputstring)", conn)
+    '    Appstatus.Parameters.AddWithValue("@outputstring", outputstring)
+    '    conn.Open()
+    '    Appstatus.ExecuteNonQuery()
+    '    conn.Close()
+    '    Dim Appstate As New SqlCommand("INSERT INTO AppStates (TabLoaded,State,LogOn,Suspended,ActionState,rppTab,FailState,ClinicalOn,Treatment,ActTab,faultstate, loaded, ReturnClinical,StateID, Linac) " _
+    '                   & "VALUES (@v1,@v2,@v3,@v4,@v5,@v6,@v7,@v8,@v9,@v10,@v11,@v12,@v13, @v14, @EquipmentID)", conn)
+
+    '    Appstate.Parameters.Add("@v1", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v1").Value = appvals(0)
+    '    Appstate.Parameters.Add("@v2", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v2").Value = appvals(1)
+    '    Appstate.Parameters.Add("@v3", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v3").Value = appvals(2)
+    '    Appstate.Parameters.Add("@v4", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v4").Value = appvals(3)
+    '    Appstate.Parameters.Add("@v5", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v5").Value = appvals(4)
+    '    Appstate.Parameters.Add("@v6", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v6").Value = appvals(5)
+    '    Appstate.Parameters.Add("@v7", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v7").Value = appvals(6)
+    '    Appstate.Parameters.Add("@v8", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v8").Value = appvals(7)
+    '    Appstate.Parameters.Add("@v9", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v9").Value = appvals(8)
+    '    Appstate.Parameters.Add("@v10", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v10").Value = appvals(9)
+    '    Appstate.Parameters.Add("@v11", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v11").Value = appvals(10)
+    '    Appstate.Parameters.Add("@v12", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v12").Value = appvals(11)
+    '    Appstate.Parameters.Add("@v13", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@v13").Value = appvals(12)
+    '    Appstate.Parameters.Add("@v14", System.Data.SqlDbType.Int)
+    '    Appstate.Parameters("@v14").Value = StateId
+    '    Appstate.Parameters.Add("@EquipmentID", System.Data.SqlDbType.NVarChar, 50)
+    '    Appstate.Parameters("@EquipmentID").Value = EquipmentID
+    '    conn.Open()
+    '    Appstate.ExecuteNonQuery()
+    '    conn.Close()
+
+    'End Sub
 
 End Class

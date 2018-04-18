@@ -160,7 +160,7 @@ Partial Class faultPage
                 commfault.Parameters("@DateReported").Value = time
                 commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
                 commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.Text
-                commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
+                commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 10)
                 commfault.Parameters("@Energy").Value = EnergyPicked
                 commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
                 commfault.Parameters("@GantryAngle").Value = TextBox2.Text

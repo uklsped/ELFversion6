@@ -95,7 +95,7 @@ Partial Class DefectSave
     '    'Area now is text box. 23/11/16. Back to dropdown 28/3/18
     '    commfault.Parameters("@Area").Value = DropDownListArea.SelectedItem.ToString
     '    'commfault.Parameters("@Area").Value = AreaBox.Text
-    '    commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
+    '    commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 10)
     '    commfault.Parameters("@Energy").Value = Energy
     '    commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
     '    commfault.Parameters("@GantryAngle").Value = TextBox2.Text
@@ -226,8 +226,8 @@ Partial Class DefectSave
         Dim Faults As New DataTable()
         Dim conn As SqlConnection
         Dim comm As SqlCommand
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
+        'formatting has to change between vs versions
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
         If newfault Then
             comm = New SqlCommand("SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' and IncidentID = (Select max(IncidentID) from  [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE') order by ConcessionNumber", conn)
@@ -263,8 +263,8 @@ Partial Class DefectSave
         Dim Areas As New DataTable()
         Dim conn As SqlConnection
         Dim comm As SqlCommand
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
+        'vs formatting
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
 
         comm = New SqlCommand("SELECT AreaID, Area FROM [AreaTable] order by AreaID", conn)
@@ -313,8 +313,8 @@ Partial Class DefectSave
         Dim comm2 As SqlCommand
         Dim Region As String = ""
         Dim Queryreturn As String = ""
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
+        'formatting vs
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
         incidentIDstring = Defect.SelectedItem.Value
         Dim result As ListItem
@@ -503,7 +503,7 @@ Partial Class DefectSave
                 conn.Close()
             End If
 
-            WriteTracking(UserInfo, "New", LastIncident)
+            WriteTracking(UserInfo, "New", LastIncident, "")
 
             'update incident table with fault id then don't need it in fault tracking table?
 
@@ -518,11 +518,10 @@ Partial Class DefectSave
 
             'from viewopenfaults. Now turn into concession
             Dim commconcess As SqlCommand
-            commconcess = New SqlCommand("Insert into ConcessionTable (PreFix, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) " &
-            "VALUES (@PreFix, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) SELECT SCOPE_IDENTITY()", conn)
+            commconcess = New SqlCommand("Insert into ConcessionTable (PreFix, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) VALUES (@PreFix, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) SELECT SCOPE_IDENTITY()", conn)
             commconcess.Parameters.Add("@PreFix", System.Data.SqlDbType.NVarChar, 10)
             commconcess.Parameters("@PreFix").Value = "ELF"
-            commconcess.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 20)
+            commconcess.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 250)
             commconcess.Parameters("@ConcessionDescription").Value = TextBox4.Text
             commconcess.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
             commconcess.Parameters("@incidentID").Value = LastIncident
@@ -560,9 +559,9 @@ Partial Class DefectSave
                 commconcess.Parameters("@incidentID").Value = LastIncident
                 commconcess.ExecuteNonQuery()
                 conn.Close()
-
+                Dim TrackAction As String = RadAct.Text
                 'need to write reportfault and faulttracking table again
-                WriteTracking(UserInfo, "Concession", LastIncident)
+                WriteTracking(UserInfo, "Concession", LastIncident, TrackAction)
                 WriteRadAckFault(LastIncident, False)
                 'From repair
                 Dim updatefault As SqlCommand
@@ -607,8 +606,8 @@ Partial Class DefectSave
 
         conn = New SqlConnection(connectionString)
         Dim commfault As SqlCommand
-        commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber ) " &
-                                   "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
+        commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber ) " _
+                                  & "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
         commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
         commfault.Parameters("@Description").Value = TextBox4.Text
         commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
@@ -617,7 +616,7 @@ Partial Class DefectSave
         commfault.Parameters("@DateReported").Value = time
         commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
         commfault.Parameters("@Area").Value = HiddenField2.Value
-        commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
+        commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 10)
         commfault.Parameters("@Energy").Value = Energy
         commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
         commfault.Parameters("@GantryAngle").Value = TextBox2.Text
@@ -641,14 +640,14 @@ Partial Class DefectSave
 
         End Try
     End Sub
-    Protected Sub WriteTracking(ByVal UserInfo As String, ByVal Status As String, ByVal LastIncident As Integer)
+    Protected Sub WriteTracking(ByVal UserInfo As String, ByVal Status As String, ByVal LastIncident As Integer, ByVal Action As String)
         time = Now()
         Dim conn As SqlConnection
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString)
         Dim commtrack As SqlCommand
-        commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, IncidentID) " &
-                                   "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon, @Linac, @IncidentID)", conn)
+        commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, Action, IncidentID) " _
+                                  & "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon, @Linac, @Action, @IncidentID)", conn)
         commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
         commtrack.Parameters("@Trackingcomment").Value = ""
         commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
@@ -661,6 +660,8 @@ Partial Class DefectSave
         commtrack.Parameters("@Lastupdatedon").Value = time
         commtrack.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
         commtrack.Parameters("@Linac").Value = MachineName
+        commtrack.Parameters.Add("@Action", System.Data.SqlDbType.NVarChar, 250)
+        commtrack.Parameters("@Action").Value = Action
         commtrack.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
         commtrack.Parameters("@IncidentID").Value = LastIncident
         Try
@@ -696,7 +697,6 @@ Partial Class DefectSave
     End Sub
 
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
-        ctrl.ClientID + "').focus();}, 100);", True)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 End Class

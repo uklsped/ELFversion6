@@ -80,13 +80,12 @@ Partial Class ViewOpenFaults
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader As SqlDataReader
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(name:="connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
         'comm = New SqlCommand("select faultid from reportfault where linac=@linac and FaultStatus = 'New'", conn)
         comm = New SqlCommand("select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')", conn)
 
-        comm.Parameters.AddWithValue("@linac", MachineName)
+        comm.Parameters.AddWithValue(parameterName:="@linac", value:=MachineName)
         Try
             conn.Open()
             reader = comm.ExecuteReader() 'checks to see if there is a new fault - returns true or false if record read
@@ -177,9 +176,7 @@ Partial Class ViewOpenFaults
 
                 Dim conn As SqlConnection
 
-                Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-                "connectionstring").ConnectionString
-                Dim incidentfault As SqlCommand
+                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 Dim commfault As SqlCommand
                 Dim comm As SqlCommand
                 Dim ConcessionNumber As String
@@ -197,8 +194,8 @@ Partial Class ViewOpenFaults
                 conn.Close()
 
 
-                commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " &
-                                           "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
+                commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " _
+                                          & "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
                 commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
                 commfault.Parameters("@Description").Value = TextBox4.Text
                 commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
@@ -207,7 +204,7 @@ Partial Class ViewOpenFaults
                 commfault.Parameters("@DateReported").Value = time
                 commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
                 commfault.Parameters("@Area").Value = AreaBox.Text
-                commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 6)
+                commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 10)
                 commfault.Parameters("@Energy").Value = Energy
                 commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
                 commfault.Parameters("@GantryAngle").Value = TextBox2.Text
@@ -253,13 +250,8 @@ Partial Class ViewOpenFaults
                 Dim assignuser As String
                 Dim time As DateTime
                 time = Now()
-                'Dim faultNumber As Integer
-                Dim ConcessionNumber As String
-                Dim ConcessionDescription As String
                 Dim ConcessionActive As Integer
                 Dim ConcessionAction As String
-
-                Dim FaultStatus As String
                 Dim exists As Integer
 
                 'This should probably happen at the end
@@ -267,9 +259,9 @@ Partial Class ViewOpenFaults
                 'ConcessiondescriptionBox.ReadOnly = True
                 'ConcessionNumberBox.ReadOnly = True
                 Dim conn As SqlConnection
-                Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-                "connectionstring").ConnectionString
+                Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 conn = New SqlConnection(connectionString1)
+                Dim ConcessionDescription As String
                 Try
                     'check that this is successful what happens if it isn't
 
@@ -277,7 +269,7 @@ Partial Class ViewOpenFaults
                     'ConcessionNumber = ConcessionNumberBox.Text
                     ConcessionDescription = ConcessiondescriptionBox.Text
                     assignuser = DropDownList2.SelectedItem.Text
-                    FaultStatus = StatusLabel1.Text
+                    Dim FaultStatus As String = StatusLabel1.Text
                     ConcessionAction = ActionBox.Text
                     If assignuser = "Select" Then
                         assignuser = "Unassigned"
@@ -295,8 +287,8 @@ Partial Class ViewOpenFaults
                 End Try
                 If incidentID <> 0 Then
                     Dim commtrack As SqlCommand
-                    commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon,   linac, action, incidentID) " &
-                                               "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon,  @linac, @action, @IncidentID) SELECT SCOPE_IDENTITY()", conn)
+                    commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon,   linac, action, incidentID) " _
+                                              & "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon,  @linac, @action, @IncidentID) SELECT SCOPE_IDENTITY()", conn)
                     commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
                     commtrack.Parameters("@Trackingcomment").Value = CommentBox1.Text
                     commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
@@ -336,11 +328,11 @@ Partial Class ViewOpenFaults
                     '"VALUES (@ConcessionNumber, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) Update FaultIDTable SET ConcessionNumber=@ConcessionNumber WHERE IncidentID=@incidentID ", conn)
                     'commconcess.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 10)
                     'commconcess.Parameters("@ConcessionNumber").Value = ConcessionNumber
-                    commconcess = New SqlCommand("Insert into ConcessionTable (PreFix, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) " &
-                    "VALUES (@PreFix, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) SELECT SCOPE_IDENTITY()", conn)
+                    commconcess = New SqlCommand("Insert into ConcessionTable (PreFix, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) " _
+                    & "VALUES (@PreFix, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) SELECT SCOPE_IDENTITY()", conn)
                     commconcess.Parameters.Add("@PreFix", System.Data.SqlDbType.NVarChar, 10)
                     commconcess.Parameters("@PreFix").Value = "ELF"
-                    commconcess.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 20)
+                    commconcess.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 250)
                     commconcess.Parameters("@ConcessionDescription").Value = ConcessionDescription
                     commconcess.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
                     commconcess.Parameters("@incidentID").Value = incidentID
@@ -610,8 +602,8 @@ Partial Class ViewOpenFaults
         SqlDataSource2.ID = "SqlDataSource2"
         SqlDataSource2.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         'SqlDataSource2.SelectCommand = "select * from reportfault where linac=@linac and FaultStatus in('Open', 'Concession') order by faultid desc"
-        SqlDataSource2.SelectCommand = "select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, f.ConcessionNumber, f.linac, f.incidentid " &
-            "from reportfault r left outer join FaultTracking t on r.incidentID=t.incidentID left outer join FaultIDTable f on f.incidentid=r.incidentid where f.status=t.status and f.Status in('Open', 'Concession') order by f.incidentid desc"
+        SqlDataSource2.SelectCommand = "select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, f.ConcessionNumber, f.linac, f.incidentid " _
+        & "from reportfault r left outer join FaultTracking t on r.incidentID=t.incidentID left outer join FaultIDTable f on f.incidentid=r.incidentid where f.status=t.status and f.Status in('Open', 'Concession') order by f.incidentid desc"
         SqlDataSource2.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource2.SelectParameters.Add("linac", MachineName)
 
@@ -676,8 +668,7 @@ Partial Class ViewOpenFaults
                     Dim conn1 As SqlConnection
                     Dim comm1 As SqlCommand
 
-                    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-                    "connectionstring").ConnectionString
+                    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                     conn1 = New SqlConnection(connectionString)
                     'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
                     comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
@@ -756,8 +747,7 @@ Partial Class ViewOpenFaults
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader1 As SqlDataReader
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString)
         comm = New SqlCommand("select Count(ConcessionNumber) as 'Count' from ConcessionTable where linac=@linac and ConcessionNumber = @ConcessionNumber", conn)
         comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar)
@@ -798,11 +788,10 @@ Partial Class ViewOpenFaults
         Label4.Text = incidentID
         Dim conn As SqlConnection
         Dim comm As SqlCommand
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
-        comm = New SqlCommand("select distinct f.status, ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, ISNULL(c.action, '') as Action, f.IncidentID " &
-        "from FaultIDTable f left outer join ConcessionTable c on f.ConcessionNumber=c.ConcessionNumber where f.incidentID = @incidentID", conn)
+        comm = New SqlCommand("select distinct f.status, ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, ISNULL(c.action, '') as Action, f.IncidentID " _
+        & "from FaultIDTable f left outer join ConcessionTable c on f.ConcessionNumber=c.ConcessionNumber where f.incidentID = @incidentID", conn)
         comm.Parameters.AddWithValue("@incidentID", incidentID)
         Try
             conn.Open()
@@ -850,8 +839,8 @@ Partial Class ViewOpenFaults
         'comm = New SqlCommand("select FaultStatus  from reportfault where linac=@linac and FaultID = @FaultID", conn)
         'comm = New SqlCommand("select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, r.FaultStatus, r.Area, r.Energy, r.GantryAngle, r.CollimatorAngle,t.ConcessionNumber, t.concessiondescription, r.linac, t.IncidentID " & _
         '    "from reportfault r left outer join faulttracking t on r.FaultID=t.FaultID left outer join faultidtable f on f.incidentid=t.incidentid where r.linac=@linac and f.status=t.status and r.FaultID = @FaultID", conn)
-        comm = New SqlCommand("select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, r.Area, r.Energy, r.GantryAngle, r.CollimatorAngle, ISNULL (r.BSUHID, '') as BSUHID,ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, f.linac, f.IncidentID " &
-        "from reportfault r left outer join FaultIDTable f on f.OriginalFaultID = r.FaultID left outer join ConcessionTable c on f.ConcessionNumber=c.ConcessionNumber where f.linac=@linac and f.incidentID = @incidentID", conn)
+        comm = New SqlCommand("select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, r.Area, r.Energy, r.GantryAngle, r.CollimatorAngle, ISNULL (r.BSUHID, '') as BSUHID,ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, f.linac, f.IncidentID " _
+        & "from reportfault r left outer join FaultIDTable f on f.OriginalFaultID = r.FaultID left outer join ConcessionTable c on f.ConcessionNumber=c.ConcessionNumber where f.linac=@linac and f.incidentID = @incidentID", conn)
         comm.Parameters.AddWithValue("@linac", MachineName)
         comm.Parameters.AddWithValue("@incidentID", incidentID)
         Try
@@ -915,8 +904,8 @@ Partial Class ViewOpenFaults
         Dim SqlDataSource2 As New SqlDataSource()
         SqlDataSource2.ID = "SqlDataSource2"
         SqlDataSource2.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " &
-           "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber where f.linac=@linac and f.Status in('New') order by incidentid desc"
+        SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " _
+        & "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber where f.linac=@linac and f.Status in('New') order by incidentid desc"
         'Open was added to allow use with singlemachinefaultuc it will only be appropriate for the repair page
         SqlDataSource2.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource2.SelectParameters.Add("linac", MachineName)
@@ -933,8 +922,8 @@ Partial Class ViewOpenFaults
         Dim SqlDataSource2 As New SqlDataSource()
         SqlDataSource2.ID = "SqlDataSource2"
         SqlDataSource2.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " &
-           "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber where f.linac=@linac and f.Status in('Concession') order by incidentid desc"
+        SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " _
+        & "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber where f.linac=@linac and f.Status in('Concession') order by incidentid desc"
         'Open was added to f.status allow use with singlemachinefaultuc it will only be appropriate for the repair page. TAken out on 5/8/15
 
         'SqlDataSource2.SelectCommand = "select r.FaultID, r.Description, r.ReportedBy, r.DateReported, r.FaultStatus, t.ConcessionNumber, r.linac " & _
@@ -946,17 +935,6 @@ Partial Class ViewOpenFaults
         GridView1.DataBind()
         CheckEmptyGrid(GridView1)
 
-
-
-
-
-
-
-
-
-
-
-
     End Sub
     Protected Sub BindTrackingGrid(ByVal incidentID As String)
         Dim incidentNumber As String = incidentID
@@ -966,8 +944,8 @@ Partial Class ViewOpenFaults
         SqlDataSource3.ID = "SqlDataSource3"
         SqlDataSource3.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         'SqlDataSource3.SelectCommand = "select * from FaultTracking where linac=@linac and FaultID=@FaultID"
-        SqlDataSource3.SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, c.ConcessionNumber, t.linac, t.incidentID " &
-            "from FaultTracking t left outer join ConcessionTable c on c.incidentID=t.incidentID where t.linac=@linac and t.incidentID=@incidentID order by trackingid asc"
+        SqlDataSource3.SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, c.ConcessionNumber, t.linac, t.incidentID " _
+        & "from FaultTracking t left outer join ConcessionTable c on c.incidentID=t.incidentID where t.linac=@linac and t.incidentID=@incidentID order by trackingid asc"
         SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource3.SelectParameters.Add("linac", MachineName)
         SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
@@ -979,8 +957,8 @@ Partial Class ViewOpenFaults
         Dim SqlDataSource3 As New SqlDataSource()
         SqlDataSource3.ID = "SqlDataSource3"
         SqlDataSource3.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        SqlDataSource3.SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " &
-            "from FaultTracking t  where t.linac=@linac and t.incidentID=@incidentID order by t.TrackingID desc"
+        SqlDataSource3.SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " _
+        & "from FaultTracking t  where t.linac=@linac and t.incidentID=@incidentID order by t.TrackingID desc"
         SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource3.SelectParameters.Add("linac", MachineName)
         SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
@@ -1158,8 +1136,7 @@ Partial Class ViewOpenFaults
     End Sub
 
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
-        ctrl.ClientID + "').focus();}, 100);", True)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 
     Public Sub RebindViewFault()
