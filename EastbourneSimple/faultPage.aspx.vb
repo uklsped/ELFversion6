@@ -150,8 +150,8 @@ Partial Class faultPage
                 If EnergyPicked = "Select" Then
                     EnergyPicked = ""
                 End If
-                commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID) " & _
-                                           "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID )", conn)
+                commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID) " _
+                                          & "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID )", conn)
                 commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
                 commfault.Parameters("@Description").Value = TextBox4.Text
                 commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
@@ -195,8 +195,8 @@ Partial Class faultPage
                     End Try
 
                     Dim commtrack As SqlCommand
-                commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, IncidentID) " &
-                                               "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon, @Linac, @IncidentID)", conn)
+                commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, IncidentID) " _
+                                            & "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon, @Linac, @IncidentID)", conn)
                 'The tracking comment should be "" at this stage 11/04/18 not TextBox4.Text as that is fault description
                 commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
                 commtrack.Parameters("@Trackingcomment").Value = ""
