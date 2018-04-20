@@ -598,7 +598,7 @@ Partial Class ViewOpenFaults
         'This is called when the new fault is changed to Open or Concession
         DropDownList1.SelectedIndex = -1
         DropDownList2.SelectedIndex = -1
-        CommentBox1.Text = ""
+        'CommentBox1.Text = ""
         Dim SqlDataSource2 As New SqlDataSource()
         SqlDataSource2.ID = "SqlDataSource2"
         SqlDataSource2.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
@@ -785,7 +785,7 @@ Partial Class ViewOpenFaults
         BindTrackingGridTech(incidentID)
         DropDownList1.SelectedIndex = -1
         DropDownList2.SelectedIndex = -1
-        CommentBox1.Text = String.Empty
+        'CommentBox1.Text = String.Empty
         Label4.Text = incidentID
         Dim conn As SqlConnection
         Dim comm As SqlCommand

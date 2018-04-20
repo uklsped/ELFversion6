@@ -312,7 +312,7 @@
                             </td>
                             <td>
                                 <asp:TextBox ID="CommentBox1" runat="server" readonly="false" 
-                            TextMode="MultiLine" MaxLength="250"></asp:TextBox>
+                            TextMode="MultiLine" MaxLength="250" EnableViewState="False"></asp:TextBox>
                             </td>
                             <td>
                                 <asp:Label ID="ActionLabel" runat="server" Text="Concession Action"></asp:Label>
