@@ -377,46 +377,50 @@ Partial Class ClinicalUserControl
 
 
     Private Sub BindEnergyData()
-        Dim SqlDataSource1 As New SqlDataSource()
-        'the distinct takes care of when suspended returns via pre-clinical because then there are two pre ids for one runup id
-        'Dim query As String = "Select distinct handoverID, MV6, MV10, MeV6, MeV8, " & _
-        '                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) as lastrecord from HandoverEnergies where linac=@linac)"
-        'Added isnull as per energy displayuc
-        Dim query As String = "Select distinct handoverID, MV6, ISNULL(MV6FFF, 0) as ""MV6FFF"", MV10 ,ISNULL(MV10FFF, 0) as ""MV10FFF"",ISNULL(MeV4,0) as ""MeV4"", MeV6, MeV8, " & _
+        If MachineName IsNot "T1" Then
+            Dim SqlDataSource1 As New SqlDataSource()
+            'the distinct takes care of when suspended returns via pre-clinical because then there are two pre ids for one runup id
+            'Dim query As String = "Select distinct handoverID, MV6, MV10, MeV6, MeV8, " & _
+            '                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) as lastrecord from HandoverEnergies where linac=@linac)"
+            'Added isnull as per energy displayuc
+            Dim query As String = "Select distinct handoverID, MV6, ISNULL(MV6FFF, 0) as ""MV6FFF"", MV10 ,ISNULL(MV10FFF, 0) as ""MV10FFF"",ISNULL(MeV4,0) as ""MeV4"", MeV6, MeV8, " &
                           "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)"
 
-        SqlDataSource1 = QuerySqlConnection(MachineName, query)
-        GridView2.DataSource = SqlDataSource1
-        GridView2.DataBind()
+            SqlDataSource1 = QuerySqlConnection(MachineName, query)
+            GridView2.DataSource = SqlDataSource1
+            GridView2.DataBind()
 
-        GridView2.Columns(13).Visible = False
-        Select Case MachineName
-            Case "LA1"
-                For index As Integer = 1 To 4
-                    GridView2.Columns(index).Visible = False
-                Next
+            GridView2.Columns(13).Visible = False
+            Select Case MachineName
+                Case "LA1"
+                    For index As Integer = 1 To 4
+                        GridView2.Columns(index).Visible = False
+                    Next
 
-            Case "LA2", "LA3"
-                For index As Integer = 1 To 4
-                    GridView2.Columns(index).Visible = False
-                Next
-                GridView2.Columns(2).Visible = True
-            Case "LA4"
+                Case "LA2", "LA3"
+                    For index As Integer = 1 To 4
+                        GridView2.Columns(index).Visible = False
+                    Next
+                    GridView2.Columns(2).Visible = True
+                Case "LA4"
 
-                For index As Integer = 1 To 11
-                    GridView2.Columns(index).Visible = False
-                Next
-                GridView2.Columns(2).Visible = True
-                GridView2.Columns(13).Visible = True
-            Case "E1", "E2", "B1"
-                GridView2.Columns(13).Visible = True
-                For index As Integer = 10 To 11
-                    GridView2.Columns(index).Visible = False
-                Next
-            Case Else
-                'All columns are valid and are displayed
+                    For index As Integer = 1 To 11
+                        GridView2.Columns(index).Visible = False
+                    Next
+                    GridView2.Columns(2).Visible = True
+                    GridView2.Columns(13).Visible = True
+                Case "E1", "E2", "B1"
+                    GridView2.Columns(13).Visible = True
+                    For index As Integer = 10 To 11
+                        GridView2.Columns(index).Visible = False
+                    Next
+                Case Else
+                    'All columns are valid and are displayed
 
-        End Select
+            End Select
+        Else
+            GridView2.Visible = False
+        End If
         'Select Case MachineName
         '    Case "LA1"
         '        GridView2.Columns(1).Visible = False

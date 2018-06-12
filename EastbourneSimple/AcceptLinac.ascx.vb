@@ -145,7 +145,7 @@ Partial Public Class AcceptLinac
     End Sub
 
     Public Event LaunchControl(ByVal Control As Integer)
-    Protected Sub page_init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
+    Protected Sub Page_init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
         'AddHandler AcceptLinac.AcceptHandler, AddressOf BlankTabs
         appstate = "LogOn" + MachineName
         suspstate = "Suspended" + MachineName
@@ -153,7 +153,7 @@ Partial Public Class AcceptLinac
     Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
         Response.Redirect("faultPage.aspx?val=LA1")
     End Sub
-    Protected Sub page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+    Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim reload As String
         Dim clinstate As String = "Clinical"
         reload = DavesCode.Reuse.GetLastState(MachineName, 0)
@@ -167,15 +167,17 @@ Partial Public Class AcceptLinac
                 Dim MyString As String
                 Dim Tabnumber As String
                 If Tabby = 3 Then
-                    Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
-                    CType(objCon, EnergyDisplayuc).LinacName = MachineName
-                    PlaceHolder2.Controls.Add(objCon)
-                    'PlaceHolder2.Visible = True
-                    Panel1.Width = 1000
-                    Panel1.Height = 200
-                    AcceptOK.Text = "Acknowledge Energies and Accept Linac"
+                    If MachineName IsNot "T1" Then
+                        Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
+                        CType(objCon, EnergyDisplayuc).LinacName = MachineName
+                        PlaceHolder2.Controls.Add(objCon)
+                        'PlaceHolder2.Visible = True
+                        Panel1.Width = 1000
+                        Panel1.Height = 200
+                        AcceptOK.Text = "Acknowledge Energies and Accept Linac"
+                    End If
                 End If
-                MyString = "ModalPopupextendergen"
+                    MyString = "ModalPopupextendergen"
                 Tabnumber = tablabel
                 MyString = MyString & Tabnumber
                 modalpopupextendergen.ID = MyString
@@ -203,7 +205,7 @@ Partial Public Class AcceptLinac
 
     End Sub
 
-    Public Sub btnchkcancel_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnchkcancel.Click
+    Public Sub Btnchkcancel_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnchkcancel.Click
         AcceptOK.Visible = False
         Dim reload As String
         Dim clinstate As String = "Clinical"

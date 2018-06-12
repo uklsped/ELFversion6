@@ -3,7 +3,7 @@ Imports System.Data
 Imports AjaxControlToolkit
 Imports System.Web.UI.Page
 
-Partial Class ErunupUserControl
+Partial Class ErunupUserControlPark
     Inherits System.Web.UI.UserControl
     Private MachineName As String
     Private WriteName As String
@@ -15,12 +15,12 @@ Partial Class ErunupUserControl
     Private actionstate As String
     Private failstate As String
     Private repairstate As String
-    Private faultviewstate As String
-    Private atlasviewstate As String
-    Private qaviewstate As String
+    'Private faultviewstate As String
+    'Private atlasviewstate As String
+    'Private qaviewstate As String
     Private LinacFlag As String
     Private objconToday As TodayClosedFault
-    Private Todaydefect As DefectSave
+    Private Todaydefect As DefectSavePark
     Private BoxChanged As String
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private tabstate As String
@@ -106,9 +106,9 @@ Partial Class ErunupUserControl
         suspstate = "Suspended" + MachineName
         failstate = "FailState" + MachineName
         repairstate = "rppTab" + MachineName
-        faultviewstate = "Faultsee" + MachineName
-        atlasviewstate = "Atlassee" + MachineName
-        qaviewstate = "QAsee" + MachineName
+        'faultviewstate = "Faultsee" + MachineName
+        'atlasviewstate = "Atlassee" + MachineName
+        'qaviewstate = "QAsee" + MachineName
         LinacFlag = "State" + MachineName
         BoxChanged = "EngBoxChanged" + MachineName
         tabstate = "ActTab" + MachineName
@@ -138,8 +138,8 @@ Partial Class ErunupUserControl
         Dim username As String = Userinfo
         Dim Valid As Boolean = False
         Dim Activity As String = "Logged Off"
-        Dim iView As Boolean = False
-        Dim XVI As Boolean = False
+        'Dim iView As Boolean = False
+        'Dim XVI As Boolean = False
         'Dim Imagecheck As CheckBoxList
         Dim strScript As String = "<script>"
         'Imagecheck = FindControl("Imaging")
@@ -149,8 +149,8 @@ Partial Class ErunupUserControl
         '1 or 7 is engineering tab or emergency run up tab
         If tabcontrol = "1" Or "7" Then
             'DavesCode.Reuse.ReturnApplicationState(tabcontrol)
-            Dim grdview As GridView = FindControl("Gridview1")
-            Dim grdviewI As GridView = FindControl("GridViewImage")
+            'Dim grdview As GridView = FindControl("Gridview1")
+            'Dim grdviewI As GridView = FindControl("GridViewImage")
             Dim Textboxcomment As TextBox = FindControl("CommentBox")
             Dim Comment As String = Textboxcomment.Text
             If Action = "Confirm" Then
@@ -158,40 +158,39 @@ Partial Class ErunupUserControl
                 Application(repairstate) = 1
                 Application(LinacFlag) = "Clinical"
                 Valid = True
-                DavesCode.Reuse.CommitRunup(grdview, LinacName, tablabel, username, Comment, Valid, False, False)
+                DavesCode.ReusePC.CommitRunup(LinacName, tablabel, username, Comment, Valid, False, False)
                 'inserted to make same as LA linac step without having to activate pre-clin tab
-                DavesCode.Reuse.MachineState(Username, usergroupselected, MachineName, Reason, False)
-                DavesCode.Reuse.ReturnImaging(iView,XVI,grdviewI, LinacName)
-            DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView,XVI, Valid, False)
-            Application(appstate) = Nothing
-            HttpContext.Current.Application(BoxChanged) = Nothing
-            Application(tabstate) = String.Empty
-             Dim returnstring As String = MachineName + "page.aspx?tabref=3"
-                
+                DavesCode.Reuse.MachineState(username, usergroupselected, MachineName, Reason, False)
+                DavesCode.Reuse.CommitPreClin(LinacName, username, Comment, False, False, Valid, False)
+                Application(appstate) = Nothing
+                HttpContext.Current.Application(BoxChanged) = Nothing
+                Application(tabstate) = String.Empty
+                Dim returnstring As String = MachineName + "page.aspx?tabref=3"
+
                 Application(suspstate) = 1
                 Response.Redirect(returnstring)
 
             Else
-               
+
                 Valid = False
                 Application(LinacFlag) = "Linac Unauthorised"
                 'added this line 27 jan 2016 to set repairstate
                 Application(repairstate) = Nothing
-               
-                strScript += "alert('No Energies Approved Logging Off');"
-               DavesCode.Reuse.CommitRunup(grdview, LinacName, tablabel, username, Comment, Valid, False, False)
-            'DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
-            Application(appstate) = Nothing
-            HttpContext.Current.Application(BoxChanged) = Nothing
-            Application(tabstate) = String.Empty
-            
-            strScript += "window.location='"
-            strScript += machinelabel
-            strScript += "</script>"
-            ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+
+                strScript += "alert('Not clinical Logging Off');"
+                DavesCode.ReusePC.CommitRunup(LinacName, tablabel, username, Comment, Valid, False, False)
+                'DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
+                Application(appstate) = Nothing
+                HttpContext.Current.Application(BoxChanged) = Nothing
+                Application(tabstate) = String.Empty
+
+                strScript += "window.location='"
+                strScript += machinelabel
+                strScript += "</script>"
+                ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
             End If
-            
-            
+
+
         End If
     End Sub
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -200,7 +199,7 @@ Partial Class ErunupUserControl
         objconToday = Page.LoadControl("TodayClosedFault.ascx")
         objconToday.ID = "Todaysfaults"
         objconToday.LinacName = MachineName
-        PlaceHolder5.Controls.Add(objConToday)
+        PlaceHolder5.Controls.Add(objconToday)
         Dim websiteAlreadyAccessed As Boolean = False
         'Dim objConAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
         'CType(objConAtlas, AtlasEnergyViewuc).LinacName = MachineName
@@ -226,19 +225,19 @@ Partial Class ErunupUserControl
             PlaceHolder3.Controls.Add(objCon)
         End If
 
-        Dim objQA As UserControl = Page.LoadControl("WebUserControl2.ascx")
-        CType(objQA, WebUserControl2).LinacName = MachineName
-        CType(objQA, WebUserControl2).TabName = 1
-        PlaceHolder6.Controls.Add(objQA)
+        'Dim objQA As UserControl = Page.LoadControl("WebUserControl2.ascx")
+        'CType(objQA, WebUserControl2).LinacName = MachineName
+        'CType(objQA, WebUserControl2).TabName = 1
+        'PlaceHolder6.Controls.Add(objQA)
 
 
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
-        Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
-        CType(objDefect, DefectSave).ID = "DefectDisplay"
-        CType(objDefect, DefectSave).LinacName = MachineName
+        Dim objDefect As UserControl = Page.LoadControl("DefectSavePark.ascx")
+        CType(objDefect, DefectSavePark).ID = "DefectDisplay"
+        CType(objDefect, DefectSavePark).LinacName = MachineName
         PlaceHolder1.Controls.Add(objDefect)
-        
+
 
         'Wire up the event (UserApproved) to the event handler (UserApprovedEvent)
         'The solution of how to pass parameter to dynamically loaded user control is from here:
@@ -271,8 +270,8 @@ Partial Class ErunupUserControl
             'strScript += "alert('load eng control');"
             'strScript += "</script>"
             'ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "JSCR", strScript.ToString(), False)
-            Application(faultviewstate) = 1
-            Application(atlasviewstate) = 1
+            'Application(faultviewstate) = 1
+            'Application(atlasviewstate) = 1
             Application(LinacFlag) = "Linac Unauthorised"
             'This sets up the gridview with all of the available energies
             'Dim SqlDataSource1 As New SqlDataSource()
@@ -340,7 +339,7 @@ Partial Class ErunupUserControl
         '    strScript += "</script>"
         '    ScriptManager.RegisterStartupScript(Me.Page, Me.GetType(), "JSCR", strScript.ToString(), False)
         'End If
-        PlaceHolder2.Visible = True
+        'PlaceHolder2.Visible = True
         websiteAlreadyAccessed = True
     End Sub
     ' Protected Sub SetImaging()
@@ -446,13 +445,13 @@ Partial Class ErunupUserControl
             '        End If
             '    Next
             '    If icounter <> 0 Then
-            '        ConfirmExitEvent()
+            ConfirmExitEvent()
             '    Else
-            Dim cptrl As ConfirmPage = CType(FindControl("ConfirmPage1"), ConfirmPage)
-                    Dim cpbutton As Button = CType(cptrl.FindControl("AcceptOK"), Button)
-                    'Dim cptext As TextBox = CType(cptrl.FindControl("txtchkUserName"), TextBox)
-                    cpbutton.Text = "Confirm No Imaging"
-                    ConfirmPage1.Visible = True
+            'Dim cptrl As ConfirmPage = CType(FindControl("ConfirmPage1"), ConfirmPage)
+            '        Dim cpbutton As Button = CType(cptrl.FindControl("AcceptOK"), Button)
+            '        'Dim cptext As TextBox = CType(cptrl.FindControl("txtchkUserName"), TextBox)
+            '        cpbutton.Text = "Confirm No Imaging"
+            '        ConfirmPage1.Visible = True
             'ForceFocus(cptext)
 
             'End If
@@ -496,19 +495,19 @@ Partial Class ErunupUserControl
         End If
     End Function
 
-    Protected Sub FaultPanelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles FaultPanelButton.Click
-        Dim updatepanel3 As UpdatePanel = FindControl("updatepanel3")
-        If Application(faultviewstate) = 1 Then
-            updatepanel3.Visible = True
-            Application(faultviewstate) = Nothing
-            FaultPanelButton.Text = "Hide Open Faults"
-        Else
-            updatepanel3.Visible = False
-            Application(faultviewstate) = 1
-            FaultPanelButton.Text = "View Open Faults"
-        End If
+    'Protected Sub FaultPanelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles FaultPanelButton.Click
+    '    Dim updatepanel3 As UpdatePanel = FindControl("updatepanel3")
+    '    If Application(faultviewstate) = 1 Then
+    '        updatepanel3.Visible = True
+    '        Application(faultviewstate) = Nothing
+    '        FaultPanelButton.Text = "Hide Open Faults"
+    '    Else
+    '        updatepanel3.Visible = False
+    '        Application(faultviewstate) = 1
+    '        FaultPanelButton.Text = "View Open Faults"
+    '    End If
 
-    End Sub
+    'End Sub
 
     Protected Sub LogOff_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LogOffButton.Click
 
@@ -547,11 +546,11 @@ Partial Class ErunupUserControl
         '15 April test mod next 6 lines
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         Dim lockctrltext As TextBox = CType(lockctrl.FindControl("txtchkUserName"), TextBox)
-        Dim grdview As GridView = FindControl("Gridview1")
+        'Dim grdview As GridView = FindControl("Gridview1")
         Dim Textboxcomment As TextBox = FindControl("CommentBox")
         Dim Comment As String = Textboxcomment.Text
         'has to be tablable to cope with either tab 1 or 7 control
-        DavesCode.Reuse.CommitRunup(grdview, LinacName, tablabel, "Lockuser", Comment, False, False, True)
+        DavesCode.ReusePC.CommitRunup(LinacName, tablabel, "Lockuser", Comment, False, False, True)
         RaiseEvent BlankGroup(0)
         lockctrl.Visible = True
         ForceFocus(lockctrltext)
@@ -574,7 +573,7 @@ Partial Class ErunupUserControl
 
     '15 April Comment added as a result of Bug 6
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
     Private Sub WaitButtons(ByVal WaitType As String)
@@ -637,7 +636,7 @@ Partial Class ErunupUserControl
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        wcbutton.Text = "Confirm Energies"
+        wcbutton.Text = "Confirm Clinical"
         Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
         WriteDatauc1.Visible = True
         ForceFocus(wctext)

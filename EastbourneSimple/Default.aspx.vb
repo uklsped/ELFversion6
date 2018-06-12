@@ -18,7 +18,7 @@ Partial Class _Default
             Dim loadedstring As String = machinepage + "loaded"
 
             Select Case machinepage
-                Case "LA1", "LA2", "LA3", "LA4", "E1", "E2", "B1"
+                Case "LA1", "LA2", "LA3", "LA4", "E1", "E2", "B1", "T1"
 
                     Response.Redirect(returnstring)
                 Case Else

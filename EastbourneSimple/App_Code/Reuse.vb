@@ -12,7 +12,7 @@ Imports System.IO
 Namespace DavesCode
 
     Public Class Reuse
-       
+
         Public Shared Function GetIPAddress() As String
             Dim context As System.Web.HttpContext = System.Web.HttpContext.Current
             Dim sIPAddress As String = context.Request.ServerVariables("HTTP_X_FORWARDED_FOR")
@@ -44,7 +44,7 @@ Namespace DavesCode
             Return Activitydictionary.Item(activity)
 
         End Function
-      
+
 
 
         Public Shared Sub writeLogFile(ByVal useage As Integer, ByVal user As String, ByVal onoff As Boolean)
@@ -134,7 +134,7 @@ Namespace DavesCode
             Dim conn1 As SqlConnection
             Dim comm2 As SqlCommand
             Dim reader1 As SqlDataReader
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             status = "Linac Unauthorised"
 
@@ -155,7 +155,7 @@ Namespace DavesCode
                 End If
             Else
                 'DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, machine, 1)
-                DavesCode.Reuse.MachineState("No User", 5, machine, 7, False)
+                MachineState("No User", 5, machine, 7, False)
                 status = "Linac Unauthorised"
             End If
             reader1.Close()
@@ -180,7 +180,7 @@ Namespace DavesCode
             Dim conn1 As SqlConnection
             Dim comm2 As SqlCommand
             Dim reader1 As SqlDataReader
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             status = False
 
@@ -205,7 +205,7 @@ Namespace DavesCode
         Public Shared Sub ToggleBrowser(ByVal linac As String, ByVal toggle As Boolean)
             Dim conn1 As SqlConnection
             Dim comm2 As SqlCommand
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
 
             conn1 = New SqlConnection(connectionString)
@@ -222,7 +222,7 @@ Namespace DavesCode
 
         End Sub
 
-        Public Shared Function RandomNumber(ByVal MaxNumber As Integer, _
+        Public Shared Function RandomNumber(ByVal MaxNumber As Integer,
     Optional ByVal MinNumber As Integer = 0) As Integer
 
             'initialize random number generator
@@ -257,7 +257,7 @@ Namespace DavesCode
             If Membership.ValidateUser(loginUsername, loginPassword) Then
                 'Find out which user group user is in
                 Dim usergroupselected As Integer = GetRole(loginUsername)
-                If DavesCode.Reuse.LogOn(usergroupselected, MachineName, Reason) Then
+                If LogOn(usergroupselected, MachineName, Reason) Then
                     Return usergroupselected
                 Else
                     'Tell them they don't have permission
@@ -324,9 +324,9 @@ Namespace DavesCode
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("userstring").ConnectionString
             Dim con As New SqlConnection(connectionString)
             con.Open()
-            Dim cmd As New SqlCommand("select r.rolename from aspnet_Roles r " & _
-            "left outer join aspnet_UsersInRoles ur on ur.RoleId = r.RoleId " & _
-            "left outer join aspnet_Users u on u.UserId=ur.UserId " & _
+            Dim cmd As New SqlCommand("select r.rolename from aspnet_Roles r " &
+            "left outer join aspnet_UsersInRoles ur on ur.RoleId = r.RoleId " &
+            "left outer join aspnet_Users u on u.UserId=ur.UserId " &
             "where u.UserName = @UserName", con)
             cmd.Parameters.AddWithValue("@UserName", loginUsername)
             Dim da As New SqlDataAdapter(cmd)
@@ -417,7 +417,7 @@ Namespace DavesCode
             Dim linacName As String = linac
             Dim conn As SqlConnection
 
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim Machinestatus As SqlCommand
             Dim StatusNow As SqlCommand
@@ -442,7 +442,7 @@ Namespace DavesCode
             End If
             'commented out code removed 15 April 2016
 
-            Machinestatus = New SqlCommand("INSERT INTO LinacStatus (state, DateTime, usergroup,userreason,linac, UserName ) " & _
+            Machinestatus = New SqlCommand("INSERT INTO LinacStatus (state, DateTime, usergroup,userreason,linac, UserName ) " &
                                         "VALUES (@state, @Datetime, @usergroup, @userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
             Machinestatus.Parameters.AddWithValue("@state", System.Data.SqlDbType.NVarChar)
             Machinestatus.Parameters("@state").Value = nowstatus
@@ -484,7 +484,7 @@ Namespace DavesCode
             Dim lastState As String = ""
             Dim Activestatus As SqlCommand
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
 
             laststateid = GetLastTech(linacname, 1, lastState, lastusername:="", lastusergroup:=0)
@@ -492,7 +492,7 @@ Namespace DavesCode
 
             conn = New SqlConnection(connectionString)
 
-            Activestatus = New SqlCommand("INSERT INTO ActiveTime (userreason, StartID, StartTime, Linac, PreviousStateID ) " & _
+            Activestatus = New SqlCommand("INSERT INTO ActiveTime (userreason, StartID, StartTime, Linac, PreviousStateID ) " &
                                         "VALUES (@userreason,@StartID, @StartTime, @Linac, @PreviousStateID)", conn)
             Activestatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
             Activestatus.Parameters("@userreason").Value = possessreason
@@ -523,7 +523,7 @@ Namespace DavesCode
             Dim linacName As String = linac
             Dim conn As SqlConnection
 
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
 
             Dim StatusNow As SqlCommand
@@ -555,7 +555,7 @@ Namespace DavesCode
             UpdateNow.ExecuteNonQuery()
             conn.Close()
         End Sub
-     
+
 
         'Used
         Public Shared Function CommitRunup(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean) As String
@@ -566,7 +566,7 @@ Namespace DavesCode
             Dim cb As CheckBox
             Dim conn As SqlConnection
             Dim comm As SqlCommand
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim TextBox As String = TextBoxc
             Dim GridView1 As GridView = GridviewE
@@ -627,9 +627,9 @@ Namespace DavesCode
             minutesDuration = Decimal.Round(duration.TotalMinutes, 2, MidpointRounding.ToEven)
             'Had to amend this to insert extra energies for E1 4/7/17
             'new table for handoverenergies
-            comm = New SqlCommand("INSERT INTO HandoverEnergies ( MV6, MV6FFF, MV10, MV10FFF,MeV4, MeV6, MeV8, MeV10, MeV12, MeV15, MeV18, " & _
-                                  "MeV20, Comment, LogOutName, LogOutDate, linac, LogInDate, Duration,LogInStatusID, LogOutStatusID, Approved, LogInName) " & _
-                                  "VALUES ( @MV6, @MV6FFF, @MV10,@MV10FFF, @MeV4, @MeV6, @MeV8, @MeV10, @MeV12, @MeV15, @MeV18, @MeV20,  @Comment, @LogOutName, " & _
+            comm = New SqlCommand("INSERT INTO HandoverEnergies ( MV6, MV6FFF, MV10, MV10FFF,MeV4, MeV6, MeV8, MeV10, MeV12, MeV15, MeV18, " &
+                                  "MeV20, Comment, LogOutName, LogOutDate, linac, LogInDate, Duration,LogInStatusID, LogOutStatusID, Approved, LogInName) " &
+                                  "VALUES ( @MV6, @MV6FFF, @MV10,@MV10FFF, @MeV4, @MeV6, @MeV8, @MeV10, @MeV12, @MeV15, @MeV18, @MeV20,  @Comment, @LogOutName, " &
                                   "@LogOutDate, @linac, @LogInDate, @Duration,@LogInStatusID, @LogOutStatusID, @Approved, @LogInName)", conn)
 
             Select Case tablabel
@@ -774,7 +774,7 @@ Namespace DavesCode
                             comm.Parameters("@MeV18").Value = False
                             comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MeV20").Value = False
-                           
+
 
                         Case Else
                     End Select
@@ -870,7 +870,7 @@ Namespace DavesCode
                     comm.Parameters("@MeV18").Value = False
                     comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
                     comm.Parameters("@MeV20").Value = False
-                    
+
             End Select
 
 
@@ -919,7 +919,7 @@ Namespace DavesCode
             Dim conn As SqlConnection
             Dim localcomment As String = comment
             Dim MachineName As String = LinacID
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim commpm As SqlCommand
             Dim StartTime As DateTime
@@ -932,7 +932,7 @@ Namespace DavesCode
             Dim builder As New StringBuilder()
             Dim TableName As String = "AuxTable"
             Dim Activity As String = ""
-            Dim InsertData As String = "(Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " & _
+            Dim InsertData As String = "(Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
                                        "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)"
             Dim suspstate As String = suspendvalue
             Dim repstate As String = repairvalue
@@ -1069,7 +1069,7 @@ Namespace DavesCode
             Dim conn As SqlConnection
             Dim SqlDataSource1 As New SqlDataSource()
             Dim cb As CheckBox
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim commHAuthID As SqlCommand
             Dim contime As SqlCommand
@@ -1127,22 +1127,22 @@ Namespace DavesCode
                         LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 102, LinacName, 2)
                     Else
                         'added for E1 and E2
-                        If LinacName = "E1" Or LinacName="E2" Or LinacName = "B1" Then
-                             LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 7, LinacName, 1)
-                            Else
+                        If LinacName = "E1" Or LinacName = "E2" Or LinacName = "B1" Then
+                            LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 7, LinacName, 1)
+                        Else
                             LogOutStatusID = DavesCode.Reuse.SetStatus(logOutName, "Engineering Approved", 5, 7, LinacName, 2)
                         End If
-                        
+
                     End If
 
                 End If
             End If
             'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
-                                                      
+
             'This writes the clinicalhandover table - doesn't have the user in it
 
             Dim commaccept As SqlCommand
-            commaccept = New SqlCommand("INSERT INTO ClinicalHandover ( CComment,Ehandid, LogOutDate, linac, LogInDate, Duration, iView, XVI, LogOutStatusID, Approved, LogInName, LogOutName, LogInStatusID) " & _
+            commaccept = New SqlCommand("INSERT INTO ClinicalHandover ( CComment,Ehandid, LogOutDate, linac, LogInDate, Duration, iView, XVI, LogOutStatusID, Approved, LogInName, LogOutName, LogInStatusID) " &
                                         "VALUES (@CComment,@Ehandid, @LogOutDate, @linac, @LogInDate, @Duration, @iView, @XVI, @LogOutStatusID, @Approved, @LogInName, @LogOutName, @LogInStatusID)", conn)
             commaccept.Parameters.Add("@CComment", System.Data.SqlDbType.NVarChar, 250)
             commaccept.Parameters("@CComment").Value = textbox
@@ -1205,7 +1205,7 @@ Namespace DavesCode
             Dim conn As SqlConnection
             Dim SqlDataSource1 As New SqlDataSource()
 
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim commHAuthID As SqlCommand
             Dim contime As SqlCommand
@@ -1281,7 +1281,7 @@ Namespace DavesCode
             'This writes the clinicalstatus table
 
             Dim commaccept As SqlCommand
-            commaccept = New SqlCommand("INSERT INTO ClinicalStatus ( PClinID, LogInDate, LogOutDate, linac, Duration, LogInName, LogOutName,LogOutStatusID, logInStatusID) " & _
+            commaccept = New SqlCommand("INSERT INTO ClinicalStatus ( PClinID, LogInDate, LogOutDate, linac, Duration, LogInName, LogOutName,LogOutStatusID, logInStatusID) " &
                                         "VALUES (@PClinID, @LogInDate, @LogOutDate, @linac, @Duration,@LogInName, @LogOutName, @LogOutStatusID, @logInStatusID)", conn)
             'commaccept.Parameters.Add("@CComment", System.Data.SqlDbType.NVarChar, 250)
             'commaccept.Parameters("@CComment").Value = TextBox
@@ -1320,13 +1320,13 @@ Namespace DavesCode
             Dim StateType As String = State
             Dim Linacstatusid As String = linacstate
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim commstatus As SqlCommand
             time = Now()
             conn = New SqlConnection(connectionString)
             If StateType = "Treating" Then
-                commstatus = New SqlCommand("INSERT INTO TreatmentTable ( TreatmentStartTime, LinacStatusId,linac) " & _
+                commstatus = New SqlCommand("INSERT INTO TreatmentTable ( TreatmentStartTime, LinacStatusId,linac) " &
                                             "VALUES ( @TreatmentStartTime, @LinacStatusID, @linac)", conn)
 
                 commstatus.Parameters.Add("@TreatmentStartTime", System.Data.SqlDbType.DateTime)
@@ -1367,7 +1367,7 @@ Namespace DavesCode
             Dim LinacStatusID As String
             time = Now()
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim commstatus As SqlCommand
 
@@ -1378,7 +1378,7 @@ Namespace DavesCode
             conn = New SqlConnection(connectionString)
 
 
-            commstatus = New SqlCommand("INSERT INTO LinacStatus ( State, DateTime, Usergroup, Userreason, linac, UserName) " & _
+            commstatus = New SqlCommand("INSERT INTO LinacStatus ( State, DateTime, Usergroup, Userreason, linac, UserName) " &
                                         "VALUES ( @State, @Datetime, @Usergroup, @Userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
             commstatus.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
             commstatus.Parameters("@State").Value = StateType
@@ -1426,11 +1426,11 @@ Namespace DavesCode
             Dim conn As SqlConnection
             Dim comm As SqlCommand
 
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
 
             conn = New SqlConnection(connectionString)
-            comm = New SqlCommand("INSERT INTO WriteDuration (Linac, Activity, EndTime,  StartTime, Duration, StatusID) " & _
+            comm = New SqlCommand("INSERT INTO WriteDuration (Linac, Activity, EndTime,  StartTime, Duration, StatusID) " &
                                         "VALUES (@linac, @Activity, @EndTime, @StartTime, @Duration, @StatusID)", conn)
             comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
             comm.Parameters("@linac").Value = LinacName
@@ -1466,7 +1466,7 @@ Namespace DavesCode
             Dim conn As SqlConnection
             Dim comm As SqlCommand
             Dim contime As SqlCommand
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
 
             conn = New SqlConnection(connectionString)
@@ -1490,7 +1490,7 @@ Namespace DavesCode
             minutesDuration = Decimal.Round(duration.TotalMinutes, 2, MidpointRounding.ToEven)
 
 
-            comm = New SqlCommand("INSERT INTO WriteDuration (Linac, Activity, EndTime,  StartTime, Duration) " & _
+            comm = New SqlCommand("INSERT INTO WriteDuration (Linac, Activity, EndTime,  StartTime, Duration) " &
                                         "VALUES (@linac, @Activity, @EndTime, @StartTime, @Duration)", conn)
             comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
             comm.Parameters("@linac").Value = LinacName
@@ -1516,7 +1516,7 @@ Namespace DavesCode
             Dim LinacName As String = Linac
             Dim conn As SqlConnection
             Dim contime As SqlCommand
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
 
             conn = New SqlConnection(connectionString)
@@ -1548,7 +1548,7 @@ Namespace DavesCode
             Dim nowstatus As String
             Dim linacName As String = linac
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             'Dim Machinestatus As SqlCommand
             Dim StatusNow As SqlCommand
@@ -1586,7 +1586,7 @@ Namespace DavesCode
             Dim nowstatus As String = "Error"
             Dim linacName As String = linac
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             'Dim Machinestatus As SqlCommand
             Dim StatusNow As SqlCommand
@@ -1716,7 +1716,7 @@ Namespace DavesCode
             Dim reader As SqlDataReader
             Dim linacName As String = linac
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             'Dim Machinestatus As SqlCommand
             Dim StatusNow As SqlCommand
@@ -1750,7 +1750,7 @@ Namespace DavesCode
         Public Shared Function CheckForOpenFault(ByVal machinename As String) As Boolean
             Dim openfault As Boolean = False
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim existingfault As SqlCommand
             Dim LinacStatusID As String = ""
@@ -1774,10 +1774,10 @@ Namespace DavesCode
 
         Public Shared Sub ArchiveEnergies(ByVal EnergyIndex As Integer)
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim archive As SqlCommand
-           
+
             conn = New SqlConnection(connectionString)
 
             archive = New SqlCommand("Insert INTO  [PhysicsEnergiesArchive] Select * from [PhysicsEnergies] where EnergyID = @EnergyID", conn)
@@ -1790,17 +1790,17 @@ Namespace DavesCode
 
         Public Shared Sub ReturnImaging(ByRef iView As Boolean, ByRef XVi As Boolean, ByVal GridViewImage As GridView, ByVal MachineName As String)
             Dim cb As CheckBox
-            Select MachineName
+            Select Case MachineName
 
                 Case "LA1", "LA2", "LA3"
                     cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBoxImage"), CheckBox)
                     iView = cb.Checked
-                        'added E1 and LA6 for eastbourne 4/7/17
+                    'added E1 and LA6 for eastbourne 4/7/17
                 Case Else
                     cb = CType(GridViewImage.Rows(0).FindControl("RowLevelCheckBoxImage"), CheckBox)
                     iView = cb.Checked
                     cb = CType(GridViewImage.Rows(1).FindControl("RowLevelCheckBoxImage"), CheckBox)
-                    XVI = cb.Checked
+                    XVi = cb.Checked
             End Select
         End Sub
 

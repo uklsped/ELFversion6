@@ -130,7 +130,7 @@ Partial Class ViewFaultsuc
         Dim adapter As SqlDataAdapter
 
         conn = New SqlConnection(connectionstring)
-        querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " & _
+        querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " &
         "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac = @linac and c.ConcessionNumber != '' order by c.concessionnumber"
         adapter = New SqlDataAdapter()
         Dim command As SqlCommand = New SqlCommand(querystring, conn)
@@ -252,7 +252,7 @@ Partial Class ViewFaultsuc
         Dim reader As SqlDataReader
         Dim connectionstring As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         conn = New SqlConnection(connectionstring)
-        comm = New SqlCommand("select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " & _
+        comm = New SqlCommand("select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " &
             "from FaultTracking t  where t.incidentID=@incidentID order by t.trackingid asc", conn)
         comm.Parameters.Add("IncidentID", System.Data.SqlDbType.Int)
         comm.Parameters.Item("IncidentID").Value = Convert.ToInt16(IncidentNumber)
@@ -275,7 +275,7 @@ Partial Class ViewFaultsuc
         Dim reader As SqlDataReader
         Dim connectionstring As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         conn = New SqlConnection(connectionstring)
-        comm = New SqlCommand("SELECT FaultID ,Description,ReportedBy,DateReported, Area, Energy, GantryAngle, CollimatorAngle, Linac, IncidentID, BSUHID, ConcessionNumber " & _
+        comm = New SqlCommand("SELECT FaultID ,Description,ReportedBy,DateReported, Area, Energy, GantryAngle, CollimatorAngle, Linac, IncidentID, BSUHID, ConcessionNumber " &
         "FROM ReportFault where incidentID=@incidentID and FaultID not in (Select OriginalFaultID from FaultIDTable where incidentID=@incidentID) order by faultid asc", conn)
         comm.Parameters.Add("IncidentID", System.Data.SqlDbType.Int)
         comm.Parameters.Item("IncidentID").Value = Convert.ToInt16(IncidentNumber)
@@ -321,7 +321,7 @@ Partial Class ViewFaultsuc
         adapter = New SqlDataAdapter()
         Dim command As SqlCommand
 
-        querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " & _
+        querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " &
         "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and f.Status in (@closed, @concession) and f.dateinserted between @StartDate and @EndDate order by Dateinserted desc"
 
         command = New SqlCommand(querystring, conn)
@@ -373,7 +373,7 @@ Partial Class ViewFaultsuc
                     closed = "concession"
                     concession = "concession"
                 End If
-                querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " & _
+                querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " &
                 "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and f.Status in (@closed, @concession) order by Dateinserted desc"
 
                 command = New SqlCommand(querystring, conn)
@@ -382,7 +382,7 @@ Partial Class ViewFaultsuc
                 command.Parameters.AddWithValue("@closed", System.Data.SqlDbType.NVarChar).Value = closed
                 command.Parameters.AddWithValue("@concession", System.Data.SqlDbType.NVarChar).Value = concession
             Case 3
-                querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " & _
+                querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " &
                 "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and c.ConcessionNumber like 'ELF%'  order by Dateinserted desc"
                 command = New SqlCommand(querystring, conn)
                 adapter.SelectCommand = command
@@ -390,10 +390,10 @@ Partial Class ViewFaultsuc
             Case 5, 6
 
                 If radioselection = 5 Then
-                    querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " & _
+                    querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " &
                     "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and f.dateinserted between @StartDate and @EndDate order by Dateinserted desc"
                 Else
-                    querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " & _
+                    querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " &
                     "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and f.dateclosed between @StartDate and @EndDate order by Dateinserted desc"
                 End If
                 command = New SqlCommand(querystring, conn)

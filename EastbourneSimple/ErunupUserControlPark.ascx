@@ -1,4 +1,4 @@
-﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="ErunupUserControlPark.ascx.vb" Inherits="ErunupUserControl" %>
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="ErunupUserControlPark.ascx.vb" Inherits="ErunupUserControlPark" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
 <%--<%@ Register src="AtlasEnergyViewuc.ascx" tagname="AtlasEnergyViewuc" tagprefix="uc2" %>--%>
@@ -11,7 +11,7 @@
 
 
 
-<%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc6" %>
+<%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc6" %>
 
 
 
@@ -134,7 +134,7 @@
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
                Width="1500px">
                <asp:TableRow ID="r1" runat="server">
-                   <asp:TableCell ID="c1" runat="server" Width="250px" HorizontalAlign="Left">
+                   <%--<asp:TableCell ID="c1" runat="server" Width="250px" HorizontalAlign="Left">--%>
                   <%-- <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" >
             <Columns>
             
@@ -156,8 +156,8 @@
             </Columns>
         </asp:GridView>--%>
                
-</asp:TableCell>
-                   <asp:TableCell ID="imagingcell" runat="server" Width =" 250px" HorizontalAlign="Left">
+<%--</asp:TableCell>--%>
+                   <%--<asp:TableCell ID="imagingcell" runat="server" Width =" 250px" HorizontalAlign="Left">--%>
                        <%--<asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" >
             <Columns>
             
@@ -172,7 +172,7 @@
                       </asp:TemplateField>
             </Columns>
         </asp:GridView>--%>
-                   </asp:TableCell>
+                   <%--</asp:TableCell>--%>
                         
 
                    
@@ -208,31 +208,22 @@
                </asp:TableCell>
                </asp:TableRow>
                           </asp:Table>
-                          <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1507px">
+                          <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1500px">
          <asp:TableRow ID ="t2r1" runat="server">
-         <asp:TableCell ID="lock" runat="server" Width="160px" HorizontalAlign="Left">
-         <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
+         <asp:TableCell ID="lock" runat="server" Width="100px" HorizontalAlign="Left">
+             <asp:Button ID="LogOffButton" runat="server" Text="Log Off Not Clinical" CausesValidation="False" />
+         
          </asp:TableCell>
-         <asp:TableCell ID="t2c1" runat="server" Width="160px" HorizontalAlign="Left">
-         <asp:Button ID="FaultPanelButton" runat="server" Text="View Open Faults" causesvalidation ="false" Visible="false"/>
+         <asp:TableCell ID="t2c1" runat="server" Width="60px" HorizontalAlign="Left">
+              <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
+        <%-- <asp:Button ID="FaultPanelButton" runat="server" Text="View Open Faults" causesvalidation ="false" Visible="false"/>--%>
                </asp:TableCell>
-               <asp:TableCell ID="t2c2" runat="server" Width="50px">
-               <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" width = "160px" causesvalidation="false"/>
-               </asp:TableCell>
-               <asp:TableCell ID="TableCell1" runat="server">
-                    <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" CausesValidation="false" />
-                </asp:TableCell>
-               <asp:TableCell ID="t2c3" runat="server">
-               <asp:Button ID="LogOffButton" runat="server" Text="Log Off Without Approving Energies" CausesValidation="False" />
-               </asp:TableCell>
+               <asp:TableCell ID="t2c2" runat="server" Width="1380px">
               
+               </asp:TableCell>            
                         </asp:TableRow>
-               </asp:Table>
-                          
-            
-                          
-            </asp:Panel>
-           
+               </asp:Table>                
+            </asp:Panel>         
         </div>         
 
   <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true">
@@ -242,7 +233,7 @@
 
 </ContentTemplate> 
 </asp:UpdatePanel>
-<asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="false">
+<%--<asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="false">
 <ContentTemplate>
     <asp:PlaceHolder ID="PlaceHolder6" runat="server">
     </asp:PlaceHolder>
@@ -255,7 +246,7 @@
      <ContentTemplate>
          <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder>
      </ContentTemplate>
-</asp:UpdatePanel>
+</asp:UpdatePanel>--%>
 
 
  <asp:UpdatePanel ID="UpdatePanel4" runat="server">
