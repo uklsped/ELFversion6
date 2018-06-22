@@ -88,11 +88,11 @@
 
         <tr>
             <td class="style3">
-               <%-- Area:--%>
+               Error Code:
                 <%--comment out 21/11/16 to replace with text box
                  <span class = "redcolor"> * </span><br /> </td>--%>
             <td class="style4">
-                <asp:UpdatePanel ID="UpdatePanelArea" runat="server" UpdateMode="Conditional" Visible="false"  ><ContentTemplate>
+              <asp:UpdatePanel ID="UpdatePanelArea" runat="server" UpdateMode="Conditional" Visible="false"  ><ContentTemplate>
           <asp:DropDownList ID="DropDownListArea" runat="server"  enabled ="false" enableviewstate="false" Visible="false">
                 <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
                 <asp:ListItem Text="Machine" Value="Machine"></asp:ListItem>
@@ -104,7 +104,7 @@
                      </ContentTemplate>
                                    </asp:UpdatePanel>
                
-    <asp:TextBox ID="AreaBox" runat="server" Text="" readonly="true" EnableViewState="False" Visible="false"></asp:TextBox>
+    <asp:TextBox ID="AreaBox" runat="server" Text="" readonly="true" EnableViewState="False" Visible="true"></asp:TextBox>
             </td>
         </tr>
         <tr>
@@ -167,10 +167,12 @@
     <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" validationexpression="^\d{7}$" Display="Static" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
             </td>
             </tr>
-
+      </table>
+                           <Table>
 <tr>
  <td class="style2">
- <asp:Button ID="SaveDefectButton" runat="server" Text="Save" ValidationGroup="defect" CausesValidation="true" />
+ <asp:Button ID="SaveDefectButton" runat="server" Text="Close" ValidationGroup="defect" CausesValidation="true" /></td>
+     <td><asp:Button ID="HandtoPhysics" runat="server" Text="Hand To Physics" ValidationGroup="defect" CausesValidation="true" Enabled="false"/>
                                
 
                                </td>
