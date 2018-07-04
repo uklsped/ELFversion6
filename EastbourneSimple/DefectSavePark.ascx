@@ -53,19 +53,7 @@
                                    <asp:DropDownList ID="Defect" runat="server" AutoPostBack="true" 
                                        AppendDataBoundItems="True" DataValueField="IncidentID" DateTextField ="Fault">
                                     <asp:ListItem>Select</asp:ListItem>                           
-                                    <%--<asp:ListItem Value="-4">D1 RLY OFF</asp:ListItem>
-                                    <asp:ListItem Value="-5">COMMUNICATION ERROR</asp:ListItem>                                
-                                    <asp:ListItem Value="-6">LEAVES NOT READY</asp:ListItem>
-                                    <asp:ListItem Value="-7">UNIFORMITY</asp:ListItem>                                   
-                                    <asp:ListItem Value="-8">HT CON K</asp:ListItem>                                
-                                    <asp:ListItem Value="-9">INTEGRITY NOT READY</asp:ListItem>                                 
-                                    <asp:ListItem Value="-10">IVIEW IMAGE QUALITY</asp:ListItem>
-                                    <asp:ListItem Value="-11">M.FIL V MON</asp:ListItem>
-                                    <asp:ListItem Value="-12">DOSE DIFF</asp:ListItem>
-                                    <asp:ListItem Value="-13">IVIEW FAULT</asp:ListItem>
-                                    <asp:ListItem Value="-14">XVI FAULT</asp:ListItem>
-                                    <asp:ListItem Value="-15">DAILY QA3 WARNING</asp:ListItem>--%>
-                                    </asp:DropDownList>
+                                   </asp:DropDownList>
                                        
                                     </ContentTemplate>
                                    </asp:UpdatePanel>
@@ -73,26 +61,16 @@
                                     <td></td>
                                     </tr>
 
-<%--
-<tr>
-<td class="style1">--%>
      </table>       
-<%--                <asp:Label ID="Label2" runat="server" Text=""></asp:Label>
-            </td>
-            <td></td>
-            <td>
-            </td>
-            </tr>
-            </table>--%>
+
   <table style="width:401px;" >
 
         <tr>
             <td class="style3">
                Error Code:
-                <%--comment out 21/11/16 to replace with text box
-                 <span class = "redcolor"> * </span><br /> </td>--%>
+  
             <td class="style4">
-              <asp:UpdatePanel ID="UpdatePanelArea" runat="server" UpdateMode="Conditional" Visible="false"  ><ContentTemplate>
+            <%--  <asp:UpdatePanel ID="UpdatePanelArea" runat="server" UpdateMode="Conditional" Visible="false"  ><ContentTemplate>
           <asp:DropDownList ID="DropDownListArea" runat="server"  enabled ="false" enableviewstate="false" Visible="false">
                 <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
                 <asp:ListItem Text="Machine" Value="Machine"></asp:ListItem>
@@ -102,23 +80,23 @@
                 <asp:ListItem Text="Other" Value="Other"></asp:ListItem>
             </asp:DropDownList>
                      </ContentTemplate>
-                                   </asp:UpdatePanel>
+                                   </asp:UpdatePanel>--%>
                
-    <asp:TextBox ID="AreaBox" runat="server" Text="" readonly="true" EnableViewState="False" Visible="true"></asp:TextBox>
+    <asp:TextBox ID="ErrorCode" runat="server" Text="" readonly="false" EnableViewState="False" Visible="true"></asp:TextBox>
             </td>
         </tr>
-        <tr>
+       <%-- <tr>
             <td class="style2">
-               <%-- Energy:--%></td>
+               <%-- Energy:</td>
             <td class="style3">
               <asp:DropDownList ID="DropDownListEnergy" runat="server" Visible="false">
     </asp:DropDownList></td>
-        </tr>
+        </tr>--%>
         <tr>
             <td class="style2">
                 <%--Gantry Angle:--%>Physicist/Accuray job number:</td>
             <td>
-    <asp:TextBox ID="TextBox2" runat="server"></asp:TextBox>
+    <asp:TextBox ID="Accuray" runat="server"></asp:TextBox>
    <%-- <asp:CompareValidator ID="GantryAngleCheck"
         runat="server" ErrorMessage="Please enter angle as integer" 
                     ControlToValidate="TextBox2" Operator="DataTypeCheck" SetFocusOnError="True" 
@@ -133,7 +111,7 @@
            <%-- <td class="style2">
                 Collimator Angle:</td>
             <td> --%>
-    <asp:TextBox ID="TextBox3" runat="server" Visible="false"></asp:TextBox>
+    <%--<asp:TextBox ID="TextBox3" runat="server" Visible="false"></asp:TextBox>--%>
      <%--<asp:CompareValidator ID="CollimatorAngleCheck"
         runat="server" ErrorMessage="Please enter angle as integer" 
                 ControlToValidate="TextBox3" Operator="DataTypeCheck" SetFocusOnError="True" 
@@ -148,7 +126,7 @@
         <td class="style2">
                 Fault Description:</td>
             <td>
-              <asp:TextBox ID="TextBox4" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
+              <asp:TextBox ID="FaultDescription" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
               </td> 
         </tr>
       <tr>

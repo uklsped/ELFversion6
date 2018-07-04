@@ -3,11 +3,14 @@
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
 
-<%@ Register src="FaultGriduc.ascx" tagname="FaultGriduc" tagprefix="uc3" %>
-
-<%@ Register src="UpDateIncidentuc.ascx" tagname="UpDateIncidentuc" tagprefix="uc4" %>
-
 <%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc2" %>
+
+<%@ Register src="controls/DeviceReportedfaultuc.ascx" tagname="DeviceReportedfaultuc" tagprefix="uc5" %>
+
+<%@ Register src="controls/DeviceRepeatFaultuc.ascx" tagname="DeviceRepeatFaultuc" tagprefix="uc3" %>
+
+
+
 
 <style type="text/css">
     .style2
@@ -38,17 +41,17 @@
                     <asp:Table ID="Table3" runat="server">
                     <asp:TableRow>
                     <asp:TableCell>
-                     <uc2:ManyFaultGriduc ID="ManyFaultGriduc"  NewFault="false" runat="server" />
+                        
+                    <uc2:ManyFaultGriduc ID="ManyFaultGriduc"  NewFault="false" runat="server" />
                     </asp:TableCell>
                     <asp:TableCell>
                     <fieldset style="width:auto;">
                     <legend>Open Concessions</legend>
-                        <%--<uc3:FaultGriduc ID="FaultGriduc1"  Incident = "" NewFault="False" runat="server" />--%>
-                       
-                    <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" CellPadding="4" 
+                                               
+                    <asp:GridView ID="ConcessionGrid" runat="server" AutoGenerateColumns="False" CellPadding="4" 
                         DataKeyNames="incidentID" PageSize="5" 
                         style="top: 670px; left: 10px; height: 162px; width: 617px" 
-                        AllowPaging="True" OnPageIndexChanging="GridView1_PageIndexChanging" 
+                        AllowPaging="True" OnPageIndexChanging="ConcessionGrid_PageIndexChanging" 
                         onrowcommand="FaultGridView_RowCommand"
                         ForeColor="#333333" GridLines="None" EmptyDataText="No Data To Display" EmptyDataRowStyle-ForeColor="White" EmptyDataRowStyle-BackColor="Black" Font-Bold="True">
                         <RowStyle BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Center" />
@@ -112,12 +115,13 @@
                     <asp:MultiView ID="MultiView1" runat="server">
                         <asp:View ID="UpdatefaultView" runat="server">
                        
-                    <asp:UpdatePanel ID="UpdatePanelRepeatFault" runat="server" Visible="false">
+                    <asp:Panel ID="UpdatePanelRepeatFault" runat="server" Visible="false">
                     <ContentTemplate>
                      <fieldset style="width:700px;">
                     <legend>Repeat Faults</legend>
                     <fieldset style="width:700px;">
                     <legend>Record Repeat Fault</legend>
+                       
                      <asp:TableRow runat="server">
             <asp:TableCell>
                 <asp:Label ID="Label1" runat="server" Text="Incident ID"></asp:Label>
@@ -126,12 +130,16 @@
                 <asp:Label ID="Label2" runat="server" Text=""></asp:Label>
             </asp:TableCell>
             <asp:TableCell>
+                
             </asp:TableCell>
             <asp:TableCell>
             </asp:TableCell>
             </asp:TableRow>
-                     <table style="width:300px;">
+<asp:PlaceHolder ID="PlaceholderRepeatFault" runat="server"></asp:PlaceHolder>
+<%--                     <table style="width:300px;">
         <tr>
+           
+                         
             <td class="style1">
                 Area:</td>
             <td>
@@ -176,27 +184,28 @@
             </tr>
 
     </table>
+
     <table style="width:300px;">
         <tr>
             <td class="style1">
-        <asp:Button ID="confirmfault" runat="server" Text="Confirm Repeat Fault" 
+      <asp:Button ID="confirmfault" runat="server" Text="Confirm Repeat Fault" 
                     causesvalidation="false"/>
         </td>
-        <td><asp:Button ID="Cancel" runat="server" Text="Cancel" CausesValidation="false" />
+     <td><asp:Button ID="Cancel" runat="server" Text="Cancel" CausesValidation="false" />
         </td>
         </tr>
-        </table>
+        </table>--%>
         
                         <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" causesvalidation="false"/>
                         </fieldset>
-                        <%--<uc3:FaultGriduc ID="FaultGriduc1" runat="server" />--%>
-                       <fieldset style="width:auto">
+                        <fieldset style="width:auto">
                        <legend>Associated Faults
                            </legend>
                        <asp:UpdatePanel ID="UpdatePanelVEF" runat="server">
                             
                         <ContentTemplate>
-                        <asp:GridView ID="GridView4" AutoGenerateColumns="false" runat="server"
+                            <asp:PlaceHolder ID="PlaceHolder3" runat="server"></asp:PlaceHolder>
+                       <%-- <asp:GridView ID="GridView4" AutoGenerateColumns="false" runat="server"
                         CellPadding="4" DataKeyNames="FaultID" 
         EnableViewState="False" ForeColor="#333333" GridLines="None" 
         AllowSorting="True">
@@ -225,12 +234,13 @@
         <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
         <PagerStyle BackColor="#666666" ForeColor="White" HorizontalAlign="Center" />
         <SelectedRowStyle BackColor="#C5BBAF" Font-Bold="True" ForeColor="#333333" />
-    </asp:GridView></fieldset></fieldset>
+    </asp:GridView>--%>
+                            </fieldset></fieldset>
                     </ContentTemplate>
                         </asp:UpdatePanel>
                         
                     </ContentTemplate>
-                    </asp:UpdatePanel>
+                    </asp:Panel>
                     </asp:View>
                         <asp:View ID="View1" runat="server">
                             <asp:MultiView ID="MultiView2" runat="server">
@@ -336,7 +346,7 @@
     <%--<asp:PlaceHolder ID="PlaceHolderDisplayfault" runat="server"></asp:PlaceHolder>--%>
             <fieldset style="width:300px;">
                 
-
+<%-- from here to line 419
             <legend>Reported Fault Details</legend>
                 <table style="width:300px;">                
         <tr>           
@@ -412,12 +422,18 @@
               <td>
                   <asp:TextBox ID="OriginalOpenDateBox" runat="server" ReadOnly="True"></asp:TextBox>
               </td>
+                  <td> --%>
+                      <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder></td>
+                     
         </tr>
     </table>
+
     </fieldset>
     </asp:TableCell>
     </asp:TableRow>
     </asp:Table>
+             
+            
         </asp:Panel>
         <asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow"> 
                 <asp:GridView ID="GridView5" runat="server" AllowPaging="True" 
@@ -517,7 +533,10 @@
                 
             </asp:UpdatePanel>
 
-            <div>
+
+
+
+<%--            <div>
             <asp:UpdatePanel ID="UpdatePanelNewFault" runat="server" Visible="false">
                     <ContentTemplate>
                      <fieldset style="width:700px;">
@@ -601,7 +620,7 @@
             
             
             
-            </div>
+            </div>--%>
          
 <%--<uc2:ManyFaultGriduc ID="ManyFaultGriduc1" runat="server" />--%>
 

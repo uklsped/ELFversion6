@@ -6,6 +6,7 @@ Partial Class DefectSavePark
     Private MachineName As String
     Private actionstate As String
     Private time As DateTime
+    Const Unrecoverable As Integer = -23
     Public Event UpDateDefect(ByVal EquipmentName As String, ByVal incidentID As String)
     Public Event UpdateViewFault(ByVal EquipmentName As String)
 
@@ -72,32 +73,32 @@ Partial Class DefectSavePark
                 '    strScript += "</script>"
                 '    ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
             ElseIf Defect.SelectedItem.Text = "UnRecoverable Fault" Then
-                If DropDownListArea.SelectedItem.Text = "Select" Then
+                If Accuray.Text = "" Then
                     wctrl.Visible = False
-                    DropDownListArea.Enabled = True
-                    strScript += "alert('Please select an Area');"
+                    'AreaBox.Enabled = True
+                    strScript += "alert('Please enter a name or Job number');"
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                ElseIf TextBox4.Text = "" Then
+                ElseIf FaultDescription.Text = "" Then
                     wctrl.Visible = False
-                    DropDownListArea.Enabled = True
+                    'DropDownListArea.Enabled = True
                     strScript += "alert('Please complete the Fault Description');"
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                 ElseIf RadAct.Text = "" Then
                     wctrl.Visible = False
-                    DropDownListArea.Enabled = True
+                    'DropDownListArea.Enabled = True
                     strScript += "alert('Please complete corrective action');"
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                 Else
-                    wcbutton.Text = "Saving RAD RESET"
+                    wcbutton.Text = "Saving Unrecoverable Fault"
                     Application(actionstate) = "Confirm"
                     wctrl.Visible = True
                     ForceFocus(wctext)
                 End If
             Else
-                'This is what will happen for recoverable fault
+                'This is what will happen for recoverable fault and Concession
                 'Now just call User Approved Even March 2016
                 'UserApprovedEvent("Defect", "")
                 Application(actionstate) = "Confirm"
@@ -116,7 +117,7 @@ Partial Class DefectSavePark
         If Not IsPostBack Then
             newFault = False
             SetFaults(newFault)
-            AddEnergyItem()
+            'AddEnergyItem()
 
         End If
         'WriteDatauc1 no longer used 23/11/16
@@ -175,27 +176,27 @@ Partial Class DefectSavePark
 
     End Sub
     'Not used - for if areas are in table
-    Protected Sub SetArea()
+    'Protected Sub SetArea()
 
-        Dim Areas As New DataTable()
-        Dim conn As SqlConnection
-        Dim comm As SqlCommand
-        'vs formatting
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        conn = New SqlConnection(connectionString1)
+    '    Dim Areas As New DataTable()
+    '    Dim conn As SqlConnection
+    '    Dim comm As SqlCommand
+    '    'vs formatting
+    '    Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+    '    conn = New SqlConnection(connectionString1)
 
-        comm = New SqlCommand("SELECT AreaID, Area FROM [AreaTable] order by AreaID", conn)
+    '    comm = New SqlCommand("SELECT AreaID, Area FROM [AreaTable] order by AreaID", conn)
 
-        'Don't need to open https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/populating-a-dataset-from-a-dataadapter
-        'conn.Open()
-        Dim at As New SqlDataAdapter(comm)
-        at.Fill(Areas)
+    '    'Don't need to open https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/populating-a-dataset-from-a-dataadapter
+    '    'conn.Open()
+    '    Dim at As New SqlDataAdapter(comm)
+    '    at.Fill(Areas)
 
-        DropDownListArea.DataSource = Areas
-        DropDownListArea.DataTextField = "Area"
-        DropDownListArea.DataValueField = "AreaID"
-        DropDownListArea.DataBind()
-    End Sub
+    '    DropDownListArea.DataSource = Areas
+    '    DropDownListArea.DataTextField = "Area"
+    '    DropDownListArea.DataValueField = "AreaID"
+    '    DropDownListArea.DataBind()
+    'End Sub
 
     Private Sub BindDefectData()
 
@@ -222,14 +223,14 @@ Partial Class DefectSavePark
     End Function
 
     Protected Sub Defect_SelectedIndexChanged(sender As Object, e As System.EventArgs) Handles Defect.SelectedIndexChanged
-        Dim radreset As String = "Undefined"
+        'Dim radreset As String = "Undefined"
         Dim incidentIDstring As String = ""
         Dim incidentID As Integer
         Dim conn1 As SqlConnection
         Dim comm1 As SqlCommand
-        Dim comm2 As SqlCommand
-        Dim Region As String = ""
-        Dim Queryreturn As String = ""
+        'Dim comm2 As SqlCommand
+        'Dim Region As String = ""
+        'Dim Queryreturn As String = ""
         'formatting vs
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
@@ -239,88 +240,87 @@ Partial Class DefectSavePark
         Dim index As Integer
         index = Defect.Items.IndexOf(result)
         If Integer.TryParse(incidentIDstring, incidentID) Then
-            DropDownListArea.SelectedIndex = -1
+
             HiddenField1.Value = incidentID
 
             conn1 = New SqlConnection(connectionString)
-            If incidentID > 0 Then
-                comm1 = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn1)
-                comm2 = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn1)
-            Else
-                comm1 = New SqlCommand("SELECT Area from DefectTable where incidentID=@incidentID", conn1)
-            End If
+            If incidentID > 0 Then 'concession
+                comm1 = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn1) 'Corrective action
 
-            comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-            comm1.Parameters("@incidentID").Value = incidentID
+                comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                comm1.Parameters("@incidentID").Value = incidentID
 
-            conn1.Open()
-            Dim sqlresult As Object = comm1.ExecuteScalar()
-            If sqlresult Is Nothing Then
+                conn1.Open()
+                'Dim sqlresult As Object = comm1.ExecuteScalar()
+                'If sqlresult Is Nothing Then
+                'do nothing
                 'AreaBox.Text = String.Empty
-                DropDownListArea.SelectedValue = "Select"
-            Else
-                Queryreturn = sqlresult.ToString
-                If Queryreturn = radreset Then
-                    DropDownListArea.Enabled = True
-                    DropDownListArea.SelectedValue = "Select"
-
-                Else
-                    DropDownListArea.SelectedItem.Text = sqlresult.ToString
-                    HiddenField2.Value = sqlresult.ToString
-                    DropDownListArea.Enabled = False
-                    If incidentID > 0 Then
-                        comm2 = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn1)
-                        comm2.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                        comm2.Parameters("@incidentID").Value = incidentID
-                        Dim sqlresult1 As Object = comm2.ExecuteScalar()
-                        RadAct.Text = sqlresult1.ToString
+                'DropDownListArea.SelectedValue = "Select"
+                'Else
+                'Queryreturn = sqlresult.ToString
+                'If Queryreturn = radreset Then
+                'DropDownListArea.Enabled = True
+                'DropDownListArea.SelectedValue = "Select"
+                'AreaBox.Enabled = True
+                'Else
+                'DropDownListArea.SelectedItem.Text = sqlresult.ToString
+                'AreaBox.Text = sqlresult.ToString
+                'HiddenField2.Value = sqlresult.ToString - this might be needed for energy or error code later
+                'AreaBox.Enabled = False
+                'DropDownListArea.Enabled = False
+                'If incidentID > 0 Then
+                'comm2 = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn1)
+                'comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                'comm1.Parameters("@incidentID").Value = incidentID
+                Dim sqlresult1 As Object = comm1.ExecuteScalar()
+                    RadAct.Text = sqlresult1.ToString
                         RadAct.ReadOnly = True
-                    End If
 
-                End If
+
             End If
 
-            conn1.Close()
+
+        conn1.Close()
 
         Else
             HiddenField1.Value = -1000
             'AreaBox.Text = String.Empty
-            DropDownListArea.SelectedIndex = -1
+            'DropDownListArea.SelectedIndex = -1
         End If
 
     End Sub
-    Protected Sub AddEnergyItem()
-        'from http://www.aspsnippets.com/Articles/Programmatically-add-items-to-DropDownList-on-Button-Click-in-ASPNet-using-C-and-VBNet.aspx
-        'and http://www.yaldex.com/asp_tutorial/0596004877_progaspdotnet2-chp-5-sect-7.html
+    'Protected Sub AddEnergyItem()
+    '    'from http://www.aspsnippets.com/Articles/Programmatically-add-items-to-DropDownList-on-Button-Click-in-ASPNet-using-C-and-VBNet.aspx
+    '    'and http://www.yaldex.com/asp_tutorial/0596004877_progaspdotnet2-chp-5-sect-7.html
 
-        'This is a mad way of doing it but I don't know how to dim the energy list without constructing it at the same time
+    '    'This is a mad way of doing it but I don't know how to dim the energy list without constructing it at the same time
 
-        Select Case MachineName
-            Case "LA1"
-                Dim Energy1() As String = {"Select", "6 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
-                ConstructEnergylist(Energy1)
-            Case "LA2", "LA3"
-                Dim Energy1() As String = {"Select", "6 MV", "10 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
-                ConstructEnergylist(Energy1)
-            Case "LA4"
-                Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
-                ConstructEnergylist(Energy1)
-            Case "E1", "E2", "B1"
-                Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
-                ConstructEnergylist(Energy1)
-            Case Else
-                'Don't show any energies
-        End Select
+    '    Select Case MachineName
+    '        Case "LA1"
+    '            Dim Energy1() As String = {"Select", "6 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
+    '            ConstructEnergylist(Energy1)
+    '        Case "LA2", "LA3"
+    '            Dim Energy1() As String = {"Select", "6 MV", "10 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
+    '            ConstructEnergylist(Energy1)
+    '        Case "LA4"
+    '            Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
+    '            ConstructEnergylist(Energy1)
+    '        Case "E1", "E2", "B1"
+    '            Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
+    '            ConstructEnergylist(Energy1)
+    '        Case Else
+    '            'Don't show any energies
+    '    End Select
 
-    End Sub
-    Protected Sub ConstructEnergylist(ByVal Energylist() As String)
-        Dim energy() As String = Energylist
-        Dim i As Integer
-        For i = 0 To energy.GetLength(0) - 1
-            DropDownListEnergy.Items.Add(New ListItem(energy(i)))
-        Next
-        DropDownListEnergy.SelectedIndex = -1
-    End Sub
+    'End Sub
+    'Protected Sub ConstructEnergylist(ByVal Energylist() As String)
+    '    Dim energy() As String = Energylist
+    '    Dim i As Integer
+    '    For i = 0 To energy.GetLength(0) - 1
+    '        DropDownListEnergy.Items.Add(New ListItem(energy(i)))
+    '    Next
+    '    DropDownListEnergy.SelectedIndex = -1
+    'End Sub
 
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
         ClearsForm()
@@ -328,19 +328,19 @@ Partial Class DefectSavePark
 
     Protected Sub ClearsForm()
         Defect.SelectedIndex = -1
-        DropDownListArea.SelectedIndex = -1
-        DropDownListEnergy.SelectedIndex = -1
-        TextBox2.Text = Nothing
-        TextBox3.Text = Nothing
-        TextBox4.Text = Nothing
+        'DropDownListArea.SelectedIndex = -1
+        'DropDownListEnergy.SelectedIndex = -1
+        ErrorCode.Text = Nothing
+        Accuray.Text = Nothing
+        FaultDescription.Text = Nothing
         PatientIDBox.Text = Nothing
         RadAct.Text = Nothing
     End Sub
 
-    Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
+    'Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
 
-        HiddenField2.Value = DropDownListArea.SelectedValue.ToString
-    End Sub
+    '    HiddenField2.Value = DropDownListArea.SelectedValue.ToString
+    'End Sub
 
     Protected Sub Writeradreset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
         'Dim time As DateTime
@@ -358,7 +358,7 @@ Partial Class DefectSavePark
 
 
         LastIncident = HiddenField1.Value
-        If LastIncident = -21 Then
+        If LastIncident = Unrecoverable Then
             Dim logInStatusID As Integer = 0
             ConcessionNumber = ""
             Dim constateid As SqlCommand
@@ -439,7 +439,7 @@ Partial Class DefectSavePark
             commconcess.Parameters.Add("@PreFix", System.Data.SqlDbType.NVarChar, 10)
             commconcess.Parameters("@PreFix").Value = "ELF"
             commconcess.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 250)
-            commconcess.Parameters("@ConcessionDescription").Value = TextBox4.Text
+            commconcess.Parameters("@ConcessionDescription").Value = FaultDescription.Text
             commconcess.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
             commconcess.Parameters("@incidentID").Value = LastIncident
             commconcess.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
@@ -514,31 +514,23 @@ Partial Class DefectSavePark
     Protected Sub WriteReportFault(ByVal UserInfo As String, ByVal LastIncident As String, ConcessionNumber As String)
         Dim conn As SqlConnection
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        Dim Energy As String = ""
-        'Energy = DropDownListEnergy.SelectedItem.Text
-        'If Energy = "Select" Then
-        '    Energy = ""
-        'End If
+
         time = Now()
 
         conn = New SqlConnection(connectionString)
         Dim commfault As SqlCommand
-        commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber ) " _
-                                  & "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
+        commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, Linac, IncidentID, BSUHID, ConcessionNumber ) " _
+                                  & "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
         commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
-        commfault.Parameters("@Description").Value = TextBox4.Text
+        commfault.Parameters("@Description").Value = FaultDescription.Text
         commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
         commfault.Parameters("@ReportedBy").Value = UserInfo
         commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
         commfault.Parameters("@DateReported").Value = time
         commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
-        commfault.Parameters("@Area").Value = HiddenField2.Value
+        commfault.Parameters("@Area").Value = Accuray.Text
         commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 10)
-        commfault.Parameters("@Energy").Value = Energy
-        commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
-        commfault.Parameters("@GantryAngle").Value = TextBox2.Text
-        commfault.Parameters.Add("@CollimatorAngle", System.Data.SqlDbType.NVarChar, 3)
-        commfault.Parameters("@CollimatorAngle").Value = TextBox3.Text
+        commfault.Parameters("@Energy").Value = ErrorCode.Text
         commfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
         commfault.Parameters("@Linac").Value = MachineName
         commfault.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
