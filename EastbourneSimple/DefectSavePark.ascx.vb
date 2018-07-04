@@ -499,13 +499,14 @@ Partial Class DefectSavePark
                     conn.Close()
                 End Try
                 BindDefectData()
+                RaiseEvent UpDateDefect(MachineName, LastIncident)
+                RaiseEvent UpdateViewFault(MachineName)
             End If
         Else
             WriteReportFault(UserInfo, LastIncident, ConcessionNumber)
             BindDefectData()
         End If
-        RaiseEvent UpDateDefect(MachineName, LastIncident)
-        RaiseEvent UpdateViewFault(MachineName)
+
 
         ClearsForm()
 
