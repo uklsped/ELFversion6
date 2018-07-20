@@ -45,14 +45,22 @@ Partial Class DefectSavePark
             Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
             wctrl.Visible = False
             If Action = "Confirm" Then
-                Writeradreset(Userinfo, ConcessionNumber)
+                BindDefectData()
+
+                'Writeradreset(Userinfo, ConcessionNumber)
             Else
                 ClearsForm()
             End If
         End If
     End Sub
 
-    Protected Sub SaveDefectButton_Click(sender As Object, e As System.EventArgs) Handles SaveDefectButton.Click
+    Protected Sub SaveDefectButton_Click(sender As Object, e As System.EventArgs) Handles SaveDefectButton.Click, FaultOpenClosed.SelectedIndexChanged
+        'Dim b As Button = TryCast(sender, Button)
+        'Dim i As RadioButtonList
+        'If b Is Nothing Then
+        '    i = CType(sender, RadioButtonList)
+        'End If
+
         'No need for reference to WriteDatauc if no signature - March 2016
         'Back in 26/03/2108
         Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
@@ -62,6 +70,7 @@ Partial Class DefectSavePark
         Page.Validate("defect")
         If Page.IsValid Then
             If Defect.SelectedItem.Text = "Select" Then
+                FaultOpenClosed.SelectedIndex = -1
                 wctrl.Visible = False
                 strScript += "alert('Please select a fault');"
                 strScript += "</script>"
@@ -74,18 +83,21 @@ Partial Class DefectSavePark
                 '    ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
             ElseIf Defect.SelectedItem.Text = "UnRecoverable Fault" Then
                 If Accuray.Text = "" Then
+                    FaultOpenClosed.SelectedIndex = -1
                     wctrl.Visible = False
                     'AreaBox.Enabled = True
                     strScript += "alert('Please enter a name or Job number');"
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                 ElseIf FaultDescription.Text = "" Then
+                    FaultOpenClosed.SelectedIndex = -1
                     wctrl.Visible = False
                     'DropDownListArea.Enabled = True
                     strScript += "alert('Please complete the Fault Description');"
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                 ElseIf RadAct.Text = "" Then
+                    FaultOpenClosed.SelectedIndex = -1
                     wctrl.Visible = False
                     'DropDownListArea.Enabled = True
                     strScript += "alert('Please complete corrective action');"
@@ -328,6 +340,7 @@ Partial Class DefectSavePark
 
     Protected Sub ClearsForm()
         Defect.SelectedIndex = -1
+        FaultOpenClosed.SelectedIndex = -1
         'DropDownListArea.SelectedIndex = -1
         'DropDownListEnergy.SelectedIndex = -1
         ErrorCode.Text = Nothing
@@ -609,4 +622,5 @@ Partial Class DefectSavePark
     Private Sub ForceFocus(ByVal ctrl As Control)
         ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
+
 End Class

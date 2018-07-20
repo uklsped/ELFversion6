@@ -381,7 +381,8 @@ Namespace DavesCode
                     End If
                     '104 is recovery and at the moment let anyone do that
                     'change 11 to only allow rad to select RAD RESET in defect uc
-                Case 8, 10, 102, 103, 104
+                    'Added 12 to allow for tomo unrecoverable fault
+                Case 8, 10, 12, 102, 103, 104
                     Return True
 
                 Case 11

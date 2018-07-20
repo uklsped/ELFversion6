@@ -37,7 +37,7 @@
 <asp:HiddenField ID="HiddenField3" Value="" runat="server" />
 <%-- NO requirement 23/11/16 --%>
 <%-- Added back in 26/03/18 --%>
-<uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11"  Tabby="Defect"  WriteName="Defect" visible="false"  runat="server" />
+<uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="12"  Tabby="Defect"  WriteName="Defect" visible="false"  runat="server" />
 
                  <%--<asp:TableCell ID="c2" runat="server" HorizontalAlign="left" Width="250px">Radiographer Cleared Fault <br />--%>
                  
@@ -147,6 +147,16 @@
             </tr>
       </table>
                            <Table>
+                               <tr>
+                                   <td class="style2">
+                                       <asp:Label ID="Label1" runat="server" Text="Fault Closed?"></asp:Label>
+                                       <asp:RadioButtonList ID="FaultOpenClosed"  runat="server" AutoPostBack="True">
+                                           <asp:ListItem Text="No" Value="-1"></asp:ListItem>
+                                           <asp:ListItem Text="Yes" Value="1"></asp:ListItem> </asp:RadioButtonList>
+                                       </td>
+                                   <td class="style2">
+                                       </td>
+                               </tr>
 <tr>
  <td class="style2">
  <asp:Button ID="SaveDefectButton" runat="server" Text="Close" ValidationGroup="defect" CausesValidation="true" /></td>
