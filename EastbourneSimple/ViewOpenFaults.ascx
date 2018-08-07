@@ -32,7 +32,7 @@
                 CausesValidation="False" Text="View Open Faults" />--%>    
        <br />
 <br />
-<uc1:WriteDatauc ID="WriteDatauc1"  LinacName ="" Tabby="Updatefault" UserReason="11" Visible="false" runat="server" />
+<%--<uc1:WriteDatauc ID="WriteDatauc1"  LinacName ="" Tabby="Updatefault" UserReason="11" Visible="false" runat="server" />--%>
        <asp:UpdatePanel ID="UpdatePanel4"  runat="server" 
     ChildrenAsTriggers="False" UpdateMode="Conditional">
                 <ContentTemplate>

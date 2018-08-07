@@ -74,6 +74,14 @@
     <asp:TextBox ID="ErrorTextBox" runat="server"></asp:TextBox>
             </td>
         </tr>
+                       <tr>
+            <td class="style2">
+                Physicist/Accuray job number:</td>
+            <td>
+    <asp:TextBox ID="Accuray" runat="server" EnableViewState="false"></asp:TextBox>
+               
+            </td>
+        </tr>
         <tr>
              
         <td class="style1">
@@ -85,6 +93,14 @@
                     Rows="5" TextMode="MultiLine"></asp:TextBox>
               </td>
               </tr>
+                       <tr>
+          <td class="style2">
+              Corrective Action:
+          </td>
+          <td>
+                            <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible ="true" EnableViewState="false" ReadOnly="True"></asp:TextBox>
+                </td>
+      </tr>
                <tr>
                 
         <td class="style1">

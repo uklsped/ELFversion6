@@ -3,33 +3,21 @@
 
 <%--<%@ Register src="AtlasEnergyViewuc.ascx" tagname="AtlasEnergyViewuc" tagprefix="uc2" %>--%>
 
-
 <%@ Register src="UpDateIncidentuc.ascx" tagname="UpDateIncidentuc" tagprefix="uc3" %>
-
 
 <%@ Register src="ViewCommentsuc.ascx" tagname="ViewCommentsuc" tagprefix="uc5" %>
 
-
-
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc6" %>
-
-
 
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>
 
-
-
 <%@ Register src="Traininguc.ascx" tagname="Traininguc" tagprefix="uc8" %>
-
 
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>
 
-
 <%@ Register src="WebUserControl2.ascx" tagname="WebUserControl2" tagprefix="uc10" %>
 
-
 <%--<%@ Register src="CommitData.ascx" tagname="CommitData" tagprefix="uc3" %>--%>
-
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc4" %>
 <%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc1" %>
@@ -41,90 +29,8 @@
 <%@ Register src="Singlemachinefaultuc.ascx" tagname="Singlemachinefaultuc" tagprefix="uc2" %>
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="1" Tabby="1" visible="false" runat="server" />
 
-<asp:Label ID="CheckUser" runat="server" Text=""  visible="true" display="none" causesvalidation="false"></asp:Label>
-      
-
-        
-            <script type="text/javascript">
-                //    function pageLoad() {
-                //    var popup = $find('check_ModalPopupExtender');
-                //popup.add_showing(calledWhenShown);
-                //        if (popup != null) {
-                //            popup.show();
-                //        }
-                //     }
-
-               
-               <%-- function yaag() {
-
-                    
-                    pipup.add_showing(calledWhenShown);
-                    return true;
-                }
-                
-
-
-                function runup() {
-                    var apopup = $find('check_ModalPopupExtender');
-
-                    apopup.add_showing(rkunup);
-
-                }
-                function rkunup() {
-                    alert('I am called!');
-                }
-
-
-
-                function calledWhenShown() {
-
-                    alert('I am called when the ModalPopup is shown');
-
-                }
-
-                function ClearUI() {
-                    $find("textvalidator1").hide();
-                    $get("txtUsername").value = "";
-                }
-
-                function IsValid() {
-                    var textbox = $get("txtUsername");
-                    if (textbox.value == "") {
-                        return false;
-                    }
-                    else
-                        return true;
-                }
-                function ClosePopup() {
-                    if (IsValid()) {
-                        
-                        alert("You have given your name");
-                        ClearUI();
-                    }
-                }
-
-                function DoClose() {
-                    // close the modal popup
-                    
-                    
-                    $find('Buggerit_ModalPopupExtender').hide();
-
-                    // return true so that submit will happen
-                    return true;
-                }
-                function CheckAllEmp(Checkbox) {
-                    var GridView1 = document.getElementById("<%=GridView1.ClientID %>");
-                    for (i = 1; i < GridView1.rows.length; i++) {
-                        if (GridView1.rows[i].cells[1].getElementsByTagName("RowlevelCheckBox")[0].enabled) {
-                            GridView1.rows[i].cells[1].getElementsByTagName("INPUT")[0].checked = Checkbox.checked;
-                        }
-                    }
-                }--%>
-
-
-
-            </script>
-
+<asp:Label ID="CheckUser" runat="server" Text=""  visible="true" display="none" causesvalidation="false"></asp:Label>     
+       
  <div>
  
        <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
@@ -133,49 +39,8 @@
            
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
                Width="1500px">
-               <asp:TableRow ID="r1" runat="server">
-                   <%--<asp:TableCell ID="c1" runat="server" Width="250px" HorizontalAlign="Left">--%>
-                  <%-- <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" >
-            <Columns>
-            
-                <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
-                    SortExpression="Energy" />
-                    <asp:TemplateField>  
-            <HeaderTemplate>  
-                <asp:CheckBox ID="chkSelectAll"   
-                    runat="server" 
-                    AutoPostBack="true"  
-                    OncheckedChanged="checked"
-                     />  
-            </HeaderTemplate>
-                    
-            <ItemTemplate>
-            <asp:CheckBox runat="server" ID="RowlevelCheckBox" />
-            </ItemTemplate>
-            </asp:TemplateField>
-            </Columns>
-        </asp:GridView>--%>
-               
-<%--</asp:TableCell>--%>
-                   <%--<asp:TableCell ID="imagingcell" runat="server" Width =" 250px" HorizontalAlign="Left">--%>
-                       <%--<asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" >
-            <Columns>
-            
-                <asp:BoundField DataField="Energy" HeaderText="Select Imaging" 
-                    SortExpression="Energy" />
-                    <asp:TemplateField>  
-                             
-            <ItemTemplate>
-            <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" />
+               <asp:TableRow ID="r1" runat="server">                     
 
-            </ItemTemplate>
-                      </asp:TemplateField>
-            </Columns>
-        </asp:GridView>--%>
-                   <%--</asp:TableCell>--%>
-                        
-
-                   
                    <asp:TableCell ID="c2" runat="server" Width="50px">
                        
                    <asp:Button ID="engHandoverButton" runat="server" Text="Approve For Clinical Use" causesvalidation="false"  Height="150px" BackColor="#FFCC00"/>
@@ -233,21 +98,6 @@
 
 </ContentTemplate> 
 </asp:UpdatePanel>
-<%--<asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="false">
-<ContentTemplate>
-    <asp:PlaceHolder ID="PlaceHolder6" runat="server">
-    </asp:PlaceHolder>
-        </ContentTemplate>
-        
-</asp:UpdatePanel>
-
- 
-<asp:UpdatePanel ID="UpdatePanelatlas" runat="server" Visible="false">
-     <ContentTemplate>
-         <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder>
-     </ContentTemplate>
-</asp:UpdatePanel>--%>
-
 
  <asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>

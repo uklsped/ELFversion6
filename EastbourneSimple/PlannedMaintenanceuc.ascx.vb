@@ -15,6 +15,7 @@ Partial Class Planned_Maintenanceuc
     Private qaviewstate As String
     Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
+    Private Todaydefectpark As DefectSavePark
     Dim Master As Object
     Private laststate As String
     Private lastuser As String
@@ -23,6 +24,7 @@ Partial Class Planned_Maintenanceuc
     Private Event AutoApproved(ByVal Tab As String, ByVal UserName As String)
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private tabstate As String
+    Private Objcon As ViewOpenFaults
 
     Public Property LinacName() As String
         Get
@@ -37,18 +39,43 @@ Partial Class Planned_Maintenanceuc
         If MachineName = EquipmentID Then
             Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
             todayfault.SetGrid()
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            Todaydefect.ResetDefectDropDown(incidentID)
+            If MachineName Like "T?" Then
+                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark.ResetDefectDropDown(incidentID)
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.ResetDefectDropDown(incidentID)
+            End If
+
+        End If
+    End Sub
+
+    Protected Sub Update_TodayClosedFault(ByVal EquipmentID As String)
+        If MachineName = EquipmentID Then
+
         End If
     End Sub
 
     Protected Sub Update_Defect(ByVal EquipmentID As String)
         If MachineName = EquipmentID Then
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            Todaydefect.UpDateDefectsEventHandler()
+            If MachineName Like "T?" Then
+                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark.UpDateDefectsEventHandler()
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.UpDateDefectsEventHandler()
+            End If
+
 
         End If
     End Sub
+    Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            Objcon = FindControl("ViewOpenFaults")
+            Objcon.RebindViewFault()
+        End If
+    End Sub
+
 
     Public Sub UpdateReturnButtonsHandler()
         'Now find which user group is logged on
@@ -66,7 +93,7 @@ Partial Class Planned_Maintenanceuc
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
 
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
-        AddHandler Planned_Maintenanceuc.AutoApproved, AddressOf UserApprovedEvent
+        AddHandler AutoApproved, AddressOf UserApprovedEvent
         appstate = "LogOn" + MachineName
         actionstate = "ActionState" + MachineName
         suspstate = "Suspended" + MachineName
@@ -176,9 +203,10 @@ Partial Class Planned_Maintenanceuc
         objconToday.LinacName = MachineName
         PlaceHolder5.Controls.Add(objconToday)
 
-        Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
+        Objcon = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = MachineName
         CType(objCon, ViewOpenFaults).TabName = "5"
+        CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(objCon)
 
         Dim objAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
@@ -199,12 +227,22 @@ Partial Class Planned_Maintenanceuc
         '    LogOffButton.Enabled = True
         'End If
         'Dim lastState As String
-
+        Dim objDefect As UserControl
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
-        Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
-        CType(objDefect, DefectSave).ID = "DefectDisplay"
-        CType(objDefect, DefectSave).LinacName = MachineName
+        If MachineName Like "T?" Then
+            objDefect = Page.LoadControl("DefectSavePark.ascx")
+            CType(objDefect, DefectSavePark).ID = "DefectDisplay"
+            CType(objDefect, DefectSavePark).LinacName = MachineName
+            AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
+            AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
+            'AddHandler CType(objDefect, DefectSavePark).UpdateUnrecoverableClosed Address Of Update
+        Else
+            objDefect = Page.LoadControl("DefectSave.ascx")
+            CType(objDefect, DefectSave).ID = "DefectDisplay"
+            CType(objDefect, DefectSave).LinacName = MachineName
+        End If
+
         PlaceHolder4.Controls.Add(objDefect)
         Dim Textboxcomment As TextBox = FindControl("CommentBox")
         'radio1.Items.Add(new ListItem("Apple", "1"))

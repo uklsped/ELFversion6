@@ -2,6 +2,7 @@
     Inherits="Planned_Maintenanceuc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc1" %>
+<%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc10" %>
 <%--<%@ Register Src="ErunupUserControl.ascx" TagName="ErunupUserControl" TagPrefix="uc1" %>--%>
 <%@ Register Src="Singlemachinefaultuc.ascx" TagName="Singlemachinefaultuc" TagPrefix="uc2" %>
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc3" %>

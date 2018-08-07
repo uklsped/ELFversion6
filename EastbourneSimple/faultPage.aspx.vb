@@ -146,10 +146,10 @@ Partial Class faultPage
                     conn.Close()
                 End If
 
-                EnergyPicked = DropDownListEnergy.SelectedItem.Text
-                If EnergyPicked = "Select" Then
-                    EnergyPicked = ""
-                End If
+                'EnergyPicked = DropDownListEnergy.SelectedItem.Text
+                'If EnergyPicked = "Select" Then
+                EnergyPicked = ""
+                'End If
                 commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID) " _
                                           & "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID )", conn)
                 commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)

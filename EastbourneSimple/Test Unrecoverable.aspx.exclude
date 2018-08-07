@@ -1,0 +1,12 @@
+﻿<%@ Page Title="" Language="VB" MasterPageFile="~/Elf.master" AutoEventWireup="false" CodeFile="Test Unrecoverable.aspx.vb" Inherits="Test_Unrecoverable" %>
+
+<%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc1" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+
+    <uc1:DefectSavePark ID="DefectSavePark1" LinacName="T1" runat="server" />
+
+</asp:Content>
+

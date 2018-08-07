@@ -8,7 +8,7 @@ Partial Class controls_DeviceRepeatFaultuc
     Private comm As SqlCommand
     Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     Dim commfault As SqlCommand
-    Dim ConcessionNumber As String
+    Private ConcessionNumber As String
     Const RepeatFault As String = "Updatefault"
     Const CancelFaultReturn As String = "Cancel"
     'Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
@@ -32,6 +32,7 @@ Partial Class controls_DeviceRepeatFaultuc
         AreaBox.Text = String.Empty
         GantryAngleBox.Text = String.Empty
         CollimatorAngleBox.Text = String.Empty
+        DescriptionBox.Text = String.Empty
         PatientIDBox.Text = String.Empty
 
         conn = New SqlConnection(connectionString)
@@ -48,6 +49,19 @@ Partial Class controls_DeviceRepeatFaultuc
     Protected Sub TomoLoad()
         DescriptionBoxT.Text = String.Empty
         PatientIDBoxT.Text = String.Empty
+        ErrorTextBox.Text = String.Empty
+        Accuray.Text = String.Empty
+        RadAct.Text = String.Empty
+        conn = New SqlConnection(connectionString)
+        'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
+        comm = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn) 'Corrective action
+        comm.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+        comm.Parameters("@incidentID").Value = IncidentID
+        conn.Open()
+        Dim sqlresult1 As Object = comm.ExecuteScalar()
+        RadAct.Text = sqlresult1.ToString
+        conn.Close()
+
     End Sub
 
     Protected Sub AddEnergyItem()
@@ -55,7 +69,6 @@ Partial Class controls_DeviceRepeatFaultuc
         'and http://www.yaldex.com/asp_tutorial/0596004877_progaspdotnet2-chp-5-sect-7.html
 
         'This is a mad way of doing it but I don't know how to dim the energy list without constructing it at the same time
-
         Select Case Device
             Case "LA1"
                 Dim Energy1() As String = {"Select", "6 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
@@ -86,7 +99,7 @@ Partial Class controls_DeviceRepeatFaultuc
         SaveRepeatFaultbutton()
     End Sub
     Public Sub SaveRepeatFaultbutton()
-
+        'Dim faultid As Integer
         Dim Energy As String = String.Empty
         Dim Description As String = String.Empty
         Dim ReportedBy As String = String.Empty
@@ -95,7 +108,6 @@ Partial Class controls_DeviceRepeatFaultuc
         Dim CollimatorAngle As String = String.Empty
         Dim GantryAngle As String = String.Empty
         Dim PatientId As String = String.Empty
-
 
         If Device Like "T?" Then
             Area = ErrorTextBox.Text
@@ -113,7 +125,6 @@ Partial Class controls_DeviceRepeatFaultuc
             PatientId = PatientIDBox.Text
         End If
 
-
         conn = New SqlConnection(connectionString)
 
         'this gets the relevant concession number and creates the entry for the report fault table that is used subsequently to create the defect table entries
@@ -127,44 +138,8 @@ Partial Class controls_DeviceRepeatFaultuc
         'Dim LinacStatusIDs As String = obj.ToString()
         ConcessionNumber = CStr(obj)
         conn.Close()
+        DavesCode.ReusePC.InsertReportFault(Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle, Device, IncidentID, PatientId, ConcessionNumber)
 
-
-        commfault = New SqlCommand("INSERT INTO ReportFault (Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle,Linac, IncidentID, BSUHID, ConcessionNumber) " _
-                                  & "VALUES (@Description, @ReportedBy, @DateReported, @Area, @Energy,@GantryAngle,@CollimatorAngle, @Linac, @IncidentID, @BSUHID, @ConcessionNumber )", conn)
-        commfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
-        commfault.Parameters("@Description").Value = Description
-        commfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
-        commfault.Parameters("@ReportedBy").Value = ReportedBy
-        commfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
-        commfault.Parameters("@DateReported").Value = DateReported
-        commfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
-        commfault.Parameters("@Area").Value = Area
-        commfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 10)
-        commfault.Parameters("@Energy").Value = Energy
-        commfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
-        commfault.Parameters("@GantryAngle").Value = GantryAngle
-        commfault.Parameters.Add("@CollimatorAngle", System.Data.SqlDbType.NVarChar, 3)
-        commfault.Parameters("@CollimatorAngle").Value = CollimatorAngle
-        commfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
-        commfault.Parameters("@Linac").Value = Device
-        commfault.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
-        commfault.Parameters("@IncidentID").Value = IncidentID
-        commfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.VarChar, 7)
-        commfault.Parameters("@BSUHID").Value = PatientId
-        commfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
-        commfault.Parameters("@ConcessionNumber").Value = ConcessionNumber
-
-
-        Try
-            conn.Open()
-            commfault.ExecuteNonQuery()
-            conn.Close()
-
-        Finally
-            conn.Close()
-
-        End Try
-        'RaiseEvent UpDateDefectDisplay(Device)
         RaiseEvent UpdateRepeatFault(RepeatFault, ReportedBy)
     End Sub
 
