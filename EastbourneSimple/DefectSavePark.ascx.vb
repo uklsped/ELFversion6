@@ -5,6 +5,10 @@ Partial Class DefectSavePark
     Inherits System.Web.UI.UserControl
     Private appstate As String
     Private actionstate As String
+    Private suspstate As String
+    Private failstate As String
+    Private repairstate As String
+    Const RADIO As Integer = 103
     Private time As DateTime
     Const RecoverableFault As String = "Recoverable Fault"
     Const UnRecoverableFault As String = "UnRecoverable Fault"
@@ -26,6 +30,11 @@ Partial Class DefectSavePark
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
         'Added back in 26/3/18 see SPR
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
+        appstate = "LogOn" + LinacName
+        actionstate = "ActionState" + LinacName
+        suspstate = "Suspended" + LinacName
+        failstate = "FailState" + LinacName
+        repairstate = "rppTab" + LinacName
 
     End Sub
 
@@ -231,70 +240,70 @@ Partial Class DefectSavePark
     End Sub
 
 
-    Protected Sub Writeradreset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
+    'Protected Sub Writeradreset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
 
-        Dim usergroupselected As Integer = 0
-        Dim LastIncident As Integer
-        Dim IncidentID As Integer
-        Dim Selected As String = EMPTYSTRING
+    '    Dim usergroupselected As Integer = 0
+    '    Dim LastIncident As Integer
+    '    Dim IncidentID As Integer
+    '    Dim Selected As String = EMPTYSTRING
 
-        Dim Status As String = EMPTYSTRING
+    '    Dim Status As String = EMPTYSTRING
 
-        LastIncident = HiddenField1.Value
-        If LastIncident = UnRecoverableID Then
+    '    LastIncident = HiddenField1.Value
+    '    If LastIncident = UnRecoverableID Then
 
-            Selected = FaultOpenClosed.SelectedItem.Text
-            If Selected.Equals(FaultAnswerYes) Then
-                'Open new fault
-                IncidentID = CreateNewFault(UserInfo)
-                usergroupselected = DavesCode.Reuse.GetRole(UserInfo)
-                'If usertype = rad then create concession else
-                If usergroupselected.Equals(Radiographer) Then
-                    Status = Concession
-                    CreateNewConcession(UserInfo, IncidentID)
-                    BindDefectData()
-                    RaiseEvent UpDateDefect(LinacName, IncidentID)
-                    RaiseEvent UpdateViewFault(LinacName)
-                Else
-                    'close fault
-                    CloseFault(IncidentID, UserInfo)
-                End If
+    '        Selected = FaultOpenClosed.SelectedItem.Text
+    '        If Selected.Equals(FaultAnswerYes) Then
+    '            'Open new fault
+    '            IncidentID = CreateNewFault(UserInfo, Status)
+    '            usergroupselected = DavesCode.Reuse.GetRole(UserInfo)
+    '            'If usertype = rad then create concession else
+    '            If usergroupselected.Equals(Radiographer) Then
+    '                Status = Concession
+    '                CreateNewConcession(UserInfo, IncidentID)
+    '                BindDefectData()
+    '                RaiseEvent UpDateDefect(LinacName, IncidentID)
+    '                RaiseEvent UpdateViewFault(LinacName)
+    '            Else
+    '                'close fault
+    '                CloseFault(IncidentID, UserInfo)
+    '            End If
 
-                'RaiseEvent UpDateDefect(LinacName, IncidentID)
-                'RaiseEvent UpdateViewFault(LinacName)
+    '            'RaiseEvent UpDateDefect(LinacName, IncidentID)
+    '            'RaiseEvent UpdateViewFault(LinacName)
 
-                'Unrecoverable fault isn't closed
-            ElseIf Selected.Equals(FaultAnswerNo) Then
-                'Write equivalent of report fault assume only one fault at a time at the moment
-                'Close current tab
-                Dim result As String
-                appstate = "LogOn" + LinacName
-                Select Case ParentControl
+    '            'Unrecoverable fault isn't closed
+    '        ElseIf Selected.Equals(FaultAnswerNo) Then
+    '            'Write equivalent of report fault assume only one fault at a time at the moment
+    '            'Close current tab
+    '            Dim result As String
+    '            appstate = "LogOn" + LinacName
+    '            Select Case ParentControl
 
-                    Case 1, 7
-                        Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
-                        Dim Comment As String = DaTxtBox.Text
-                        result = DavesCode.ReusePC.CommitRunup(LinacName, ParentControl, UserInfo, Comment, Valid, True, False)
-                        Application(appstate) = Nothing
-                        CreateNewFault(UserInfo)
+    '                Case 1, 7
+    '                    Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
+    '                    Dim Comment As String = DaTxtBox.Text
+    '                    result = DavesCode.ReusePC.CommitRunup(LinacName, ParentControl, UserInfo, Comment, Valid, True, False)
+    '                    Application(appstate) = Nothing
+    '                    CreateNewFault(UserInfo, Status)
 
-                        Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
-                        Response.Redirect(returnstring & ParentControl & "&comment=" & "")
-                End Select
+    '                    Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
+    '                    Response.Redirect(returnstring & ParentControl & "&comment=" & "")
+    '            End Select
 
-            Else
-                'Error action
-            End If
+    '        Else
+    '            'Error action
+    '        End If
 
-        Else 'This is a recoverable fault
-            DavesCode.ReusePC.InsertReportFault(FaultDescription.Text, UserInfo, DateTime.Parse(HiddenField2.Value), Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, LinacName, IncidentID, PatientIDBox.Text, ConcessionNumber)
-            BindDefectData()
-        End If
+    '    Else 'This is a recoverable fault
+    '        DavesCode.ReusePC.InsertReportFault(FaultDescription.Text, UserInfo, DateTime.Parse(HiddenField2.Value), Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, LinacName, IncidentID, PatientIDBox.Text, ConcessionNumber)
+    '        BindDefectData()
+    '    End If
 
-        Defect.SelectedIndex = -1
-        ClearsForm()
+    '    Defect.SelectedIndex = -1
+    '    ClearsForm()
 
-    End Sub
+    'End Sub
 
     Sub NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
         Dim usergroupselected As Integer = 0
@@ -309,50 +318,55 @@ Partial Class DefectSavePark
 
             Selected = FaultOpenClosed.SelectedItem.Text
             If Selected.Equals(FaultAnswerYes) Then
-                'Open new fault
-                'IncidentID = CreateNewFault(UserInfo)
                 usergroupselected = DavesCode.Reuse.GetRole(UserInfo)
-                'If usertype = rad then create concession else
                 If usergroupselected.Equals(Radiographer) Then
-                    IncidentID = CreateNewFault(UserInfo)
+                    IncidentID = CreateNewFault(UserInfo, "Concession")
                     Status = Concession
-                    CreateNewConcession(UserInfo, IncidentID)
                     BindDefectData()
                     RaiseEvent UpDateDefect(LinacName, IncidentID)
                     RaiseEvent UpdateViewFault(LinacName)
                 Else
-                    'close fault
-                    IncidentID = CreateNewFault(UserInfo)
-                    CloseFault(IncidentID, UserInfo)
+                    IncidentID = CreateNewFault(UserInfo, "Closed")
                 End If
-
-                'RaiseEvent UpDateDefect(LinacName, IncidentID)
-                'RaiseEvent UpdateViewFault(LinacName)
 
                 'Unrecoverable fault isn't closed
             ElseIf Selected.Equals(FaultAnswerNo) Then
                 'Write equivalent of report fault assume only one fault at a time at the moment
                 'Close current tab
                 Dim result As String
-                appstate = "LogOn" + LinacName
+                Dim susstate As String = Application(suspstate)
+                Dim repstate As String = Application(repairstate)
+                Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
+                Dim Comment As String = DaTxtBox.Text
+
                 Select Case ParentControl
 
                     Case 1, 7
-                        Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
-                        Dim Comment As String = DaTxtBox.Text
                         result = DavesCode.ReusePC.CommitRunup(LinacName, ParentControl, UserInfo, Comment, Valid, True, False)
-                        Application(appstate) = Nothing
-                        CreateNewFault(UserInfo)
 
-                        Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
-                        Response.Redirect(returnstring & ParentControl & "&comment=" & "")
+                    Case 3
+                        DavesCode.Reuse.CommitClinical(LinacName, UserInfo, True)
+                        Application(suspstate) = 1
+
+                    Case 4, 5, 6, 8
+                        DavesCode.Reuse.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False)
+
+                    Case Else
+                        Application(failstate) = ParentControl
+                        DavesCode.Reuse.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False)
+
                 End Select
+                Application(appstate) = Nothing
+                CreateNewFault(UserInfo, "New")
 
+                Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
+                Response.Redirect(returnstring & ParentControl & "&comment=" & "")
             Else
-                'Error action
+                'Error Action
             End If
 
-        Else 'This is a recoverable fault
+        Else 'This is a recoverable fault - So won't have concession number?
+            IncidentID = HiddenField1.Value
             DavesCode.ReusePC.InsertReportFault(FaultDescription.Text, UserInfo, DateTime.Parse(HiddenField2.Value), Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, LinacName, IncidentID, PatientIDBox.Text, ConcessionNumber)
             BindDefectData()
         End If
@@ -361,49 +375,46 @@ Partial Class DefectSavePark
         ClearsForm()
     End Sub
 
-    Protected Sub CloseFault(ByVal IncidentID As Integer, UserInfo As String)
-        Dim TrackAction = RadAct.Text
-        Dim Status As String = Closed
-        Dim TrackingComment As String = ""
-        Dim Assigned As String = EMPTYSTRING
+    'Protected Sub CloseFault(ByVal IncidentID As Integer, UserInfo As String)
+    '    Dim TrackAction = RadAct.Text
+    '    Dim Status As String = Closed
+    '    Dim TrackingComment As String = ""
+    '    Dim Assigned As String = EMPTYSTRING
 
-        DavesCode.ReusePC.UpdateTracking(TrackingComment, Assigned, Status, UserInfo, LinacName, TrackAction, IncidentID)
-        DavesCode.ReusePC.UpdateFaultIDTable(IncidentID, Status, LinacName)
-        'where should these be?
-        'RaiseEvent UpdateUnrecoverableClosed()
-        'RaiseEvent UpDateDefect(LinacName, IncidentID)
-    End Sub
+    '    DavesCode.ReusePC.UpdateTracking(TrackingComment, Assigned, Status, UserInfo, LinacName, TrackAction, IncidentID)
+    '    DavesCode.ReusePC.UpdateFaultIDTable(IncidentID, Status, LinacName)
+    'where should these be?
+    'RaiseEvent UpdateUnrecoverableClosed()
+    'RaiseEvent UpDateDefect(LinacName, IncidentID)
+    'End Sub
 
-    Protected Sub CreateNewConcession(ByVal UserInfo As String, ByVal IncidentID As Integer)
-        Dim Inserted As Integer
-        Dim TrackAction As String = RadAct.Text
-        Const concession = "Concession"
-        Inserted = DavesCode.ReusePC.InsertNewConcession(FaultDescription.Text, LinacName, IncidentID, RadAct.Text)
-        If Inserted = 0 Then
-            'need to write faultidtable again and faulttracking table again and set rad concession flag
-            DavesCode.ReusePC.UpdateTracking(EMPTYSTRING, EMPTYSTRING, concession, UserInfo, LinacName, TrackAction, IncidentID)
-            DavesCode.ReusePC.UpdateFaultIDTable(IncidentID, concession, LinacName)
-            DavesCode.ReusePC.WriteRadAckFault(IncidentID, False)
+    'Protected Sub CreateNewConcession(ByVal UserInfo As String, ByVal IncidentID As Integer)
+    '    Dim Inserted As Integer
+    '    Dim TrackAction As String = RadAct.Text
+    '    Const concession = "Concession"
+    'Inserted = DavesCode.ReusePC.InsertNewConcession(FaultDescription.Text, LinacName, IncidentID, RadAct.Text)
+    'If Inserted = 0 Then
+    'need to write faultidtable again and faulttracking table again and set rad concession flag
+    'DavesCode.ReusePC.UpdateTracking(EMPTYSTRING, EMPTYSTRING, concession, UserInfo, LinacName, TrackAction, IncidentID)
+    'DavesCode.ReusePC.UpdateFaultIDTable(IncidentID, concession, LinacName)
+    'DavesCode.ReusePC.WriteRadAckFault(IncidentID, False)
 
-        Else
-            ' create concession has failed
-        End If
+    ' Else
+    ' create concession has failed
+    ' End If
 
-    End Sub
+    'End Sub
 
-    Protected Function CreateNewFault(ByVal UserInfo As String) As Integer
-        Dim IncidentID As Integer
-        Dim LastFault As Integer
+    Protected Function CreateNewFault(ByVal UserInfo As String, ByVal State As String) As Integer
+        Dim IncidentID As Integer = 0
+        Dim DateInserted As DateTime = DateTime.Parse(HiddenField2.Value)
+        Dim Description As String = FaultDescription.Text
         Dim ConcessionNumber = EMPTYSTRING
-        Dim Status = "New"
         Dim Assigned = EMPTYSTRING
         Dim TrackingComment = EMPTYSTRING
         Dim TrackAction = EMPTYSTRING
-        IncidentID = DavesCode.ReusePC.InsertNewFault(LinacName, DateTime.Parse(HiddenField2.Value))
-        LastFault = DavesCode.ReusePC.InsertReportFault(FaultDescription.Text, UserInfo, DateTime.Parse(HiddenField2.Value), Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, LinacName, IncidentID, PatientIDBox.Text, ConcessionNumber)
-        DavesCode.ReusePC.UpdateFaultIDTable(IncidentID, LastFault)
-        DavesCode.ReusePC.UpdateTracking(TrackingComment, Assigned, Status, UserInfo, LinacName, TrackAction, IncidentID)
 
+        IncidentID = DavesCode.ReusePC.InsertNewFault(State, LinacName, DateInserted, Description, UserInfo, Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, PatientIDBox.Text, FaultDescription.Text, RadAct.Text)
         Return IncidentID
     End Function
 
@@ -415,6 +426,7 @@ Partial Class DefectSavePark
         Dim Selected As String = ""
         Selected = FaultOpenClosed.SelectedItem.Text
         UnRecoverableSave.Enabled = True
+        UnRecoverableSave.BackColor = Drawing.Color.Yellow
     End Sub
     Protected Sub UnRecoverableSave_Click(sender As Object, e As EventArgs) Handles UnRecoverableSave.Click
         Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
@@ -429,6 +441,8 @@ Partial Class DefectSavePark
         Page.Validate("defect")
         If Page.IsValid Then
             Dim Selected As String = ""
+            UnRecoverableSave.BackColor = Drawing.Color.LightGray
+            UnRecoverableSave.Enabled = False
             Selected = FaultOpenClosed.SelectedItem.Text
             If Selected.Equals(FaultAnswerNo) Then
                 wcbutton.Text = "Saving Unrecoverable Fault"
@@ -448,4 +462,5 @@ Partial Class DefectSavePark
 
         End If
     End Sub
+
 End Class

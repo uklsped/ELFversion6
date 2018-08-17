@@ -18,6 +18,7 @@ Partial Class Repairuc
     Private faultstate As String
     Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
+    Private Todaydefectpark As DefectSavePark
     Private laststate As String
     Private lastuser As String
     Private lastusergroup As String
@@ -26,6 +27,7 @@ Partial Class Repairuc
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private Event AutoApproved(ByVal Tab As String, ByVal UserName As String)
     Private tabstate As String
+    Private Objcon As ViewOpenFaults
 
     Public Property LinacName() As String
         Get
@@ -53,21 +55,40 @@ Partial Class Repairuc
         If MachineName = EquipmentID Then
             Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
             todayfault.SetGrid()
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            Todaydefect.ResetDefectDropDown(incidentID)
+            If MachineName Like "T?" Then
+                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark.ResetDefectDropDown(incidentID)
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.ResetDefectDropDown(incidentID)
+            End If
+
         End If
     End Sub
 
     Protected Sub Update_Defect(ByVal EquipmentID As String)
         If MachineName = EquipmentID Then
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            Todaydefect.UpDateDefectsEventHandler()
+            If MachineName Like "T?" Then
+                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark.UpDateDefectsEventHandler()
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.UpDateDefectsEventHandler()
+            End If
+
+
+        End If
+    End Sub
+    Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            Objcon = FindControl("ViewOpenFaults")
+            Objcon.RebindViewFault()
         End If
     End Sub
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
 
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
-        AddHandler Repairuc.AutoApproved, AddressOf UserApprovedEvent
+        AddHandler AutoApproved, AddressOf UserApprovedEvent
         appstate = "LogOn" + MachineName
         actionstate = "ActionState" + MachineName
         suspstate = "Suspended" + MachineName
@@ -289,6 +310,7 @@ Partial Class Repairuc
         Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = MachineName
         CType(objCon, ViewOpenFaults).TabName = "Tech"
+        CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(objCon)
 
         'Dim objCon As UserControl = Page.LoadControl("ViewOpenConcessions.ascx")
@@ -313,11 +335,24 @@ Partial Class Repairuc
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = MachineName
 
+
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
-        Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
-        CType(objDefect, DefectSave).ID = "DefectDisplay"
-        CType(objDefect, DefectSave).LinacName = MachineName
+        Dim objDefect As UserControl
+        If MachineName Like "T?" Then
+            objDefect = Page.LoadControl("DefectSavePark.ascx")
+            CType(objDefect, DefectSavePark).ID = "DefectDisplay"
+            CType(objDefect, DefectSavePark).LinacName = MachineName
+            CType(objDefect, DefectSavePark).ParentControl = 4
+            AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
+            AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
+            'AddHandler CType(objDefect, DefectSavePark).UpdateUnrecoverableClosed Address Of Update
+        Else
+            objDefect = Page.LoadControl("DefectSave.ascx")
+            CType(objDefect, DefectSave).ID = "DefectDisplay"
+            CType(objDefect, DefectSave).LinacName = MachineName
+        End If
+
         PlaceHolder4.Controls.Add(objDefect)
 
 

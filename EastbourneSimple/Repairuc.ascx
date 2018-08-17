@@ -11,6 +11,7 @@
 <%@ Register src="ViewOpenConcessions.ascx" tagname="ViewOpenConcessions" tagprefix="uc8" %>
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc10" %>
+<%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc11" %>
 <uc2:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="5"  Tabby="5"  WriteName="Repair" visible="false" runat="server" />
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="5" visible="false" runat="server" />
 <div>
@@ -122,6 +123,9 @@
         
     </ContentTemplate>
 </asp:UpdatePanel>
+
+
+
 
 
 <uc6:ViewCommentsuc ID="ViewCommentsuc1" LinacName="" CommentSort="rp" runat="server" />

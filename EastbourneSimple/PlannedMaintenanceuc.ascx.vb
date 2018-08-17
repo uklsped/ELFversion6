@@ -234,6 +234,7 @@ Partial Class Planned_Maintenanceuc
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = MachineName
+            CType(objDefect, DefectSavePark).ParentControl = 4
             AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
             AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
             'AddHandler CType(objDefect, DefectSavePark).UpdateUnrecoverableClosed Address Of Update

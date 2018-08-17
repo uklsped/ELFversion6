@@ -14,6 +14,7 @@
                      .style2
                      {
                          width: 124px;
+                         vertical-align: top;
                      }
                      .style3
                      {
@@ -117,7 +118,14 @@
       </table>
                             <Table>
                                <tr>
-                                   <td class="style2">     
+                                   <td class="style2">  
+                                        <asp:Panel id="Page1ViewPanel" 
+            
+            Height="85px"
+            HorizontalAlign ="Left"
+           
+                              
+            runat="Server">
                                                                   <asp:MultiView ID="FaultTypeSave" ActiveViewIndex="-1" runat="server">
                                <asp:View ID="RecoverableView" runat="server">recoverable
                                    <asp:Button ID="SaveDefectButton" runat="server" Text="Save" ValidationGroup="defect" CausesValidation="true" />
@@ -127,10 +135,10 @@
                                        <asp:RadioButtonList ID="FaultOpenClosed"  runat="server" AutoPostBack="True">
                                            <asp:ListItem Text="No" Value="-1"></asp:ListItem>
                                            <asp:ListItem Text="Yes" Value="1"></asp:ListItem> </asp:RadioButtonList>
-                                   <asp:Button ID="UnRecoverableSave" runat="server" CausesValidation="False" Enabled="False" Text="Save" />
+                                   <asp:Button ID="UnRecoverableSave" runat="server" CausesValidation="False" Enabled="False" Text="Save" ba/>
                                </asp:View>
                            </asp:MultiView>
-
+</asp:Panel>
                                        </td>
                                    <td class="style2">
                                         <asp:Button ID="ClearButton" runat="server" Text="Clear" CausesValidation="False" CssClass="buttonmargin" />
@@ -183,6 +191,7 @@
 </div>
 
 </div>
+
 
  
 

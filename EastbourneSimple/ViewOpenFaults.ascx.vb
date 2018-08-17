@@ -226,158 +226,47 @@ Partial Class ViewOpenFaults
 
                 End Try
                 If incidentID <> 0 Then
-                    TRACKINGID = DavesCode.ReusePC.UpdateTracking(CommentBox1.Text, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID)
-                    'Dim commtrack As SqlCommand
-                    'commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon,   linac, action, incidentID) " _
-                    '                          & "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon,  @linac, @action, @IncidentID) SELECT SCOPE_IDENTITY()", conn)
-                    'commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
-                    'commtrack.Parameters("@Trackingcomment").Value = CommentBox1.Text
-                    'commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
-                    'commtrack.Parameters("@AssignedTo").Value = assignuser
-                    'commtrack.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
-                    'commtrack.Parameters("@Status").Value = DropDownList1.SelectedItem.Text
-                    'commtrack.Parameters.Add("@LastupdatedBy", System.Data.SqlDbType.NVarChar, 50)
-                    'commtrack.Parameters("@LastupdatedBy").Value = Userinfo
-                    'commtrack.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
-                    'commtrack.Parameters("@Lastupdatedon").Value = time
 
-                    'commtrack.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                    'commtrack.Parameters("@linac").Value = LinacName
-                    'commtrack.Parameters.Add("@action", System.Data.SqlDbType.NVarChar, 250)
-                    'commtrack.Parameters("@action").Value = ConcessionAction
-                    'commtrack.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    'commtrack.Parameters("@incidentID").Value = incidentID
-                    ''This updates the original fault table as well so faultstatus is in two places as is concession number now
-
-
-                    Dim incidentfault As SqlCommand
-                    incidentfault = New SqlCommand("Update FaultIDTable SET Status=@Status WHERE IncidentID=@incidentID", conn)
-                    incidentfault.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
-                    incidentfault.Parameters("@Status").Value = DropDownList1.SelectedItem.Text
-                    incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    incidentfault.Parameters("@incidentID").Value = incidentID
-
-                    Dim updateconcession As SqlCommand
-                    'Dim updateconcession As SqlCommand
-                    'updateconcession = New SqlCommand("Update ConcessionTable Set Action=@Action where IncidentID=@incidentID", conn)
-                    'updateconcession.Parameters.Add("@Action", Data.SqlDbType.NVarChar, 250)
-                    'updateconcession.Parameters("@Action").Value = ConcessionAction
-                    'updateconcession.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    'updateconcession.Parameters("@incidentID").Value = incidentID
-
-                    'Dim commconcess As SqlCommand
-                    ''commconcess = New SqlCommand("Insert into ConcessionTable (ConcessionNumber, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) " & _
-                    ''"VALUES (@ConcessionNumber, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) Update FaultIDTable SET ConcessionNumber=@ConcessionNumber WHERE IncidentID=@incidentID ", conn)
-                    ''commconcess.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 10)
-                    ''commconcess.Parameters("@ConcessionNumber").Value = ConcessionNumber
-                    'commconcess = New SqlCommand("Insert into ConcessionTable (PreFix, ConcessionDescription, IncidentID, Linac, ConcessionActive, Action) " _
-                    '& "VALUES (@PreFix, @ConcessionDescription, @IncidentID, @Linac, @ConcessionActive, @Action) SELECT SCOPE_IDENTITY()", conn)
-                    'commconcess.Parameters.Add("@PreFix", System.Data.SqlDbType.NVarChar, 10)
-                    'commconcess.Parameters("@PreFix").Value = "ELF"
-                    'commconcess.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 250)
-                    'commconcess.Parameters("@ConcessionDescription").Value = ConcessionDescription
-                    'commconcess.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    'commconcess.Parameters("@incidentID").Value = incidentID
-                    'commconcess.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
-                    'commconcess.Parameters("@Linac").Value = LinacName
-                    'commconcess.Parameters.Add("@ConcessionActive", System.Data.SqlDbType.Bit)
-                    'commconcess.Parameters("@ConcessionActive").Value = ConcessionActive
-                    'commconcess.Parameters.Add("@Action", System.Data.SqlDbType.NVarChar, 250)
-                    'commconcess.Parameters("@Action").Value = ConcessionAction
-                    'Dim bcommand = New SqlCommand("select count(*) from Concessiontable where incidentID=@incidentID", conn)
-                    'bcommand.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    'bcommand.Parameters("@incidentID").Value = incidentID
-                    Try
-                        'conn.Open()
-                        'Modified 10/4/18 to return trackingid for RadAckFault
-                        'commtrack.ExecuteNonQuery()
-
-                        'Dim tobj As Object = commtrack.ExecuteScalar()
-                        ''Dim LinacStatusIDs As String = obj.ToString()
-                        'TRACKINGID = CInt(tobj)
-
-                        'commfault.ExecuteNonQuery()
-                        'This checks at this point if already a concession
-                        If selecttext = "Concession" Then
-                            exists = DavesCode.ReusePC.InsertNewConcession(ConcessionDescription, LinacName, incidentID, ConcessionAction)
-                            If Not exists = 0 Then
-                                conn.Open()
-
-                                updateconcession = New SqlCommand("Update ConcessionTable Set Action=@Action where IncidentID=@incidentID", conn)
-                                updateconcession.Parameters.Add("@Action", Data.SqlDbType.NVarChar, 250)
-                                updateconcession.Parameters("@Action").Value = ConcessionAction
-                                updateconcession.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                                updateconcession.Parameters("@incidentID").Value = incidentID
-                                updateconcession.ExecuteNonQuery()
-                                conn.Close()
-                            End If
+                    If selecttext = "Concession" Then
+                        exists = DavesCode.ReusePC.InsertNewConcession(ConcessionDescription, LinacName, incidentID, Userinfo, ConcessionAction)
+                        If Not exists = 0 Then
+                            TRACKINGID = DavesCode.ReusePC.UpdateTracking(CommentBox1.Text, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, ConcessionActive)
                         End If
-                        'conn.Close()
-                        conn.Open()
-                        incidentfault.ExecuteNonQuery()
-                        'conn.Close()
-                        'conn.Open()
-                        'commconcess.ExecuteNonQuery()
-                    Finally
-                        conn.Close()
 
-                    End Try
-                    'This for when there is a closed statement
-                    If selecttext = "Closed" Then
-                        Dim ObjTransaction As SqlTransaction = Nothing
-                        incidentfault = New SqlCommand("Update FaultIDTable SET DateClosed=@DateClosed WHERE IncidentID=@incidentID", conn)
-                        incidentfault.Parameters.Add("@DateClosed", System.Data.SqlDbType.DateTime)
-                        incidentfault.Parameters("@DateClosed").Value = time
-                        'incidentfault.Parameters("@Status").Value = DropDownList1.SelectedItem.Text
-                        incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                        incidentfault.Parameters("@incidentID").Value = incidentID
-                        updateconcession = New SqlCommand("Update ConcessionTable Set ConcessionActive=@ConcessionActive where IncidentID=@incidentID", conn)
-                        updateconcession.Parameters.Add("@ConcessionActive", Data.SqlDbType.Bit)
-                        updateconcession.Parameters("@ConcessionActive").Value = 0
-                        updateconcession.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                        updateconcession.Parameters("@incidentID").Value = incidentID
-
-
-                        Try
-                            conn.Open()
-                            ObjTransaction = conn.BeginTransaction()
-                            incidentfault.ExecuteNonQuery()
-                            updateconcession.ExecuteNonQuery()
-                            ObjTransaction.Commit()
-
-                        Catch
-                            ObjTransaction.Rollback()
-                        Finally
-                            conn.Close()
-                            RaiseEvent UpDateDefect(LinacName, incidentID)
-                        End Try
+                    Else
+                        TRACKINGID = DavesCode.ReusePC.UpdateTracking(CommentBox1.Text, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, ConcessionActive)
 
                     End If
                     'Write RadAckTable
 
                     'Only do this if Acknowledge is 0 ie not 1
-                    Dim AckCheck As New SqlCommand("SELECT Acknowledge FROM RadAckFault where IncidentID=@incidentID", conn)
-                    AckCheck.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    AckCheck.Parameters("@incidentID").Value = incidentID
-                    conn.Open()
-                    Dim AckObj As Object = AckCheck.ExecuteScalar()
-                    Dim Acknowledge As Boolean
+                    'Checks that there is infact a concession before checking radackfault
+                    'If Not exists = 0 Then
 
-                    Acknowledge = CBool(AckObj)
-                    conn.Close()
-                    If Not Acknowledge Then
-                        Dim UpdateRadAckTable As SqlCommand
-                        UpdateRadAckTable = New SqlCommand("Update RadAckFault Set TrackingID = @TrackingID, Acknowledge=@Acknowledge where IncidentID=@incidentID", conn)
-                        UpdateRadAckTable.Parameters.Add("@TrackingID", System.Data.SqlDbType.Int)
-                        UpdateRadAckTable.Parameters("@TrackingID").Value = TRACKINGID
-                        UpdateRadAckTable.Parameters.Add("@Acknowledge", Data.SqlDbType.Bit)
-                        UpdateRadAckTable.Parameters("@Acknowledge").Value = True
-                        UpdateRadAckTable.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                        UpdateRadAckTable.Parameters("@incidentID").Value = incidentID
-                        conn.Open()
-                        UpdateRadAckTable.ExecuteNonQuery()
-                        conn.Close()
-                    End If
+
+                    '    Dim AckCheck As New SqlCommand("SELECT Acknowledge FROM RadAckFault where IncidentID=@incidentID", conn)
+                    '    AckCheck.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                    '    AckCheck.Parameters("@incidentID").Value = incidentID
+                    '    conn.Open()
+                    '    Dim AckObj As Object = AckCheck.ExecuteScalar()
+                    '    Dim Acknowledge As Boolean
+
+                    '    Acknowledge = CBool(AckObj)
+                    '    conn.Close()
+                    '    If Not Acknowledge Then
+                    '        Dim UpdateRadAckTable As SqlCommand
+                    '        UpdateRadAckTable = New SqlCommand("Update RadAckFault Set TrackingID = @TrackingID, Acknowledge=@Acknowledge where IncidentID=@incidentID", conn)
+                    '        UpdateRadAckTable.Parameters.Add("@TrackingID", System.Data.SqlDbType.Int)
+                    '        UpdateRadAckTable.Parameters("@TrackingID").Value = TRACKINGID
+                    '        UpdateRadAckTable.Parameters.Add("@Acknowledge", Data.SqlDbType.Bit)
+                    '        UpdateRadAckTable.Parameters("@Acknowledge").Value = True
+                    '        UpdateRadAckTable.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                    '        UpdateRadAckTable.Parameters("@incidentID").Value = incidentID
+                    '        conn.Open()
+                    '        UpdateRadAckTable.ExecuteNonQuery()
+                    '        conn.Close()
+                    '    End If
+                    'End If
                     RadRow = HighlightRow()
                     bindGridView()
 
