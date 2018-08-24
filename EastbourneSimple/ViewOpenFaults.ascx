@@ -27,17 +27,14 @@
       
 </style>
 
-<%--
-                    <asp:Button ID="ViewFault" runat="server" 
-                CausesValidation="False" Text="View Open Faults" />--%>    
        <br />
 <br />
-<%--<uc1:WriteDatauc ID="WriteDatauc1"  LinacName ="" Tabby="Updatefault" UserReason="11" Visible="false" runat="server" />--%>
+
        <asp:UpdatePanel ID="UpdatePanel4"  runat="server" 
     ChildrenAsTriggers="False" UpdateMode="Conditional">
                 <ContentTemplate>
-<%--                <uc1:WriteDatauc ID="WriteDatauc1"  LinacName ="LA1" Tabby="Updatefault" UserReason="11" Visible="false" runat="server" />
---%>                <asp:Label ID="FakeLabel" runat="server" style="display:none;" />
+
+               <asp:Label ID="FakeLabel" runat="server" style="display:none;" />
                     <asp:Table ID="Table3" runat="server">
                     <asp:TableRow>
                     <asp:TableCell>
@@ -94,21 +91,10 @@
                    </asp:Table>
                     
                     </ContentTemplate>
-                    <Triggers>
-<%--<asp:AsyncPostBackTrigger ControlId="GridView1" EventName="SelectedIndexChanged" />--%>
-</Triggers>
-                  
+                 
                     </asp:UpdatePanel>
                     
-                    <%--<asp:Panel ID="Panel2" runat="server">
-                     <div >
-               </div>
-                    </asp:Panel>
-                    <br />
-                        <asp:ModalPopupExtender ID="Panel2_ModalPopupExtender" runat="server" 
-        DynamicServicePath="" Enabled="True" TargetControlID="FakeLabel" PopupControlID="Panel2">
-    </asp:ModalPopupExtender>--%>
-<asp:UpdatePanel ID="UpdatePanel3" runat="server">
+<asp:UpdatePanel ID="UpdatePanel3" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
 <ContentTemplate>
                     <asp:Panel ID="Panel4" runat="server">
                     
@@ -136,105 +122,17 @@
             </asp:TableCell>
             </asp:TableRow>
 <asp:PlaceHolder ID="PlaceholderRepeatFault" runat="server"></asp:PlaceHolder>
-<%--                     <table style="width:300px;">
-        <tr>
-           
-                         
-            <td class="style1">
-                Area:</td>
-            <td>
-    <asp:TextBox ID="AreaBox" runat="server" ReadOnly="true"></asp:TextBox>
-            </td>
-        </tr>
-        <tr>
-            <td class="style2">
-                Energy:</td>
-            <td class="style3">
-               <asp:DropDownList ID="DropDownListEnergy" runat="server">
-    </asp:DropDownList></td>
-        </tr>
-        <tr>
-            <td class="style1">
-                Gantry Angle:</td>
-            <td>
-    <asp:TextBox ID="TextBox2" runat="server"></asp:TextBox>
-            </td>
-        </tr>
-        <tr>
-            <td class="style1">
-                Collimator Angle:</td>
-            <td>
-    <asp:TextBox ID="TextBox3" runat="server"></asp:TextBox>
-            </td>
-            </tr>
-            <tr>
-        <td class="style1">
-                Fault Description:</td>
-            <td>
-              <asp:TextBox ID="TextBox4" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
-              </td> 
-        </tr>
-         <tr>
-            <td class="style1">
-                Patient ID:</td>
-            <td>
-    <asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
-    <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" validationexpression="^\d{7}$" Display="Dynamic" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
-            </td>
-            </tr>
-
-    </table>
-
-    <table style="width:300px;">
-        <tr>
-            <td class="style1">
-      <asp:Button ID="confirmfault" runat="server" Text="Confirm Repeat Fault" 
-                    causesvalidation="false"/>
-        </td>
-     <td><asp:Button ID="Cancel" runat="server" Text="Cancel" CausesValidation="false" />
-        </td>
-        </tr>
-        </table>--%>
         
                         <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" causesvalidation="false"/>
                         </fieldset>
                         <fieldset style="width:auto">
                        <legend>Associated Faults
                            </legend>
-                       <asp:UpdatePanel ID="UpdatePanelVEF" runat="server">
+                       <asp:UpdatePanel ID="UpdatePanelVEF" runat="server" ChildrenAsTriggers="false">
                             
                         <ContentTemplate>
                             <asp:PlaceHolder ID="PlaceHolder3" runat="server"></asp:PlaceHolder>
-                       <%-- <asp:GridView ID="GridView4" AutoGenerateColumns="false" runat="server"
-                        CellPadding="4" DataKeyNames="FaultID" 
-        EnableViewState="False" ForeColor="#333333" GridLines="None" 
-        AllowSorting="True">
-        <RowStyle BackColor="#E3EAEB" />
-        <AlternatingRowStyle BackColor="White" />
-        <Columns>
-            <asp:BoundField DataField="FaultID" HeaderText="FaultID" InsertVisible="False" 
-                ReadOnly="True"
-                SortExpression="FaultID" />
-            <asp:BoundField DataField="Description" HeaderText="User Description" 
-                SortExpression="Description" />
-            <asp:BoundField DataField="ReportedBy" HeaderText="Reported By" 
-                SortExpression="ReportedBy" />
-            <asp:BoundField DataField="DateReported" HeaderText="Date Reported" 
-                SortExpression="DateReported" />
-                <asp:BoundField DataField="Area" HeaderText="Area" SortExpression="Area" />
-                <asp:BoundField DataField="Energy" HeaderText="Energy" SortExpression="Energy" />
-                <asp:BoundField DataField="GantryAngle" HeaderText="GantryAngle" SortExpression="GantryAngle" />
-                     <asp:BoundField DataField="CollimatorAngle" HeaderText="CollimatorAngle" SortExpression="CollimatorAngle" />      
-                           <asp:BoundField DataField="Linac" HeaderText="Linac" 
-                SortExpression="Linac" />
-           
-        </Columns>
-        <EditRowStyle BackColor="#7C6F57" />
-        <FooterStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
-        <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
-        <PagerStyle BackColor="#666666" ForeColor="White" HorizontalAlign="Center" />
-        <SelectedRowStyle BackColor="#C5BBAF" Font-Bold="True" ForeColor="#333333" />
-    </asp:GridView>--%>
+
                             </fieldset></fieldset>
                     </ContentTemplate>
                         </asp:UpdatePanel>
@@ -245,7 +143,7 @@
                         <asp:View ID="View1" runat="server">
                             <asp:MultiView ID="MultiView2" runat="server">
                                <asp:View ID="statustech" runat="server">
-                               <asp:UpdatePanel ID="UpdatePanel5" runat="server" visible="false"><ContentTemplate>
+                               <asp:Panel ID="statustechpanel" runat="server" visible="false" >
      <uc1:WriteDatauc ID="WriteDatauc3" LinacName="" UserReason="4"  Tabby="incident"  WriteName="incident" visible="false" runat="server" />
 
         <asp:Panel ID="Panel2" runat="server" BorderColor="#33CC33" BorderStyle="Solid">
@@ -284,14 +182,20 @@
                                 <asp:Label ID="ProblemStatusLabel" runat="server" Text="New Status"></asp:Label>
                             </td>
                             <td>
-                                <asp:UpdatePanel ID="UpdatePanelStatuslist" runat="server"><ContentTemplate><asp:Panel 
-                                        ID="Panel5" runat="server"><asp:DropDownList ID="DropDownList1" 
-                                        autopostback="true" runat="server"><asp:ListItem>Select</asp:ListItem><asp:ListItem>Open</asp:ListItem><asp:ListItem>Concession</asp:ListItem><asp:ListItem>Closed</asp:ListItem></asp:DropDownList>
+                               <%-- <asp:UpdatePanel ID="UpdatePanelStatuslist" runat="server">
+                                    <ContentTemplate>--%>
+                                        <asp:Panel ID="Panel5" runat="server">
+                                            <asp:DropDownList ID="DropDownList1" autopostback="true" runat="server">
+                                            <asp:ListItem>Select</asp:ListItem>
+                                            <asp:ListItem>Open</asp:ListItem>
+                                            <asp:ListItem>Concession</asp:ListItem>
+                                            <asp:ListItem>Closed</asp:ListItem>
+                                            </asp:DropDownList>
                                         </asp:Panel>
-                                </ContentTemplate>
-                                <%--<Triggers><asp:AsyncPostBackTrigger ControlID="DropDownList1" EventName="SelectedIndexChanged" /></Triggers>--%>
+                              <%--  </ContentTemplate>--%>
+<%--                                <Triggers><asp:AsyncPostBackTrigger ControlID="DropDownList1" EventName="SelectedIndexChanged" /></Triggers>--%>
 
-                                </asp:UpdatePanel>
+                              <%--  </asp:UpdatePanel>--%>
                             <td>
                                 <asp:Label ID="ConcessionLabel" runat="server" Text="Concession Number"></asp:Label>
                             </td>
@@ -321,8 +225,15 @@
                                 <asp:Label ID="commentLabel" runat="server" Text="Comment"></asp:Label>
                             </td>
                             <td>
-                                <asp:TextBox ID="CommentBox1" runat="server" readonly="false" 
+                                <asp:PlaceHolder ID="CommentPlace" runat="server">
+                                <asp:UpdatePanel ID="CommentBoxUpdatePanel" runat="server"><ContentTemplate>
+                                <asp:TextBox ID="CommentBox1" runat="server" readonly="true" visible="false"
                             TextMode="MultiLine" MaxLength="250" EnableViewState="False"></asp:TextBox>
+                                    </ContentTemplate><Triggers>
+                                        <asp:AsyncPostBackTrigger ControlID="DropDownList1" EventName="SelectedIndexChanged" />
+                                        <asp:AsyncPostBackTrigger ControlID="CommentBoxButton" EventName="Click" />
+                                                      </Triggers></asp:UpdatePanel>
+                                    </asp:PlaceHolder>
                             </td>
                             <td>
                                 <asp:Label ID="ActionLabel" runat="server" Text="Concession Action"></asp:Label>
@@ -343,86 +254,10 @@
                 </fieldset>
     </asp:TableCell>
     <asp:TableCell>
-    <%--<asp:PlaceHolder ID="PlaceHolderDisplayfault" runat="server"></asp:PlaceHolder>--%>
+   
             <fieldset style="width:300px;">
                 
-<%-- from here to line 419
-            <legend>Reported Fault Details</legend>
-                <table style="width:300px;">                
-        <tr>           
-            <td class="style1">
-                Area:</td>
-            <td>
-    <asp:TextBox ID="OriginalAreaBox" runat="server" ReadOnly="True"></asp:TextBox>
-            </td>
-        </tr>
-         <tr>
-            
-            <td class="style1">
 
-                Energy:</td>
-            <td>      
-
-    <asp:TextBox ID="OriginalEnergyBox" runat="server" ReadOnly="True"></asp:TextBox>
-            </td>
-        </tr>
-        <tr>
-            <td class="style1">
-                Gantry Angle:</td>
-            <td>
-    <asp:TextBox ID="OriginalGantryBox" ReadOnly="True" runat="server"></asp:TextBox>
-
-            </td>
-        </tr>
-        <tr>
-
-            <td class="style1">
-                
-                Collimator Angle:</td>
-            <td>
-                
-    <asp:TextBox ID="OriginalCollBox" runat="server" ReadOnly="True"></asp:TextBox>
-
-            </td>
-            </tr>
-            <tr>
-                
-        <td class="style1">
-                
-                Fault Description:</td>
-            <td>
-                
-              <asp:TextBox ID="OriginalDescriptionBox" runat="server" MaxLength="250" ReadOnly="True" 
-                    Rows="5" TextMode="MultiLine"></asp:TextBox>
-              </td>
-              </tr>
-               <tr>
-                
-        <td class="style1">
-                
-                Patient ID:</td>
-            <td>
-                
-              <asp:TextBox ID="OriginalPatientIDBox" runat="server" ReadOnly="True"></asp:TextBox>
-              </td>
-              </tr>
-              <tr>
-
-              <td>
-                  
-              Reported By:</td>
-              <td>
-                  <asp:TextBox ID="OriginalReportedBox" runat="server" ReadOnly="True"></asp:TextBox>
-                </td>
-              </tr>
-              <tr>
-              <td>
-                  
-              Date Open:</td>
-              <td>
-                  <asp:TextBox ID="OriginalOpenDateBox" runat="server" ReadOnly="True"></asp:TextBox>
-              </td>
-                  <td> --%>
                       <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder></td>
                      
         </tr>
@@ -467,11 +302,11 @@
         
 
        </asp:Panel> 
-</ContentTemplate>
-    </asp:UpdatePanel>
+
+    </asp:Panel>
 </asp:View>       
 <asp:View ID="statusother" runat="server">
-                 <asp:UpdatePanel ID="UpdatePanel1" runat="server" Visible="false">
+                 <asp:UpdatePanel ID="UpdatePanel1" runat="server" Visible="false" ChildrenAsTriggers="false">
 <ContentTemplate>
               
     <asp:Panel ID="Panel1" runat="server">
@@ -495,8 +330,7 @@
                             SortExpression="LastupdatedOn" />
                             <asp:BoundField DataField="ConcessionNumber" HeaderText="Concession Number"
                             SortExpression="ConcessionNumber" ItemStyle-HorizontalAlign="Center" />
-                        <%--<asp:BoundField DataField="incidentID" HeaderText="incidentID" 
-                            SortExpression="FaultID" />--%>
+
                     </Columns>
                     <EditRowStyle BackColor="#99FF33" />
                     <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
@@ -514,9 +348,7 @@
 
  <asp:View ID="View2" runat="server">
                         
-                    <%--<asp:Panel ID="Panel3" runat="server" Height="200px">
-                    </asp:Panel>--%>
-                    <asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="false">
+                    <asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="false" ChildrenAsTriggers="false">
 <ContentTemplate>
     <asp:Panel ID="Panel3" runat="server">
     <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>                 
@@ -533,95 +365,7 @@
                 
             </asp:UpdatePanel>
 
+<asp:Button ID="CommentBoxButton" runat="server" Text="" Style="display:none" CausesValidation="False" />
 
-
-
-<%--            <div>
-            <asp:UpdatePanel ID="UpdatePanelNewFault" runat="server" Visible="false">
-                    <ContentTemplate>
-                     <fieldset style="width:700px;">
-                    <legend>New Fault</legend>
-                    <fieldset style="width:700px;">
-                    <legend>Record New Fault</legend>
-                     <asp:TableRow ID="TableRow1" runat="server">
-            <asp:TableCell>
-                <asp:Label ID="Label5" runat="server" Text="Incident ID"></asp:Label>
-            </asp:TableCell>
-            <asp:TableCell>
-                <asp:Label ID="Label6" runat="server" Text=""></asp:Label>
-            </asp:TableCell>
-            <asp:TableCell>
-            </asp:TableCell>
-            <asp:TableCell>
-            </asp:TableCell>
-            </asp:TableRow>
-                     <table style="width:300px;">
-        <tr>
-            <td class="style1">
-                Area:</td>
-            <td>
-    <asp:TextBox ID="TextBox1" runat="server"></asp:TextBox>
-            </td>
-        </tr>
-        <tr>
-            <td class="style2">
-                Energy:</td>
-            <td class="style3">
-               <asp:DropDownList ID="DropDownList3" runat="server">
-    </asp:DropDownList></td>
-        </tr>
-        <tr>
-            <td class="style1">
-                Gantry Angle:</td>
-            <td>
-    <asp:TextBox ID="TextBox5" runat="server"></asp:TextBox>
-            </td>
-        </tr>
-        <tr>
-            <td class="style1">
-                Collimator Angle:</td>
-            <td>
-    <asp:TextBox ID="TextBox6" runat="server"></asp:TextBox>
-            </td>
-            </tr>
-            <tr>
-        <td class="style1">
-                Fault Description:</td>
-            <td>
-              <asp:TextBox ID="TextBox7" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
-              </td> 
-        </tr>
-         <tr>
-            <td class="style1">
-                Patient ID:</td>
-            <td>
-    <asp:TextBox ID="TextBox8" Text="" runat="server"></asp:TextBox>
-    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ControlToValidate="PatientIDBox" validationexpression="^\d{7}$" Display="Dynamic" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
-            </td>
-            </tr>
-
-    </table>
-    <table style="width:300px;">
-        <tr>
-            <td class="style1">
-        <asp:Button ID="Button1" runat="server" Text="Confirm Repeat Fault" 
-                    causesvalidation="false"/>
-        </td>
-        <td><asp:Button ID="Button2" runat="server" Text="Cancel" CausesValidation="false" />
-        </td>
-        </tr>
-        </table>
-        
-  
-                        
-                    </ContentTemplate>
-                    </asp:UpdatePanel>
-            
-            
-            
-            
-            </div>--%>
-         
-<%--<uc2:ManyFaultGriduc ID="ManyFaultGriduc1" runat="server" />--%>
 
          
