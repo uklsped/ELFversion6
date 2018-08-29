@@ -427,6 +427,9 @@ Partial Class DefectSavePark
         Selected = FaultOpenClosed.SelectedItem.Text
         UnRecoverableSave.Enabled = True
         UnRecoverableSave.BackColor = Drawing.Color.Yellow
+        AccurayValidation.ValidationGroup = "defect"
+        FaultDescriptionValidation.ValidationGroup = "defect"
+        CorrectiveActionValidation.ValidationGroup = "defect"
     End Sub
     Protected Sub UnRecoverableSave_Click(sender As Object, e As EventArgs) Handles UnRecoverableSave.Click
         Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
@@ -445,7 +448,7 @@ Partial Class DefectSavePark
             UnRecoverableSave.Enabled = False
             Selected = FaultOpenClosed.SelectedItem.Text
             If Selected.Equals(FaultAnswerNo) Then
-                wcbutton.Text = "Saving Unrecoverable Fault"
+                wcbutton.Text = "Saving New Fault"
                 Application(actionstate) = "Confirm"
                 wctrl.Visible = True
                 ForceFocus(wctext)

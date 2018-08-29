@@ -1,4 +1,4 @@
-﻿<%@ Control Language="VB"  AutoEventWireup="false" CodeFile="ViewOpenFaults.ascx.vb" Inherits="ViewOpenFaults" %>
+﻿<%@ Control Language="VB"  AutoEventWireup="false" CodeFile="ViewOpenFaults.ascx.vb" Inherits="ViewOpenFaults"%>
 <%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="asp" %>
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
@@ -30,9 +30,8 @@
        <br />
 <br />
 
-       <asp:UpdatePanel ID="UpdatePanel4"  runat="server" 
-    ChildrenAsTriggers="False" UpdateMode="Conditional">
-                <ContentTemplate>
+       <asp:Panel ID="UpdatePanel4"  runat="server">
+               
 
                <asp:Label ID="FakeLabel" runat="server" style="display:none;" />
                     <asp:Table ID="Table3" runat="server">
@@ -90,19 +89,20 @@
                   </asp:TableRow>
                    </asp:Table>
                     
-                    </ContentTemplate>
+                   
                  
-                    </asp:UpdatePanel>
+                    </asp:Panel>
                     
-<asp:UpdatePanel ID="UpdatePanel3" runat="server" ChildrenAsTriggers="false" UpdateMode="Conditional">
-<ContentTemplate>
+<asp:Panel ID="UpdatePanel3" runat="server">
+  
+    
                     <asp:Panel ID="Panel4" runat="server">
                     
                     <asp:MultiView ID="MultiView1" runat="server">
                         <asp:View ID="UpdatefaultView" runat="server">
                        
                     <asp:Panel ID="UpdatePanelRepeatFault" runat="server" Visible="false">
-                    <ContentTemplate>
+                    
                      <fieldset style="width:700px;">
                     <legend>Repeat Faults</legend>
                     <fieldset style="width:700px;">
@@ -121,25 +121,27 @@
             <asp:TableCell>
             </asp:TableCell>
             </asp:TableRow>
-<asp:PlaceHolder ID="PlaceholderRepeatFault" runat="server"></asp:PlaceHolder>
+                    <asp:PlaceHolder ID="PlaceholderRepeatFault" runat="server"></asp:PlaceHolder>
         
                         <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" causesvalidation="false"/>
                         </fieldset>
                         <fieldset style="width:auto">
                        <legend>Associated Faults
                            </legend>
-                       <asp:UpdatePanel ID="UpdatePanelVEF" runat="server" ChildrenAsTriggers="false">
+                            <asp:Panel ID="UpdatePanelVEF" runat="server">
+                      
                             
-                        <ContentTemplate>
-                            <asp:PlaceHolder ID="PlaceHolder3" runat="server"></asp:PlaceHolder>
-
-                            </fieldset></fieldset>
-                    </ContentTemplate>
-                        </asp:UpdatePanel>
                         
-                    </ContentTemplate>
-                    </asp:Panel>
-                    </asp:View>
+                            <asp:PlaceHolder ID="PlaceHolder3" runat="server"></asp:PlaceHolder>
+                                </asp:Panel>
+                            </fieldset></fieldset>
+                 
+                      
+                            </asp:panel>
+                        
+                   </asp:View>
+                   
+                    
                         <asp:View ID="View1" runat="server">
                             <asp:MultiView ID="MultiView2" runat="server">
                                <asp:View ID="statustech" runat="server">
@@ -181,9 +183,9 @@
                             <td>
                                 <asp:Label ID="ProblemStatusLabel" runat="server" Text="New Status"></asp:Label>
                             </td>
+                        
                             <td>
-                               <%-- <asp:UpdatePanel ID="UpdatePanelStatuslist" runat="server">
-                                    <ContentTemplate>--%>
+
                                         <asp:Panel ID="Panel5" runat="server">
                                             <asp:DropDownList ID="DropDownList1" autopostback="true" runat="server">
                                             <asp:ListItem>Select</asp:ListItem>
@@ -192,10 +194,9 @@
                                             <asp:ListItem>Closed</asp:ListItem>
                                             </asp:DropDownList>
                                         </asp:Panel>
-                              <%--  </ContentTemplate>--%>
-<%--                                <Triggers><asp:AsyncPostBackTrigger ControlID="DropDownList1" EventName="SelectedIndexChanged" /></Triggers>--%>
 
-                              <%--  </asp:UpdatePanel>--%>
+                            
+                               
                             <td>
                                 <asp:Label ID="ConcessionLabel" runat="server" Text="Concession Number"></asp:Label>
                             </td>
@@ -211,14 +212,17 @@
                             <td>
                                 <asp:DropDownList ID="DropDownList2" runat="server"><asp:ListItem>Unassigned</asp:ListItem><asp:ListItem>Engineering</asp:ListItem><asp:ListItem>Physics</asp:ListItem><asp:ListItem>Software</asp:ListItem></asp:DropDownList>
                             </td>
+                          
                             <td>
+                                
                                 <asp:Label ID="ConcessiondescriptionLabel" runat="server" 
                                     Text="Concession Description"></asp:Label>
-                                <td>
+                            </td>
+                            </td>
                                     <asp:TextBox ID="ConcessiondescriptionBox" runat="server" ReadOnly="True" TextMode="MultiLine"
                                 Visible="True" MaxLength="250"></asp:TextBox>
-                                </td>
                             </td>
+                            
                         </tr>
                         <tr>
                             <td>
@@ -245,22 +249,23 @@
                         <tr>
                             <td>
                                 <asp:Button ID="SaveAFault" runat="server" Text="Save"  CausesValidation="false"  />
-                                <td>
+                                </td>
+                            <td>
                                     <asp:Button ID="CancelButton" runat="server" Text="Cancel/Close" causesvalidation="false"/>
                                 </td>
-                        </td>
+                        
                         </tr>
                     </table>
                 </fieldset>
     </asp:TableCell>
     <asp:TableCell>
-   
+   <td>
             <fieldset style="width:300px;">
                 
 
                       <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder></td>
                      
-        </tr>
+      
     </table>
 
     </fieldset>
@@ -306,8 +311,8 @@
     </asp:Panel>
 </asp:View>       
 <asp:View ID="statusother" runat="server">
-                 <asp:UpdatePanel ID="UpdatePanel1" runat="server" Visible="false" ChildrenAsTriggers="false">
-<ContentTemplate>
+                 <asp:Panel ID="UpdatePanel1" runat="server" Visible="false" >
+
               
     <asp:Panel ID="Panel1" runat="server">
                     <asp:GridView ID="GridView2" runat="server" AllowPaging="True" 
@@ -340,30 +345,29 @@
                 </asp:GridView>
                 
    </asp:Panel>
-</ContentTemplate>
-</asp:UpdatePanel>
+
+</asp:Panel>
 </asp:View>
 </asp:MultiView>
 </asp:View>
 
  <asp:View ID="View2" runat="server">
                         
-                    <asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="false" ChildrenAsTriggers="false">
-<ContentTemplate>
+                    <asp:Panel ID="UpdatePanel2" runat="server" Visible="false" >
+
     <asp:Panel ID="Panel3" runat="server">
     <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>                 
    </asp:Panel>
-</ContentTemplate>
-</asp:UpdatePanel>
+
+</asp:Panel>
 </asp:View>
 </asp:MultiView>
-<asp:Button ID="Hidefaults" runat="server" CausesValidation="False" visible="false"
+                        <asp:Button ID="Hidefaults" runat="server" CausesValidation="False" visible="false"
                         Text="Close" />
                         
                         </asp:Panel>
-                </ContentTemplate>
-                
-            </asp:UpdatePanel>
+                               
+            </asp:Panel>
 
 <asp:Button ID="CommentBoxButton" runat="server" Text="" Style="display:none" CausesValidation="False" />
 

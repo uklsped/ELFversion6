@@ -1,5 +1,7 @@
 ﻿Imports System.Data
 Imports System.Data.SqlClient
+Imports System.IO
+
 Namespace DavesCode
     Public Class ReusePC
 
@@ -203,7 +205,6 @@ Namespace DavesCode
         Public Shared Function InsertReportFault(ByVal Description As String, ByVal ReportedBy As String, ByVal DateReported As DateTime, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal Device As String, ByVal IncidentID As Integer, ByVal PatientID As String, ByVal ConcessionNumber As String) As Integer
             Dim LastFault As Integer = IncidentID
             Dim conn As SqlConnection
-            'Dim incidentfault As SqlCommand
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString)
 
@@ -254,13 +255,7 @@ Namespace DavesCode
                 Catch ex As Exception
 
                     ObjTransaction.Rollback()
-                    Dim message As String = String.Format("Message: {0}\n\n", ex.Message)
-
-                    message &= String.Format("StackTrace: {0}\n\n", ex.StackTrace.Replace(Environment.NewLine, String.Empty))
-
-                    message &= String.Format("Source: {0}\n\n", ex.Source.Replace(Environment.NewLine, String.Empty))
-
-                    message &= String.Format("TargetSite: {0}", ex.TargetSite.ToString().Replace(Environment.NewLine, String.Empty))
+                    LogError(ex)
 
                 Finally
                     incidentfault.Parameters.Clear()
@@ -272,21 +267,15 @@ Namespace DavesCode
         End Function
 
         Public Shared Function InsertNewConcession(ByVal ConcessionDescription As String, ByVal LinacName As String, ByVal IncidentID As Integer, ByVal ReportedBy As String, ByVal ConcessionAction As String) As String
-
+            Dim Countcommandtext As String = "select count(*) from Concessiontable where incidentID=@incidentID"
+            Dim Getfaultstatus As String = "select Status From FaultIDTable where incidentID = @incidentID"
+            Dim Status As String
+            Dim exists As Integer
             Dim time As DateTime = Now()
             Dim conn As SqlConnection
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString)
 
-            Dim bcommand = New SqlCommand("select count(*) from Concessiontable where incidentID=@incidentID", conn)
-            bcommand.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-            bcommand.Parameters("@incidentID").Value = IncidentID
-
-            conn.Open()
-
-            Dim exists As Integer
-            exists = bcommand.ExecuteScalar()
-            conn.Close()
             Using (conn)
                 Dim incidentfault As New SqlCommand With {
                     .Connection = conn
@@ -297,7 +286,22 @@ Namespace DavesCode
                 Try
                     conn.Open()
                     ObjTransaction = conn.BeginTransaction()
-                    If exists = 0 Then
+                    incidentfault.CommandText = Getfaultstatus
+                    incidentfault.CommandType = CommandType.Text
+                    incidentfault.Transaction = ObjTransaction
+                    incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                    incidentfault.Parameters("@incidentID").Value = IncidentID
+                    Status = incidentfault.ExecuteScalar()
+                    incidentfault.Parameters.Clear()
+
+                    incidentfault.CommandText = Countcommandtext
+                    incidentfault.CommandType = CommandType.Text
+                    incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                    incidentfault.Parameters("@incidentID").Value = IncidentID
+                    exists = incidentfault.ExecuteScalar()
+                    incidentfault.Parameters.Clear()
+
+                    If (exists = 0) And ((Status = "Open") Or (Status = "New")) Then
                         'commconcess.ExecuteNonQuery()
                         'from http://www.dotnetperls.com/string-format-vbnet
 
@@ -327,17 +331,15 @@ Namespace DavesCode
                         ObjTransaction.Commit()
                         incidentfault.Parameters.Clear()
 
+                    ElseIf (((exists = 0) And (Status = "Concession")) Or ((exists = 1) And (Not Status = "Concession"))) Then
+                        exists = -1
+                        ObjTransaction.Rollback()
+                        LogAnomaly(LinacName, "InsertNewConcession", "Error exists = 0 but Status = Concession")
                     End If
                 Catch ex As Exception
                     ObjTransaction.Rollback()
-                    Dim message As String = String.Format("Message: {0}\n\n", ex.Message)
-
-                    message &= String.Format("StackTrace: {0}\n\n", ex.StackTrace.Replace(Environment.NewLine, String.Empty))
-
-                    message &= String.Format("Source: {0}\n\n", ex.Source.Replace(Environment.NewLine, String.Empty))
-
-                    message &= String.Format("TargetSite: {0}", ex.TargetSite.ToString().Replace(Environment.NewLine, String.Empty))
-
+                    exists = -1
+                    LogError(ex)
 
                 Finally
                     conn.Close()
@@ -410,22 +412,14 @@ Namespace DavesCode
                     incidentfault.ExecuteNonQuery()
                     incidentfault.Parameters.Clear()
 
-
-
                     ObjTransaction.Commit()
 
 
                 Catch ex As Exception
 
                     ObjTransaction.Rollback()
-                    Dim message As String = String.Format("Message: {0}\n\n", ex.Message)
-
-                    message &= String.Format("StackTrace: {0}\n\n", ex.StackTrace.Replace(Environment.NewLine, String.Empty))
-
-                    message &= String.Format("Source: {0}\n\n", ex.Source.Replace(Environment.NewLine, String.Empty))
-
-                    message &= String.Format("TargetSite: {0}", ex.TargetSite.ToString().Replace(Environment.NewLine, String.Empty))
-
+                    LogError(ex)
+                    trackingID = -1
                 Finally
                     conn.Close()
                 End Try
@@ -612,14 +606,7 @@ Namespace DavesCode
                 Catch ex As Exception
 
                     ObjTransaction.Rollback()
-                    Dim message As String = String.Format("Message: {0}\n\n", ex.Message)
-
-                    message &= String.Format("StackTrace: {0}\n\n", ex.StackTrace.Replace(Environment.NewLine, String.Empty))
-
-                    message &= String.Format("Source: {0}\n\n", ex.Source.Replace(Environment.NewLine, String.Empty))
-
-                    message &= String.Format("TargetSite: {0}", ex.TargetSite.ToString().Replace(Environment.NewLine, String.Empty))
-
+                    LogError(ex)
                 Finally
                     conn.Close()
                 End Try
@@ -628,6 +615,65 @@ Namespace DavesCode
             Return IncidentID
         End Function
 
+        Public Shared Sub LogError(ex As Exception)
+            Dim message As String = String.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"))
+            message += Environment.NewLine
+            message += "-----------------------------------------------------------"
+            message += Environment.NewLine
+            message += String.Format("Message: {0}", ex.Message)
+            message += Environment.NewLine
+            message += String.Format("StackTrace: {0}", ex.StackTrace)
+            message += Environment.NewLine
+            message += String.Format("Source: {0}", ex.Source)
+            message += Environment.NewLine
+            message += String.Format("TargetSite: {0}", ex.TargetSite.ToString())
+            message += Environment.NewLine
+            message += "-----------------------------------------------------------"
+            message += Environment.NewLine
+            'Dim path As String = System.Web.HttpContext.Current.Server.MapPath("~/ErrorLog/ErrorLog.txt")
+            Dim path As String = System.Web.HttpContext.Current.Server.MapPath("~/ErrorLog/")
+            If (Not Directory.Exists(path)) Then
+                Directory.CreateDirectory(path)
+            End If
+            path = path + DateTime.Today.ToString("dd-MM-yy") + ".txt" ' Text File Name
+            If (Not File.Exists(path)) Then
+                File.Create(path).Dispose()
+            End If
+            Using writer As New StreamWriter(path, True)
+                writer.WriteLine(message)
+                writer.Close()
+            End Using
+        End Sub
+
+        Public Shared Sub LogAnomaly(ByVal LinacName As String, ByVal Procedure As String, ByVal Anomaly As String)
+            Dim message As String = String.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"))
+            message += Environment.NewLine
+            message += "-----------------------------------------------------------"
+            message += Environment.NewLine
+            message += String.Format("Linac: {0}", LinacName)
+            message += Environment.NewLine
+            message += String.Format("Calling Procedure: {0}", Procedure)
+            message += Environment.NewLine
+            message += String.Format("Anomaly: {0}", Anomaly)
+            message += Environment.NewLine
+            message += String.Format("Anomaly occurred on page: {0}", System.Web.HttpContext.Current.Request.Url.ToString)
+            message += Environment.NewLine
+            message += "-----------------------------------------------------------"
+            message += Environment.NewLine
+            'Dim path As String = System.Web.HttpContext.Current.Server.MapPath("~/ErrorLog/ErrorLog.txt")
+            Dim path As String = System.Web.HttpContext.Current.Server.MapPath("~/ErrorLog/")
+            If (Not Directory.Exists(path)) Then
+                Directory.CreateDirectory(path)
+            End If
+            path = path + DateTime.Today.ToString("dd-MM-yy") + ".txt" ' Text File Name
+            If (Not File.Exists(path)) Then
+                File.Create(path).Dispose()
+            End If
+            Using writer As New StreamWriter(path, True)
+                writer.WriteLine(message)
+                writer.Close()
+            End Using
+        End Sub
 
     End Class
 
