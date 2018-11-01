@@ -144,7 +144,7 @@ Namespace DavesCode
                 commstatus.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.NVarChar, 10)
                 commstatus.Parameters("@LinacStatusId").Value = Linacstatusid
                 commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                commstatus.Parameters("@linac").Value = MachineType
+                'commstatus.Parameters("@linac").Value = MachineType
             Else
                 'Update command changed 12 April because it should update last row not all rows with same LinacStatusId
                 'commstatus = New SqlCommand("UPDATE  TreatmentTable SET TreatmentStopTime = @TreatmentStopTime where LinacStatusid = @LinacStatusID", conn)
