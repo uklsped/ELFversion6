@@ -4,7 +4,11 @@
 
 
 
-<%@ Register src="ErunupUserControlPark.ascx" tagname="ErunupUserControlPark" tagprefix="uc1" %>
+<%@ Register src="ErunupUserControlCommon.ascx" tagname="ErunupUserControlCommon" tagprefix="uc1" %>
+
+
+
+<%--<%@ Register src="ErunupUserControlPark.ascx" tagname="ErunupUserControlPark" tagprefix="uc1" %>--%>
 <%@ Register src="Preclinusercontrol.ascx" tagname="Preclinusercontrol" tagprefix="uc2" %>
 <%@ Register src="ClinicalUserControl.ascx" tagname="ClinicalUserControl" tagprefix="uc3" %>
 
@@ -176,16 +180,11 @@
    
 <asp:Button ID="ReportFault" runat="server" BackColor="#FF3300" ForeColor="#FFFF66" 
         Height="25px" Text="Report Fault" Width="150px" CausesValidation="False" 
-                Font-Bold="True" Font-Size="Medium" />
+                Font-Bold="True" Font-Size="Medium" style="display:none" />
 
     
   <asp:Button ID="EndOfDay" runat="server" Text="End of Day"  causesvalidation="false"/>              
 &nbsp;
-<%--<asp:Button ID="RegisterUser" runat="server" Text="Register" causesvalidation="false"/>
-    <asp:Button ID="Admin" runat="server" CausesValidation="False" Text="Admin" />
-    
-    <asp:Button ID="ViewFaultButton" runat="server" visible="true" CausesValidation="False" 
-        style="height: 26px" Text="View Faults" />--%>
 
             <asp:Button ID="RestoreButton" runat="server" visible="true" CausesValidation="False" 
         style="height: 26px" Text="RESTORE ELF" />
@@ -213,8 +212,7 @@
 T1 Status
 </HeaderTemplate>
 <ContentTemplate>
-<asp:UpdatePanel ID="linacstatus" runat="server" >
-    <ContentTemplate>
+<asp:UpdatePanel ID="linacstatus" runat="server" ><ContentTemplate>
 <%--<uc4:AcceptLinac ID="AcceptLinac0" LinacName= "T1"  UserReason = "1"  Tabby="0" runat="server" />--%>
         <asp:UpdatePanel ID="UpdatePanel0" runat="server" >
             <ContentTemplate>
@@ -225,6 +223,7 @@ T1 Status
                     </asp:Panel></ContentTemplate></asp:UpdatePanel>
 </ContentTemplate>
 </asp:UpdatePanel>
+
 </ContentTemplate>
 </asp:TabPanel>
 
@@ -238,7 +237,8 @@ T1 Status
 <asp:Button ID="TabButton1" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent1" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "T1"  Tabby="1" UserReason = "1" visible="false" />
-<uc1:ErunupUserControlPark ID="ErunupUserControl1" LinacName="T1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server"  />
+<%--<uc1:ErunupUserControlPark ID="ErunupUserControl1" LinacName="T1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server"  />--%>
+<uc1:ErunupUserControlCommon ID="ErunupUserControlCommon1" LinacName="T1" Tabby = "1" UserReason = "1" DataName="EngData" Visible ="false" runat="server" />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -246,10 +246,6 @@ T1 Status
 </asp:UpdatePanel>
 </ContentTemplate>
     
-
-
-
-
 
 </asp:TabPanel>
         
@@ -355,14 +351,16 @@ T1 Status
 <ContentTemplate><asp:Button ID="TabButton7" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent7" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "T1"  Tabby="7" UserReason = "9" visible="false" />
-<uc1:ErunupUserControlPark ID="ErunupUserControl2" LinacName="T1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />
+<%--<uc1:ErunupUserControlPark ID="ErunupUserControl2" LinacName="T1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />--%>
+    <uc1:ErunupUserControlcommon ID="ErunupUserControl2" LinacName="T1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
 </ContentTemplate>
 </asp:UpdatePanel>
 </ContentTemplate>
- </asp:TabPanel>
+ 
+</asp:TabPanel>
 
 <asp:TabPanel ID="TabPanel8" runat="server" HeaderText="T1 Development/Training" DynamicContextKey='Devel' CssClass="ajax__tab_header"><ContentTemplate>
 <asp:UpdatePanel ID="UpdateDevel" runat="server">
@@ -377,5 +375,6 @@ T1 Status
 </ContentTemplate>
 </asp:TabPanel>      
     </asp:TabContainer>
+    
 </asp:Content>
 

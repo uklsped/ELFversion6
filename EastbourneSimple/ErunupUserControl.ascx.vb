@@ -20,16 +20,17 @@ Partial Class ErunupUserControl
     Private qaviewstate As String
     Private LinacFlag As String
     Private objconToday As TodayClosedFault
+    Private objEngApprove As controls_EngApproveuc
     Private Todaydefect As DefectSave
     Private BoxChanged As String
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private tabstate As String
 
-    Public ReadOnly Property CurrentComment() As String
-        Get
-            Return CommentBox.Text
-        End Get
-    End Property
+    'Public ReadOnly Property CurrentComment() As String
+    '    Get
+    '        Return CommentBox.Text
+    '    End Get
+    'End Property
 
     Public Property DataName() As String
         Get
@@ -77,25 +78,25 @@ Partial Class ErunupUserControl
         End If
     End Function
 
-    Protected Sub checked(ByVal sender As Object, ByVal e As System.EventArgs)
-        Dim toggle As CheckBox = CType(GridView1.HeaderRow.FindControl("chkSelectAll"), CheckBox)
+    'Protected Sub checked(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    Dim toggle As CheckBox = CType(GridView1.HeaderRow.FindControl("chkSelectAll"), CheckBox)
 
-        If toggle.Checked = True Then
+    '    If toggle.Checked = True Then
 
-            For Each grv As GridViewRow In GridView1.Rows
-                Dim cb As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
-                If cb.Enabled = True Then
-                    cb.Checked = True
-                End If
-            Next
-        Else
-            For Each grv As GridViewRow In GridView1.Rows
-                Dim cb As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
-                cb.Checked = False
-            Next
-        End If
+    '        For Each grv As GridViewRow In GridView1.Rows
+    '            Dim cb As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
+    '            If cb.Enabled = True Then
+    '                cb.Checked = True
+    '            End If
+    '        Next
+    '    Else
+    '        For Each grv As GridViewRow In GridView1.Rows
+    '            Dim cb As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
+    '            cb.Checked = False
+    '        Next
+    '    End If
 
-    End Sub
+    'End Sub
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
 
@@ -141,7 +142,9 @@ Partial Class ErunupUserControl
         '1 or 7 is engineering tab or emergency run up tab
         If tabcontrol = "1" Or "7" Then
             'DavesCode.Reuse.ReturnApplicationState(tabcontrol)
-            Dim grdview As GridView = FindControl("Gridview1")
+            Dim engcontrol As controls_EngApproveuc
+            engcontrol = PlaceHolderEnergyApprove.FindControl("EngApprove")
+            Dim grdview As GridView = engcontrol.FindControl("EnergyGridView")
             Dim Textboxcomment As TextBox = FindControl("CommentBox")
             Dim Comment As String = Textboxcomment.Text
             Dim strScript As String = "<script>"
@@ -177,39 +180,46 @@ Partial Class ErunupUserControl
             strScript += "window.location='"
             strScript += machinelabel
             strScript += "</script>"
-            ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+            'ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
         End If
     End Sub
 
-    Protected Function ConfirmNoRadConcession() As Boolean
-        Dim comm As SqlCommand
-        Dim conn As SqlConnection
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        Dim reader As SqlDataReader
-        Dim NumOpen As Integer
-        conn = New SqlConnection(connectionString)
-        comm = New SqlCommand("SELECT Count(*) as NumOpen From RadAckFault r Left outer join concessiontable c on r.Incidentid = c.Incidentid where r.Acknowledge = 'false' and linac=@linac", conn)
-        comm.Parameters.AddWithValue("@linac", MachineName)
+    'Protected Function ConfirmNoRadConcession() As Boolean
+    '    Dim comm As SqlCommand
+    '    Dim conn As SqlConnection
+    '    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+    '    Dim reader As SqlDataReader
+    '    Dim NumOpen As Integer
+    '    conn = New SqlConnection(connectionString)
+    '    comm = New SqlCommand("SELECT Count(*) as NumOpen From RadAckFault r Left outer join concessiontable c on r.Incidentid = c.Incidentid where r.Acknowledge = 'false' and linac=@linac", conn)
+    '    comm.Parameters.AddWithValue("@linac", MachineName)
 
 
-        conn.Open()
-        reader = comm.ExecuteReader()
+    '    conn.Open()
+    '    reader = comm.ExecuteReader()
 
-        If reader.Read() Then
-            NumOpen = reader.Item("NumOpen")
-            If NumOpen <> 0 Then 'there are open faults
-                Return False
-            Else
-                Return True
-            End If
-        Else
-            Return True
+    '    If reader.Read() Then
+    '        NumOpen = reader.Item("NumOpen")
+    '        If NumOpen <> 0 Then 'there are open faults
+    '            Return False
+    '        Else
+    '            Return True
+    '        End If
+    '    Else
+    '        Return True
 
-        End If
-    End Function
+    '    End If
+    'End Function
 
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         WaitButtons("Tech")
+        objEngApprove = Page.LoadControl("~/controls/EngApproveuc.ascx")
+        objEngApprove.Device = MachineName
+        objEngApprove.TabLabel = tablabel
+        objEngApprove.ID = "EngApprove"
+        PlaceHolderEnergyApprove.Controls.Add(objEngApprove)
+        'CType(objcon, controls_EngApproveuc).Device = "LA1"
+
 
         objconToday = Page.LoadControl("TodayClosedFault.ascx")
         objconToday.ID = "Todaysfaults"
@@ -289,62 +299,64 @@ Partial Class ErunupUserControl
             Application(atlasviewstate) = 1
             Application(LinacFlag) = "Linac Unauthorised"
             'This sets up the gridview with all of the available energies
-            Dim SqlDataSource1 As New SqlDataSource()
-            SqlDataSource1.ID = "SqlDataSource1"
-            SqlDataSource1.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+            'exclude 7 sept
+            'Dim SqlDataSource1 As New SqlDataSource()
+            'SqlDataSource1.ID = "SqlDataSource1"
+            'SqlDataSource1.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
 
-            If tablabel = 1 Then
-                
-                SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac= @linac and Energy not in ('iView','XVI')"
-            Else
-                SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac= @linac and EnergyID in (1,2,10,11,19,27,28)"
-            End If
+            'If tablabel = 1 Then
 
-            SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-            SqlDataSource1.SelectParameters.Add("linac", MachineName)
+            '    SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac= @linac and Energy not in ('iView','XVI')"
+            'Else
+            '    SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac= @linac and EnergyID in (1,2,10,11,19,27,28)"
+            'End If
 
-            GridView1.DataSource = SqlDataSource1
-            GridView1.DataBind()
+            'SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+            'SqlDataSource1.SelectParameters.Add("linac", MachineName)
+
+            'GridView1.DataSource = SqlDataSource1
+            'GridView1.DataBind()
 
             'This makes visible checkboxes for those energies that are approved
-            Dim conn As SqlConnection
-            Dim comm As SqlCommand
-            Dim reader As SqlDataReader
-            Dim count As Integer = 0
-            Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-            conn = New SqlConnection(connectionString1)
-            If tablabel = 1 Then
-                'added imaging
-                comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy not in ('iView','XVI')", conn)
-            Else
-                comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and EnergyID in (1,2,10,11,19,27,28)", conn)
-            End If
-            comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            comm.Parameters("@linac").Value = MachineName
-            Try
-                conn.Open()
-                reader = comm.ExecuteReader()
-                While reader.Read()
-                    'This will fall over if approved is null so needs error handling
-                    'Added handling 4/7/17
-                    If Not IsDBNull(reader.Item("Approved")) Then
-                        If Not reader.Item("Approved") Then
-                            Dim cb As CheckBox = CType(GridView1.Rows(count).FindControl("RowLevelCheckBox"), CheckBox)
-                            cb.Enabled = False
-                            cb.Visible = False
-                        End If
-                    Else
-                        Dim cb As CheckBox = CType(GridView1.Rows(count).FindControl("RowLevelCheckBox"), CheckBox)
-                        cb.Enabled = False
-                        cb.Visible = False
-                    End If
-                    count = count + 1
-                End While
-                reader.Close()
-            Finally
-                conn.Close()
+            'Exclude 7 sept
+            'Dim conn As SqlConnection
+            'Dim comm As SqlCommand
+            'Dim reader As SqlDataReader
+            'Dim count As Integer = 0
+            'Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+            'conn = New SqlConnection(connectionString1)
+            'If tablabel = 1 Then
+            '    'added imaging
+            '    comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy not in ('iView','XVI')", conn)
+            'Else
+            '    comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and EnergyID in (1,2,10,11,19,27,28)", conn)
+            'End If
+            'comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            'comm.Parameters("@linac").Value = MachineName
+            'Try
+            '    conn.Open()
+            '    reader = comm.ExecuteReader()
+            '    While reader.Read()
+            '        'This will fall over if approved is null so needs error handling
+            '        'Added handling 4/7/17
+            '        If Not IsDBNull(reader.Item("Approved")) Then
+            '            If Not reader.Item("Approved") Then
+            '                Dim cb As CheckBox = CType(GridView1.Rows(count).FindControl("RowLevelCheckBox"), CheckBox)
+            '                cb.Enabled = False
+            '                cb.Visible = False
+            '            End If
+            '        Else
+            '            Dim cb As CheckBox = CType(GridView1.Rows(count).FindControl("RowLevelCheckBox"), CheckBox)
+            '            cb.Enabled = False
+            '            cb.Visible = False
+            '        End If
+            '        count = count + 1
+            '    End While
+            '    reader.Close()
+            'Finally
+            '    conn.Close()
 
-            End Try
+            'End Try
 
         End If
 
@@ -370,43 +382,48 @@ Partial Class ErunupUserControl
     'End Sub
 
 
-    Protected Sub chkSelectAll_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs)
-        For Each grv As GridViewRow In GridView1.Rows
-            Dim cb As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
-            If cb.Enabled = True Then
-                cb.Checked = True
-            End If
-        Next
-        
+    'Protected Sub chkSelectAll_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    For Each grv As GridViewRow In GridView1.Rows
+    '        Dim cb As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
+    '        If cb.Enabled = True Then
+    '            cb.Checked = True
+    '        End If
+    '    Next
 
 
-    End Sub
 
-    Protected Sub EngHandoverButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles engHandoverButton.Click
-        Dim strScript As String = "<script>"
-        Dim Radcount As Boolean
-        Radcount = ConfirmNoRadConcession()
-        If Radcount Then
-            Dim counter As Integer = 0
-            For Each grv As GridViewRow In GridView1.Rows
+    'End Sub
+    'exclude 7 september
+    'Protected Sub EngHandoverButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles engHandoverButton.Click
+    '    Dim strScript As String = "<script>"
+    '    Dim Radcount As Boolean
+    '    Radcount = ConfirmNoRadConcession()
+    '    If Radcount Then
+    '        Dim counter As Integer = 0
+    '        'For Each grv As GridViewRow In GridView1.Rows
+    '        Dim engcontrol As controls_EngApproveuc
+    '        engcontrol = PlaceHolderEnergyApprove.FindControl("EngApprove")
+    '        Dim enggrid As GridView
+    '        enggrid = engcontrol.FindControl("EnergyGridView")
+    '        For Each grv As GridViewRow In enggrid.Rows
 
-                Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
-                If checktick.Checked = True Then
-                    counter = counter + 1
-                End If
-            Next
-            If counter <> 0 Then
-                ConfirmExitEvent()
-            Else
-                strScript += "alert('Select at least one energy');"
-            End If
-        Else
-            strScript += "alert('There are unacknowledged Rad Concessions');"
-        End If
-        strScript += "</script>"
-        ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+    '            Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
+    '            If checktick.Checked = True Then
+    '                counter = counter + 1
+    '            End If
+    '        Next
+    '        If counter <> 0 Then
+    '            ConfirmExitEvent()
+    '        Else
+    '            strScript += "alert('Select at least one energy');"
+    '        End If
+    '    Else
+    '        strScript += "alert('There are unacknowledged Rad Concessions');"
+    '    End If
+    '    strScript += "</script>"
+    '    ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
 
-    End Sub
+    'End Sub
 
     Protected Sub FaultPanelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles FaultPanelButton.Click
         Dim updatepanel3 As UpdatePanel = FindControl("updatepanel3")
@@ -448,11 +465,11 @@ Partial Class ErunupUserControl
         End If
     End Sub
 
-    
-    Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-        Application(BoxChanged) = CommentBox.Text
-        'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    End Sub
+
+    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
+    '    Application(BoxChanged) = CommentBox.Text
+    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
+    'End Sub
 
     '15 April Added this control as a result of Bug 11
     Protected Sub LockElf_Click(sender As Object, e As System.EventArgs) Handles LockElf.Click

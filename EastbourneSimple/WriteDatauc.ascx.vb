@@ -147,14 +147,14 @@ Partial Class WriteDatauc
 
         Dim modalidentifier As String
 
-        If DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, MachineName, Reason, textboxUser, passwordUser, logerrorbox, modalpop) <> 0 Then
+        If DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, Reason, textboxUser, passwordUser, logerrorbox, modalpop) <> 0 Then
             If modalpop IsNot Nothing Then
                 'modalpop.Dispose()
                 resetLogInscreen()
                 'eg from http://dotnetbites.wordpress.com/2014/02/15/call-parent-page-method-from-user-control-using-reflection/
 
                 RaiseEvent UserApproved(tablabel, loginUsername)
-                DavesCode.Reuse.writeLogFile(Reason, loginUsername, False)
+                'DavesCode.Reuse.writeLogFile(Reason, loginUsername, False)
                 'activity = DavesCode.Reuse.ReturnActivity(Reason)
                 'Me.Page.GetType.InvokeMember("UpdateDisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {activity})
 

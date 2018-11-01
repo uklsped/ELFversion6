@@ -158,7 +158,8 @@ Partial Class ErunupUserControl
                 Application(repairstate) = 1
                 Application(LinacFlag) = "Clinical"
                 Valid = True
-                DavesCode.Reuse.CommitRunup(grdview, LinacName, tablabel, username, Comment, Valid, False, False)
+                'put back in
+                ' DavesCode.Reuse.CommitRunup(grdview, LinacName, tablabel, username, Comment, Valid, False, False)
                 'inserted to make same as LA linac step without having to activate pre-clin tab
                 DavesCode.Reuse.MachineState(Username, usergroupselected, MachineName, Reason, False)
                 DavesCode.Reuse.ReturnImaging(iView,XVI,grdviewI, LinacName)
@@ -177,11 +178,12 @@ Partial Class ErunupUserControl
                 Application(LinacFlag) = "Linac Unauthorised"
                 'added this line 27 jan 2016 to set repairstate
                 Application(repairstate) = Nothing
-               
+
                 strScript += "alert('No Energies Approved Logging Off');"
-               DavesCode.Reuse.CommitRunup(grdview, LinacName, tablabel, username, Comment, Valid, False, False)
-            'DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
-            Application(appstate) = Nothing
+                'put back in
+                'DavesCode.Reuse.CommitRunup(grdview, LinacName, tablabel, username, Comment, Valid, False, False)
+                'DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
+                Application(appstate) = Nothing
             HttpContext.Current.Application(BoxChanged) = Nothing
             Application(tabstate) = String.Empty
             

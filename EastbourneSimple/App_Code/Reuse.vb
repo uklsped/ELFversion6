@@ -6,8 +6,7 @@ Imports System.Web.UI.Page
 Imports AjaxControlToolkit
 Imports System.Text
 Imports System.IO
-
-
+Imports System.Transactions
 
 Namespace DavesCode
 
@@ -25,20 +24,21 @@ Namespace DavesCode
         End Function
 
         Public Shared Function ReturnActivity(ByVal activity As String) As String
-            Dim Activitydictionary As New Dictionary(Of Integer, String)
-            Activitydictionary.Add(1, "Engineering Run up")
-            Activitydictionary.Add(2, "Pre-Clinical Run up")
-            Activitydictionary.Add(3, "Clinical")
-            Activitydictionary.Add(4, "Planned Maintenance")
-            Activitydictionary.Add(5, "Repair")
-            Activitydictionary.Add(6, "Physics QA")
-            Activitydictionary.Add(7, "Logged Off")
-            Activitydictionary.Add(8, "Development/Training")
-            Activitydictionary.Add(9, "Emergency Run Up")
-            Activitydictionary.Add(100, "Administration")
-            Activitydictionary.Add(101, "Lock Elf")
-            Activitydictionary.Add(102, "End of Day")
-            Activitydictionary.Add(103, "Report Fault")
+            Dim Activitydictionary As New Dictionary(Of Integer, String) From {
+                {1, "Engineering Run up"},
+                {2, "Pre-Clinical Run up"},
+                {3, "Clinical"},
+                {4, "Planned Maintenance"},
+                {5, "Repair"},
+                {6, "Physics QA"},
+                {7, "Logged Off"},
+                {8, "Development/Training"},
+                {9, "Emergency Run Up"},
+                {100, "Administration"},
+                {101, "Lock Elf"},
+                {102, "End of Day"},
+                {103, "Report Fault"}
+            }
 
 
             Return Activitydictionary.Item(activity)
@@ -242,12 +242,12 @@ Namespace DavesCode
         End Function
 
         'Used
-        Public Shared Function SuccessfulLogin(ByVal username As String, ByVal userpassword As String, ByVal LinacName As String, ByVal Need As Integer, ByVal Texbox As TextBox, ByVal pasword As TextBox, ByVal logerror As Label, ByVal modalp As ModalPopupExtender) As Integer
+        Public Shared Function SuccessfulLogin(ByVal username As String, ByVal userpassword As String, ByVal Need As Integer, ByVal Texbox As TextBox, ByVal pasword As TextBox, ByVal logerror As Label, ByVal modalp As ModalPopupExtender) As Integer
             'We need to determine if the user is authenticated and set e.Authenticated accordingly
             'Get the values entered by the user
+            'If anything is invalid the popup remains until corrected or the cancel button on the popup is selected
             Dim loginUsername As String = username
             Dim loginPassword As String = userpassword
-            Dim MachineName As String = LinacName
             Dim Reason As Integer = Need
             Dim textboxUser As TextBox = Texbox
             Dim textboxPass As TextBox = pasword
@@ -256,8 +256,10 @@ Namespace DavesCode
             'First check if user name and password are correct
             If Membership.ValidateUser(loginUsername, loginPassword) Then
                 'Find out which user group user is in
+                'Only roles that are valid will get to here
                 Dim usergroupselected As Integer = GetRole(loginUsername)
-                If LogOn(usergroupselected, MachineName, Reason) Then
+                'No database action here
+                If LogOn(usergroupselected, Reason) Then
                     Return usergroupselected
                 Else
                     'Tell them they don't have permission
@@ -315,12 +317,13 @@ Namespace DavesCode
         Public Shared Function GetRole(ByVal user As String) As Integer
             Dim loginUsername As String = user
             'This won't work if new users are added.
-            Dim Roledictionary As New Dictionary(Of String, Integer)
-            Roledictionary.Add("Administrator", 1)
-            Roledictionary.Add("Engineer", 2)
-            Roledictionary.Add("Radiographer", 3)
-            Roledictionary.Add("Physicist", 4)
-            Roledictionary.Add("None", 5)
+            Dim Roledictionary As New Dictionary(Of String, Integer) From {
+                {"Administrator", 1},
+                {"Engineer", 2},
+                {"Radiographer", 3},
+                {"Physicist", 4},
+                {"None", 5}
+            }
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("userstring").ConnectionString
             Dim con As New SqlConnection(connectionString)
             con.Open()
@@ -341,22 +344,23 @@ Namespace DavesCode
                 Next
             End If
             con.Close()
+            'if userrolename does not exist in the dictionary then the error page is called and returned to calling page
+            'So only returned value will be a valid value from this function
             Return Roledictionary.Item(userrolename)
         End Function
         'Used
-        Public Shared Function LogOn(ByVal usergroup As Integer, ByVal linac As String, ByVal userreason As Integer) As Boolean
+        Public Shared Function LogOn(ByVal usergroup As Integer, ByVal userreason As Integer) As Boolean
+            ' this checks for valid usergroup for this log in for a particular reason. The linac entry is obsolete and is removed.
             Dim usergroupselected As Integer = usergroup
             Dim reason As Integer = userreason
-            Dim linacName As String = linac
+
             Select Case reason
                 Case 1, 4, 5, 101
 
-                    If usergroupselected = 2 Then
-                        'MachineState(usergroupselected, linacName, reason)
+                    If usergroupselected = 2 Or usergroupselected = 4 Then
+
                         Return True
-                    ElseIf usergroupselected = 4 Then
-                        'MachineState(usergroupselected, linacName, reason)
-                        Return True
+
                     Else
                         Return False
 
@@ -366,7 +370,7 @@ Namespace DavesCode
                 Case 2, 3, 9
 
                     If usergroupselected = 3 Then
-                        'MachineState(usergroupselected, linacName, reason)
+
                         Return True
                     Else
                         Return False
@@ -374,7 +378,7 @@ Namespace DavesCode
 
                 Case 6
                     If usergroupselected = 4 Or usergroupselected = 2 Then
-                        'MachineState(usergroupselected, linacName, reason)
+
                         Return True
                     Else
                         Return False
@@ -467,7 +471,7 @@ Namespace DavesCode
 
                 Dim obj As Object = Machinestatus.ExecuteScalar()
                 'Dim LinacStatusIDs As String = obj.ToString()
-                LinacStatusID = CInt(obj)
+                'LinacStatusID = CInt(obj)
                 conn.Close()
                 'This creates in the Activity table the entry for the start of an activity so long as it is not as a result of switching the user.
                 If Not unlock Then
@@ -480,86 +484,204 @@ Namespace DavesCode
 
 
         End Sub
+
+        Public Shared Sub MachineStateNew(ByVal loginuser As String, ByVal usergroup As Integer, ByVal linac As String, ByVal possessreason As Integer, ByVal unlock As Boolean, ConnectionString As String)
+            'Need Some Error Handling in this function
+            Dim loginName As String = loginuser
+            Dim time As DateTime
+            time = Now()
+
+            Dim LinacStatusID As Integer
+            Dim reader As SqlDataReader
+            Dim nowstatus As String
+            Dim linacName As String = linac
+            Dim conn As SqlConnection
+
+            'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            '"connectionstring").ConnectionString
+            Dim Machinestatus As SqlCommand
+            Dim StatusNow As SqlCommand
+            conn = New SqlConnection(ConnectionString)
+            'Added because state wasn't being changed from Suspended to Clinical 31 March 2016 Bug 7
+            If possessreason = 3 Then
+                nowstatus = "Clinical"
+            Else
+                StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+                StatusNow.Parameters.AddWithValue("@linac", linacName)
+                conn.Open()
+                reader = StatusNow.ExecuteReader()
+
+                If reader.Read() Then
+                    nowstatus = reader.Item("state").ToString()
+                Else
+                    'this caters for the case where this is the first record for the linac
+                    nowstatus = "Linac Unauthorised"
+                End If
+                reader.Close()
+                conn.Close()
+            End If
+            'commented out code removed 15 April 2016
+
+            Machinestatus = New SqlCommand("INSERT INTO LinacStatus (state, DateTime, usergroup,userreason,linac, UserName ) " &
+                                        "VALUES (@state, @Datetime, @usergroup, @userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
+            Machinestatus.Parameters.Add("@state", System.Data.SqlDbType.NVarChar, 50)
+            Machinestatus.Parameters("@state").Value = nowstatus
+            Machinestatus.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
+            Machinestatus.Parameters("@DateTime").Value = time
+            Machinestatus.Parameters.Add("@usergroup", System.Data.SqlDbType.Int)
+            Machinestatus.Parameters("@usergroup").Value = usergroup
+            Machinestatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
+            Machinestatus.Parameters("@userreason").Value = possessreason
+            Machinestatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            Machinestatus.Parameters("@linac").Value = linacName
+            Machinestatus.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 50)
+            Machinestatus.Parameters("@UserName").Value = loginName
+
+
+            'Try
+            'To get the identity of the record just inserted from
+            'http://www.aspsnippets.com/Articles/Return-Identity-Auto-Increment-Column-value-after-record-insert-in-SQL-Server-Database-using-ADONet-with-C-and-VBNet.aspx
+            conn.Open()
+            'commstatus.ExecuteNonQuery()
+
+            Dim obj As Object = Machinestatus.ExecuteScalar()
+                'Dim LinacStatusIDs As String = obj.ToString()
+                LinacStatusID = CInt(obj)
+            conn.Close()
+            'This creates in the Activity table the entry for the start of an activity so long as it is not as a result of switching the user.
+            If Not unlock Then
+                WriteActivityTableNew(LinacStatusID, time, possessreason, linacName, ConnectionString)
+            End If
+
+            'Finally
+            '    conn.Close()
+            'End Try
+
+
+        End Sub
         Public Shared Sub WriteActivityTable(ByVal StateID As Integer, ByVal timestamp As DateTime, ByVal possessreason As Integer, ByVal linacname As String)
             Dim laststateid As Integer = 0
             Dim lastState As String = ""
             Dim Activestatus As SqlCommand
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
-
-            laststateid = GetLastTech(linacname, 1, lastState, lastusername:="", lastusergroup:=0)
-
-
-            conn = New SqlConnection(connectionString)
-
-            Activestatus = New SqlCommand("INSERT INTO ActiveTime (userreason, StartID, StartTime, Linac, PreviousStateID ) " &
-                                        "VALUES (@userreason,@StartID, @StartTime, @Linac, @PreviousStateID)", conn)
-            Activestatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
-            Activestatus.Parameters("@userreason").Value = possessreason
-            Activestatus.Parameters.AddWithValue("@StartID", System.Data.SqlDbType.Int)
-            Activestatus.Parameters("@StartID").Value = StateID
-            Activestatus.Parameters.Add("@StartTime", System.Data.SqlDbType.DateTime)
-            Activestatus.Parameters("@StartTime").Value = timestamp
-            Activestatus.Parameters.AddWithValue("@linac", System.Data.SqlDbType.NVarChar)
-            Activestatus.Parameters("@linac").Value = linacname
-            Activestatus.Parameters.AddWithValue("@PreviousStateID", System.Data.SqlDbType.Int)
-            Activestatus.Parameters("@PreviousStateID").Value = laststateid
-
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             Try
+                laststateid = GetLastTech(linacname, 1, lastState, lastusername:="", lastusergroup:=0)
+
+
+                conn = New SqlConnection(connectionString)
+
+                Activestatus = New SqlCommand("INSERT INTO ActiveTime (userreason, StartID, StartTime, Linac, PreviousStateID ) " &
+                                        "VALUES (@userreason,@StartID, @StartTime, @Linac, @PreviousStateID)", conn)
+                Activestatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
+                Activestatus.Parameters("@userreason").Value = possessreason
+                Activestatus.Parameters.AddWithValue("@StartID", System.Data.SqlDbType.Int)
+                Activestatus.Parameters("@StartID").Value = StateID
+                Activestatus.Parameters.Add("@StartTime", System.Data.SqlDbType.DateTime)
+                Activestatus.Parameters("@StartTime").Value = timestamp
+                Activestatus.Parameters.AddWithValue("@linac", System.Data.SqlDbType.NVarChar)
+                Activestatus.Parameters("@linac").Value = linacname
+                Activestatus.Parameters.AddWithValue("@PreviousStateID", System.Data.SqlDbType.Int)
+                Activestatus.Parameters("@PreviousStateID").Value = laststateid
+
+
                 conn.Open()
 
                 Activestatus.ExecuteNonQuery()
+            Catch ex As Exception
+                DavesCode.ReusePC.LogError(ex)
 
             Finally
                 conn.Close()
             End Try
 
         End Sub
+        Public Shared Sub WriteActivityTableNew(ByVal StateID As Integer, ByVal timestamp As DateTime, ByVal possessreason As Integer, ByVal linacname As String, ByVal ConnectionString As String)
+            Dim laststateid As Integer = 0
+            Dim lastState As String = ""
+            Dim Activestatus As SqlCommand
+            Dim conn As SqlConnection
+            Dim lastusername As String = Nothing
+            Dim lastusergroup As Integer = Nothing
+            'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+            'Try
+            laststateid = GetLastTechNew(linacname, 1, lastState, lastusername, lastusergroup, ConnectionString)
 
-        Public Shared Sub UpdateActivityTable(ByVal linac As String, ByVal StopID As String)
+
+            conn = New SqlConnection(ConnectionString)
+
+            Activestatus = New SqlCommand("INSERT INTO ActiveTime (userreason, StartID, StartTime, Linac, PreviousStateID ) " &
+                                        "VALUES (@userreason,@StartID, @StartTime, @Linac, @PreviousStateID)", conn)
+            Activestatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
+            Activestatus.Parameters("@userreason").Value = possessreason
+            Activestatus.Parameters.Add("@StartID", System.Data.SqlDbType.Int)
+            Activestatus.Parameters("@StartID").Value = StateID
+            Activestatus.Parameters.Add("@StartTime", System.Data.SqlDbType.DateTime)
+            Activestatus.Parameters("@StartTime").Value = timestamp
+            Activestatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            Activestatus.Parameters("@linac").Value = linacname
+            Activestatus.Parameters.Add("@PreviousStateID", System.Data.SqlDbType.Int)
+            Activestatus.Parameters("@PreviousStateID").Value = laststateid
+
+
+            conn.Open()
+
+            Activestatus.ExecuteNonQuery()
+            'Catch ex As Exception
+            '    DavesCode.ReusePC.LogError(ex)
+
+            'Finally
+            conn.Close()
+            'End Try
+
+        End Sub
+        Public Shared Sub UpdateActivityTable(ByVal linac As String, ByVal StopID As String, ByVal connectionString As String)
 
             Dim reader As SqlDataReader
             Dim ActID As String
             Dim linacName As String = linac
             Dim conn As SqlConnection
 
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
+            'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            '"connectionstring").ConnectionString
 
             Dim StatusNow As SqlCommand
             Dim UpdateNow As SqlCommand
             conn = New SqlConnection(connectionString)
             'Added because state wasn't being changed from Suspended to Clinical 31 March 2016 Bug 7
+            'Try
 
             StatusNow = New SqlCommand("SELECT ActID FROM [ActiveTime] where ActID = (Select max(ActID) as lastrecord from [ActiveTime] where linac=@linac)", conn)
-            StatusNow.Parameters.AddWithValue("@linac", linacName)
-            conn.Open()
-            reader = StatusNow.ExecuteReader()
+                StatusNow.Parameters.AddWithValue("@linac", linacName)
+                conn.Open()
+                reader = StatusNow.ExecuteReader()
 
-            If reader.Read() Then
-                ActID = reader.Item("ActID").ToString
-            End If
-            reader.Close()
-            conn.Close()
+                If reader.Read() Then
+                    ActID = reader.Item("ActID").ToString
+                End If
+                reader.Close()
+                conn.Close()
 
-            UpdateNow = New SqlCommand("Update ActiveTime SET StopID=@StopID,StopTime=@StopTime WHERE ActID=@ActID", conn)
-            UpdateNow.Parameters.Add("@StopID", System.Data.SqlDbType.Int)
-            UpdateNow.Parameters("@StopID").Value = StopID
-            UpdateNow.Parameters.Add("@StopTime", System.Data.SqlDbType.DateTime)
-            UpdateNow.Parameters("@StopTime").Value = Now()
-            UpdateNow.Parameters.Add("@ActID", System.Data.SqlDbType.Int)
-            UpdateNow.Parameters("@ActID").Value = ActID
+                UpdateNow = New SqlCommand("Update ActiveTime SET StopID=@StopID,StopTime=@StopTime WHERE ActID=@ActID", conn)
+                UpdateNow.Parameters.Add("@StopID", System.Data.SqlDbType.Int)
+                UpdateNow.Parameters("@StopID").Value = StopID
+                UpdateNow.Parameters.Add("@StopTime", System.Data.SqlDbType.DateTime)
+                UpdateNow.Parameters("@StopTime").Value = Now()
+                UpdateNow.Parameters.Add("@ActID", System.Data.SqlDbType.Int)
+                UpdateNow.Parameters("@ActID").Value = ActID
+                conn.Open()
+                UpdateNow.ExecuteNonQuery()
+                'Catch ex As Exception
+                '    DavesCode.ReusePC.LogError(ex)
 
-
-            conn.Open()
-            UpdateNow.ExecuteNonQuery()
-            conn.Close()
+                'Finally
+                conn.Close()
+            'End Try
         End Sub
 
 
         'Used
-        Public Shared Function CommitRunup(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean) As String
+        Public Shared Function CommitRunupold(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean) As String
             Dim time As DateTime
             time = Now()
             Dim commitusername As String = LogOffName
@@ -620,7 +742,7 @@ Namespace DavesCode
 
             End If
             If Not lock Then
-                UpdateActivityTable(machinename, LogOffStateID)
+                UpdateActivityTable(machinename, LogOffStateID, connectionString)
             End If
 
             Dim minutesDuration As Decimal
@@ -908,35 +1030,818 @@ Namespace DavesCode
 
         End Function
 
-        Public Shared Function WriteAuxTables(ByVal LinacID As String, ByVal username As String, ByVal comment As String, ByVal Radio As Integer, ByVal Tab As Integer, ByVal Fault As Boolean, ByVal suspendvalue As String, ByVal repairvalue As String, ByVal lock As Boolean) As String
-            'writes the aux tables depending on the options picked. And writes the linac status table first.
-            'When tidying this up look at whether radio is the same as tab used - no it's not
-
-            Dim Breakdown As Boolean = Fault
+        Public Shared Function CommitRunup(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean) As String
             Dim time As DateTime
             time = Now()
-            Dim Tabused As Integer = Tab
-            Dim LoginStatusID As String = ""
+            Dim commitusername As String = LogOffName
+            Dim LogInName As String = ""
+            Dim cb As CheckBox
             Dim conn As SqlConnection
-            Dim localcomment As String = comment
-            Dim MachineName As String = LinacID
+            Dim comm As SqlCommand
             Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
+            Dim TextBox As String = TextBoxc
+            Dim GridView1 As GridView = GridviewE
+            Dim machinename As String = LinacName
+            Dim tablabel As Integer = tabby 'this is inconsistent
+            Dim reader As SqlDataReader
+            Dim StartTime As DateTime
+            Dim LogOffStateID As String
+            Dim LogOnStateID As String = ""
+            Dim Approved As Boolean = Valid
+            Dim breakdown As Boolean = Fault
+            Dim contime As SqlCommand
+            'Dim Activity As Integer = 2
+
+            conn = New SqlConnection(connectionString)
+
+            contime = New SqlCommand("SELECT DateTime, UserName, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+
+            contime.Parameters.AddWithValue("@linac", LinacName)
+            conn.Open()
+            reader = contime.ExecuteReader()
+
+            If reader.Read() Then
+                StartTime = reader.Item("DateTime")
+                LogInName = reader.Item("UserName")
+                LogOnStateID = reader.Item("stateID")
+            End If
+            reader.Close()
+            conn.Close()
+            If Fault Then
+                'If it's a fault it will go straight to fault page so user will be whichever user group logged on ie engineering or physics.
+                '2nd june 2016 changed userreason to 103 and activity to 0 - this stops duration being written for fault
+                LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Fault", 5, 103, machinename, tablabel)
+            Else
+                If Approved Then
+                    If tablabel = 1 Then
+                        LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Engineering Approved", 5, 7, machinename, 1)
+                    Else
+                        LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Radiographer Approved", 5, 7, machinename, 1)
+                    End If
+                Else
+                    'added 5/6/16 to set reason to end of day for midnight reset
+                    If commitusername = "System" Then
+                        LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Linac Unauthorised", 5, 102, machinename, 1)
+                    Else
+                        LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Linac Unauthorised", 5, 7, machinename, 1)
+                    End If
+
+                End If
+
+            End If
+            If Not lock Then
+                UpdateActivityTable(machinename, LogOffStateID, connectionString)
+            End If
+
+            Dim minutesDuration As Decimal
+            Dim duration As TimeSpan = time - StartTime
+            minutesDuration = Decimal.Round(duration.TotalMinutes, 2, MidpointRounding.ToEven)
+            'Had to amend this to insert extra energies for E1 4/7/17
+            'new table for handoverenergies
+            comm = New SqlCommand("INSERT INTO HandoverEnergies ( MV6, MV6FFF, MV10, MV10FFF,MeV4, MeV6, MeV8, MeV10, MeV12, MeV15, MeV18, " &
+                                  "MeV20, Comment, LogOutName, LogOutDate, linac, LogInDate, Duration,LogInStatusID, LogOutStatusID, Approved, LogInName) " &
+                                  "VALUES ( @MV6, @MV6FFF, @MV10,@MV10FFF, @MeV4, @MeV6, @MeV8, @MeV10, @MeV12, @MeV15, @MeV18, @MeV20,  @Comment, @LogOutName, " &
+                                  "@LogOutDate, @linac, @LogInDate, @Duration,@LogInStatusID, @LogOutStatusID, @Approved, @LogInName)", conn)
+
+            Select Case tablabel
+                Case 1
+                    Select Case machinename
+
+                        Case "LA1"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = False
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = cb.Checked
+                            cb = CType(GridView1.Rows(2).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = cb.Checked
+                            cb = CType(GridView1.Rows(3).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = cb.Checked
+                            cb = CType(GridView1.Rows(4).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = cb.Checked
+                            cb = CType(GridView1.Rows(5).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = cb.Checked
+                            cb = CType(GridView1.Rows(6).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = cb.Checked
+                            cb = CType(GridView1.Rows(7).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = cb.Checked
+
+                        Case "LA4"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = cb.Checked
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = False
+
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = False
+
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = False
+
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = False
+
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = False
+
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+                        Case "LA2", "LA3"
+
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = cb.Checked
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            cb = CType(GridView1.Rows(2).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = cb.Checked
+                            cb = CType(GridView1.Rows(3).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = cb.Checked
+                            cb = CType(GridView1.Rows(4).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = cb.Checked
+                            cb = CType(GridView1.Rows(5).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = cb.Checked
+                            cb = CType(GridView1.Rows(6).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = cb.Checked
+                            cb = CType(GridView1.Rows(7).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = cb.Checked
+                            cb = CType(GridView1.Rows(8).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = cb.Checked
+                        Case "E1", "E2", "B1"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = cb.Checked
+                            cb = CType(GridView1.Rows(2).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = cb.Checked
+                            cb = CType(GridView1.Rows(3).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = cb.Checked
+                            cb = CType(GridView1.Rows(4).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = cb.Checked
+                            cb = CType(GridView1.Rows(5).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = cb.Checked
+                            cb = CType(GridView1.Rows(6).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = cb.Checked
+                            cb = CType(GridView1.Rows(7).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = cb.Checked
+                            cb = CType(GridView1.Rows(8).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = cb.Checked
+                            cb = CType(GridView1.Rows(9).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = cb.Checked
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+
+                        Case Else
+                    End Select
+
+                Case 7
+                    Select Case machinename
+                        Case "LA1"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = False
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = False
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = False
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = False
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = False
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = False
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+                        Case "LA2", "LA3", "LA4"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = cb.Checked
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = False
+
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = False
+
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = False
+
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = False
+
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = False
+
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+                        Case Else
+                    End Select
+                Case Else
+                    'needed to add eastbourne energies here to cater for fault condition
+                    comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MV6").Value = False
+                    comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MV6FFF").Value = False
+                    comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MV10").Value = False
+                    comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MV10FFF").Value = False
+                    comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV4").Value = False
+                    comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV6").Value = False
+                    comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV8").Value = False
+                    comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV10").Value = False
+                    comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV12").Value = False
+                    comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV15").Value = False
+                    comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV18").Value = False
+                    comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV20").Value = False
+
+            End Select
+
+
+            comm.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, 250)
+            comm.Parameters("@Comment").Value = TextBox
+            comm.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 10)
+            comm.Parameters("@LogOutName").Value = commitusername 'This will have to find real user name
+            comm.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
+            comm.Parameters("@LogOutDate").Value = time
+            comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            comm.Parameters("@linac").Value = machinename
+            comm.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
+            comm.Parameters("@LogInDate").Value = StartTime
+            comm.Parameters.Add("@Duration", System.Data.SqlDbType.Decimal)
+            comm.Parameters("@Duration").Value = minutesDuration
+            comm.Parameters.Add("@LogInStatusID", System.Data.SqlDbType.NVarChar, 10)
+            comm.Parameters("@LogInStatusID").Value = LogOnStateID
+            comm.Parameters.Add("@LogOutStatusID", System.Data.SqlDbType.NVarChar, 10)
+            comm.Parameters("@LogOutStatusID").Value = LogOffStateID
+            comm.Parameters.Add("@Approved", System.Data.SqlDbType.Bit)
+            comm.Parameters("@Approved").Value = Approved
+            comm.Parameters.Add("LogInName", SqlDbType.NVarChar, 50)
+            comm.Parameters("LogInName").Value = LogInName
+            Try
+                conn.Open()
+                comm.ExecuteNonQuery()
+
+            Finally
+                conn.Close()
+
+            End Try
+            Return LogOffStateID
+
+
+        End Function
+
+        '        Private Shared Sub DistributedTransactionScope()
+        '            Dim myconnectionString As String = ConfigurationManager.ConnectionStrings("MyTestDatabase").ToString()
+
+        '            Dim myconnectionString1 As String = ConfigurationManager.ConnectionStrings("MyTestDatabase2").ToString()
+
+        '            Using myscope As TransactionScope = New TransactionScope()
+
+
+        '                Using myconn = New SqlConnection(myconnectionString)
+        '                    myconn.Open()
+        '                    Dim mycommand = New SqlCommand("Insert Into Student"(StudentID, StudentName), 15.Values(StudentID, StudentName), ", myconn);", mycommand.Parameters.Add(New SqlParameter() With {
+        '                .ParameterName = "@StudentID",
+        '                .DbType = System.Data.DbType.Int32,
+        '                .Value = 1111111
+        '            }))
+        '                    mycommand.Parameters.Add(New SqlParameter(), 20._)
+
+        '                    If True Then
+        '                        ParameterName = "@StudentName"
+        '                        DbType = System.Data.DbType.String
+        '                        Value = "Sample Student"
+        '                    End If
+
+        '                    mycommand.ExecuteNonQuery()
+
+        '                    Using myconn1 = New SqlConnection(myconnectionString1)
+        '25._
+        '            End Using
+
+        '                    If True Then
+        '                        conn1.Open()
+        '                        Dim mycommand1 = New SqlCommand("Insert Into Subject"(SubjectID, SubjectName), Values(SubjectID, SubjectName), ", myconn1);", 30.mycommand1.Parameters.Add(New SqlParameter() With {
+        '                    .ParameterName = "@SubjectID",
+        '                    .DbType = System.Data.DbType.Int32,
+        '                    .Value = 44400001
+        '                }))
+        '                        mycommand1.Parameters.Add(New SqlParameter() With {
+        '                    .ParameterName = "@SubjectName",
+        '                    .DbType = 35.System.Data.DbType.String,
+        '                    .Value = "Sample Subject"
+        '                })
+        '                        mycommand1.ExecuteNonQuery()
+        '                    End If
+        '                End Using
+
+        '40.myscope.Complete()
+        '    End Using
+        '        End Sub
+
+        Public Shared Function CommitRunupNew(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean, ByVal ConnectionString As String) As String
+            Dim time As DateTime
+            time = Now()
+            Dim commitusername As String = LogOffName
+            Dim LogInName As String = ""
+            Dim cb As CheckBox
+            Dim conn As SqlConnection
+            Dim comm As SqlCommand
+            'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            '"connectionstring").ConnectionString
+            Dim TextBox As String = TextBoxc
+            Dim GridView1 As GridView = GridviewE
+            Dim machinename As String = LinacName
+            Dim tablabel As Integer = tabby 'this is inconsistent
+            Dim reader As SqlDataReader
+            Dim StartTime As DateTime
+            Dim LogOffStateID As String
+            Dim LogOnStateID As String = ""
+            Dim Approved As Boolean = Valid
+            Dim breakdown As Boolean = Fault
+            Dim contime As SqlCommand
+            Dim State As String = "Linac Unauthorised" 'default reason
+            Dim UserReason As Integer = 7 'most common reason
+            'Dim Activity As Integer = 2
+
+            conn = New SqlConnection(ConnectionString)
+
+            contime = New SqlCommand("SELECT DateTime, UserName, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+
+            contime.Parameters.AddWithValue("@linac", LinacName)
+            conn.Open()
+            reader = contime.ExecuteReader()
+
+            If reader.Read() Then
+                StartTime = reader.Item("DateTime")
+                LogInName = reader.Item("UserName")
+                LogOnStateID = reader.Item("stateID")
+            End If
+            reader.Close()
+            conn.Close()
+            If Fault Then
+                'If it's a fault it will go straight to fault page so user will be whichever user group logged on ie engineering or physics.
+                '2nd june 2016 changed userreason to 103 and activity to 0 - this stops duration being written for fault
+                'LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Fault", 5, 103, machinename, tablabel)
+                State = "Fault"
+                UserReason = 103
+            Else
+                If Approved Then
+                    If tablabel = 1 Then
+                        'LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Engineering Approved", 5, 7, machinename, 1)
+                        State = "Engineering Approved"
+                    Else
+                        'LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Radiographer Approved", 5, 7, machinename, 1)
+                        State = "Radiographer Approved"
+                    End If
+                Else
+                    'added 5/6/16 to set reason to end of day for midnight reset
+                    If commitusername = "System" Then
+                        'LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Linac Unauthorised", 5, 102, machinename, 1)
+                        UserReason = 102
+                    Else
+                        'LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Linac Unauthorised", 5, 7, machinename, 1)
+                        'default
+                    End If
+
+                End If
+
+            End If
+            LogOffStateID = DavesCode.Reuse.SetStatusNew(commitusername, State, 5, UserReason, machinename, 1, ConnectionString)
+            If Not lock Then
+                UpdateActivityTable(machinename, LogOffStateID, ConnectionString)
+            End If
+
+            Dim minutesDuration As Decimal
+            Dim duration As TimeSpan = time - StartTime
+            minutesDuration = Decimal.Round(duration.TotalMinutes, 2, MidpointRounding.ToEven)
+            'Had to amend this to insert extra energies for E1 4/7/17
+            'new table for handoverenergies
+
+
+            comm = New SqlCommand("INSERT INTO HandoverEnergies ( MV6, MV6FFF, MV10, MV10FFF,MeV4, MeV6, MeV8, MeV10, MeV12, MeV15, MeV18, " &
+                                  "MeV20, Comment, LogOutName, LogOutDate, linac, LogInDate, Duration,LogInStatusID, LogOutStatusID, Approved, LogInName) " &
+                                  "VALUES ( @MV6, @MV6FFF, @MV10,@MV10FFF, @MeV4, @MeV6, @MeV8, @MeV10, @MeV12, @MeV15, @MeV18, @MeV20,  @Comment, @LogOutName, " &
+                                  "@LogOutDate, @linac, @LogInDate, @Duration,@LogInStatusID, @LogOutStatusID, @Approved, @LogInName)", conn)
+
+            Select Case tablabel
+                Case 1
+                    Select Case machinename
+
+                        Case "LA1"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = False
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = cb.Checked
+                            cb = CType(GridView1.Rows(2).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = cb.Checked
+                            cb = CType(GridView1.Rows(3).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = cb.Checked
+                            cb = CType(GridView1.Rows(4).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = cb.Checked
+                            cb = CType(GridView1.Rows(5).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = cb.Checked
+                            cb = CType(GridView1.Rows(6).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = cb.Checked
+                            cb = CType(GridView1.Rows(7).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = cb.Checked
+
+                        Case "LA4"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = cb.Checked
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = False
+
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = False
+
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = False
+
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = False
+
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = False
+
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+                        Case "LA2", "LA3"
+
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = cb.Checked
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            cb = CType(GridView1.Rows(2).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = cb.Checked
+                            cb = CType(GridView1.Rows(3).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = cb.Checked
+                            cb = CType(GridView1.Rows(4).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = cb.Checked
+                            cb = CType(GridView1.Rows(5).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = cb.Checked
+                            cb = CType(GridView1.Rows(6).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = cb.Checked
+                            cb = CType(GridView1.Rows(7).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = cb.Checked
+                            cb = CType(GridView1.Rows(8).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = cb.Checked
+                        Case "E1", "E2", "B1"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = cb.Checked
+                            cb = CType(GridView1.Rows(2).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = cb.Checked
+                            cb = CType(GridView1.Rows(3).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = cb.Checked
+                            cb = CType(GridView1.Rows(4).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = cb.Checked
+                            cb = CType(GridView1.Rows(5).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = cb.Checked
+                            cb = CType(GridView1.Rows(6).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = cb.Checked
+                            cb = CType(GridView1.Rows(7).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = cb.Checked
+                            cb = CType(GridView1.Rows(8).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = cb.Checked
+                            cb = CType(GridView1.Rows(9).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = cb.Checked
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+                        Case "T1"
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = False
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = False
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = False
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = False
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = False
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = False
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = False
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+                        Case Else
+                    End Select
+
+                Case 7
+                    Select Case machinename
+                        Case "LA1"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = False
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = False
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = False
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = False
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = False
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = False
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+                        Case "LA2", "LA3", "LA4"
+                            cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6").Value = cb.Checked
+                            comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV6FFF").Value = False
+                            cb = CType(GridView1.Rows(1).FindControl("RowLevelCheckBox"), CheckBox)
+                            comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10").Value = cb.Checked
+                            comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MV10FFF").Value = False
+                            comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV4").Value = False
+                            comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV6").Value = False
+
+                            comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV8").Value = False
+
+                            comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV10").Value = False
+
+                            comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV12").Value = False
+
+                            comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV15").Value = False
+
+                            comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV18").Value = False
+
+                            comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                            comm.Parameters("@MeV20").Value = False
+
+                        Case Else
+                    End Select
+                Case Else
+                    'needed to add eastbourne energies here to cater for fault condition
+                    comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MV6").Value = False
+                    comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MV6FFF").Value = False
+                    comm.Parameters.Add("@MV10", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MV10").Value = False
+                    comm.Parameters.Add("@MV10FFF", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MV10FFF").Value = False
+                    comm.Parameters.Add("@MeV4", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV4").Value = False
+                    comm.Parameters.Add("@MeV6", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV6").Value = False
+                    comm.Parameters.Add("@MeV8", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV8").Value = False
+                    comm.Parameters.Add("@MeV10", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV10").Value = False
+                    comm.Parameters.Add("@MeV12", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV12").Value = False
+                    comm.Parameters.Add("@MeV15", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV15").Value = False
+                    comm.Parameters.Add("@MeV18", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV18").Value = False
+                    comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
+                    comm.Parameters("@MeV20").Value = False
+
+            End Select
+
+
+            comm.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, 250)
+            comm.Parameters("@Comment").Value = TextBox
+            comm.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 10)
+            comm.Parameters("@LogOutName").Value = commitusername 'This will have to find real user name
+            comm.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
+            comm.Parameters("@LogOutDate").Value = time
+            comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            comm.Parameters("@linac").Value = machinename
+            comm.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
+            comm.Parameters("@LogInDate").Value = StartTime
+            comm.Parameters.Add("@Duration", System.Data.SqlDbType.Decimal)
+            comm.Parameters("@Duration").Value = minutesDuration
+            comm.Parameters.Add("@LogInStatusID", System.Data.SqlDbType.NVarChar, 10)
+            comm.Parameters("@LogInStatusID").Value = LogOnStateID
+            comm.Parameters.Add("@LogOutStatusID", System.Data.SqlDbType.NVarChar, 10)
+            comm.Parameters("@LogOutStatusID").Value = LogOffStateID
+            comm.Parameters.Add("@Approved", System.Data.SqlDbType.Bit)
+            comm.Parameters("@Approved").Value = Approved
+            comm.Parameters.Add("LogInName", SqlDbType.NVarChar, 50)
+            comm.Parameters("LogInName").Value = LogInName
+            'Try
+            conn.Open()
+                comm.ExecuteNonQuery()
+
+            'Finally
+            conn.Close()
+
+            'End Try
+            'myscope.Complete()
+            'End Using
+            Return LogOffStateID
+
+
+        End Function
+        Public Shared Function WriteAuxTables(ByVal MachineName As String, ByVal logOutName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal Fault As Boolean, ByVal suspstate As String, ByVal repstate As String, ByVal lock As Boolean) As String
+            'writes the aux tables depending on the options picked. And writes the linac status table first.
+            'When tidying this up look at whether radio is the same as tab used - no it's not
+            Dim state As String = "Linac Unauthorised" 'most common value
+            'Dim Breakdown As Boolean = Fault
+            Dim time As DateTime
+            time = Now()
+            'Dim Tabused As Integer = TAB()
+            Dim LoginStatusID As String = ""
+            Dim conn As SqlConnection
+            'Dim localcomment As String = comment
+            ' Dim MachineName As String = LinacID
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             Dim commpm As SqlCommand
             Dim StartTime As DateTime
             Dim LoginName As String = ""
-            Dim logOutName As String = username
+            'Dim logOutName As String = username
             Dim LogOutStatusID As String = ""
             Dim contime As SqlCommand
             Dim reader As SqlDataReader
-            Dim Radioselect As Integer = Radio
-            Dim builder As New StringBuilder()
-            Dim TableName As String = "AuxTable"
+            'Dim Radioselect As Integer = Radio
+            'Dim builder As New StringBuilder()
+            'Dim TableName As String = "AuxTable"
             Dim Activity As String = ""
             Dim InsertData As String = "(Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
                                        "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)"
-            Dim suspstate As String = suspendvalue
-            Dim repstate As String = repairvalue
+            'Dim suspstate As String = suspendvalue
+            'Dim repstate As String = repairvalue
             Dim userreason As Integer
 
             conn = New SqlConnection(connectionString)
@@ -972,11 +1877,11 @@ Namespace DavesCode
 
             End Select
 
-            builder.Append("INSERT INTO ")
-            builder.Append(TableName)
-            builder.Append(" ")
-            builder.Append(InsertData)
-            Dim output As String = builder.ToString
+            'builder.Append("INSERT INTO ")
+            'builder.Append(TableName)
+            'builder.Append(" ")
+            'builder.Append(InsertData)
+            'Dim output As String = builder.ToString
 
             Select Case Radioselect
                 Case 101, 102, 103
@@ -985,40 +1890,41 @@ Namespace DavesCode
                     userreason = 7
             End Select
 
-            If Breakdown Then
-                LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Fault", 5, userreason, MachineName, Tabused)
+            If Fault Then
+                'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Fault", 5, userreason, MachineName, Tabused)
+                state = "Fault"
             Else
                 'Radioselect determines how to SetStatus as a result of which radiobutton selected
                 Select Case Radioselect
                     Case 1
-                        LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
+                        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
                     Case 4, 5, 6, 8, 101
                         If suspstate = 1 Then
-                            LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
+                            'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
+                            state = "Suspended"
                         ElseIf repstate = 1 Then
-                            LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
+                            'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
+                            state = "Engineering Approved"
                         Else
-                            LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
+                            'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
                         End If
 
                     Case 2
-                        LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
+                        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
+                        state = "Engineering Approved"
                     Case 3
-                        LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
-                        'Case 3
-                        '    LogOutStatusID = DavesCode.Reuse.SetStatus(username, Activity, 5, 7, MachineName, Tabused)
-                        'Case 101
-                        '    LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Fault", 5, userreason, MachineName, Tabused)
+                        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
+                        state = "Suspended"
                     Case 102
-                        LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
-                        'Case 5
-                        '    LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, 7, MachineName, Tabused)
+                        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
+
                 End Select
             End If
-            'commpm = New SqlCommand("INSERT INTO PQATable (LogInDate, LogOutDate, LogInName, LogOutName, pqaComment,linac, LogInStatusID, LogOutStatusID ) " & _
-            '                           "VALUES ( @LogInDate, @LogOutDate, @LogInName, @LogOutName, @pqaComment,@linac, @LogInStatusID, @LogOutStatusID)", conn)
+            LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, state, 5, userreason, MachineName, Tabused, connectionString)
+            commpm = New SqlCommand("INSERT INTO AuxTable (Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
+                                       "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)", conn)
 
-            commpm = New SqlCommand(builder.ToString, conn)
+            'commpm = New SqlCommand(builder.ToString, conn)
             commpm.Parameters.Add("@Tab", System.Data.SqlDbType.Int)
             commpm.Parameters("@Tab").Value = Tabused
             commpm.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
@@ -1030,7 +1936,7 @@ Namespace DavesCode
             commpm.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
             commpm.Parameters("@LogOutName").Value = logOutName
             commpm.Parameters.Add("Comment", System.Data.SqlDbType.NVarChar, 250)
-            commpm.Parameters("Comment").Value = localcomment
+            commpm.Parameters("Comment").Value = comment
             commpm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
             commpm.Parameters("@linac").Value = MachineName
             commpm.Parameters.Add("@LogInStatusID", System.Data.SqlDbType.NVarChar, 10)
@@ -1045,7 +1951,7 @@ Namespace DavesCode
 
             End Try
             If Not lock Then
-                UpdateActivityTable(MachineName, LogOutStatusID)
+                UpdateActivityTable(MachineName, LogOutStatusID, connectionString)
             End If
             Return LogOutStatusID
         End Function
@@ -1184,177 +2090,328 @@ Namespace DavesCode
 
             Finally
                 conn.Close()
-                UpdateActivityTable(LinacName, LogOutStatusID)
+                UpdateActivityTable(LinacName, LogOutStatusID, connectionString)
             End Try
             Return LogOutStatusID
 
         End Function
 
+        'Public Shared Function CommitPreClinNew(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal Imgchk1 As Boolean, ByVal Imgchk2 As Boolean, ByVal Valid As Boolean, ByVal Fault As Boolean, ConnectionString As String) As String
+        '    'Public Shared Function CommitPreClin(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal GridViewI As GridView, ByVal Valid As Boolean, ByVal Fault As Boolean) As String
+        '    Dim LogOutStatusID As String
+        '    Dim LogInStatusID As String
+        '    Dim time As DateTime
+        '    Dim LinacName As String = LinacN
+        '    Dim logOutName As String = username
+        '    Dim logInName As String = ""
+        '    time = Now()
+        '    Dim StartTime As DateTime
+        '    Dim reader As SqlDataReader
+        '    Dim EHID As Integer
+        '    Dim Approved As Boolean = Valid
+        '    Dim breakdown As Boolean = Fault
+        '    Dim iView As Boolean = Imgchk1
+        '    Dim XVI As Boolean = Imgchk2
+        '    Dim textbox As String = TextBoxp
+        '    Dim conn As SqlConnection
+        '    Dim SqlDataSource1 As New SqlDataSource()
+        '    'Dim cb As CheckBox
+        '    'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+        '    '"connectionstring").ConnectionString
+        '    Dim commHAuthID As SqlCommand
+        '    Dim contime As SqlCommand
+        '    Dim State As String = "Linac Unauthorised" 'default reason
+        '    Dim UserReason As Integer = 7 'most common reason
+        '    Dim Tab As Integer = 2 'most common tab
+
+        '    conn = New SqlConnection(connectionString)
+        '    'This will get the time the linac was accepted for the pre-clinical
+        '    contime = New SqlCommand("SELECT DateTime, username, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+
+        '    contime.Parameters.AddWithValue("@linac", LinacName)
+        '    conn.Open()
+        '    reader = contime.ExecuteReader()
+
+        '    If reader.Read() Then
+        '        StartTime = reader.Item("DateTime")
+        '        logInName = reader.Item("username")
+        '        LogInStatusID = reader.Item("stateID")
+        '    End If
+        '    reader.Close()
+        '    conn.Close()
+        '    'This calculates the time between logging on and now - but why here?
+        '    Dim minutesDuration As Decimal
+        '    Dim duration As TimeSpan = time - StartTime
+
+        '    minutesDuration = Decimal.Round(duration.TotalMinutes, 2, MidpointRounding.ToEven)
+
+
+        '    'this gets the ID of the associated engineering handover
+        '    commHAuthID = New SqlCommand("Select HandoverID from HandoverEnergies where HandoverID  = (Select max(HandoverID) as lastrecord from HandoverEnergies where linac=@linac)", conn)
+        '    commHAuthID.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
+        '    commHAuthID.Parameters("@linac").Value = LinacName
+
+        '    conn.Open()
+        '    reader = commHAuthID.ExecuteReader()
+        '    If reader.Read() Then
+        '        EHID = reader.Item("HandoverId")
+        '        reader.Close()
+        '        conn.Close()
+        '    End If
+        '    'This is here because this sub is also called from the fault page in order to write the linacstatus and to write clinicalhandover table
+        '    If breakdown Then
+        '        'changed to user reason 103
+        '        'LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, "Fault", 5, 103, LinacName, -1, ConnectionString)
+        '        State = "Fault"
+        '        UserReason = 103
+        '        iView = False
+        '        XVI = False
+        '        Tab = -1
+        '    Else 'not a breakdown so if approved set clinical - not treating or back to engineering approved
+        '        If Approved Then
+        '            'LinacStatusID = DavesCode.Reuse.SetStatus(loginName, "Clinical - Not Treating", 5, 7, LinacName, 2)
+        '            'October change
+        '            'changed august 21 to allow going to other states
+        '            'changed clinical to suspended to allow for cancel on clinical.  31 March 2016
+        '            'LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, "Suspended", 5, 7, LinacName, 2, ConnectionString)
+        '            State = "Suspended"
+        '        Else
+        '            'added to make right for midnight check before it just left as engineering approved
+        '            If logOutName = "System" Then
+        '                'LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, "Linac Unauthorised", 5, 102, LinacName, 2, ConnectionString)
+        '                UserReason = 102
+        '            Else
+        '                'added for E1 and E2
+        '                If LinacName = "E1" Or LinacName = "E2" Or LinacName = "B1" Then
+        '                    'LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, "Linac Unauthorised", 5, 7, LinacName, 1, ConnectionString)
+        '                    Tab = 1
+        '                Else
+        '                    'LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, "Engineering Approved", 5, 7, LinacName, 2, ConnectionString)
+        '                    State = "Engineering Approved"
+        '                End If
+
+        '            End If
+
+        '        End If
+        '    End If
+        '    LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, State, 5, UserReason, LinacName, Tab, ConnectionString)
+        '    'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
+
+        '    'This writes the clinicalhandover table - doesn't have the user in it
+
+        '    Dim commaccept As SqlCommand
+        '    commaccept = New SqlCommand("INSERT INTO ClinicalHandover ( CComment,Ehandid, LogOutDate, linac, LogInDate, Duration, iView, XVI, LogOutStatusID, Approved, LogInName, LogOutName, LogInStatusID) " &
+        '                                "VALUES (@CComment,@Ehandid, @LogOutDate, @linac, @LogInDate, @Duration, @iView, @XVI, @LogOutStatusID, @Approved, @LogInName, @LogOutName, @LogInStatusID)", conn)
+        '    commaccept.Parameters.Add("@CComment", System.Data.SqlDbType.NVarChar, 250)
+        '    commaccept.Parameters("@CComment").Value = textbox
+        '    commaccept.Parameters.Add("@Ehandid", Data.SqlDbType.Int)
+        '    commaccept.Parameters("@Ehandid").Value = EHID
+        '    commaccept.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
+        '    commaccept.Parameters("@LogOutDate").Value = time
+        '    commaccept.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+        '    commaccept.Parameters("@linac").Value = LinacName
+        '    commaccept.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
+        '    commaccept.Parameters("@LogInDate").Value = StartTime
+        '    commaccept.Parameters.Add("@Duration", System.Data.SqlDbType.Decimal)
+        '    commaccept.Parameters("@Duration").Value = minutesDuration
+        '    commaccept.Parameters.Add("@iView", System.Data.SqlDbType.Bit)
+        '    commaccept.Parameters("@iView").Value = iView
+        '    commaccept.Parameters.Add("@XVI", System.Data.SqlDbType.Bit)
+        '    commaccept.Parameters("@XVI").Value = XVI
+        '    commaccept.Parameters.Add("@LogOutStatusID", Data.SqlDbType.Int)
+        '    commaccept.Parameters("@LogOutStatusID").Value = LogOutStatusID
+        '    commaccept.Parameters.Add("@Approved", Data.SqlDbType.Bit)
+        '    commaccept.Parameters("@Approved").Value = Approved
+        '    commaccept.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
+        '    commaccept.Parameters("@LogInName").Value = logInName
+        '    commaccept.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
+        '    commaccept.Parameters("@LogOutName").Value = logOutName
+        '    commaccept.Parameters.Add("@LogInStatusID", Data.SqlDbType.Int)
+        '    commaccept.Parameters("@LogInStatusID").Value = LogInStatusID
+
+
+        '    'Try
+        '    conn.Open()
+        '        'Altered 17 March
+        '        'commaccept.ExecuteNonQuery()
+        '        Dim CHANDID As Integer
+        '        Dim obj As Object = commaccept.ExecuteScalar()
+        '        'Dim LinacStatusIDs As String = obj.ToString()
+        '        CHANDID = CInt(obj)
+
+        '    'Finally
+        '    conn.Close()
+        '    UpdateActivityTable(LinacName, LogOutStatusID, ConnectionString)
+        '    'End Try
+        '    Return LogOutStatusID
+
+        'End Function
+        'left in for defectsavepark
         Public Shared Function CommitClinical(ByVal LinacN As String, ByVal username As String, ByVal Fault As Boolean) As String
-            Dim LinacStatusID As Integer
-            Dim logInStatusID As Integer
-            Dim time As DateTime
-            Dim LinacName As String = LinacN
-            Dim logOutName As String = username
-            Dim logInName As String = ""
-            time = Now()
-            Dim StartTime As DateTime
-            Dim reader As SqlDataReader
-            Dim CHID As Integer
-            Dim breakdown As Boolean = Fault
-            'Dim textbox As String = TextBoxc
-            Dim conn As SqlConnection
-            Dim SqlDataSource1 As New SqlDataSource()
+            '    Dim LinacStatusID As Integer
+            '    Dim logInStatusID As Integer
+            '    Dim time As DateTime
+            '    Dim LinacName As String = LinacN
+            '    Dim logOutName As String = username
+            '    Dim logInName As String = ""
+            '    time = Now()
+            '    Dim StartTime As DateTime
+            '    Dim reader As SqlDataReader
+            '    Dim CHID As Integer
+            '    Dim breakdown As Boolean = Fault
+            '    'Dim textbox As String = TextBoxc
+            '    Dim conn As SqlConnection
+            '    Dim SqlDataSource1 As New SqlDataSource()
 
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
-            Dim commHAuthID As SqlCommand
-            Dim contime As SqlCommand
+            '    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            '    "connectionstring").ConnectionString
+            '    Dim commHAuthID As SqlCommand
+            '    Dim contime As SqlCommand
 
-            conn = New SqlConnection(connectionString)
-            'This will get the time the linac was accepted for clinical
-            contime = New SqlCommand("SELECT stateid, DateTime, UserName FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac And state='clinical')", conn)
-            contime.Parameters.AddWithValue("@linac", LinacName)
-            conn.Open()
-            reader = contime.ExecuteReader()
+            '    conn = New SqlConnection(connectionString)
+            '    'This will get the time the linac was accepted for clinical
+            '    contime = New SqlCommand("SELECT stateid, DateTime, UserName FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac And state='clinical')", conn)
+            '    contime.Parameters.AddWithValue("@linac", LinacName)
+            '    conn.Open()
+            '    reader = contime.ExecuteReader()
 
-            If reader.Read() Then
-                logInStatusID = reader.Item("stateid")
-                StartTime = reader.Item("DateTime")
-                logInName = reader.Item("UserName")
-            End If
-            reader.Close()
-            conn.Close()
-            'This calculates the time between logging on and now - but why here?
-            Dim minutesDuration As Decimal
-            Dim duration As TimeSpan = time - StartTime
+            '    If reader.Read() Then
+            '        logInStatusID = reader.Item("stateid")
+            '        StartTime = reader.Item("DateTime")
+            '        logInName = reader.Item("UserName")
+            '    End If
+            '    reader.Close()
+            '    conn.Close()
+            '    'This calculates the time between logging on and now - but why here?
+            '    Dim minutesDuration As Decimal
+            '    Dim duration As TimeSpan = time - StartTime
 
-            minutesDuration = Decimal.Round(duration.TotalMinutes, 2, MidpointRounding.ToEven)
-
-
-            'this gets the ID of the associated engineering handover
-            commHAuthID = New SqlCommand("Select CHandID from ClinicalHandover where CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)", conn)
-            commHAuthID.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
-            commHAuthID.Parameters("@linac").Value = LinacName
-
-            conn.Open()
-            reader = commHAuthID.ExecuteReader()
-            If reader.Read() Then
-                CHID = reader.Item("CHandId")
-                reader.Close()
-                conn.Close()
-            End If
-            'Moved If Breakdown after this section, checking and writing treatment table to here because it needs to be checked both for breakdown and if recover button operated.
-            'It's only if there is a breakdown or recover that there will be a null entry for treatmentstoptime Not true 22/11/17
-
-            commHAuthID = New SqlCommand("select treatmentid, treatmentstoptime from treatmenttable where treatmentid = (select max(treatmentID) from treatmentTable where linac=@linac)", conn)
-            commHAuthID.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
-            commHAuthID.Parameters("@linac").Value = LinacName
-            conn.Open()
-            reader = commHAuthID.ExecuteReader()
-            If reader.Read() Then 'this means there is an entry so
-                'checking for null from http://www.triconsole.com/dotnet/sqldatareader_class.php#isdbnull
-                If reader.IsDBNull(1) Then
-                    SetTreatment("Not Treating", LinacName, logInStatusID)
-                End If
-                reader.Close()
-
-            End If
-            conn.Close()
-            'This is here because this sub is also called from the fault page in order to write the linacstatus and to write clinicalhandover table
-            If breakdown Then
-                'need to call SetTreatment to write treatment table before anything else is updated
+            '    minutesDuration = Decimal.Round(duration.TotalMinutes, 2, MidpointRounding.ToEven)
 
 
-                'LogInName should have been LogOutName. Changed user reason to 7
-                'LinacStatusID = DavesCode.Reuse.SetStatus(logInName, "Fault", 5, 5, LinacName, 3)
-                LinacStatusID = DavesCode.Reuse.SetStatus(logOutName, "Fault", 5, 103, LinacName, -1)
-            Else 'not a breakdown so if approved set clinical - not treating or back to engineering approved
-                If logOutName = "System" Then
-                    LinacStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 102, LinacName, 3)
-                Else
-                    LinacStatusID = DavesCode.Reuse.SetStatus(logOutName, "Suspended", 5, 7, LinacName, 3)
-                End If
+            '    'this gets the ID of the associated engineering handover
+            '    commHAuthID = New SqlCommand("Select CHandID from ClinicalHandover where CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)", conn)
+            '    commHAuthID.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
+            '    commHAuthID.Parameters("@linac").Value = LinacName
 
-                'LinacStatusID = DavesCode.Reuse.SetStatus(logInName, "Suspended", 5, 7, LinacName, 3)
-            End If
-            'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
-            'This writes the clinicalstatus table
+            '    conn.Open()
+            '    reader = commHAuthID.ExecuteReader()
+            '    If reader.Read() Then
+            '        CHID = reader.Item("CHandId")
+            '        reader.Close()
+            '        conn.Close()
+            '    End If
+            '    'Moved If Breakdown after this section, checking and writing treatment table to here because it needs to be checked both for breakdown and if recover button operated.
+            '    'It's only if there is a breakdown or recover that there will be a null entry for treatmentstoptime Not true 22/11/17
 
-            Dim commaccept As SqlCommand
-            commaccept = New SqlCommand("INSERT INTO ClinicalStatus ( PClinID, LogInDate, LogOutDate, linac, Duration, LogInName, LogOutName,LogOutStatusID, logInStatusID) " &
-                                        "VALUES (@PClinID, @LogInDate, @LogOutDate, @linac, @Duration,@LogInName, @LogOutName, @LogOutStatusID, @logInStatusID)", conn)
-            'commaccept.Parameters.Add("@CComment", System.Data.SqlDbType.NVarChar, 250)
-            'commaccept.Parameters("@CComment").Value = TextBox
-            commaccept.Parameters.Add("@PClinID", Data.SqlDbType.Int)
-            commaccept.Parameters("@PClinID").Value = CHID
-            commaccept.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
-            commaccept.Parameters("@LogInDate").Value = StartTime
-            commaccept.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
-            commaccept.Parameters("@LogOutDate").Value = time
-            commaccept.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            commaccept.Parameters("@linac").Value = LinacName
-            commaccept.Parameters.Add("@Duration", System.Data.SqlDbType.Decimal)
-            commaccept.Parameters("@Duration").Value = minutesDuration
-            commaccept.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
-            commaccept.Parameters("@LogInName").Value = logInName
-            commaccept.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
-            commaccept.Parameters("@LogOutName").Value = logOutName
-            commaccept.Parameters.Add("@LogOutStatusID", Data.SqlDbType.Int)
-            commaccept.Parameters("@LogOutStatusID").Value = LinacStatusID
-            commaccept.Parameters.Add("@logInStatusID", Data.SqlDbType.Int)
-            commaccept.Parameters("@logInStatusID").Value = logInStatusID
-            Try
-                conn.Open()
-                commaccept.ExecuteNonQuery()
+            '    commHAuthID = New SqlCommand("select treatmentid, treatmentstoptime from treatmenttable where treatmentid = (select max(treatmentID) from treatmentTable where linac=@linac)", conn)
+            '    commHAuthID.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
+            '    commHAuthID.Parameters("@linac").Value = LinacName
+            '    conn.Open()
+            '    reader = commHAuthID.ExecuteReader()
+            '    If reader.Read() Then 'this means there is an entry so
+            '        'checking for null from http://www.triconsole.com/dotnet/sqldatareader_class.php#isdbnull
+            '        If reader.IsDBNull(1) Then
+            '            SetTreatment("Not Treating", LinacName, logInStatusID)
+            '        End If
+            '        reader.Close()
 
-            Finally
-                conn.Close()
-                UpdateActivityTable(LinacName, LinacStatusID)
-            End Try
-            Return LinacStatusID
+            '    End If
+            '    conn.Close()
+            '    'This is here because this sub is also called from the fault page in order to write the linacstatus and to write clinicalhandover table
+            '    If breakdown Then
+            '        'need to call SetTreatment to write treatment table before anything else is updated
+
+
+            '        'LogInName should have been LogOutName. Changed user reason to 7
+            '        'LinacStatusID = DavesCode.Reuse.SetStatus(logInName, "Fault", 5, 5, LinacName, 3)
+            '        LinacStatusID = DavesCode.Reuse.SetStatus(logOutName, "Fault", 5, 103, LinacName, -1)
+            '    Else 'not a breakdown so if approved set clinical - not treating or back to engineering approved
+            '        If logOutName = "System" Then
+            '            LinacStatusID = DavesCode.Reuse.SetStatus(logOutName, "Linac Unauthorised", 5, 102, LinacName, 3)
+            '        Else
+            '            LinacStatusID = DavesCode.Reuse.SetStatus(logOutName, "Suspended", 5, 7, LinacName, 3)
+            '        End If
+
+            '        'LinacStatusID = DavesCode.Reuse.SetStatus(logInName, "Suspended", 5, 7, LinacName, 3)
+            '    End If
+            '    'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
+            '    'This writes the clinicalstatus table
+
+            '    Dim commaccept As SqlCommand
+            '    commaccept = New SqlCommand("INSERT INTO ClinicalStatus ( PClinID, LogInDate, LogOutDate, linac, Duration, LogInName, LogOutName,LogOutStatusID, logInStatusID) " &
+            '                                "VALUES (@PClinID, @LogInDate, @LogOutDate, @linac, @Duration,@LogInName, @LogOutName, @LogOutStatusID, @logInStatusID)", conn)
+            '    'commaccept.Parameters.Add("@CComment", System.Data.SqlDbType.NVarChar, 250)
+            '    'commaccept.Parameters("@CComment").Value = TextBox
+            '    commaccept.Parameters.Add("@PClinID", Data.SqlDbType.Int)
+            '    commaccept.Parameters("@PClinID").Value = CHID
+            '    commaccept.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
+            '    commaccept.Parameters("@LogInDate").Value = StartTime
+            '    commaccept.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
+            '    commaccept.Parameters("@LogOutDate").Value = time
+            '    commaccept.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            '    commaccept.Parameters("@linac").Value = LinacName
+            '    commaccept.Parameters.Add("@Duration", System.Data.SqlDbType.Decimal)
+            '    commaccept.Parameters("@Duration").Value = minutesDuration
+            '    commaccept.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
+            '    commaccept.Parameters("@LogInName").Value = logInName
+            '    commaccept.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
+            '    commaccept.Parameters("@LogOutName").Value = logOutName
+            '    commaccept.Parameters.Add("@LogOutStatusID", Data.SqlDbType.Int)
+            '    commaccept.Parameters("@LogOutStatusID").Value = LinacStatusID
+            '    commaccept.Parameters.Add("@logInStatusID", Data.SqlDbType.Int)
+            '    commaccept.Parameters("@logInStatusID").Value = logInStatusID
+            '    Try
+            '        conn.Open()
+            '        commaccept.ExecuteNonQuery()
+
+            '    Finally
+            '        conn.Close()
+            '        UpdateActivityTable(LinacName, LinacStatusID)
+            '    End Try
+            '    Return LinacStatusID
         End Function
 
-        Public Shared Sub SetTreatment(ByVal State As String, ByVal linacid As String, ByVal linacstate As String)
-            Dim time As DateTime
-            Dim MachineType As String = linacid
-            Dim StateType As String = State
-            Dim Linacstatusid As String = linacstate
-            Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
-            Dim commstatus As SqlCommand
-            time = Now()
-            conn = New SqlConnection(connectionString)
-            If StateType = "Treating" Then
-                commstatus = New SqlCommand("INSERT INTO TreatmentTable ( TreatmentStartTime, LinacStatusId,linac) " &
-                                            "VALUES ( @TreatmentStartTime, @LinacStatusID, @linac)", conn)
+        'Public Shared Sub SetTreatment(ByVal State As String, ByVal linacid As String, ByVal linacstate As String)
+        '    Dim time As DateTime
+        '    Dim MachineType As String = linacid
+        '    Dim StateType As String = State
+        '    Dim Linacstatusid As String = linacstate
+        '    Dim conn As SqlConnection
+        '    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+        '    "connectionstring").ConnectionString
+        '    Dim commstatus As SqlCommand
+        '    time = Now()
+        '    conn = New SqlConnection(connectionString)
+        '    If StateType = "Treating" Then
+        '        commstatus = New SqlCommand("INSERT INTO TreatmentTable ( TreatmentStartTime, LinacStatusId,linac) " &
+        '                                    "VALUES ( @TreatmentStartTime, @LinacStatusID, @linac)", conn)
 
-                commstatus.Parameters.Add("@TreatmentStartTime", System.Data.SqlDbType.DateTime)
-                commstatus.Parameters("@TreatmentStartTime").Value = time
-                commstatus.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.NVarChar, 10)
-                commstatus.Parameters("@LinacStatusId").Value = Linacstatusid
-                commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                commstatus.Parameters("@linac").Value = MachineType
-            Else
-                'Update command changed 12 April because it should update last row not all rows with same LinacStatusId
-                'commstatus = New SqlCommand("UPDATE  TreatmentTable SET TreatmentStopTime = @TreatmentStopTime where LinacStatusid = @LinacStatusID", conn)
-                commstatus = New SqlCommand("UPDATE  TreatmentTable SET TreatmentStopTime = @TreatmentStopTime where TreatmentID  = (Select max(treatmentID) as lastrecord from treatmenttable where linac=@linac)", conn)
-                commstatus.Parameters.Add("@TreatmentStopTime", System.Data.SqlDbType.DateTime)
-                commstatus.Parameters("@TreatmentStopTime").Value = time
-                commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                commstatus.Parameters("@linac").Value = MachineType
+        '        commstatus.Parameters.Add("@TreatmentStartTime", System.Data.SqlDbType.DateTime)
+        '        commstatus.Parameters("@TreatmentStartTime").Value = time
+        '        commstatus.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.NVarChar, 10)
+        '        commstatus.Parameters("@LinacStatusId").Value = Linacstatusid
+        '        commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+        '        commstatus.Parameters("@linac").Value = MachineType
+        '    Else
+        '        'Update command changed 12 April because it should update last row not all rows with same LinacStatusId
+        '        'commstatus = New SqlCommand("UPDATE  TreatmentTable SET TreatmentStopTime = @TreatmentStopTime where LinacStatusid = @LinacStatusID", conn)
+        '        commstatus = New SqlCommand("UPDATE  TreatmentTable SET TreatmentStopTime = @TreatmentStopTime where TreatmentID  = (Select max(treatmentID) as lastrecord from treatmenttable where linac=@linac)", conn)
+        '        commstatus.Parameters.Add("@TreatmentStopTime", System.Data.SqlDbType.DateTime)
+        '        commstatus.Parameters("@TreatmentStopTime").Value = time
+        '        commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+        '        commstatus.Parameters("@linac").Value = MachineType
 
-            End If
-            Try
-                conn.Open()
-                commstatus.ExecuteNonQuery()
+        '    End If
+        '    Try
+        '        conn.Open()
+        '        commstatus.ExecuteNonQuery()
 
-            Finally
-                conn.Close()
-            End Try
+        '    Finally
+        '        conn.Close()
+        '    End Try
 
-        End Sub
+        'End Sub
         'Used
         Public Shared Function SetStatus(ByVal loginName As String, ByVal State As String, ByVal UserGroup As Integer, ByVal Userreason As Integer, ByVal linacid As String, ByVal Activity As Integer) As Integer
             Dim time As DateTime
@@ -1370,46 +2427,152 @@ Namespace DavesCode
             Dim conn As SqlConnection
             Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
-            Dim commstatus As SqlCommand
+            'Dim commstatus As SqlCommand
 
             If Activity <> 0 Then
                 CalculateDuration(MachineType, time, StartTime, minutesDuration)
             End If
 
             conn = New SqlConnection(connectionString)
+            Using (conn)
+                Dim commstatus As New SqlCommand With {
+                .Connection = conn
+                }
+                Dim ObjTransaction As SqlTransaction
+                ObjTransaction = Nothing
+                Try
+                    conn.Open()
+                    ObjTransaction = conn.BeginTransaction()
+                    commstatus.CommandText = "usp_InsertLinacStatus"
+                    commstatus.CommandType = CommandType.StoredProcedure
+                    commstatus.Transaction = ObjTransaction
+                    'commstatus = New SqlCommand("INSERT INTO LinacStatus ( State, DateTime, Usergroup, Userreason, linac, UserName) " &
+                    '"VALUES ( @State, @Datetime, @Usergroup, @Userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
+                    commstatus.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
+                    commstatus.Parameters("@State").Value = StateType
+                    commstatus.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
+                    commstatus.Parameters("@DateTime").Value = time
+                    commstatus.Parameters.Add("@usergroup", System.Data.SqlDbType.Int)
+                    commstatus.Parameters("@usergroup").Value = UserType
+                    commstatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
+                    commstatus.Parameters("@userreason").Value = ReasonType
+                    commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                    commstatus.Parameters("@linac").Value = MachineType
+                    commstatus.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 50)
+                    commstatus.Parameters("@UserName").Value = userName
+                    Dim outPutParameter = New SqlParameter With {
+                        .ParameterName = "@LinacStatusID",
+                        .SqlDbType = System.Data.SqlDbType.Int,
+                        .Direction = System.Data.ParameterDirection.Output
+                        }
+                    commstatus.Parameters.Add(outPutParameter)
+                    commstatus.ExecuteNonQuery()
+                    ObjTransaction.Commit()
+                    commstatus.Parameters.Clear()
+                    Dim Newstatusid As String = outPutParameter.Value.ToString
+                    LinacStatusID = CInt(Newstatusid)
+                    'Try
+                    'To get the identity of the record just inserted from
+                    'http://www.aspsnippets.com/Articles/Return-Identity-Auto-Increment-Column-value-after-record-insert-in-SQL-Server-Database-using-ADONet-with-C-and-VBNet.aspx
+                    'conn.Open()
+                    'commstatus.ExecuteNonQuery()
 
+                    'Dim obj As Object = commstatus.ExecuteScalar()
+                    '    'Dim LinacStatusIDs As String = obj.ToString()
+                    '    LinacStatusID = CInt(obj)
+                    '    conn.Close()
+                    If Activity > 0 Then
+                        WriteDurationnew(MachineType, Activity, time, StartTime, minutesDuration, LinacStatusID)
+                    End If
+                Catch ex As Exception
+                    ObjTransaction.Rollback()
+                    LinacStatusID = -1
+                    ReusePC.LogError(ex)
+                Finally
+                    conn.Close()
+                End Try
+            End Using
+            Return LinacStatusID
+        End Function
+        Public Shared Function SetStatusNew(ByVal loginName As String, ByVal State As String, ByVal UserGroup As Integer, ByVal Userreason As Integer, ByVal linacid As String, ByVal Activity As Integer, ByVal ConnectionString As String) As Integer
+            Dim time As DateTime
+            Dim userName As String = loginName
+            Dim StateType As String = State
+            Dim UserType As Integer = UserGroup
+            Dim ReasonType As Integer = Userreason
+            Dim MachineType As String = linacid
+            Dim minutesDuration As Decimal
+            Dim StartTime As DateTime
+            Dim LinacStatusID As String
+            time = Now()
+            Dim conn As SqlConnection
+            'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            '"connectionstring").ConnectionString
+            'Dim commstatus As SqlCommand
 
-            commstatus = New SqlCommand("INSERT INTO LinacStatus ( State, DateTime, Usergroup, Userreason, linac, UserName) " &
-                                        "VALUES ( @State, @Datetime, @Usergroup, @Userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
-            commstatus.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
-            commstatus.Parameters("@State").Value = StateType
-            commstatus.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
-            commstatus.Parameters("@DateTime").Value = time
-            commstatus.Parameters.Add("@usergroup", System.Data.SqlDbType.Int)
-            commstatus.Parameters("@usergroup").Value = UserType
-            commstatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
-            commstatus.Parameters("@userreason").Value = ReasonType
-            commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            commstatus.Parameters("@linac").Value = MachineType
-            commstatus.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 50)
-            commstatus.Parameters("@UserName").Value = userName
+            If Activity <> 0 Then
+                CalculateDuration(MachineType, time, StartTime, minutesDuration)
+            End If
 
-            Try
+            conn = New SqlConnection(ConnectionString)
+            Using (conn)
+                Dim commstatus As New SqlCommand With {
+                .Connection = conn
+                }
+                'Dim ObjTransaction As SqlTransaction
+                'ObjTransaction = Nothing
+                'Try
+                conn.Open()
+                'ObjTransaction = conn.BeginTransaction()
+                commstatus.CommandText = "usp_InsertLinacStatus"
+                commstatus.CommandType = CommandType.StoredProcedure
+                'commstatus.Transaction = ObjTransaction
+                'commstatus = New SqlCommand("INSERT INTO LinacStatus ( State, DateTime, Usergroup, Userreason, linac, UserName) " &
+                '"VALUES ( @State, @Datetime, @Usergroup, @Userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
+                commstatus.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
+                commstatus.Parameters("@State").Value = StateType
+                commstatus.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
+                commstatus.Parameters("@DateTime").Value = time
+                commstatus.Parameters.Add("@usergroup", System.Data.SqlDbType.Int)
+                commstatus.Parameters("@usergroup").Value = UserType
+                commstatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
+                commstatus.Parameters("@userreason").Value = ReasonType
+                commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                commstatus.Parameters("@linac").Value = MachineType
+                commstatus.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 50)
+                commstatus.Parameters("@UserName").Value = userName
+                Dim outPutParameter = New SqlParameter With {
+                        .ParameterName = "@LinacStatusID",
+                        .SqlDbType = System.Data.SqlDbType.Int,
+                        .Direction = System.Data.ParameterDirection.Output
+                        }
+                commstatus.Parameters.Add(outPutParameter)
+                commstatus.ExecuteNonQuery()
+                'ObjTransaction.Commit()
+                commstatus.Parameters.Clear()
+                Dim Newstatusid As String = outPutParameter.Value.ToString
+                LinacStatusID = CInt(Newstatusid)
+                'Try
                 'To get the identity of the record just inserted from
                 'http://www.aspsnippets.com/Articles/Return-Identity-Auto-Increment-Column-value-after-record-insert-in-SQL-Server-Database-using-ADONet-with-C-and-VBNet.aspx
-                conn.Open()
+                'conn.Open()
                 'commstatus.ExecuteNonQuery()
 
-                Dim obj As Object = commstatus.ExecuteScalar()
-                'Dim LinacStatusIDs As String = obj.ToString()
-                LinacStatusID = CInt(obj)
-                conn.Close()
+                'Dim obj As Object = commstatus.ExecuteScalar()
+                '    'Dim LinacStatusIDs As String = obj.ToString()
+                '    LinacStatusID = CInt(obj)
+                '    conn.Close()
                 If Activity > 0 Then
-                    WriteDurationnew(MachineType, Activity, time, StartTime, minutesDuration, LinacStatusID)
+                    'WriteDurationnew(MachineType, Activity, time, StartTime, minutesDuration, LinacStatusID)
                 End If
-            Finally
-                conn.Close()
-            End Try
+                'Catch ex As Exception
+                '    ObjTransaction.Rollback()
+                '    LinacStatusID = -1
+                '    ReusePC.LogError(ex)
+                'Finally
+                '    conn.Close()
+                'End Try
+            End Using
             Return LinacStatusID
         End Function
         'Used
@@ -1721,7 +2884,46 @@ Namespace DavesCode
             "connectionstring").ConnectionString
             'Dim Machinestatus As SqlCommand
             Dim StatusNow As SqlCommand
+
             conn = New SqlConnection(connectionString)
+
+            If PreviousState = 0 Then
+                StatusNow = New SqlCommand("SELECT state, username, usergroup, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            Else
+                'This doesn't work it just gets penultimate record irrespective of linac
+                'StatusNow = New SqlCommand("SELECT state, username, usergroup FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
+                'from http://stackoverflow.com/questions/8198962/taking-the-second-last-row-with-only-one-select-in-sql-server
+                StatusNow = New SqlCommand("SELECT TOP 1 * From (select Top 2 * from (select * from [LinacStatus] where linac=@linac) as a ORDER BY a.stateid DESC)  as x ORDER BY x.stateid", conn)
+
+            End If
+            StatusNow.Parameters.AddWithValue("@linac", linacName)
+            conn.Open()
+            reader = StatusNow.ExecuteReader()
+
+            If reader.Read() Then
+                lastState = reader.Item("state").ToString()
+                lastusername = reader.Item("username").ToString()
+                lastusergroup = reader.Item("usergroup")
+                laststateid = reader.Item("stateID")
+            End If
+            reader.Close()
+            conn.Close()
+
+            Return laststateid
+        End Function
+        Public Shared Function GetLastTechNew(ByVal linac As String, ByVal index As Integer, ByRef lastState As String, ByRef lastusername As String, ByRef lastusergroup As Integer, ByVal ConnectionString As String) As Integer
+            'Changed this to a function to return the linac state ID where necessary
+            Dim laststateid As Integer = 0
+            Dim PreviousState As Integer = index
+            Dim reader As SqlDataReader
+            Dim linacName As String = linac
+            Dim conn As SqlConnection
+            'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            '"connectionstring").ConnectionString
+            'Dim Machinestatus As SqlCommand
+            Dim StatusNow As SqlCommand
+
+            conn = New SqlConnection(ConnectionString)
 
             If PreviousState = 0 Then
                 StatusNow = New SqlCommand("SELECT state, username, usergroup, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
@@ -1804,6 +3006,7 @@ Namespace DavesCode
                     XVi = cb.Checked
             End Select
         End Sub
+
 
     End Class
 End Namespace

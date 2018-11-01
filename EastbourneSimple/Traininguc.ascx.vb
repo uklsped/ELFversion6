@@ -22,6 +22,7 @@ Partial Class Traininguc
     Dim BoxChanged As String
     Private Event AutoApproved(ByVal Tab As String, ByVal UserName As String)
     Private tabstate As String
+    Private Objcon As ViewOpenFaults
 
 
     Public Property LinacName() As String
@@ -118,11 +119,17 @@ Partial Class Traininguc
             Todaydefect.UpDateDefectsEventHandler()
         End If
     End Sub
+    Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
+        If MachineName = EquipmentID Then
+            Objcon = FindControl("ViewOpenFaults")
+            Objcon.RebindViewFault()
+        End If
+    End Sub
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
 
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
-        AddHandler Traininguc.AutoApproved, AddressOf UserApprovedEvent
+        AddHandler AutoApproved, AddressOf UserApprovedEvent
 
 
         appstate = "LogOn" + MachineName
@@ -160,7 +167,8 @@ Partial Class Traininguc
                 suspendvalue = Application(suspstate)
                 repairvalue = Application(repairstate)
                 Radioselect = RadioButtonList1.SelectedItem.Value
-                DavesCode.Reuse.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
+                'If this fails it writes an error to file but carries on.
+                DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
                 Application(appstate) = Nothing
                 Application(tabstate) = String.Empty
                 Select Case Radioselect
@@ -276,9 +284,23 @@ Partial Class Traininguc
 
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
-        Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
-        CType(objDefect, DefectSave).ID = "DefectDisplay"
-        CType(objDefect, DefectSave).LinacName = MachineName
+
+        Dim objDefect As UserControl
+
+        If MachineName Like "T?" Then
+            objDefect = Page.LoadControl("DefectSavePark.ascx")
+            CType(objDefect, DefectSavePark).ID = "DefectDisplay"
+            CType(objDefect, DefectSavePark).LinacName = MachineName
+            CType(objDefect, DefectSavePark).ParentControl = 4
+            AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
+            AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
+            'AddHandler CType(objDefect, DefectSavePark).UpdateUnrecoverableClosed Address Of Update
+        Else
+            objDefect = Page.LoadControl("DefectSave.ascx")
+            CType(objDefect, DefectSave).ID = "DefectDisplay"
+            CType(objDefect, DefectSave).LinacName = MachineName
+        End If
+
         PlaceHolder4.Controls.Add(objDefect)
 
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)

@@ -735,7 +735,9 @@ Partial Public Class B1page
                             Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                             Dim outputn As String = Application(appstate)
                             If outputn = 1 Then
-                                clinicalcontrol.ClinicalApprovedEvent()
+                                'should have transaction
+                                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                clinicalcontrol.ClinicalApprovedEvent(connectionString)
                             End If
 
                         Case 4
@@ -1191,7 +1193,7 @@ Partial Public Class B1page
                     Commentbox = mrucontrol.FindControl("CommentBox")
                     Comment = Commentbox.Text
                     'blank grid view 17/11/17
-                    DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
+                   ' DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
                 Case 2
                     mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
                     Commentbox = mpreccontrol.FindControl("CommentBox")
@@ -1349,7 +1351,7 @@ Partial Public Class B1page
             'Case 7
             '        DavesCode.Reuse.SetStatus(Userinfo, "Linac Unauthorised", 5, 7, MachineName, 0)
             Case 1
-                DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Userinfo, Comment, Valid, False, False) ' 666 means that blank gridview is written
+                'DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Userinfo, Comment, Valid, False, False) ' 666 means that blank gridview is written
                 Application(repairstate) = Nothing
 
             Case 2

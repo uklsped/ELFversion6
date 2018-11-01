@@ -24,7 +24,7 @@ Partial Public Class E1page
     Private clinicalstate As String = "ClinicalOnE1"
     Private treatmentstate As String = "TreatmentE1"
     Private activetabstate As String = "ActTabE1"
-    Private runupcontrolId As String = "ERunupUserControl1"
+    Private runupcontrolId As String = "ERunupUserControlCommon1"
     Private preclincontrolID As String = "PreclinUserControl1"
     Private ClinicalUserControlID As String = "ClinicalUserControl1"
     Private PlannedMaintenanceControlID As String = "PlannedMaintenanceuc1"
@@ -32,13 +32,14 @@ Partial Public Class E1page
     Private webusercontrol21ID As String = "webUserControl21"
     Private physicscontrolID As String = "PhysicsQAuc1"
     Private writedatacontrolID As String = "Writedatauc1"
-    Private emergencycontrolID As String = "ERunupUserControl2"
+    Private emergencycontrolID As String = "ERunupUserControlCommon2"
     Private trainingcontrolID As String = "Traininguc1"
     Public Event NoApprove()
     Public Event LAQA As EventHandler
     Private TodayTraining As Traininguc
     Private TodayPM As Planned_Maintenanceuc
     Private TodayRep As Repairuc
+    Private TodayER As ErunupUserControl
     Private faultstate As String = "faultstateE1"
     Private linacloaded As String = "E1loaded"
     Private returnclinical As String = "ReturnClinicalE1"
@@ -47,6 +48,7 @@ Partial Public Class E1page
     Private lsctrl As LinacStatusuc
     Private RegistrationState As String = "regstateE1"
     Private loadup As String = Nothing
+
 
 
 
@@ -186,7 +188,7 @@ Partial Public Class E1page
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
         Dim Reload As Boolean = False
-        Dim panelcontrol As TabPanel
+        'Dim panelcontrol As TabPanel
         Dim Fcancel As String = ""
         AddHandler AcceptLinac1.ShowName, AddressOf SetUser
         AddHandler AcceptLinac4.ShowName, AddressOf SetUser
@@ -203,7 +205,7 @@ Partial Public Class E1page
         AddHandler LinacStatusuc1.Resetstatus, AddressOf LaunchTab
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
-        AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
+        AddHandler ErunupUserControlCommon1.BlankGroup, AddressOf SetUser
         Dim ResetDay As String = Nothing
 
 
@@ -693,6 +695,9 @@ Partial Public Class E1page
                             Activity = "Engineering Run Up"
                             DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
                             SetUser(lastusergroup)
+                            'TodayER = tcl.ActiveTab.FindControl(runupcontrolId)
+                            'Introduced because of fix to engrunupcommon for data error
+                            'TodayER.EngLogOnEvent()
                             'User = "Engineer/Physicist"
                             rucontrol.Visible = True
                             textbox = rucontrol.FindControl("commentbox")
@@ -735,7 +740,9 @@ Partial Public Class E1page
                             Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                             Dim outputn As String = Application(appstate)
                             If outputn = 1 Then
-                                clinicalcontrol.ClinicalApprovedEvent()
+                                'should have transaction
+                                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                clinicalcontrol.ClinicalApprovedEvent(connectionString)
                             End If
 
                         Case 4
@@ -1191,7 +1198,7 @@ Partial Public Class E1page
                     Commentbox = mrucontrol.FindControl("CommentBox")
                     Comment = Commentbox.Text
                     'blank grid view 17/11/17
-                    DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
+                    'DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
                 Case 2
                     mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
                     Commentbox = mpreccontrol.FindControl("CommentBox")
@@ -1350,7 +1357,7 @@ Partial Public Class E1page
             'Case 7
             '        DavesCode.Reuse.SetStatus(Userinfo, "Linac Unauthorised", 5, 7, MachineName, 0)
             Case 1
-                DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Userinfo, Comment, Valid, False, False) ' 666 means that blank gridview is written
+                'DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Userinfo, Comment, Valid, False, False) ' 666 means that blank gridview is written
                 Application(repairstate) = Nothing
 
             Case 2

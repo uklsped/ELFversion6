@@ -124,7 +124,8 @@ Partial Class Repairuc
                 suspendvalue = Application(suspstate)
                 repairvalue = Application(repairstate)
                 Radioselect = RadioButtonList1.SelectedItem.Value
-                DavesCode.Reuse.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
+                'If this fails it writes an error to file but carries on.
+                DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
                 'DavesCode.Reuse.Writerep(MachineName, username, comment, LinacStatusID)
                 Application(appstate) = Nothing
                 Application(tabstate) = String.Empty
@@ -580,7 +581,8 @@ Partial Class Repairuc
         Dim lock As Boolean
         lock = Not lockctrl.Visible
         If lock Then
-            DavesCode.Reuse.WriteAuxTables(MachineName, username, comment, radioselect, tabused, breakdown, suspendvalue, repairvalue, lock)
+            'If this fails it writes an error to file but carries on.
+            DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, radioselect, tabused, breakdown, suspendvalue, repairvalue, lock)
             lockctrl.Visible = True
         End If
         ForceFocus(lockctrltext)

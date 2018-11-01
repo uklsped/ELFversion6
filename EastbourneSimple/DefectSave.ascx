@@ -165,6 +165,11 @@
     <asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
     <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" validationexpression="^\d{7}$" Display="Static" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
             </td>
+              <tr>
+                    <td class="style2">Reportable Fault:</td>
+                    <td>
+                        <asp:CheckBox ID="RFCheckBox" runat="server" />
+                    </td>
             </tr>
 
 <tr>

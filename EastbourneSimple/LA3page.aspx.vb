@@ -24,7 +24,7 @@ Partial Public Class LA3page
     Private clinicalstate As String = "ClinicalOnLA3"
     Private treatmentstate As String = "TreatmentLA3"
     Private activetabstate As String = "ActTabLA3"
-    Private runupcontrolId As String = "ERunupUserControl1"
+    Private runupcontrolId As String = "ERunupUserControlCommon1"
     Private preclincontrolID As String = "PreclinUserControl1"
     Private ClinicalUserControlID As String = "ClinicalUserControl1"
     Private PlannedMaintenanceControlID As String = "PlannedMaintenanceuc1"
@@ -32,7 +32,7 @@ Partial Public Class LA3page
     Private webusercontrol21ID As String = "webUserControl21"
     Private physicscontrolID As String = "PhysicsQAuc1"
     Private writedatacontrolID As String = "Writedatauc1"
-    Private emergencycontrolID As String = "ERunupUserControl2"
+    Private emergencycontrolID As String = "ERunupUserControlCommon2"
     Private trainingcontrolID As String = "Traininguc1"
     Public Event NoApprove()
     Public Event LAQA As EventHandler
@@ -202,7 +202,7 @@ Partial Public Class LA3page
         AddHandler LinacStatusuc1.Resetstatus, AddressOf LaunchTab
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
-        AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
+        AddHandler ErunupUserControlCommon1.BlankGroup, AddressOf SetUser
         Dim ResetDay As String = Nothing
 
 
@@ -743,7 +743,9 @@ Partial Public Class LA3page
                             Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                             Dim outputn As String = Application(appstate)
                             If outputn = 1 Then
-                                clinicalcontrol.ClinicalApprovedEvent()
+                                'should have a transaction
+                                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                clinicalcontrol.ClinicalApprovedEvent(connectionString)
                             End If
 
                         Case 4

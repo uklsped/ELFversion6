@@ -1,6 +1,7 @@
 ﻿Imports AjaxControlToolkit
 Imports System.Data.SqlClient
 Imports System.Data
+Imports System.Transactions
 
 Partial Public Class AcceptLinac
     Inherits System.Web.UI.UserControl
@@ -11,12 +12,17 @@ Partial Public Class AcceptLinac
     Private appstate As String
     Private suspstate As String
     Dim modalpopupextendergen As New ModalPopupExtender
-    'Public Event ClinicalApproved(ByVal sender As Object, ByVal e As CommandEventArgs)
-    Public Event ClinicalApproved()
+
+    Public Event ClinicalApproved(ByVal connectionString As String)
     Public Event AcknowledgeEnergies()
     Public Event NullPhysics()
     Public Event UpdateReturnButtons()
     Public Event ShowName(ByVal LastUserGroup As Integer)
+    Public Event EngRunuploaded(ByVal connectionString As String)
+    Public Event PreRunuploaded(ByVal connectionString As String)
+
+    Private LinacObj As LinacState
+
     Public Property Tabby() As String
         Get
             Return tablabel
@@ -50,9 +56,9 @@ Partial Public Class AcceptLinac
         End Get
 
     End Property
-    Public ReadOnly Property userpassword() As String
+    Public ReadOnly Property Userpassword() As String
         Get
-            userpassword = txtchkPWD.Text.Trim()
+            Userpassword = txtchkPWD.Text.Trim()
         End Get
     End Property
 
@@ -69,14 +75,15 @@ Partial Public Class AcceptLinac
         'We need to determine if the user is authenticated
         'Get the values entered by the user
         Dim loginUsername As String = username
-        Dim loginPassword As String = userpassword
-        'Dim Pager As Page = SPage
+        Dim loginPassword As String = Userpassword
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim Activity As String
         Dim modalidentifier As String
-        'If (Not Application(appstate) Is Nothing) Then
+
         Dim reload As String
         Dim clinstate As String = "Clinical"
-
+        LinacObj = Application(LinacName)
+        'reload = LinacObj.LinacStatus
         reload = DavesCode.Reuse.GetLastState(MachineName, 0)
         'from http://spacetech.dk/vb-net-string-compare-not-equal.html
         If Not (reload.Equals(clinstate)) Then
@@ -85,63 +92,111 @@ Partial Public Class AcceptLinac
             If myAppState <> 1 Then
                 Activity = DavesCode.Reuse.ReturnActivity(Reason)
 
-                'When tidying up don't now need to pass linac name to successful logon
-                Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, MachineName, Reason, textboxUser, passwordUser, logerrorbox, modalpop)
-                'If usergroupselected = 2 Then
-                '    usergroupname = "Engineer"
-                'ElseIf usergroupselected = 4 Then
-                '    usergroupname = "Physicist"
-                'End If
+                'This can only return here if there is a valid log in
+                Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, Reason, textboxUser, passwordUser, logerrorbox, modalpop)
+
                 If usergroupselected <> Nothing Then
-                    'what happens if machinestate fails?
 
+                    Try
+                        'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                        Using myscope As TransactionScope = New TransactionScope()
+                            'DavesCode.Reuse.MachineState(loginUsername, usergroupselected, MachineName, Reason, False)
+                            DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, Reason, False, connectionString)
+                            Select Case Tabby
+                                Case 1, 7
+                                    RaiseEvent EngRunuploaded(connectionString)
+                                Case 2
+                                    RaiseEvent PreRunuploaded(connectionString)
+                                Case 3
+                                    Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
+                                    output = "Clinical"
+                                    Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+                                    RaiseEvent ClinicalApproved(connectionString)
+                                Case 4, 5, 8
+                                    RaiseEvent UpdateReturnButtons()
+                                    'RaiseEvent ShowName(usergroupselected)
+                            End Select
+                            myscope.Complete()
+                        End Using
 
-                    DavesCode.Reuse.MachineState(loginUsername, usergroupselected, MachineName, Reason, False)
-                    modalidentifier = modalpopupextendergen.ID
-                    modalpop.Hide()
-                    If usergroupselected = 3 Then
-                        Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
-                    End If
-                    Application.Lock()
-                    Application(appstate) = 1
-                    Application.UnLock()
-                    output = Application(appstate)
-                    'eg from http://dotnetbites.wordpress.com/2014/02/15/call-parent-page-method-from-user-control-using-reflection/
-                    ' this is an instrumentation field that displays application number ie 0 or 1
-                    'Me.Page.GetType.InvokeMember("UpdateHiddenLAField", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
-                    Me.Page.GetType.InvokeMember("UpdateDisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {Activity})
-                    'this is instrumentation code that displays current username
-                    'Me.Page.GetType.InvokeMember("Updateuserlabel", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {loginUsername})
-                    If Tabby = 3 Then
-                        output = "Clinical"
-                        Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
-                        RaiseEvent ClinicalApproved()
-                    End If
-                    Select Case Tabby
+                        modalidentifier = modalpopupextendergen.ID
+                        modalpop.Hide()
+                        'moved if to case 3 above
+                        'If usergroupselected = 3 Then
+                        '    Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
+                        'End If
 
-                        Case 4, 5, 8
-                            RaiseEvent UpdateReturnButtons()
-                            RaiseEvent ShowName(usergroupselected)
-                    End Select
-                    RaiseEvent ShowName(usergroupselected)
+                        Application.Lock()
+                        Application(appstate) = 1
+                        Application.UnLock()
+                        output = Application(appstate)
+                        'eg from http://dotnetbites.wordpress.com/2014/02/15/call-parent-page-method-from-user-control-using-reflection/
+                        ' this is an instrumentation field that displays application number ie 0 or 1
+                        'Me.Page.GetType.InvokeMember("UpdateHiddenLAField", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+                        Me.Page.GetType.InvokeMember("UpdateDisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {Activity})
+                        'this is instrumentation code that displays current username
+                        'Me.Page.GetType.InvokeMember("Updateuserlabel", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {loginUsername})
+                        'If Tabby = 3 Then
+                        '    output = "Clinical"
+                        '    Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+                        '    RaiseEvent ClinicalApproved()
+                        'End If
+                        'moved following to using above
+                        'Select Case Tabby
+                        'Case 1
+                        '    RaiseEvent EngRunuploaded(connectionString)
+                        'Case 3
+                        '    output = "Clinical"
+                        '    Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+                        '    RaiseEvent ClinicalApproved()
+
+                        'Case 4, 5, 8
+                        '    RaiseEvent UpdateReturnButtons()
+                        '    RaiseEvent ShowName(usergroupselected)
+                        'End Select
+                        RaiseEvent ShowName(usergroupselected)
+                        '    myscope.Complete()
+                        'End Using
+                    Catch ex As Exception
+                        DavesCode.ReusePC.LogError(ex)
+                        RaiseLoadError()
+                    End Try
                 Else
                     'If it gets to here something has gone wrong with SuccessfulLogin()
                     modalidentifier = modalpopupextendergen.ID
                     modalpopupextendergen.Show()
+
                 End If
             Else
                 modalidentifier = modalpopupextendergen.ID
                 modalpop.Hide()
             End If
         Else
-            If Tabby = 3 Then
-                output = "Clinical"
-                Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
-                RaiseEvent ClinicalApproved()
-            End If
-            modalidentifier = modalpopupextendergen.ID
-            modalpop.Hide()
+            Try
+                If Tabby = 3 Then
+                    Using myscope As TransactionScope = New TransactionScope()
+                        RaiseEvent ClinicalApproved(connectionString)
+                        output = "Clinical"
+                        Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+                        modalidentifier = modalpopupextendergen.ID
+                        modalpop.Hide()
+                        myscope.Complete()
+                    End Using
+                End If
+            Catch ex As Exception
+                DavesCode.ReusePC.LogError(ex)
+                RaiseLoadError()
+            End Try
         End If
+    End Sub
+    Protected Sub RaiseLoadError()
+        Dim machinelabel As String = LinacName & "Page.aspx';"
+        Dim strScript As String = "<script>"
+        strScript += "alert('Problem Logging On. Please call Administrator');"
+        strScript += "window.location='"
+        strScript += machinelabel
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(AcceptOK, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
 
     Public Event LaunchControl(ByVal Control As Integer)
@@ -149,6 +204,7 @@ Partial Public Class AcceptLinac
         'AddHandler AcceptLinac.AcceptHandler, AddressOf BlankTabs
         appstate = "LogOn" + MachineName
         suspstate = "Suspended" + MachineName
+
     End Sub
     Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
         Response.Redirect("faultPage.aspx?val=LA1")
@@ -177,14 +233,10 @@ Partial Public Class AcceptLinac
                         AcceptOK.Text = "Acknowledge Energies and Accept Linac"
                     End If
                 End If
-                    MyString = "ModalPopupextendergen"
+                MyString = "ModalPopupextendergen"
                 Tabnumber = tablabel
                 MyString = MyString & Tabnumber
                 modalpopupextendergen.ID = MyString
-                'Dim TabSel As String
-                'TabSel = "FSet"
-                'TabSel = "FSet" & Tabnumber
-                'If Application(TabSel) = 1 Then
                 modalpopupextendergen.BehaviorID = MyString
                 modalpopupextendergen.TargetControlID = "label1"
                 modalpopupextendergen.PopupControlID = "Panel1"
@@ -206,6 +258,7 @@ Partial Public Class AcceptLinac
     End Sub
 
     Public Sub Btnchkcancel_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnchkcancel.Click
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         AcceptOK.Visible = False
         Dim reload As String
         Dim clinstate As String = "Clinical"
@@ -229,7 +282,7 @@ Partial Public Class AcceptLinac
                 Response.Redirect(returnstring)
             End If
         Else
-            RaiseEvent ClinicalApproved()
+            RaiseEvent ClinicalApproved(connectionString)
         End If
     End Sub
     Private Sub WaitButtons(ByVal WaitType As String)

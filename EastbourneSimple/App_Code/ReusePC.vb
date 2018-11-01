@@ -1,8 +1,11 @@
 ﻿Imports System.Data
 Imports System.Data.SqlClient
+Imports System.Diagnostics
 Imports System.IO
+Imports System.Net.Mail
 
 Namespace DavesCode
+
     Public Class ReusePC
 
 
@@ -13,8 +16,7 @@ Namespace DavesCode
             Dim LogInName As String = ""
             Dim conn As SqlConnection
             Dim comm As SqlCommand
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             Dim TextBox As String = TextBoxc
             Dim machinename As String = LinacName
             Dim tablabel As Integer = tabby 'this is inconsistent
@@ -65,7 +67,7 @@ Namespace DavesCode
 
             End If
             If Not lock Then
-                Reuse.UpdateActivityTable(machinename, LogOffStateID)
+                Reuse.UpdateActivityTable(machinename, LogOffStateID, connectionString)
             End If
 
             Dim minutesDuration As Decimal
@@ -202,7 +204,7 @@ Namespace DavesCode
 
         End Function
 
-        Public Shared Function InsertReportFault(ByVal Description As String, ByVal ReportedBy As String, ByVal DateReported As DateTime, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal Device As String, ByVal IncidentID As Integer, ByVal PatientID As String, ByVal ConcessionNumber As String) As Integer
+        Public Shared Function InsertReportFault(ByVal Description As String, ByVal ReportedBy As String, ByVal DateReported As DateTime, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal Device As String, ByVal IncidentID As Integer, ByVal PatientID As String, ByVal ConcessionNumber As String, ByVal Reportable As Boolean) As Integer
             Dim LastFault As Integer = IncidentID
             Dim conn As SqlConnection
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
@@ -247,16 +249,25 @@ Namespace DavesCode
                     incidentfault.Parameters("@ConcessionNumber").Value = ConcessionNumber
                     incidentfault.Parameters.Add("@OriginalFaultID", System.Data.SqlDbType.Int)
                     incidentfault.Parameters("@OriginalFaultID").Value = -1
+                    incidentfault.Parameters.Add("@RadiationIncident", System.Data.SqlDbType.Bit)
+                    incidentfault.Parameters("@RadiationIncident").Value = Reportable
                     incidentfault.ExecuteNonQuery()
                     incidentfault.Parameters.Clear()
 
                     ObjTransaction.Commit()
 
+                    'Catch Exception As SqlException
+                    '    ObjTransaction.Rollback()
+                    '    LogError(Exception)
+                    '    LastFault = -1
+                    'Catch E As InvalidOperationException
+                    '    LogError(E)
+                    '    LastFault = -1
                 Catch ex As Exception
 
                     ObjTransaction.Rollback()
                     LogError(ex)
-
+                    LastFault = -1
                 Finally
                     incidentfault.Parameters.Clear()
                     conn.Close()
@@ -430,7 +441,7 @@ Namespace DavesCode
             Return trackingID
         End Function
 
-        Public Shared Function InsertNewFault(ByVal State As String, ByVal LinacName As String, ByVal DateInserted As DateTime, ByVal Description As String, ByVal ReportedBy As String, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal PatientID As String, ByVal ConcessionDescription As String, ConcessionAction As String) As Integer
+        Public Shared Function InsertNewFault(ByVal State As String, ByVal LinacName As String, ByVal DateInserted As DateTime, ByVal Description As String, ByVal ReportedBy As String, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal PatientID As String, ByVal ConcessionDescription As String, ByVal ConcessionAction As String, ByVal RadiationIncident As Boolean) As Integer
             Dim time As DateTime = Now()
             Dim IncidentID As Integer = 0
             Dim LastFault As Integer = 0
@@ -518,7 +529,8 @@ Namespace DavesCode
                     incidentfault.Parameters("@ConcessionNumber").Value = ConcessionNumber
                     incidentfault.Parameters.Add("@OriginalFaultID", System.Data.SqlDbType.Int)
                     incidentfault.Parameters("@OriginalFaultID").Value = 0
-
+                    incidentfault.Parameters.Add("@RadiationIncident", System.Data.SqlDbType.Bit)
+                    incidentfault.Parameters("@RadiationIncident").Value = RadiationIncident
                     incidentfault.ExecuteNonQuery()
 
                     incidentfault.Parameters.Clear()
@@ -635,7 +647,8 @@ Namespace DavesCode
             If (Not Directory.Exists(path)) Then
                 Directory.CreateDirectory(path)
             End If
-            path = path + DateTime.Today.ToString("dd-MM-yy") + ".txt" ' Text File Name
+            Dim shortfilename As String = DateTime.Today.ToString("dd-MM-yy") + ".txt"
+            path = path + shortfilename ' Text File Name
             If (Not File.Exists(path)) Then
                 File.Create(path).Dispose()
             End If
@@ -643,6 +656,19 @@ Namespace DavesCode
                 writer.WriteLine(message)
                 writer.Close()
             End Using
+            'Send email
+            'Dim smtpClient As SmtpClient = New SmtpClient()
+            'Dim emessage As MailMessage = New MailMessage()
+
+            'Dim fromAddress As New MailAddress("VISIRSERVER@VISIRSERVER.bsuh.nhs.uk", "ELF")
+            'Dim toAddress As New MailAddress("david.spendley@bsuh.nhs.uk")
+            'emessage.From = fromAddress
+            'emessage.To.Add(toAddress)
+            'emessage.Subject = "ELF system error"
+            'emessage.Body = "Error file name: " + shortfilename
+            'smtpClient.Host = "10.216.8.19"
+            'smtpClient.Send(emessage)
+
         End Sub
 
         Public Shared Sub LogAnomaly(ByVal LinacName As String, ByVal Procedure As String, ByVal Anomaly As String)
@@ -676,6 +702,5 @@ Namespace DavesCode
         End Sub
 
     End Class
-
 
 End Namespace

@@ -17,7 +17,7 @@
             <td class="style2">
                 Energy:</td>
             <td class="style3">
-               <asp:DropDownList ID="DropDownListEnergy" runat="server">
+               <asp:DropDownList ID="DropDownListEnergy" runat="server" >
     </asp:DropDownList></td>
         </tr>
         <tr>
@@ -49,7 +49,28 @@
     <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" validationexpression="^\d{7}$" Display="Dynamic" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
             </td>
             </tr>
-
+ <%-- <tr>
+                   <td>
+                   <asp:Label ID="Label1" runat="server" Text="Radiation Incident?"></asp:Label>
+                       </td>
+                          <td>
+                                     <asp:RadioButtonList ID="RadioIncidentL" runat="server" AutoPostBack="false" ValidationGroup="IncidentL">
+                                        <asp:ListItem Text="No" Value="False"></asp:ListItem>
+                                        <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                              </td>
+                          <td>
+                        <asp:RequiredFieldValidator 
+            ID="RequiredFieldValidatorL"
+            runat="server"
+            ControlToValidate="RadioIncidentL"
+            ErrorMessage="Please complete Radiation Incident Selection"
+                            Display="Dynamic"
+                            validationgroup="IncidentL"
+            >
+        </asp:RequiredFieldValidator>
+                       </td>
+              </tr>--%>
     </table>
    <%-- <table style="width:300px;">
         <tr>
@@ -111,17 +132,62 @@
               <asp:TextBox ID="PatientIDBoxT" runat="server" ></asp:TextBox>
                  <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ControlToValidate="PatientIDBoxT" validationexpression="^\d{7}$" Display="Dynamic" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
               </td>
-              </tr>
+                   </tr>
+                     <%-- <tr>
+                   <td>
+                   <asp:Label ID="Label2" runat="server" Text="Radiation Incident?"></asp:Label>
+                       </td>
+                          <td>
+                                     <asp:RadioButtonList ID="RadioIncidentT" runat="server" AutoPostBack="false" ValidationGroup="IncidentT">
+                                        <asp:ListItem Text="No" Value="False"></asp:ListItem>
+                                        <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                              </td>
+                          <td>
+                        <asp:RequiredFieldValidator 
+            ID="ReqiredFieldValidatorT"
+            runat="server"
+            ControlToValidate="RadioIncidentT"
+            ErrorMessage="Please complete Radiation Incident Selection"
+                            Display="Dynamic"
+                            validationgroup="IncidentT"
+            >
+        </asp:RequiredFieldValidator>
+                       </td>
+              </tr>--%>
              
              
     </table>
     </asp:View>
 
 </asp:MultiView>
+<div>
  <table style="width:300px;">
+      <tr>
+                   <td>
+                   <asp:Label ID="Label2" runat="server" Text="Radiation Incident?"></asp:Label>
+                       </td>
+                          <td>
+                                     <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false" ValidationGroup="Incident">
+                                        <asp:ListItem Text="No" Value="False"></asp:ListItem>
+                                        <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                              </td>
+                          <td>
+                        <asp:RequiredFieldValidator 
+            ID="ReqiredFieldValidator1"
+            runat="server"
+            ControlToValidate="RadioIncident"
+            ErrorMessage="Please complete Radiation Incident Selection"
+                            Display="Dynamic"
+                            validationgroup="Incident"
+            >
+        </asp:RequiredFieldValidator>
+                       </td>
+              </tr>
         <tr>
             <td class="style1">
-                <asp:Button ID="SaveRepeatFault" runat="server" Text="Save Repeat Fault" CausesValidation="false"/>
+                <asp:Button ID="SaveRepeatFault" runat="server" Text="Save Repeat Fault" CausesValidation="false" />
         </td>
         <td>
             <asp:Button ID="CancelFault" runat="server" Text="Cancel" CausesValidation="false"/>
@@ -129,3 +195,4 @@
         </td>
         </tr>
         </table>
+    </div>

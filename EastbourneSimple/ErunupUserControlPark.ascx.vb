@@ -2,6 +2,7 @@
 Imports System.Data
 Imports AjaxControlToolkit
 Imports System.Web.UI.Page
+Imports DavesCode
 
 Partial Class ErunupUserControlPark
     Inherits System.Web.UI.UserControl
@@ -72,7 +73,8 @@ Partial Class ErunupUserControlPark
     End Sub
 
     Protected Sub UserApprovedEvent(ByVal Tabset As String, ByVal Userinfo As String)
-
+        Dim RunUp As EngRunup
+        RunUp = GetEngRunup()
         Dim tabcontrol As String = Tabset
         Dim Action As String = Application(actionstate)
         Dim machinelabel As String = LinacName & "Page.aspx';"
@@ -128,6 +130,14 @@ Partial Class ErunupUserControlPark
 
         End If
     End Sub
+
+    Private Function GetEngRunup() As EngRunup
+        Dim RunUp As EngRunup
+        If Cache("EngRunup") Is Nothing Then
+            'RunUp = DataListItem.GetEngRunup()
+        End If
+        Return RunUp
+    End Function
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         WaitButtons("Tech")
 
@@ -149,7 +159,7 @@ Partial Class ErunupUserControlPark
 
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName
-            Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
+        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = LinacName
 
         Dim objDefect As UserControl = Page.LoadControl("DefectSavePark.ascx")

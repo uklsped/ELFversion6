@@ -31,6 +31,9 @@
 <%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc12" %>
 
 
+<%@ Register src="controls/EngApproveuc.ascx" tagname="EngApproveuc" tagprefix="uc11" %>
+
+
 <%--<%@ Register src="CommitData.ascx" tagname="CommitData" tagprefix="uc3" %>--%>
 
 
@@ -45,88 +48,6 @@
 
 <asp:Label ID="CheckUser" runat="server" Text=""  visible="true" display="none" causesvalidation="false"></asp:Label>
       
-
-        
-            <script type="text/javascript">
-                //    function pageLoad() {
-                //    var popup = $find('check_ModalPopupExtender');
-                //popup.add_showing(calledWhenShown);
-                //        if (popup != null) {
-                //            popup.show();
-                //        }
-                //     }
-
-               
-                function yaag() {
-
-                    
-                    pipup.add_showing(calledWhenShown);
-                    return true;
-                }
-                
-
-
-                function runup() {
-                    var apopup = $find('check_ModalPopupExtender');
-
-                    apopup.add_showing(rkunup);
-
-                }
-                function rkunup() {
-                    alert('I am called!');
-                }
-
-
-
-                function calledWhenShown() {
-
-                    alert('I am called when the ModalPopup is shown');
-
-                }
-
-                function ClearUI() {
-                    $find("textvalidator1").hide();
-                    $get("txtUsername").value = "";
-                }
-
-                function IsValid() {
-                    var textbox = $get("txtUsername");
-                    if (textbox.value == "") {
-                        return false;
-                    }
-                    else
-                        return true;
-                }
-                function ClosePopup() {
-                    if (IsValid()) {
-                        
-                        alert("You have given your name");
-                        ClearUI();
-                    }
-                }
-
-                function DoClose() {
-                    // close the modal popup
-                    
-                    
-                    $find('Buggerit_ModalPopupExtender').hide();
-
-                    // return true so that submit will happen
-                    return true;
-                }
-                function CheckAllEmp(Checkbox) {
-                    var GridView1 = document.getElementById("<%=GridView1.ClientID %>");
-                    for (i = 1; i < GridView1.rows.length; i++) {
-                        if (GridView1.rows[i].cells[1].getElementsByTagName("RowlevelCheckBox")[0].enabled) {
-                            GridView1.rows[i].cells[1].getElementsByTagName("INPUT")[0].checked = Checkbox.checked;
-                        }
-                    }
-                }
-
-
-
-            </script>
-
  <div>
  
        <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
@@ -136,7 +57,8 @@
                Width="1400px">
                <asp:TableRow ID="r1" runat="server">
                    <asp:TableCell ID="c1" runat="server" Width="250px" HorizontalAlign="Left">
-                    <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" >
+                       <asp:PlaceHolder ID="PlaceHolderEnergyApprove" runat="server"></asp:PlaceHolder>
+                   <%-- <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" >
             <Columns>
             
                 <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
@@ -155,20 +77,21 @@
             </ItemTemplate>
             </asp:TemplateField>
             </Columns>
-        </asp:GridView>
+        </asp:GridView>--%>
+
 </asp:TableCell>
-                   <asp:TableCell ID="c2" runat="server" Width="50px">
+                 <%--  <asp:TableCell ID="c2" runat="server" Width="50px">
                        
                    <asp:Button ID="engHandoverButton" runat="server" Text="Approve Energies" causesvalidation="false"  Height="150px" BackColor="#FFCC00" />
 
 
 </asp:TableCell>
                    <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="250px">
-                               <%--<legend align="top" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Run-up Comments</legend>--%>
+                               <legend align="top" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Run-up Comments</legend>
                              <asp:TextBox ID="CommentBox" runat="server" MaxLength="250" Rows="5" 
                 TextMode="multiline"  Width="100px" Height="100px" AutoPostBack="true"></asp:TextBox>
 
-                       </asp:TableCell>
+                       </asp:TableCell>--%>
                        <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
@@ -244,7 +167,7 @@
 </asp:UpdatePanel>
 
 
- <asp:UpdatePanel ID="UpdatePanel4" runat="server">
+<asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>
             <asp:PlaceHolder ID="PlaceHolder4" runat="server">
             <uc4:WriteDatauc ID="WriteDatauc1" LinacName="Linac" UserReason="0"  Tabby="TabNumber"  WriteName="EngData"   Visible="false" runat="server" />
@@ -254,17 +177,9 @@
             
             
  <div style="background-color: #FFFF66; background-repeat: no-repeat; border-style: solid; border-width: thin">        
+    
      
-   
-     
-     
-     
-     
-     
-   
-     
-     
-     
+    
  <uc5:ViewCommentsuc ID="ViewCommentsuc1"  LinacName="" CommentSort="er" runat="server" />
 </div>
 <asp:PlaceHolder ID="PlaceHolder7" runat="server">

@@ -1,6 +1,7 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="Traininguc.ascx.vb"
     Inherits="Traininguc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc1" %>
 <%--<%@ Register Src="ErunupUserControl.ascx" TagName="ErunupUserControl" TagPrefix="uc1" %>--%>
 <%@ Register Src="Singlemachinefaultuc.ascx" TagName="Singlemachinefaultuc" TagPrefix="uc2" %>
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc3" %>
@@ -61,6 +62,7 @@
                </asp:TableCell>
             </asp:TableRow>
         </asp:Table>
+        
         <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1038px">
             <asp:TableRow ID="t2r1" runat="server">
                 <asp:TableCell ID="t2c1" runat="server">

@@ -4,7 +4,11 @@
 
 
 
-<%@ Register src="ErunupUserControl.ascx" tagname="ErunupUserControl" tagprefix="uc1" %>
+<%@ Register src="ErunupUserControlCommon.ascx" tagname="ErunupUserControlCommon" tagprefix="uc1" %>
+
+
+
+<%--<%@ Register src="ErunupUserControl.ascx" tagname="ErunupUserControl" tagprefix="uc1" %>--%>
 <%@ Register src="Preclinusercontrol.ascx" tagname="Preclinusercontrol" tagprefix="uc2" %>
 <%@ Register src="ClinicalUserControl.ascx" tagname="ClinicalUserControl" tagprefix="uc3" %>
 
@@ -235,7 +239,8 @@ LA1 Status
 <asp:Button ID="TabButton1" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent1" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "LA1"  Tabby="1" UserReason = "1" visible="false" />
-<uc1:ErunupUserControl ID="ErunupUserControl1" LinacName="LA1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server"  />
+    <uc1:ErunupUserControlCommon ID="ErunupUserControl1" LinacName="LA1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server" />
+<%--<uc1:ErunupUserControl ID="ErunupUserControl1" LinacName="LA1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server"  />--%>
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -279,8 +284,8 @@ LA1 Status
 <ContentTemplate>
 <asp:Button ID="TabButton3" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
 <asp:Panel ID="TabContent3" runat="server" Visible="false">
-<uc3:ClinicalUserControl ID="ClinicalUserControl1"  LinacName="LA1" DataName="ClinData" runat="server" visible="false"/>
 <uc4:AcceptLinac ID="AcceptLinac3" LinacName="LA1" UserReason="3" Tabby="3" runat="server"  />
+<uc3:ClinicalUserControl ID="ClinicalUserControl1"  LinacName="LA1" DataName="ClinData" runat="server" visible="false"/>
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -352,7 +357,8 @@ LA1 Status
 <ContentTemplate><asp:Button ID="TabButton7" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent7" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "LA1"  Tabby="7" UserReason = "9" visible="false" />
-<uc1:ErunupUserControl ID="ErunupUserControl2" LinacName="LA1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />
+ <uc1:ErunupUserControlCommon ID="ErunupUserControl2" LinacName="LA1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
+<%--<uc1:ErunupUserControl ID="ErunupUserControl2" LinacName="LA1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />--%>
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -374,5 +380,6 @@ LA1 Status
 </ContentTemplate>
 </asp:TabPanel>      
     </asp:TabContainer>
+    
 </asp:Content>
 

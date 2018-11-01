@@ -4,7 +4,7 @@
 
 
 
-<%@ Register src="ErunupUserControlEast.ascx" tagname="ErunupUserControlEast" tagprefix="uc1" %>
+<%--<%@ Register src="ErunupUserControlEast.ascx" tagname="ErunupUserControlEast" tagprefix="uc1" %>--%>
 <%@ Register src="Preclinusercontrol.ascx" tagname="Preclinusercontrol" tagprefix="uc2" %>
 <%@ Register src="ClinicalUserControl.ascx" tagname="ClinicalUserControl" tagprefix="uc3" %>
 
@@ -30,6 +30,11 @@
 
 
 <%@ Register src="RegisterUseruc.ascx" tagname="RegisterUseruc" tagprefix="uc13" %>
+
+
+
+
+<%@ Register src="ErunupUserControlCommon.ascx" tagname="ErunupUserControlCommon" tagprefix="uc14" %>
 
 
 
@@ -238,7 +243,8 @@ E1 Status
 <asp:Button ID="TabButton1" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent1" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "E1"  Tabby="1" UserReason = "1" visible="false" />
-<uc1:ErunupUserControlEast ID="ErunupUserControl1" LinacName="E1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server"  />
+<%--<uc1:ErunupUserControlEast ID="ErunupUserControl1" LinacName="E1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server"  />--%>
+<uc14:ErunupUserControlCommon ID="ErunupUserControlCommon1" LinacName="E1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server" />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -355,7 +361,8 @@ E1 Status
 <ContentTemplate><asp:Button ID="TabButton7" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent7" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "E1"  Tabby="7" UserReason = "9" visible="false" />
-<uc1:ErunupUserControlEast ID="ErunupUserControl2" LinacName="E1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />
+<%--<uc1:ErunupUserControlEast ID="ErunupUserControl2" LinacName="E1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server"  />--%>
+<uc14:ErunupUserControlCommon ID="ErunupUserControlCommon2" LinacName="E1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -377,5 +384,6 @@ E1 Status
 </ContentTemplate>
 </asp:TabPanel>      
     </asp:TabContainer>
+    
 </asp:Content>
 

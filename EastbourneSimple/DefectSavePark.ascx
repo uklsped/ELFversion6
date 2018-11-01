@@ -90,6 +90,7 @@
                         <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
                     </td>
                 </tr>
+                
             </table>
             <table>
                 <tr>
@@ -99,12 +100,17 @@
                             HorizontalAlign="Left"
                             runat="Server">
                             <asp:MultiView ID="FaultTypeSave" ActiveViewIndex="-1" runat="server">
-                                <asp:View ID="RecoverableView" runat="server">recoverable
+                                <asp:View ID="RecoverableView" runat="server">
                                    <asp:Button ID="SaveDefectButton" runat="server" Text="Save" ValidationGroup="defect" CausesValidation="true" />
                                 </asp:View>
-                                <asp:View ID="UnRecoverableView" runat="server">Unrecoverable
+                                <asp:View ID="UnRecoverableView" runat="server">
                                     <asp:Label ID="Label1" runat="server" Text="Fault Closed?"></asp:Label>
                                     <asp:RadioButtonList ID="FaultOpenClosed" runat="server" AutoPostBack="True">
+                                        <asp:ListItem Text="No" Value="-1"></asp:ListItem>
+                                        <asp:ListItem Text="Yes" Value="1"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                                    <asp:Label ID="Label2" runat="server" Text="Radiation Incident?"></asp:Label>
+                                     <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false">
                                         <asp:ListItem Text="No" Value="-1"></asp:ListItem>
                                         <asp:ListItem Text="Yes" Value="1"></asp:ListItem>
                                     </asp:RadioButtonList>
@@ -120,9 +126,12 @@
             </table>
         </ContentTemplate>
     </asp:UpdatePanel>
+    <br />
+    <br />
 
-    Today's Repeat Faults
+   
                                    <div style="background-color: Green; height: 30px; width: 400px; margin: 0; padding: 0">
+                                        Today's Repeat Faults
                                        <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table3"
                                            style="font-family: Arial; font-size: 10pt; width: 400px; color: white; border-collapse: collapse; height: 100%;">
                                            <tr>

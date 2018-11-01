@@ -54,8 +54,11 @@
                         Enabled="False" Height="150px" />
                 </asp:TableCell>
                 <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="150px">
-                    <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
+                    <%--<fieldset style="text-align:left;">--%>
+                        <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
                         Maintenance Comments</legend>
+
+                    <%--</fieldset>--%>
                     <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine"
                         Text="">
                     </asp:TextBox>

@@ -11,6 +11,9 @@
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc6" %>
 
 
+<%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc7" %>
+
+
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
 <%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
 
@@ -285,13 +288,21 @@
 
                        
 
+                       
+
+                       
+
+                       
+
+                       
+
                        <asp:UpdatePanel ID="faultupdatePanel" runat="server" Visible="true">
         <ContentTemplate>
         <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
          </ContentTemplate>
         </asp:UpdatePanel>
         <asp:PlaceHolder ID="PlaceHolder4" runat="server">
-        <uc2:WriteDatauc ID="WriteDatauc2" LinacName="" UserReason="3"  Tabby="handover"  WriteName="Handover" visible="false" runat="server" />
+        <uc2:WriteDatauc ID="WriteDatauc2" LinacName="" UserReason="3"  Tabby="3"  WriteName="Handover" visible="false" runat="server" />
          </asp:PlaceHolder>
              
 
@@ -304,7 +315,7 @@
    <div>
            <br />
                 <asp:PlaceHolder ID="PlaceHolder2" runat="server" Visible="true">
-        <uc2:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="3"  Tabby="3"  WriteName="ClinData" Visible="false" runat="server" />
+        <%--<uc2:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="3"  Tabby="3"  WriteName="ClinData" Visible="false" runat="server" />--%>
         </asp:PlaceHolder>
 </div>
 <asp:HiddenField ID="HiddenFieldLinacState" visible ="true" runat="server" />

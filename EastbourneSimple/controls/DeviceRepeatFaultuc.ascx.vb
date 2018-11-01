@@ -11,21 +11,22 @@ Partial Class controls_DeviceRepeatFaultuc
     Private ConcessionNumber As String
     Const RepeatFault As String = "Updatefault"
     Const CancelFaultReturn As String = "Cancel"
+    Const EMPTYSTRING As String = ""
     'Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
     Public Event UpdateRepeatFault(ByVal Tab As String, ByVal User As String)
-
+    Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
         Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
 
         If Device Like "T?" Then
-            TomoLoad()
-            MultiView1.SetActiveView(Tomo)
-        Else
-            LinacLoad()
-            MultiView1.SetActiveView(Linac)
-        End If
+                TomoLoad()
+                MultiView1.SetActiveView(Tomo)
+            Else
+                LinacLoad()
+                MultiView1.SetActiveView(Linac)
+            End If
 
     End Sub
     Protected Sub LinacLoad()
@@ -34,7 +35,7 @@ Partial Class controls_DeviceRepeatFaultuc
         CollimatorAngleBox.Text = String.Empty
         DescriptionBox.Text = String.Empty
         PatientIDBox.Text = String.Empty
-
+        RadioIncident.SelectedIndex = -1
         conn = New SqlConnection(connectionString)
         'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
         comm = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn)
@@ -44,7 +45,9 @@ Partial Class controls_DeviceRepeatFaultuc
         AreaBox.Text = comm.ExecuteScalar()
 
         conn.Close()
+
         AddEnergyItem()
+
     End Sub
     Protected Sub TomoLoad()
         DescriptionBoxT.Text = String.Empty
@@ -52,6 +55,7 @@ Partial Class controls_DeviceRepeatFaultuc
         ErrorTextBox.Text = String.Empty
         Accuray.Text = String.Empty
         RadAct.Text = String.Empty
+        RadioIncident.SelectedIndex = -1
         conn = New SqlConnection(connectionString)
         'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
         comm = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn) 'Corrective action
@@ -67,7 +71,7 @@ Partial Class controls_DeviceRepeatFaultuc
     Protected Sub AddEnergyItem()
         'from http://www.aspsnippets.com/Articles/Programmatically-add-items-to-DropDownList-on-Button-Click-in-ASPNet-using-C-and-VBNet.aspx
         'and http://www.yaldex.com/asp_tutorial/0596004877_progaspdotnet2-chp-5-sect-7.html
-
+        DropDownListEnergy.Items.Clear()
         'This is a mad way of doing it but I don't know how to dim the energy list without constructing it at the same time
         Select Case Device
             Case "LA1"
@@ -96,10 +100,14 @@ Partial Class controls_DeviceRepeatFaultuc
         DropDownListEnergy.SelectedIndex = -1
     End Sub
     Private Sub SaveRepeatFault_Click1(sender As Object, e As EventArgs) Handles SaveRepeatFault.Click
-        SaveRepeatFaultbutton()
+
+        Page.Validate("Incident")
+        If Page.IsValid Then
+            SaveRepeatFaultbutton()
+        End If
     End Sub
     Public Sub SaveRepeatFaultbutton()
-        'Dim faultid As Integer
+        Dim faultid As Integer
         Dim Energy As String = String.Empty
         Dim Description As String = String.Empty
         Dim ReportedBy As String = String.Empty
@@ -108,11 +116,12 @@ Partial Class controls_DeviceRepeatFaultuc
         Dim CollimatorAngle As String = String.Empty
         Dim GantryAngle As String = String.Empty
         Dim PatientId As String = String.Empty
-
+        Dim RadioIncidentSelected As String
         If Device Like "T?" Then
             Area = ErrorTextBox.Text
             Description = DescriptionBoxT.Text
             PatientId = PatientIDBoxT.Text
+
         Else
             Energy = DropDownListEnergy.SelectedItem.Text
             If Energy = "Select" Then
@@ -123,7 +132,9 @@ Partial Class controls_DeviceRepeatFaultuc
             CollimatorAngle = CollimatorAngleBox.Text
             Description = DescriptionBox.Text
             PatientId = PatientIDBox.Text
+
         End If
+        RadioIncidentSelected = RadioIncident.SelectedItem.Value
 
         conn = New SqlConnection(connectionString)
 
@@ -138,11 +149,21 @@ Partial Class controls_DeviceRepeatFaultuc
         'Dim LinacStatusIDs As String = obj.ToString()
         ConcessionNumber = CStr(obj)
         conn.Close()
-        DavesCode.ReusePC.InsertReportFault(Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle, Device, IncidentID, PatientId, ConcessionNumber)
-
-        RaiseEvent UpdateRepeatFault(RepeatFault, ReportedBy)
+        faultid = DavesCode.ReusePC.InsertReportFault(Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle, Device, IncidentID, PatientId, ConcessionNumber, RadioIncidentSelected)
+        If faultid > 0 Then
+            RaiseEvent UpdateRepeatFault(RepeatFault, ReportedBy)
+        Else
+            RaiseError()
+        End If
     End Sub
-
+    Protected Sub RaiseError()
+        Dim strScript As String = "<script>"
+        'DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, Device, -1000, EMPTYSTRING, "System Error", False)
+        'RaiseEvent UpDateDefectDisplay(Device)
+        strScript += "alert('Problem Updating Fault. Please call Engineering');"
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(SaveRepeatFault, Me.GetType(), "JSCR", strScript.ToString(), False)
+    End Sub
     Protected Sub CancelFault_Click(sender As Object, e As EventArgs) Handles CancelFault.Click
         RaiseEvent UpdateRepeatFault(CancelFaultReturn, String.Empty)
     End Sub

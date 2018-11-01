@@ -735,7 +735,9 @@ Partial Public Class E2page
                             Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                             Dim outputn As String = Application(appstate)
                             If outputn = 1 Then
-                                clinicalcontrol.ClinicalApprovedEvent()
+                                'should have a transaction
+                                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                clinicalcontrol.ClinicalApprovedEvent(connectionString)
                             End If
 
                         Case 4

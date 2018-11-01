@@ -233,7 +233,7 @@ Partial Class ViewOpenFaults
                         exists = DavesCode.ReusePC.InsertNewConcession(ConcessionDescription, LinacName, incidentID, Userinfo, ConcessionAction)
                         If exists = -1 Then
                             'error message This inserts a fault so that it can be looked at later
-                            DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, LinacName, -1000, EMPTYSTRING, "System Error")
+                            DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, LinacName, -1000, EMPTYSTRING, "System Error", False)
                             RaiseEvent UpDateDefectDisplay(LinacName)
                             strScript += "alert('Problem Updating Fault. Please call Administrator');"
                             strScript += "</script>"
@@ -951,9 +951,9 @@ Partial Class ViewOpenFaults
 
     Protected Sub RaiseError()
         Dim strScript As String = "<script>"
-        DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, LinacName, -1000, EMPTYSTRING, "System Error")
-        RaiseEvent UpDateDefectDisplay(LinacName)
-        strScript += "alert('Problem Updating Fault. Please call Administrator');"
+        'DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, LinacName, -1000, EMPTYSTRING, "System Error", False)
+        'RaiseEvent UpDateDefectDisplay(LinacName)
+        strScript += "alert('Problem Updating Fault. Please call Engineer');"
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(SaveAFault, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
@@ -981,7 +981,8 @@ Partial Class ViewOpenFaults
     Protected Sub CommentBoxButton_Click(sender As Object, e As EventArgs) Handles CommentBoxButton.Click
         Dim phrase As String
         phrase = CType(sender, String)
-        CommentBox1.Text = phrase
+        'CommentBox1.Text = phrase
         CommentBox1.Visible = True
+        ForceFocus(CommentBox1)
     End Sub
 End Class

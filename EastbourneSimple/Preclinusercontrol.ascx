@@ -10,6 +10,7 @@
 <%@ Register src="ViewCommentsuc.ascx" tagname="ViewCommentsuc" tagprefix="uc5" %>
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc6" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>
+<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
       
     <script type="text/javascript">
@@ -303,6 +304,8 @@ function DoClose() {
          </asp:PlaceHolder>
                           
             <br />
+           
+           
            
            <uc5:ViewCommentsuc ID="ViewCommentsuc1" linacName="" CommentSort="pcr" runat="server" />
                           

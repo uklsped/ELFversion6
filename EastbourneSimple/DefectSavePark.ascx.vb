@@ -15,6 +15,8 @@ Partial Class DefectSavePark
     Const UnRecoverableID As Integer = -23
     Const FaultAnswerNo As String = "No"
     Const FaultAnswerYes As String = "Yes"
+    Const RadioIncidentAnswerYes As String = "Yes"
+    Const RadioIncidentAnswerNo As String = "No"
     Const Concession As String = "Concession"
     Const Closed As String = "Closed"
     Const Radiographer As Integer = 3
@@ -237,6 +239,7 @@ Partial Class DefectSavePark
         FaultDescription.Text = Nothing
         PatientIDBox.Text = Nothing
         RadAct.Text = Nothing
+
     End Sub
 
 
@@ -309,15 +312,15 @@ Partial Class DefectSavePark
         Dim usergroupselected As Integer = 0
         Dim LastIncident As Integer
         Dim IncidentID As Integer
-        Dim Selected As String = EMPTYSTRING
+        Dim FaultSelected As String = EMPTYSTRING
 
         Dim Status As String = EMPTYSTRING
 
         LastIncident = HiddenField1.Value
         If LastIncident = UnRecoverableID Then
 
-            Selected = FaultOpenClosed.SelectedItem.Text
-            If Selected.Equals(FaultAnswerYes) Then
+            FaultSelected = FaultOpenClosed.SelectedItem.Text
+            If FaultSelected.Equals(FaultAnswerYes) Then
                 usergroupselected = DavesCode.Reuse.GetRole(UserInfo)
                 If usergroupselected.Equals(Radiographer) Then
                     IncidentID = CreateNewFault(UserInfo, "Concession")
@@ -330,7 +333,7 @@ Partial Class DefectSavePark
                 End If
 
                 'Unrecoverable fault isn't closed
-            ElseIf Selected.Equals(FaultAnswerNo) Then
+            ElseIf FaultSelected.Equals(FaultAnswerNo) Then
                 'Write equivalent of report fault assume only one fault at a time at the moment
                 'Close current tab
                 Dim result As String
@@ -367,7 +370,7 @@ Partial Class DefectSavePark
 
         Else 'This is a recoverable fault - So won't have concession number?
             IncidentID = HiddenField1.Value
-            DavesCode.ReusePC.InsertReportFault(FaultDescription.Text, UserInfo, DateTime.Parse(HiddenField2.Value), Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, LinacName, IncidentID, PatientIDBox.Text, ConcessionNumber)
+            DavesCode.ReusePC.InsertReportFault(FaultDescription.Text, UserInfo, DateTime.Parse(HiddenField2.Value), Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, LinacName, IncidentID, PatientIDBox.Text, ConcessionNumber, False)
             BindDefectData()
         End If
 
@@ -413,8 +416,9 @@ Partial Class DefectSavePark
         Dim Assigned = EMPTYSTRING
         Dim TrackingComment = EMPTYSTRING
         Dim TrackAction = EMPTYSTRING
-
-        IncidentID = DavesCode.ReusePC.InsertNewFault(State, LinacName, DateInserted, Description, UserInfo, Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, PatientIDBox.Text, FaultDescription.Text, RadAct.Text)
+        Dim RadioIncidentSelected As String = EMPTYSTRING
+        RadioIncidentSelected = RadioIncident.SelectedItem.Value
+        IncidentID = DavesCode.ReusePC.InsertNewFault(State, LinacName, DateInserted, Description, UserInfo, Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, PatientIDBox.Text, FaultDescription.Text, RadAct.Text, RadioIncidentSelected)
         Return IncidentID
     End Function
 

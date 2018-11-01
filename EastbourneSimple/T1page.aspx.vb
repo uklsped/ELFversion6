@@ -24,7 +24,8 @@ Partial Public Class T1page
     Private clinicalstate As String = "ClinicalOnT1"
     Private treatmentstate As String = "TreatmentT1"
     Private activetabstate As String = "ActTabT1"
-    Private runupcontrolId As String = "ERunupUserControl1"
+    'Private runupcontrolId As String = "ERunupUserControl1"
+    Private runupcontrolId As String = "ErunupUserControlCommon1"
     Private preclincontrolID As String = "PreclinUserControl1"
     Private ClinicalUserControlID As String = "ClinicalUserControl1"
     Private PlannedMaintenanceControlID As String = "PlannedMaintenanceuc1"
@@ -203,7 +204,8 @@ Partial Public Class T1page
         AddHandler LinacStatusuc1.Resetstatus, AddressOf LaunchTab
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
-        AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
+        'AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
+        AddHandler ErunupUserControlCommon1.BlankGroup, AddressOf SetUser
         Dim ResetDay As String = Nothing
 
 
@@ -735,7 +737,9 @@ Partial Public Class T1page
                             Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                             Dim outputn As String = Application(appstate)
                             If outputn = 1 Then
-                                clinicalcontrol.ClinicalApprovedEvent()
+                                'should have a transaction
+                                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                clinicalcontrol.ClinicalApprovedEvent(connectionString)
                             End If
 
                         Case 4
@@ -928,7 +932,8 @@ Partial Public Class T1page
                 UserControlid = ""
                 textcomment = Nothing
             Case 1
-                UserControlid = "ErunupUserControl1"
+                'UserControlid = "ErunupUserControl1"
+                UserControlid = "ErunupUserControlCommon1"
             Case 2
                 UserControlid = "Preclinusercontrol1"
                 'Case 3

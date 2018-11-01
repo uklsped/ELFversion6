@@ -4,6 +4,7 @@ Imports AjaxControlToolkit
 Imports System.Web.UI.Page
 Partial Class Preclinusercontrol
     Inherits System.Web.UI.UserControl
+    Private mpContentPlaceHolder As ContentPlaceHolder
     Private appstate As String
     Private suspstate As String
     Private actionstate As String
@@ -13,7 +14,7 @@ Partial Class Preclinusercontrol
     Private Todaydefect As DefectSave
     Private BoxChanged As String
     Private tabstate As String
-
+    Dim accontrol As AcceptLinac
     Public Property LinacName() As String
     Public Property DataName() As String
 
@@ -34,6 +35,20 @@ Partial Class Preclinusercontrol
 
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
         AddHandler ConfirmPage1.ConfirmExit, AddressOf ConfirmExitEvent ' this is if imaging wasn't selected
+        Dim tabcontainer1 As TabContainer
+        Page = Me.Page
+        mpContentPlaceHolder =
+        CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        If Not mpContentPlaceHolder Is Nothing Then
+            tabcontainer1 = CType(mpContentPlaceHolder.
+                FindControl("tcl"), TabContainer)
+            If Not tabcontainer1 Is Nothing Then
+                Dim panelcontrol As TabPanel = tabcontainer1.FindControl("TabPanel2")
+                accontrol = panelcontrol.FindControl("AcceptLinac2")
+                AddHandler accontrol.PreRunuploaded, AddressOf Preclinloaded
+
+            End If
+        End If
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
@@ -42,6 +57,83 @@ Partial Class Preclinusercontrol
         BoxChanged = "PreCBoxChanged" + LinacName
         tabstate = "ActTab" + LinacName
 
+    End Sub
+    Protected Sub Preclinloaded(ByVal connectionString As String)
+        BindGridview2(connectionString)
+        BindComments(connectionString)
+        SetImaging(connectionString)
+
+    End Sub
+    Private Sub BindGridview2(ByVal connectionString As String)
+        Dim SqlDateSourceGridView As New SqlDataSource()
+        Dim query As String = "select HandoverId, MV6,ISNULL(MV6FFF, 0) as ""MV6FFF"",MV10,ISNULL(MV10FFF, 0) as ""MV10FFF"",ISNULL(MeV4,0) as ""MeV4"", MEV6, MEV8, MeV10, MeV12, MeV15, MeV18, MeV20, Comment, LogOutName, LogOutDate, linac, LogInDate, Duration, LogInStatusID, Approved, LogInName, LogOutStatusID From handoverenergies Where handoverid = (Select Max(handoverid) As mancount from [handoverenergies] where linac=@linac)"
+        SqlDateSourceGridView = QuerySqlConnection(LinacName, query, connectionString)
+        GridView2.DataSource = SqlDateSourceGridView
+        GridView2.DataBind()
+    End Sub
+    Private Sub BindComments(ByVal connectionString As String)
+        Dim SqlDateSourceComment As New SqlDataSource()
+        Dim query As String = "select e.comment from handoverenergies e  where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
+        SqlDateSourceComment = QuerySqlConnection(LinacName, query, connectionString)
+        GridViewComments.DataSource = SqlDateSourceComment
+        GridViewComments.DataBind()
+
+    End Sub
+    Protected Sub SetImaging(ByVal connectionString As String)
+        'This had to be changed to add the imaging modalities for E1 and E2 - added 44 and 45 and 56 and 57. Altered this 2/10 because energyids are not always
+        'sequential. Changed to check energy instead which is what is used successfully elsewhere
+        'SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac= @linac and EnergyID in (29,30,31,32,33,44,45, 56,57)"
+        Dim SqlDataSource1 As New SqlDataSource With {
+            .ID = "SqlDataSource1",
+            .ConnectionString = connectionString,
+            .SelectCommand = "SELECT * FROM [physicsenergies] where linac=@linac and Energy in ('iView','XVI')"
+        }
+
+        SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+        SqlDataSource1.SelectParameters.Add("linac", LinacName)
+
+        GridViewImage.DataSource = SqlDataSource1
+        GridViewImage.DataBind()
+
+        Dim conn As SqlConnection
+        Dim comm As SqlCommand
+        Dim reader As SqlDataReader
+        Dim count As Integer = 0
+
+        conn = New SqlConnection(connectionString)
+        'This had to be changed to add the imaging modalities for E1 and E2 - added 44 and 45 and 56 and 57. Altered this 2/10 because energyids are not always
+        'sequential. Changed to check energy instead which is what is used successfully elsewhere
+        'comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and EnergyID in (29,30,31,32,33, 44, 45, 56,57)", conn)
+        comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy in ('iView','XVI')", conn)
+
+
+        comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+        comm.Parameters("@linac").Value = LinacName
+        'Try
+        conn.Open()
+        reader = comm.ExecuteReader()
+        While reader.Read()
+            'This will fall over if approved is null so needs error handling
+            'Same fix as Engineering run up energies 4/7/17
+            If Not IsDBNull(reader.Item("Approved")) Then
+                If Not reader.Item("Approved") Then
+                    Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBoxImage"), CheckBox)
+                    cb.Enabled = False
+                    cb.Visible = False
+                End If
+            Else
+                Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBoxImage"), CheckBox)
+                cb.Enabled = False
+                cb.Visible = False
+            End If
+
+            count = count + 1
+        End While
+        reader.Close()
+        'Finally
+        'conn.Close()
+
+        'End Try
     End Sub
 
     Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
@@ -77,14 +169,14 @@ Partial Class Preclinusercontrol
         ForceFocus(wctext)
     End Sub
 
-    Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
+    Public Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Dim username As String = Userinfo
         'Set these specifically to false 2/12/16
         Dim Valid As Boolean = False
         Dim iView As Boolean = False
         Dim XVI As Boolean = False
-
+        Dim Successful As Boolean = False
         If Tabused = "2" Then
 
             Dim Textboxcomment As TextBox = FindControl("CommentBox")
@@ -101,13 +193,17 @@ Partial Class Preclinusercontrol
                 Application(LinacFlag) = "Clinical"
                 Valid = True
                 DavesCode.Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
-                DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
-                Dim returnstring As String = LinacName + "page.aspx?tabref=3"
-                Application(tabstate) = String.Empty
-                HttpContext.Current.Application(BoxChanged) = Nothing
-                'added application suspstate 31 march 2016
-                Application(suspstate) = 1
-                Response.Redirect(returnstring)
+                Successful = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
+                If Successful Then
+                    Dim returnstring As String = LinacName + "page.aspx?tabref=3"
+                    Application(tabstate) = String.Empty
+                    HttpContext.Current.Application(BoxChanged) = Nothing
+                    'added application suspstate 31 march 2016
+                    Application(suspstate) = 1
+                    Response.Redirect(returnstring)
+                Else
+                    RaiseError()
+                End If
 
             Else
                 Application(LinacFlag) = "Engineering Approved"
@@ -124,6 +220,25 @@ Partial Class Preclinusercontrol
 
         End If
 
+
+    End Sub
+    Protected Sub RaiseError()
+        Dim message As String
+
+        message = "alert('Problem recording Pre-clin run up. Logging off without Approving for Clinical');"
+
+
+        Dim strScript As String = "<script>"
+        Dim machinelabel As String = LinacName & "Page.aspx';"
+        Application(LinacFlag) = "Linac Unauthorised"
+        Application(appstate) = Nothing
+        HttpContext.Current.Application(BoxChanged) = Nothing
+        Application(tabstate) = String.Empty
+        strScript += message
+        strScript += "window.location='"
+        strScript += machinelabel
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(clinHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
 
     End Sub
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -164,8 +279,8 @@ Partial Class Preclinusercontrol
 
         If Not IsPostBack Then
 
-            BindGridview2()
-            BindComments()
+            'BindGridview2()
+            'BindComments()
 
 
             'removes engineer comments from display in grid
@@ -206,28 +321,23 @@ Partial Class Preclinusercontrol
             End If
             Application(faultviewstate) = 1
 
-
             '2/12/16
-            SetImaging()
-
+            'SetImaging()
         End If
 
     End Sub
-    Private Sub BindComments()
-        Dim SqlDateSourceComment As New SqlDataSource()
-        Dim query As String = "select e.comment from handoverenergies e  where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
-        SqlDateSourceComment = QuerySqlConnection(LinacName, query)
-        GridViewComments.DataSource = SqlDateSourceComment
-        GridViewComments.DataBind()
-
-    End Sub
-
-    Private Sub BindGridview2()
-        Dim SqlDateSourceGridView As New SqlDataSource()
-        Dim query As String = "select HandoverId, MV6,ISNULL(MV6FFF, 0) as ""MV6FFF"",MV10,ISNULL(MV10FFF, 0) as ""MV10FFF"",ISNULL(MeV4,0) as ""MeV4"", MEV6, MEV8, MeV10, MeV12, MeV15, MeV18, MeV20, Comment, LogOutName, LogOutDate, linac, LogInDate, Duration, LogInStatusID, Approved, LogInName, LogOutStatusID From handoverenergies Where handoverid = (Select Max(handoverid) As mancount from [handoverenergies] where linac=@linac)"
-        SqlDateSourceGridView = QuerySqlConnection(LinacName, query)
-        GridView2.DataSource = SqlDateSourceGridView
-        GridView2.DataBind()
+    Protected Sub RaiseLoadError()
+        Dim machinelabel As String = LinacName & "Page.aspx';"
+        'Application(LinacFlag) = "Linac Unauthorised"
+        Application(appstate) = Nothing
+        HttpContext.Current.Application(BoxChanged) = Nothing
+        Application(tabstate) = String.Empty
+        Dim strScript As String = "<script>"
+        strScript += "alert('Problem Loading Page. Please call Engineer');"
+        strScript += "window.location='"
+        strScript += machinelabel
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(clinHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
 
     Protected Sub EnergyGridView_DataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView2.RowDataBound
@@ -245,33 +355,32 @@ Partial Class Preclinusercontrol
         comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
         comm.Parameters("@linac").Value = LinacName
         If headerRow.RowType = DataControlRowType.Header Then
-            Try
-                conn.Open()
-                reader = comm.ExecuteReader()
-                While reader.Read()
-                    For count = 0 To reader.FieldCount - 1
-                        'modified to account for dbnull 5/7/17
-                        If Not reader.GetValue(count) Is System.DBNull.Value Then
-                            energy = reader.GetValue(count)
-                        Else
-                            energy = 0
-                        End If
-                        Select Case energy
-                            Case -1
-                                headerRow.Cells(count + 1).BackColor = System.Drawing.Color.Green
-                            Case 0
-                                headerRow.Cells(count + 1).BackColor = System.Drawing.Color.Red
-                        End Select
+            'Try
+            conn.Open()
+            reader = comm.ExecuteReader()
+            While reader.Read()
+                For count = 0 To reader.FieldCount - 1
+                    'modified to account for dbnull 5/7/17
+                    If Not reader.GetValue(count) Is System.DBNull.Value Then
+                        energy = reader.GetValue(count)
+                    Else
+                        energy = 0
+                    End If
+                    Select Case energy
+                        Case -1
+                            headerRow.Cells(count + 1).BackColor = System.Drawing.Color.Green
+                        Case 0
+                            headerRow.Cells(count + 1).BackColor = System.Drawing.Color.Red
+                    End Select
 
-                    Next
-                End While
+                Next
+            End While
 
-                reader.Close()
-            Finally
-                conn.Close()
-            End Try
+            reader.Close()
+            'Finally
+            conn.Close()
+            'End Try
         End If
-
 
     End Sub
 
@@ -321,19 +430,19 @@ Partial Class Preclinusercontrol
         ForceFocus(wctext)
     End Sub
 
-    Protected Function QuerySqlConnection(ByVal MachineName As String, ByVal query As String) As SqlDataSource
+    Protected Function QuerySqlConnection(ByVal MachineName As String, ByVal query As String, ByVal connectionString As String) As SqlDataSource
         'This uses the sqldatasource instead of the individual conn definitions so reader can't be used
         'this solution is from http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.sqldatasource.select%28v=vs.90%29.aspx
 
-        Dim SqlDataSource1 As New SqlDataSource()
-        SqlDataSource1.ID = "SqlDataSource1"
-        SqlDataSource1.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        SqlDataSource1.SelectCommand = (query)
+        Dim SqlDataSource1 As New SqlDataSource With {
+            .ID = "SqlDataSource1",
+            .ConnectionString = connectionString,
+            .SelectCommand = (query)
+        }
         SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource1.SelectParameters.Add("linac", MachineName)
 
         Return SqlDataSource1
-
 
     End Function
 
@@ -396,63 +505,6 @@ Partial Class Preclinusercontrol
 
         End Select
 
-    End Sub
-    Protected Sub SetImaging()
-        Dim SqlDataSource1 As New SqlDataSource()
-        SqlDataSource1.ID = "SqlDataSource1"
-        SqlDataSource1.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-
-        'This had to be changed to add the imaging modalities for E1 and E2 - added 44 and 45 and 56 and 57. Altered this 2/10 because energyids are not always
-        'sequential. Changed to check energy instead which is what is used successfully elsewhere
-        'SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac= @linac and EnergyID in (29,30,31,32,33,44,45, 56,57)"
-
-        SqlDataSource1.SelectCommand = "SELECT * FROM [physicsenergies] where linac=@linac and Energy in ('iView','XVI')"
-
-        SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-        SqlDataSource1.SelectParameters.Add("linac", LinacName)
-
-        GridViewImage.DataSource = SqlDataSource1
-        GridViewImage.DataBind()
-
-        Dim conn As SqlConnection
-        Dim comm As SqlCommand
-        Dim reader As SqlDataReader
-        Dim count As Integer = 0
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        conn = New SqlConnection(connectionString1)
-        'This had to be changed to add the imaging modalities for E1 and E2 - added 44 and 45 and 56 and 57. Altered this 2/10 because energyids are not always
-        'sequential. Changed to check energy instead which is what is used successfully elsewhere
-        'comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and EnergyID in (29,30,31,32,33, 44, 45, 56,57)", conn)
-        comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy in ('iView','XVI')", conn)
-
-
-        comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-        comm.Parameters("@linac").Value = LinacName
-        Try
-            conn.Open()
-            reader = comm.ExecuteReader()
-            While reader.Read()
-                'This will fall over if approved is null so needs error handling
-                'Same fix as Engineering run up energies 4/7/17
-                If Not IsDBNull(reader.Item("Approved")) Then
-                    If Not reader.Item("Approved") Then
-                        Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBoxImage"), CheckBox)
-                        cb.Enabled = False
-                        cb.Visible = False
-                    End If
-                Else
-                    Dim cb As CheckBox = CType(GridViewImage.Rows(count).FindControl("RowLevelCheckBoxImage"), CheckBox)
-                    cb.Enabled = False
-                    cb.Visible = False
-                End If
-
-                count = count + 1
-            End While
-            reader.Close()
-        Finally
-            conn.Close()
-
-        End Try
     End Sub
 
 End Class
