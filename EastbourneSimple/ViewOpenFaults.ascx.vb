@@ -65,7 +65,7 @@ Partial Class ViewOpenFaults
         'if you don't do this then the dynamic control is not registered after postback
         Select Case Me.DynamicControlSelection
             Case REPEATFAULTSELECTED
-                LoadRepeatFaultTable(Label2.Text)
+                LoadRepeatFaultTable(Label2.Text, Label5.Text)
 
             Case Else
                 'no dynamic controls need to be loaded...yet
@@ -175,8 +175,9 @@ Partial Class ViewOpenFaults
             Cancel()
 
             'This is all redundant now because of use of devicerepeatfaultuc
-        ElseIf Tabused = "Updatefault" Then
+        ElseIf Tabused = "Repeatfault" Then
             'As a result of removing the need for signatures references to WriteDatauc removed March 2016
+            'this is now triggered by DeviceRepeatFaultuc comment 15/11/18
             incidentID = Label2.Text
             ConcessionGrid.Enabled = True
             RaiseEvent UpDateDefectDisplay(LinacName)
@@ -201,6 +202,7 @@ Partial Class ViewOpenFaults
                 Dim ConcessionActive As Integer
                 Dim ConcessionAction As String
                 Dim exists As Integer
+                Dim CommentText As String
 
                 Dim conn As SqlConnection
                 Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
@@ -229,26 +231,34 @@ Partial Class ViewOpenFaults
                 End Try
                 If incidentID <> 0 Then
                     'need to check if concession is new or not
+                    CommentText = CommentBox1.Text
                     If selecttext = "Concession" Then
-                        exists = DavesCode.ReusePC.InsertNewConcession(ConcessionDescription, LinacName, incidentID, Userinfo, ConcessionAction)
+                        'if new concession and everthing works then exists = 0 so write new concession and tracking and skip to end
+                        'if there is a problem then roll back and skip to end via -1 (what about rad row etc?)
+                        'if exists = 1 or not 0 or -1 then concession already exists so update tracking. If it gets to there then insertnewconcession has worked
+                        'ie returned exists = 1 or not 0 or -1 but hasn't done anything else. If concession updated ok but otherwise update tracking
+                        exists = DavesCode.NewFaultHandling.InsertNewConcession(ConcessionDescription, LinacName, incidentID, Userinfo, ConcessionAction)
                         If exists = -1 Then
-                            'error message This inserts a fault so that it can be looked at later
-                            DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, LinacName, -1000, EMPTYSTRING, "System Error", False)
+
                             RaiseEvent UpDateDefectDisplay(LinacName)
-                            strScript += "alert('Problem Updating Fault. Please call Administrator');"
-                            strScript += "</script>"
-                            ScriptManager.RegisterStartupScript(SaveAFault, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            RaiseError()
+                            'strScript += "alert('Problem Updating Fault. Please call Administrator');"
+                            'strScript += "</script>"
+                            'ScriptManager.RegisterStartupScript(SaveAFault, Me.GetType(), "JSCR", strScript.ToString(), False)
                         ElseIf Not exists = 0 Then
-                            TRACKINGID = DavesCode.ReusePC.UpdateTracking(CommentBox1.Text, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, ConcessionActive)
+                            TRACKINGID = DavesCode.NewFaultHandling.UpdateTracking(CommentText, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, ConcessionActive)
+                            If TRACKINGID = -1 Then
+                                RaiseError()
+                            End If
                         End If
 
                     Else
-                        TRACKINGID = DavesCode.ReusePC.UpdateTracking(CommentBox1.Text, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, ConcessionActive)
+                        TRACKINGID = DavesCode.NewFaultHandling.UpdateTracking(CommentText, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, ConcessionActive)
                         If TRACKINGID = -1 Then
                             RaiseError()
                         End If
                     End If
-
+                    CommentBox1.Text = ""
                     RadRow = HighlightRow()
                     bindGridView()
 
@@ -260,7 +270,7 @@ Partial Class ViewOpenFaults
 
                     If TabName = "Tech" Then
                         Dim lastusergroup As Integer
-                        Dim lastuser As String
+                        Dim lastuser As String = ""
                         Dim NumOpen As Integer
                         Dim Repairlist As RadioButtonList
                         Dim StateTextBox As TextBox
@@ -286,7 +296,7 @@ Partial Class ViewOpenFaults
                                     Application(faultstate) = True
                                 Else
                                     'But how does it know here to do this?
-                                    Dim lastState As String
+                                    Dim lastState As String = ""
                                     'Dim fState As String
                                     ConcessionGrid.Enabled = True
                                     bindGridView()
@@ -378,7 +388,7 @@ Partial Class ViewOpenFaults
 
         ConcessiondescriptionBox.ReadOnly = True
         ConcessionNumberBox.ReadOnly = True
-
+        CommentBox1.Text = ""
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc3"), WriteDatauc)
         wctrl.Visible = False
         ManyFaultGriduc.Visible = True
@@ -419,7 +429,7 @@ Partial Class ViewOpenFaults
     End Sub
 
     Sub FaultGridView_RowCommand(ByVal sender As Object, ByVal e As GridViewCommandEventArgs)
-
+        'this can be changed to pass concession number to report repeat fault? 02/11/18
         If Not e.CommandName = "Page" Then
             Dim IncidentID As String
             ' Convert the row index stored in the CommandArgument
@@ -429,6 +439,7 @@ Partial Class ViewOpenFaults
             ' by the user from the Rows collection.
             Dim row As GridViewRow = ConcessionGrid.Rows(index)
             IncidentID = Server.HtmlDecode(row.Cells(0).Text)
+            Dim Concession As String = Server.HtmlDecode(row.Cells(1).Text)
             Dim Region As String
             Region = ""
             SetViewFault(False)
@@ -462,6 +473,7 @@ Partial Class ViewOpenFaults
 
 
                     Label2.Text = IncidentID
+                    Label5.Text = Concession
                     'AreaBox.Text = ""
                     'TextBox2.Text = ""
                     'TextBox3.Text = ""
@@ -481,7 +493,7 @@ Partial Class ViewOpenFaults
                     'AreaBox.Text = Region
                     'conn1.Close()
                     UpdatePanel4.Visible = False
-                    LoadRepeatFaultTable(IncidentID)
+                    LoadRepeatFaultTable(IncidentID, Concession)
 
                 Case "Faults"
                     Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
@@ -504,7 +516,7 @@ Partial Class ViewOpenFaults
 
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc3"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
-
+        Dim comment As String = CommentBox1.Text
         If TabName = "Clin" Then
             wctrl.UserReason = "12"
         End If
@@ -848,12 +860,13 @@ Partial Class ViewOpenFaults
 
     End Sub
 
-    Protected Sub LoadRepeatFaultTable(ByVal incidentid As String)
+    Protected Sub LoadRepeatFaultTable(ByVal incidentid As String, ByVal concessionnumber As String)
         Dim objcon As Object
         objcon = Page.LoadControl("~/controls/DeviceRepeatFaultuc.ascx")
         'CType(objcon, controls_DeviceRepeatFaultuc).ID = "DRF1"
         CType(objcon, controls_DeviceRepeatFaultuc).IncidentID = incidentid
         CType(objcon, controls_DeviceRepeatFaultuc).Device = LinacName
+        CType(objcon, controls_DeviceRepeatFaultuc).ConcessionN = concessionnumber
         AddHandler CType(objcon, controls_DeviceRepeatFaultuc).UpdateRepeatFault, AddressOf UserApprovedEvent
         PlaceholderRepeatFault.Controls.Add(objcon)
         Me.DynamicControlSelection = REPEATFAULTSELECTED
@@ -951,8 +964,7 @@ Partial Class ViewOpenFaults
 
     Protected Sub RaiseError()
         Dim strScript As String = "<script>"
-        'DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, LinacName, -1000, EMPTYSTRING, "System Error", False)
-        'RaiseEvent UpDateDefectDisplay(LinacName)
+
         strScript += "alert('Problem Updating Fault. Please call Engineer');"
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(SaveAFault, Me.GetType(), "JSCR", strScript.ToString(), False)

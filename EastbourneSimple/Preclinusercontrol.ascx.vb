@@ -181,11 +181,12 @@ Partial Class Preclinusercontrol
 
             Dim Textboxcomment As TextBox = FindControl("CommentBox")
             Dim comment As String = Textboxcomment.Text
-            Dim Imagecheck As CheckBoxList
-            Imagecheck = FindControl("Imaging")
+            'Dim Imagecheck As CheckBoxList
+            'Imagecheck = FindControl("Imaging")
             Dim strScript As String = "<script>"
             Dim Action As String = Application(actionstate)
             Dim grdviewI As GridView = FindControl("GridViewImage")
+            Dim FaultP As DavesCode.FaultParameters = New DavesCode.FaultParameters()
             'this changed 21 aug to allow to move on to other states so suspstate is made to be suspended
             Application(appstate) = Nothing
 
@@ -193,7 +194,7 @@ Partial Class Preclinusercontrol
                 Application(LinacFlag) = "Clinical"
                 Valid = True
                 DavesCode.Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
-                Successful = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
+                Successful = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False, FaultP)
                 If Successful Then
                     Dim returnstring As String = LinacName + "page.aspx?tabref=3"
                     Application(tabstate) = String.Empty
@@ -210,14 +211,17 @@ Partial Class Preclinusercontrol
                 Valid = False
                 HttpContext.Current.Application(BoxChanged) = Nothing
                 strScript += "alert('No Pre-clinical RunUp Logging Off');"
-                DavesCode.Reuse.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False)
-                strScript += "window.location='"
-                strScript += machinelabel
-                strScript += "</script>"
-                ScriptManager.RegisterStartupScript(LogOff, Me.GetType(), "JSCR", strScript.ToString(), False)
+                Successful = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False, FaultP)
+                If Successful Then
+                    strScript += "window.location='"
+                    strScript += machinelabel
+                    strScript += "</script>"
+                    ScriptManager.RegisterStartupScript(LogOff, Me.GetType(), "JSCR", strScript.ToString(), False)
+                Else
+                    RaiseError()
+                End If
+                HttpContext.Current.Application(BoxChanged) = Nothing
             End If
-            HttpContext.Current.Application(BoxChanged) = Nothing
-
         End If
 
 
@@ -262,6 +266,7 @@ Partial Class Preclinusercontrol
         Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = LinacName
+        CType(objDefect, DefectSave).ParentControl = 2
         PlaceHolder3.Controls.Add(objDefect)
         AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
         AddHandler CType(objDefect, DefectSave).UpdateViewFault, AddressOf Update_ViewOpenFaults

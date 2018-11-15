@@ -4,12 +4,13 @@ Partial Class controls_DeviceRepeatFaultuc
     Inherits System.Web.UI.UserControl
     Public Property IncidentID() As String
     Public Property Device() As String
+    Public Property ConcessionN() As String
     Private conn As SqlConnection
     Private comm As SqlCommand
     Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     Dim commfault As SqlCommand
-    Private ConcessionNumber As String
-    Const RepeatFault As String = "Updatefault"
+    'Private ConcessionNumber As String
+    Const RepeatFault As String = "Repeatfault"
     Const CancelFaultReturn As String = "Cancel"
     Const EMPTYSTRING As String = ""
     'Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
@@ -107,7 +108,7 @@ Partial Class controls_DeviceRepeatFaultuc
         End If
     End Sub
     Public Sub SaveRepeatFaultbutton()
-        Dim faultid As Integer
+        Dim faultid As Integer = -1
         Dim Energy As String = String.Empty
         Dim Description As String = String.Empty
         Dim ReportedBy As String = String.Empty
@@ -136,21 +137,8 @@ Partial Class controls_DeviceRepeatFaultuc
         End If
         RadioIncidentSelected = RadioIncident.SelectedItem.Value
 
-        conn = New SqlConnection(connectionString)
-
-        'this gets the relevant concession number and creates the entry for the report fault table that is used subsequently to create the defect table entries
-        'comm = New SqlCommand("SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault FROM [ConcessionTable] where incidentID = @incidentID", conn)
-        comm = New SqlCommand("SELECT ConcessionNumber FROM [ConcessionTable] where incidentID = @incidentID", conn)
-        comm.Parameters.AddWithValue("@incidentID", IncidentID)
-        conn.Open()
-        'commstatus.ExecuteNonQuery()
-
-        Dim obj As Object = comm.ExecuteScalar()
-        'Dim LinacStatusIDs As String = obj.ToString()
-        ConcessionNumber = CStr(obj)
-        conn.Close()
-        faultid = DavesCode.ReusePC.InsertReportFault(Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle, Device, IncidentID, PatientId, ConcessionNumber, RadioIncidentSelected)
-        If faultid > 0 Then
+        faultid = DavesCode.NewFaultHandling.InsertRepeatFault(Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle, Device, IncidentID, PatientId, ConcessionN, RadioIncidentSelected)
+        If Not faultid = -1 Then
             RaiseEvent UpdateRepeatFault(RepeatFault, ReportedBy)
         Else
             RaiseError()
@@ -158,8 +146,7 @@ Partial Class controls_DeviceRepeatFaultuc
     End Sub
     Protected Sub RaiseError()
         Dim strScript As String = "<script>"
-        'DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, Device, -1000, EMPTYSTRING, "System Error", False)
-        'RaiseEvent UpDateDefectDisplay(Device)
+
         strScript += "alert('Problem Updating Fault. Please call Engineering');"
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(SaveRepeatFault, Me.GetType(), "JSCR", strScript.ToString(), False)

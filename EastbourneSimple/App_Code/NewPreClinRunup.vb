@@ -3,21 +3,24 @@ Imports System.Data.SqlClient
 Imports System.Transactions
 Namespace DavesCode
     Public Class NewPreClinRunup
-        Public Shared Function CommitPreClin(ByVal LinacName As String, ByVal LogOffName As String, ByVal textbox As String, ByVal iView As Boolean, ByVal XVI As Boolean, ByVal Valid As Boolean, ByVal Fault As Boolean) As Boolean
+        Public Shared Function CommitPreClin(ByVal LinacName As String, ByVal LogOffName As String, ByVal textbox As String, ByVal iView As Boolean, ByVal XVI As Boolean, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal FaultParams As DavesCode.FaultParameters) As Boolean
             Dim Successful As Boolean = False
             Try
                 Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 Using myscope As TransactionScope = New TransactionScope()
-                    CommitPreClinNew(LinacName, LogOffName, textbox, iView, XVI, Valid, False, connectionString)
+                    CommitPreClinNew(LinacName, LogOffName, textbox, iView, XVI, Valid, Fault, connectionString)
+                    If Fault Then
+                        NewFaultHandling.InsertMajorFault(FaultParams, connectionString)
+                    End If
                     myscope.Complete()
                     Successful = True
                 End Using
             Catch ex As Exception
-                DavesCode.ReusePC.LogError(ex)
+                DavesCode.NewFaultHandling.LogError(ex)
             End Try
             Return Successful
         End Function
-        Shared Function CommitPreClinNew(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal Imgchk1 As Boolean, ByVal Imgchk2 As Boolean, ByVal Valid As Boolean, ByVal Fault As Boolean, ConnectionString As String) As String
+        Shared Function CommitPreClinNew(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal Imgchk1 As Boolean, ByVal Imgchk2 As Boolean, ByVal Valid As Boolean, ByVal Fault As Boolean, connectionString As String) As String
             'Public Shared Function CommitPreClin(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal GridViewI As GridView, ByVal Valid As Boolean, ByVal Fault As Boolean) As String
             Dim LogOutStatusID As String
             Dim LogInStatusID As String
@@ -42,7 +45,7 @@ Namespace DavesCode
             Dim UserReason As Integer = 7 'most common reason
             Dim Tab As Integer = 2 'most common tab
 
-            conn = New SqlConnection(ConnectionString)
+            conn = New SqlConnection(connectionString)
             'This will get the time the linac was accepted for the pre-clinical
             contime = New SqlCommand("SELECT DateTime, username, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
 
@@ -97,9 +100,11 @@ Namespace DavesCode
                     'added to make right for midnight check before it just left as engineering approved
                     If logOutName = "System" Then
                         UserReason = 102
+                    ElseIf logOutName = "Restored" Then
+                        'Defaults ok
                     Else
                         'added for E1 and E2
-                        If LinacName = "E1" Or LinacName = "E2" Or LinacName = "B1" Then
+                        If LinacName = "E1" Or LinacName = "E2" Or LinacName = "B1" Or LinacName = "T1" Or LinacName = "T2" Then
                             Tab = 1
                         Else
                             State = "Engineering Approved"
@@ -109,7 +114,7 @@ Namespace DavesCode
 
                 End If
             End If
-            LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, State, 5, UserReason, LinacName, Tab, ConnectionString)
+            LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, State, 5, UserReason, LinacName, Tab, connectionString)
             'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
 
             'This writes the clinicalhandover table - doesn't have the user in it
@@ -156,7 +161,7 @@ Namespace DavesCode
 
             'Finally
             conn.Close()
-            DavesCode.Reuse.UpdateActivityTable(LinacName, LogOutStatusID, ConnectionString)
+            DavesCode.Reuse.UpdateActivityTable(LinacName, LogOutStatusID, connectionString)
             'End Try
             Return LogOutStatusID
 

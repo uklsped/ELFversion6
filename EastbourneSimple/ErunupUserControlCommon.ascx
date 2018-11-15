@@ -153,7 +153,7 @@ event.returnValue = false;
                        <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
-<asp:PlaceHolder ID="PlaceHolder1" runat="server">
+<asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server">
 </asp:PlaceHolder>
 </ContentTemplate>
 
@@ -164,7 +164,7 @@ event.returnValue = false;
                <ContentTemplate>
                    <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
                    
-               <asp:PlaceHolder ID="PlaceHolder5" runat="server">
+               <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server">
                 </asp:PlaceHolder>
                 </ContentTemplate></asp:UpdatePanel>
                </asp:TableCell>
@@ -199,14 +199,14 @@ event.returnValue = false;
 
   <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true">
 <ContentTemplate>
-    <asp:PlaceHolder ID="PlaceHolder3" runat="server">
+    <asp:PlaceHolder ID="PlaceHolderViewopenfaults" runat="server">
     </asp:PlaceHolder>
 
 </ContentTemplate> 
 </asp:UpdatePanel>
 <asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="false">
 <ContentTemplate>
-    <asp:PlaceHolder ID="PlaceHolder6" runat="server">
+    <asp:PlaceHolder ID="PlaceHolderModalities" runat="server">
     </asp:PlaceHolder>
         </ContentTemplate>
         
@@ -215,14 +215,14 @@ event.returnValue = false;
  
 <asp:UpdatePanel ID="UpdatePanelatlas" runat="server" Visible="false">
      <ContentTemplate>
-         <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder>
+         <asp:PlaceHolder ID="PlaceHolderAtlas" runat="server"></asp:PlaceHolder>
      </ContentTemplate>
 </asp:UpdatePanel>
 
 
  <asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>
-            <asp:PlaceHolder ID="PlaceHolder4" runat="server">
+            <asp:PlaceHolder ID="PlaceHolderWriteData" runat="server">
             <uc4:WriteDatauc ID="WriteDatauc1" LinacName="Linac" UserReason="0"  Tabby="TabNumber"  WriteName="EngData"   Visible="false" runat="server" />
             </asp:PlaceHolder>
             </ContentTemplate>
@@ -237,7 +237,7 @@ event.returnValue = false;
       
  <uc5:ViewCommentsuc ID="ViewCommentsuc1"  LinacName="" CommentSort="er" runat="server" />
 </div>
-<asp:PlaceHolder ID="PlaceHolder7" runat="server">
+<asp:PlaceHolder ID="PlaceHolderConfirmPage" runat="server">
         
             <uc1:ConfirmPage ID="ConfirmPage1" Visible="false" runat="server" />
          </asp:PlaceHolder>

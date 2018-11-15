@@ -1,46 +1,81 @@
 ﻿Imports System.Data.SqlClient
 Imports System.Transactions
 Namespace DavesCode
+
     Public Class NewEngRunup
-        Public Shared Function CommitRunup(ByVal GridviewE As GridView, ByVal grdviewI As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean) As Boolean
+        Private ReadOnly Name As String
+        Public Sub New(ByVal Nm As String)
+            Name = Nm
+        End Sub
+
+        ''' <summary>
+        ''' Commits the Engineering runup.
+        ''' </summary>
+        ''' <param name="GridviewE">The Energy gridview.</param>
+        ''' <param name="grdviewI">The Imaging gridview</param>
+        ''' <param name="LinacName">Name of the linac.</param>
+        ''' <param name="tabby">the Calling Tab</param>
+        ''' <param name="LogOffName">Name of user logging off</param>
+        ''' <param name="TextBoxc">The Comment text box.</param>
+        ''' <param name="Valid">if set to <c>true</c> [valid]. Is Run up valid</param>
+        ''' <param name="Fault">if set to <c>true</c> [fault]. Is there an open fault</param>
+        ''' <param name="lock">if set to <c>true</c> [lock]. Is the Tab locked</param>
+        ''' <returns>Returns Successful which is a Boolean. So calling functions should test this</returns>
+        Public Shared Function CommitRunup(ByVal GridviewE As GridView, ByVal grdviewI As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean, ByVal FaultParams As DavesCode.FaultParameters) As Boolean
             Dim usergroupselected As Integer = 2
             Dim Reason As Integer = 2
             Dim iView As Boolean = False
             Dim XVI As Boolean = False
             Dim Successful As Boolean = False
+
             Try
                 Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 Using myscope As TransactionScope = New TransactionScope()
-                    If Valid Then
+                    If Not Fault Then
 
                         If LinacName Like "LA?" Then
-                            CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, False, False, connectionString)
+                            CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, lock, connectionString)
                         Else
-                            If LinacName Like "T1" Then
-                                CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, False, False, connectionString)
-                                Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, False, connectionString)
+                            If LinacName Like "T?" Then
+                                CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, lock, connectionString)
+                                Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, lock, connectionString)
                             Else
-                                CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, False, False, connectionString)
-                                Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, False, connectionString)
+                                CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, False, connectionString)
+                                Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, lock, connectionString)
                                 Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
                             End If
 
-                            NewPreClinRunup.CommitPreClinNew(LinacName, LogOffName, "", iView, XVI, Valid, False, connectionString)
+                            NewPreClinRunup.CommitPreClinNew(LinacName, LogOffName, "", iView, XVI, Valid, Fault, connectionString)
 
                         End If
                     Else
-                        CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, False, False, connectionString)
+                        CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, lock, connectionString)
+                        NewFaultHandling.InsertMajorFault(FaultParams, connectionString)
+
                     End If
                     myscope.Complete()
                     Successful = True
 
                 End Using
             Catch ex As Exception
-                DavesCode.ReusePC.LogError(ex)
+                DavesCode.NewFaultHandling.LogError(ex)
             End Try
             Return Successful
         End Function
 
+        ''' <summary>
+        ''' Commits the runup new.
+        ''' </summary>
+        ''' <param name="GridviewE">The gridview e.</param>
+        ''' <param name="LinacName">Name of the linac.</param>
+        ''' <param name="tabby">The tabby.</param>
+        ''' <param name="LogOffName">Name of the log off.</param>
+        ''' <param name="TextBoxc">The text boxc.</param>
+        ''' <param name="Valid">if set to <c>true</c> [valid].</param>
+        ''' <param name="Fault">if set to <c>true</c> [fault].</param>
+        ''' <param name="lock">if set to <c>true</c> [lock].</param>
+        ''' <param name="ConnectionString">The connection string.</param>
+        ''' <returns></returns>
         Public Shared Function CommitRunupNew(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean, ByVal ConnectionString As String) As String
             Dim time As DateTime
             time = Now()
@@ -261,7 +296,7 @@ Namespace DavesCode
                             comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MeV20").Value = False
 
-                        Case "T1"
+                        Case "T1", "T2"
                             comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MV6").Value = False
                             comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
@@ -415,5 +450,6 @@ Namespace DavesCode
 
 
         End Function
+
     End Class
 End Namespace

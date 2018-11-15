@@ -1,4 +1,5 @@
 ﻿Imports System.Data.SqlClient
+Imports System.Transactions
 Imports AjaxControlToolkit
 
 Partial Class ErunupUserControl
@@ -24,6 +25,7 @@ Partial Class ErunupUserControl
     Dim accontrol1 As AcceptLinac
     Dim accontrol7 As AcceptLinac
     Private Obpage As Page
+    Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
 
     Public ReadOnly Property CurrentComment() As String
         Get
@@ -120,16 +122,16 @@ Partial Class ErunupUserControl
 
     Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
         If LinacName = EquipmentID Then
-            Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
+            Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
             todayfault.SetGrid()
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
             Todaydefect.ResetDefectDropDown(incidentID)
         End If
     End Sub
 
     Protected Sub Update_Defect(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
             Todaydefect.UpDateDefectsEventHandler()
         End If
     End Sub
@@ -142,7 +144,8 @@ Partial Class ErunupUserControl
 
     Public Sub UserApprovedEvent(ByVal Tabset As String, ByVal Userinfo As String)
 
-        If Tabset = "1" Or "7" Then
+        'If Tabset = "1" Or "7" Then
+        If (Tabset = "1") Or (Tabset = "666") Then
             Dim Action As String = Application(actionstate)
             Dim machinelabel As String = LinacName & "Page.aspx';"
             Dim Valid As Boolean = False
@@ -159,9 +162,12 @@ Partial Class ErunupUserControl
             Dim Textboxcomment As TextBox = FindControl("CommentBox")
             Dim Comment As String = Textboxcomment.Text
             Dim Successful As Boolean = False
+            'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+
+
             If Action = "Confirm" Then
                 Valid = True
-                Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, Userinfo, Comment, Valid, False, False)
+                Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, Comment, Valid, False, False, FaultParams)
                 If Successful Then
                     'This app sets for repair, maintenance and physics tab to know that run up was done
                     Application(repairstate) = 1
@@ -190,7 +196,10 @@ Partial Class ErunupUserControl
 
             Else
                 Valid = False
-                Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, Userinfo, Comment, Valid, False, False)
+                If Tabset = "666" Then
+                    grdview = CType(mpContentPlaceHolder.FindControl("DummyGridview"), GridView)
+                End If
+                Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, Comment, Valid, False, False, FaultParams)
                 If Successful Then
                     Application(LinacFlag) = "Linac Unauthorised"
                     Application(repairstate) = Nothing
@@ -250,8 +259,7 @@ Partial Class ErunupUserControl
     End Sub
     Protected Sub RaiseLockError()
         Dim strScript As String = "<script>"
-        'DavesCode.ReusePC.InsertReportFault("System Error", "System", Now(), EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, EMPTYSTRING, LinacName, -1000, EMPTYSTRING, "System Error", False)
-        'RaiseEvent UpDateDefectDisplay(LinacName)
+
         strScript += "alert('Problem Locking Elf. Please inform system administator');"
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(LockElf, Me.GetType(), "JSCR", strScript.ToString(), False)
@@ -262,41 +270,46 @@ Partial Class ErunupUserControl
         WaitButtons("Tech")
         Dim SuccessEnergy As Boolean = False
         Dim SuccessImage As Boolean = False
+        'Sets up Today's closed faults
         objconToday = Page.LoadControl("TodayClosedFault.ascx")
         objconToday.ID = "Todaysfaults"
         objconToday.LinacName = LinacName
-        PlaceHolder5.Controls.Add(objconToday)
-        Dim websiteAlreadyAccessed As Boolean = False
+        PlaceHolderTodaysclosedfaults.Controls.Add(objconToday)
+
+        'Dim websiteAlreadyAccessed As Boolean = False
+        'Sets up Atlas Energies
         Dim objConAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
         CType(objConAtlas, AtlasEnergyViewuc).LinacName = LinacName
-        PlaceHolder2.Controls.Add(objConAtlas)
+        PlaceHolderAtlas.Controls.Add(objConAtlas)
         Objcon = Page.LoadControl("ViewOpenFaults.ascx")
 
         Dim strScript As String = "<script>"
-
+        'Sets up user comments
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName
+
+        'Sets up view open faults and Lock Elf
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = LinacName
         If Tabby = 1 Then
 
             CType(Objcon, ViewOpenFaults).TabName = Tabby
             CType(Objcon, ViewOpenFaults).LinacName = LinacName
-            PlaceHolder3.Controls.Add(Objcon)
+            PlaceHolderViewopenfaults.Controls.Add(Objcon)
         Else
             'Hide lock elf button if rad run up
             LockElf.Visible = False
             CType(Objcon, ViewOpenFaults).TabName = Tabby
             CType(Objcon, ViewOpenFaults).LinacName = LinacName
-            PlaceHolder3.Controls.Add(Objcon)
+            PlaceHolderViewopenfaults.Controls.Add(Objcon)
         End If
-
+        'Sets up View Modalities
         Dim objQA As UserControl = Page.LoadControl("WebUserControl2.ascx")
         CType(objQA, WebUserControl2).LinacName = LinacName
         CType(objQA, WebUserControl2).TabName = 1
-        PlaceHolder6.Controls.Add(objQA)
+        PlaceHolderModalities.Controls.Add(objQA)
 
-
+        'Sets up Defect Control
         AddHandler CType(Objcon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
         AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
         Dim objDefect As UserControl
@@ -312,9 +325,10 @@ Partial Class ErunupUserControl
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = LinacName
+            CType(objDefect, DefectSave).ParentControl = Tabby
         End If
 
-        PlaceHolder1.Controls.Add(objDefect)
+        PlaceHolderDefectSave.Controls.Add(objDefect)
 
 
 
@@ -322,7 +336,7 @@ Partial Class ErunupUserControl
         'The solution of how to pass parameter to dynamically loaded user control is from here:
         'http://weblogs.asp.net/aghausman/archive/2009/04/15/how-to-pass-parameters-to-the-dynamically-added-user-control.aspx
 
-        PlaceHolder4.Visible = True
+        'PlaceHolderWriteData.Visible = True
         Dim ControlName As String = DataName
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
@@ -336,7 +350,7 @@ Partial Class ErunupUserControl
                 'Textboxcomment.Text = comment
             End If
         End If
-        websiteAlreadyAccessed = True
+        ' websiteAlreadyAccessed = True
     End Sub
     Protected Sub SetEnergies(ByVal connectionString As String)
         Dim SelCommand As String = ""
@@ -545,7 +559,7 @@ Partial Class ErunupUserControl
 
             End If
         Catch ex As Exception
-            DavesCode.ReusePC.LogError(ex)
+            DavesCode.NewFaultHandling.LogError(ex)
             RaiseError("Radconcess")
         Finally
             conn.Close()
@@ -595,8 +609,9 @@ Partial Class ErunupUserControl
         Dim Textboxcomment As TextBox = FindControl("CommentBox")
         Dim Comment As String = Textboxcomment.Text
         Dim success As Boolean = False
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         'has to be tablable to cope with either tab 1 or 7 control
-        success = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, "Lockuser", Comment, False, False, True)
+        success = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, "Lockuser", Comment, False, False, True, FaultParams)
         'DavesCode.Reuse.CommitRunup(grdview, LinacName, Tabby, "Lockuser", Comment, False, False, True)
         If success Then
             RaiseEvent BlankGroup(0)

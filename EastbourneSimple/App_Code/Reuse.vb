@@ -589,7 +589,7 @@ Namespace DavesCode
 
                 Activestatus.ExecuteNonQuery()
             Catch ex As Exception
-                DavesCode.ReusePC.LogError(ex)
+                DavesCode.NewFaultHandling.LogError(ex)
 
             Finally
                 conn.Close()
@@ -628,7 +628,7 @@ Namespace DavesCode
 
             Activestatus.ExecuteNonQuery()
             'Catch ex As Exception
-            '    DavesCode.ReusePC.LogError(ex)
+            '    DavesCode.NewFaultHandling.LogError(ex)
 
             'Finally
             conn.Close()
@@ -671,11 +671,11 @@ Namespace DavesCode
                 UpdateNow.Parameters("@ActID").Value = ActID
                 conn.Open()
                 UpdateNow.ExecuteNonQuery()
-                'Catch ex As Exception
-                '    DavesCode.ReusePC.LogError(ex)
+            'Catch ex As Exception
+            '    DavesCode.NewFaultHandling.LogError(ex)
 
-                'Finally
-                conn.Close()
+            'Finally
+            conn.Close()
             'End Try
         End Sub
 
@@ -2487,7 +2487,7 @@ Namespace DavesCode
                 Catch ex As Exception
                     ObjTransaction.Rollback()
                     LinacStatusID = -1
-                    ReusePC.LogError(ex)
+                    NewFaultHandling.LogError(ex)
                 Finally
                     conn.Close()
                 End Try
@@ -2568,7 +2568,7 @@ Namespace DavesCode
                 'Catch ex As Exception
                 '    ObjTransaction.Rollback()
                 '    LinacStatusID = -1
-                '    ReusePC.LogError(ex)
+                '    NewFaultHandling.LogError(ex)
                 'Finally
                 '    conn.Close()
                 'End Try

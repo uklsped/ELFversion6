@@ -6,9 +6,23 @@ Imports System.Net.Mail
 
 Namespace DavesCode
 
+
+    ''' <summary>
+    ''' 
+    ''' </summary>
     Public Class ReusePC
 
-
+        ''' <summary>
+        ''' Commits the runup.
+        ''' </summary>
+        ''' <param name="LinacName">Name of the linac.</param>
+        ''' <param name="tabby">The tabby.</param>
+        ''' <param name="LogOffName">Name of the log off.</param>
+        ''' <param name="TextBoxc">The text boxc.</param>
+        ''' <param name="Valid">if set to <c>true</c> [valid].</param>
+        ''' <param name="Fault">if set to <c>true</c> [fault].</param>
+        ''' <param name="lock">if set to <c>true</c> [lock].</param>
+        ''' <returns></returns>
         Public Shared Function CommitRunup(ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean) As String
             Dim time As DateTime
             time = Now()
@@ -204,7 +218,7 @@ Namespace DavesCode
 
         End Function
 
-        Public Shared Function InsertReportFault(ByVal Description As String, ByVal ReportedBy As String, ByVal DateReported As DateTime, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal Device As String, ByVal IncidentID As Integer, ByVal PatientID As String, ByVal ConcessionNumber As String, ByVal Reportable As Boolean) As Integer
+        Public Shared Function InsertRepeatFault(ByVal Description As String, ByVal ReportedBy As String, ByVal DateReported As DateTime, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal Device As String, ByVal IncidentID As Integer, ByVal PatientID As String, ByVal ConcessionNumber As String, ByVal Reportable As Boolean) As Integer
             Dim LastFault As Integer = IncidentID
             Dim conn As SqlConnection
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString

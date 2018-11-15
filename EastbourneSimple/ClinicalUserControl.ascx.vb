@@ -135,6 +135,7 @@ Partial Class ClinicalUserControl
         Dim machinelabel As String = LinacName & "Page.aspx"
         Dim username As String = Userinfo
         Dim linacstatusid As String = HiddenFieldLinacState.Value
+        Dim result As Boolean = False
         'If tabused = "3" Then
         '    'DavesCode.Reuse.ReturnApplicationState(tabused)
         '    If Action = "Confirm" Then
@@ -162,33 +163,44 @@ Partial Class ClinicalUserControl
         '    WriteDatauc1.Visible = False
         'ElseIf tabused = "handover" Then
         If tabused = "3" Then
-            If Action = "Confirm" Then
+            Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
+            result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams)
+            If result Then
+                If Action = "Confirm" Then
+                    Dim activity As Integer = 7 'This will always be log off?
+                    If Application(treatmentstate) = "No" Then
+                        activity = 8
+                    ElseIf Application(treatmentstate) = "Yes" Then
+                        activity = 3
+                    Else
+                        'This has gone wrong
+                    End If
+                    'DavesCode.Reuse.SetStatus(username, "Suspended", 5, 7, MachineName, activity)
 
-                Dim activity As Integer = 7 'This will always be log off?
-                If Application(treatmentstate) = "No" Then
-                    activity = 8
-                ElseIf Application(treatmentstate) = "Yes" Then
-                    activity = 3
-                Else
-                    'This has gone wrong
+                    'result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams)
+
+                    Application(treatmentstate) = "Yes"
+                    Application(appstate) = Nothing
+                    Application(suspstate) = 1
+                    Application(repairstate) = Nothing
+                    StateLabel.Text = "Suspended"
+                    ActivityLabel.Text = "Logged Off"
+                    Application(LinacFlag) = "Suspended"
+                    'DavesCode.Reuse.ReturnApplicationState(tabused)
+                    Response.Redirect(machinelabel)
+                    'Else
+                    '    RaiseLoadError()
+                    'End If
+
+                    'Else
+                    'DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, Faultparams)
                 End If
-                'DavesCode.Reuse.SetStatus(username, "Suspended", 5, 7, MachineName, activity)
-
-                DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False)
-                Application(treatmentstate) = "Yes"
-                Application(appstate) = Nothing
-                Application(suspstate) = 1
-                Application(repairstate) = Nothing
-                StateLabel.Text = "Suspended"
-                ActivityLabel.Text = "Logged Off"
-                Application(LinacFlag) = "Suspended"
-                'DavesCode.Reuse.ReturnApplicationState(tabused)
-                Response.Redirect(machinelabel)
-
+            Else
+                RaiseLogOffError()
+                'Application(tabstate) = String.Empty
+                'HttpContext.Current.Application(BoxChanged) = Nothing
+                'WriteDatauc2.Visible = False
             End If
-            Application(tabstate) = String.Empty
-            HttpContext.Current.Application(BoxChanged) = Nothing
-            WriteDatauc2.Visible = False
         End If
     End Sub
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -231,6 +243,7 @@ Partial Class ClinicalUserControl
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = LinacName
+            CType(objDefect, DefectSave).ParentControl = 3
         End If
 
         PlaceHolder3.Controls.Add(objDefect)
@@ -280,7 +293,7 @@ Partial Class ClinicalUserControl
                     End If
                 End Using
             Catch ex As Exception
-                DavesCode.ReusePC.LogError(ex)
+                DavesCode.NewFaultHandling.LogError(ex)
                 RaiseLoadError()
             End Try
         End If
@@ -533,12 +546,19 @@ Partial Class ClinicalUserControl
                 End Using
                 StateLabel.Text = "Clinical"
             Catch ex As Exception
-                DavesCode.ReusePC.LogError(ex)
+                DavesCode.NewFaultHandling.LogError(ex)
                 RaiseStartError()
             End Try
         End If
         'DavesCode.Reuse.ReturnApplicationState("after set treatment")
         'End If
+    End Sub
+    Protected Sub RaiseLogOffError()
+        Dim machinelabel As String = LinacName & "Page.aspx';"
+        Dim strScript As String = "<script>"
+        strScript += "alert('Problem Logging Off. Please inform Engineering');"
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(Tstart, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
     Protected Sub RaiseStartError()
         Dim machinelabel As String = LinacName & "Page.aspx';"

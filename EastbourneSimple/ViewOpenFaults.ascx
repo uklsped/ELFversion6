@@ -107,17 +107,19 @@
                             <asp:Table runat="server">
                             <asp:TableRow runat="server">
                                 <asp:TableCell>
-                                    <asp:Label ID="Label1" runat="server" Text="Incident ID"></asp:Label>
+                                    <asp:Label ID="Label1" runat="server" Text="Concession: "></asp:Label>
                                 </asp:TableCell>
                                 <asp:TableCell>
-                                    <asp:Label ID="Label2" runat="server" Text=""></asp:Label>
-                                </asp:TableCell>
+                                     <asp:Label ID="Label5" runat="server" Text=""></asp:Label>
+                                    <asp:Label ID="Label2" runat="server" Text="" Visible="false"></asp:Label>
+                                   </asp:TableCell>
                                 <asp:TableCell>
                                 </asp:TableCell>
                                 <asp:TableCell>
                                 </asp:TableCell>
                             </asp:TableRow>
                              </asp:Table>  
+                            
                             <asp:PlaceHolder ID="PlaceholderRepeatFault" runat="server"></asp:PlaceHolder>
                                    
                             <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" CausesValidation="false" />
@@ -216,7 +218,7 @@
                                                         <asp:PlaceHolder ID="CommentPlace" runat="server">
                                                         <asp:UpdatePanel ID="CommentBoxUpdatePanel" runat="server">
                                                         <ContentTemplate>
-                                                        <asp:TextBox ID="CommentBox1" runat="server" ReadOnly="true" Visible="false" TextMode="MultiLine" MaxLength="250" EnableViewState="False"></asp:TextBox>
+                                                        <asp:TextBox ID="CommentBox1" runat="server" ReadOnly="true" Visible="false" TextMode="MultiLine" MaxLength="250" EnableViewState="true"></asp:TextBox>
                                                         <asp:Button ID="CommentBoxButton" runat="server" Text="" Style="display: none" CausesValidation="False" />
                                                         </ContentTemplate>
                                                         <Triggers>

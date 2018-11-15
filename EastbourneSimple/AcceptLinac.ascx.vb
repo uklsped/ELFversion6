@@ -158,7 +158,7 @@ Partial Public Class AcceptLinac
                         '    myscope.Complete()
                         'End Using
                     Catch ex As Exception
-                        DavesCode.ReusePC.LogError(ex)
+                        DavesCode.NewFaultHandling.LogError(ex)
                         RaiseLoadError()
                     End Try
                 Else
@@ -184,7 +184,7 @@ Partial Public Class AcceptLinac
                     End Using
                 End If
             Catch ex As Exception
-                DavesCode.ReusePC.LogError(ex)
+                DavesCode.NewFaultHandling.LogError(ex)
                 RaiseLoadError()
             End Try
         End If

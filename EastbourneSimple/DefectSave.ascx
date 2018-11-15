@@ -37,7 +37,9 @@
 <asp:HiddenField ID="HiddenField3" Value="" runat="server" />
 <%-- NO requirement 23/11/16 --%>
 <%-- Added back in 26/03/18 --%>
+This is for rad reset
 <uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11"  Tabby="Defect"  WriteName="Defect" visible="false"  runat="server" />
+<uc1:WriteDatauc ID="WriteDatauc2" LinacName="" UserReason="103"  Tabby="Major"  WriteName="Major" visible="false"  runat="server" />
 
                  <%--<asp:TableCell ID="c2" runat="server" HorizontalAlign="left" Width="250px">Radiographer Cleared Fault <br />--%>
                  
@@ -52,21 +54,7 @@
                                    <asp:DropDownList ID="Defect" runat="server" AutoPostBack="true" 
                                        AppendDataBoundItems="True" DataValueField="IncidentID" DateTextField ="Fault">
                                     <asp:ListItem>Select</asp:ListItem>                           
-                                   <%-- <asp:ListItem Value="-1">2T Error</asp:ListItem>
-                                    <asp:ListItem Value="-2">2R Error</asp:ListItem>
-                                    <asp:ListItem Value="-3">DOSE RATE MON</asp:ListItem>
-                                    <asp:ListItem Value="-4">D1 RLY OFF</asp:ListItem>
-                                    <asp:ListItem Value="-5">COMMUNICATION ERROR</asp:ListItem>                                
-                                    <asp:ListItem Value="-6">LEAVES NOT READY</asp:ListItem>
-                                    <asp:ListItem Value="-7">UNIFORMITY</asp:ListItem>                                   
-                                    <asp:ListItem Value="-8">HT CON K</asp:ListItem>                                
-                                    <asp:ListItem Value="-9">INTEGRITY NOT READY</asp:ListItem>                                 
-                                    <asp:ListItem Value="-10">IVIEW IMAGE QUALITY</asp:ListItem>
-                                    <asp:ListItem Value="-11">M.FIL V MON</asp:ListItem>
-                                    <asp:ListItem Value="-12">DOSE DIFF</asp:ListItem>
-                                    <asp:ListItem Value="-13">IVIEW FAULT</asp:ListItem>
-                                    <asp:ListItem Value="-14">XVI FAULT</asp:ListItem>
-                                    <asp:ListItem Value="-15">DAILY QA3 WARNING</asp:ListItem>--%>
+                                
                                     </asp:DropDownList>
                                     </ContentTemplate>
                                    </asp:UpdatePanel>
@@ -74,17 +62,8 @@
                                     <td></td>
                                     </tr>
 
-<%--
-<tr>
-<td class="style1">--%>
      </table>       
-<%--                <asp:Label ID="Label2" runat="server" Text=""></asp:Label>
-            </td>
-            <td></td>
-            <td>
-            </td>
-            </tr>
-            </table>--%>
+
   <table style="width:401px;" >
         <tr>
             <td class="style3">
@@ -101,9 +80,7 @@
                 <asp:ListItem Text="IT" Value="IT"></asp:ListItem>
                 <asp:ListItem Text="Other" Value="Other"></asp:ListItem>
             </asp:DropDownList>
-                     <%--</ContentTemplate>
-                                   </asp:UpdatePanel>--%>
-    <%--<asp:TextBox ID="AreaBox" runat="server" Text="" readonly="true" EnableViewState="False"></asp:TextBox>--%>
+                <asp:RequiredFieldValidator ID="AreaValidation" ControlToValidate="DropDownListArea" runat="server" InitialValue="Select" ErrorMessage="Please Select Area"></asp:RequiredFieldValidator>
             </td>
         </tr>
         <tr>
@@ -117,38 +94,39 @@
             <td class="style2">
                 Gantry Angle:</td>
             <td>
-    <asp:TextBox ID="TextBox2" runat="server"></asp:TextBox>
+    <asp:TextBox ID="GantryAngleBox" runat="server"></asp:TextBox>
     <asp:CompareValidator ID="GantryAngleCheck"
         runat="server" ErrorMessage="Please enter angle as integer" 
-                    ControlToValidate="TextBox2" Operator="DataTypeCheck" SetFocusOnError="True" 
-                    Type="Integer" Display="Static" ValidationGroup="defect"></asp:CompareValidator>
+                    ControlToValidate="GantryAngleBox" Operator="DataTypeCheck" SetFocusOnError="True" 
+                    Type="Integer" Display="Dynamic" ></asp:CompareValidator>
                 <asp:RangeValidator ID="GantryRangeCheck" runat="server" 
                     ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="True" 
-                    MaximumValue="360" MinimumValue="0" ControlToValidate="TextBox2" 
-                    Display="Static" ValidationGroup="defect"></asp:RangeValidator>
+                    MaximumValue="360" MinimumValue="0" ControlToValidate="GantryAngleBox" 
+                    Display="Dynamic"></asp:RangeValidator>
             </td>
         </tr>
         <tr>
             <td class="style2">
                 Collimator Angle:</td>
             <td>
-    <asp:TextBox ID="TextBox3" runat="server"></asp:TextBox>
+    <asp:TextBox ID="CollimatorAngleBox" runat="server"></asp:TextBox>
      <asp:CompareValidator ID="CollimatorAngleCheck"
         runat="server" ErrorMessage="Please enter angle as integer" 
-                ControlToValidate="TextBox3" Operator="DataTypeCheck" SetFocusOnError="True" 
-                Type="Integer" Display="Static" ValidationGroup="defect"></asp:CompareValidator>
+                ControlToValidate="CollimatorAngleBox" Operator="DataTypeCheck" SetFocusOnError="True" 
+                Type="Integer" Display="Dynamic" ></asp:CompareValidator>
                 <asp:RangeValidator ID="CollimatorRangeCheck" runat="server" 
                 ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="True" 
-                MaximumValue="360" MinimumValue="0" ControlToValidate="TextBox3" 
-                Display="Static" ValidationGroup="defect"></asp:RangeValidator>
+                MaximumValue="360" MinimumValue="0" ControlToValidate="CollimatorAngleBox" 
+                Display="Dynamic"></asp:RangeValidator>
             </td>
             </tr>
             <tr>
         <td class="style2">
                 Fault Description:</td>
             <td>
-              <asp:TextBox ID="TextBox4" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
-              </td> 
+              <asp:TextBox ID="FaultDescription" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
+                 <asp:RequiredFieldValidator ID="FaultDescriptionValidation" ControlToValidate="FaultDescription"  runat="server" ErrorMessage="Please Enter a Fault Description" Display="Dynamic"></asp:RequiredFieldValidator>
+                </td>
         </tr>
       <tr>
           <td class="style2">
@@ -156,7 +134,9 @@
           </td>
           <td>
               <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible ="true"></asp:TextBox>
-          </td>
+          
+          <asp:RequiredFieldValidator ID="RadActValidation" ControlToValidate="RadAct" runat="server" ErrorMessage="Please Enter the Corrective Action Taken" Display="Dynamic"></asp:RequiredFieldValidator>
+              </td>
       </tr>
          <tr>
             <td class="style2">
@@ -165,16 +145,33 @@
     <asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
     <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" validationexpression="^\d{7}$" Display="Static" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
             </td>
-              <tr>
-                    <td class="style2">Reportable Fault:</td>
-                    <td>
-                        <asp:CheckBox ID="RFCheckBox" runat="server" />
-                    </td>
-            </tr>
+             </tr>
+             <tr>
+                   <td class="style2">
+                  <asp:Label ID="Label1" runat="server" Text="Radiation Incident?"></asp:Label>
+                       </td>
+                          <td>
+                                     <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false" enabled="true">
+                                        <asp:ListItem Text="No" Value="False"></asp:ListItem>
+                                        <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                              </td>
+                          <td>
+                        <asp:RequiredFieldValidator 
+            ID="RadioIncidentValidation"
+            runat="server"
+            ControlToValidate="RadioIncident"
+            ErrorMessage="Please complete Radiation Incident Selection"
+                            Display="Dynamic"
+                            validationgroup="defect"
+            >
+        </asp:RequiredFieldValidator>
+                       </td>
+              </tr>
 
 <tr>
  <td class="style2">
- <asp:Button ID="SaveDefectButton" runat="server" Text="Save" ValidationGroup="defect" CausesValidation="true" />
+ <asp:Button ID="SaveDefectButton" runat="server" Text="Save" CausesValidation="false" Enabled ="false"  />
                                
 
                                </td>

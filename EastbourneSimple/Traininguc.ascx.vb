@@ -144,12 +144,13 @@ Partial Class Traininguc
         tabstate = "ActTab" + MachineName
     End Sub
 
-    Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
+    Public Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
         Dim machinelabel As String = MachineName & "Page.aspx';"
         Dim username As String = Userinfo
         Dim LinacStateID As String = ""
         Dim suspendvalue As String
         Dim repairvalue As String
+        Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
         DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
         HttpContext.Current.Application(BoxChanged) = Nothing
         If Tabused = "8" Then
@@ -160,101 +161,113 @@ Partial Class Traininguc
             Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
             wctrl.Visible = False
             Dim Action As String = Application(actionstate)
-            If Action = "Confirm" Then
-                'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                Dim Textboxcomment As TextBox = FindControl("CommentBox")
-                Dim comment As String = Textboxcomment.Text
-                suspendvalue = Application(suspstate)
-                repairvalue = Application(repairstate)
-                Radioselect = RadioButtonList1.SelectedItem.Value
-                'If this fails it writes an error to file but carries on.
-                DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
-                Application(appstate) = Nothing
-                Application(tabstate) = String.Empty
-                Select Case Radioselect
-                    Case 1
-                        'LinacStateID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, 7, MachineName, 5)
-                        Application(failstate) = Nothing
-                        Application(repairstate) = Nothing
-                        Application(suspstate) = Nothing
-                        'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                        If lastusergroup <> 3 Then
-                            Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            Response.Redirect(returnstring)
-                        Else
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        End If
-                    Case 2
-                        ' LinacStateID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, 7, MachineName, 5)
-                        Application(suspstate) = Nothing
-                        Application(failstate) = Nothing
-                        Application(repairstate) = 1
-                        'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                        If lastusergroup = 3 Then
-                            Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            Response.Redirect(returnstring)
-                        Else
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        End If
+            Dim Textboxcomment As TextBox = FindControl("CommentBox")
+            Dim comment As String = Textboxcomment.Text
+            Dim result As Boolean = False
 
-                    Case 3
-                        Application(suspstate) = 1
-                        Application(failstate) = Nothing
-                        'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                        If lastusergroup = 3 Then
-                            Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            Response.Redirect(returnstring)
-                        Else
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        End If
-                    Case 4
-                        'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                        If lastusergroup <> 3 Then
-                            Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            Response.Redirect(returnstring)
-                        Else
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        End If
-                    Case 5
-                        'LinacStateID = DavesCode.Reuse.SetStatus(username, "Planned Maintenance", 5, 7, MachineName, 5)
-                        'ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                        If lastusergroup <> 3 Then
-                            Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            Response.Redirect(returnstring)
-                        Else
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        End If
-                    Case 6
-                        'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                        If lastusergroup <> 3 Then
-                            Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            Response.Redirect(returnstring)
-                        Else
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        End If
-                    Case 102
-                        'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                        Application(failstate) = Nothing
-                        Application(repairstate) = Nothing
-                        Application(suspstate) = Nothing
-                        ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                End Select
+            suspendvalue = Application(suspstate)
+            repairvalue = Application(repairstate)
+            Radioselect = RadioButtonList1.SelectedItem.Value
+            result = DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
 
-                RadioButtonList1.SelectedIndex = -1
-                LogOffButton.BackColor = Drawing.Color.AntiqueWhite
-                'SelectCount = False
+            If result Then
+                If Action = "Confirm" Then
+                    'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                    'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+                    'Dim comment As String = Textboxcomment.Text
+                    'suspendvalue = Application(suspstate)
+                    'repairvalue = Application(repairstate)
+                    'Radioselect = RadioButtonList1.SelectedItem.Value
+                    'If this fails it writes an error to file but carries on.
+                    'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
+                    Application(appstate) = Nothing
+                    Application(tabstate) = String.Empty
+                    Select Case Radioselect
+                        Case 1
+                            'LinacStateID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, 7, MachineName, 5)
+                            Application(failstate) = Nothing
+                            Application(repairstate) = Nothing
+                            Application(suspstate) = Nothing
+                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            If lastusergroup <> 3 Then
+                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Response.Redirect(returnstring)
+                            Else
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            End If
+                        Case 2
+                            ' LinacStateID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, 7, MachineName, 5)
+                            Application(suspstate) = Nothing
+                            Application(failstate) = Nothing
+                            Application(repairstate) = 1
+                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            If lastusergroup = 3 Then
+                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Response.Redirect(returnstring)
+                            Else
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            End If
+
+                        Case 3
+                            Application(suspstate) = 1
+                            Application(failstate) = Nothing
+                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            If lastusergroup = 3 Then
+                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Response.Redirect(returnstring)
+                            Else
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            End If
+                        Case 4
+                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            If lastusergroup <> 3 Then
+                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Response.Redirect(returnstring)
+                            Else
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            End If
+                        Case 5
+                            'LinacStateID = DavesCode.Reuse.SetStatus(username, "Planned Maintenance", 5, 7, MachineName, 5)
+                            'ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            If lastusergroup <> 3 Then
+                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Response.Redirect(returnstring)
+                            Else
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            End If
+                        Case 6
+                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            If lastusergroup <> 3 Then
+                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Response.Redirect(returnstring)
+                            Else
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            End If
+                        Case 102
+                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            Application(failstate) = Nothing
+                            Application(repairstate) = Nothing
+                            Application(suspstate) = Nothing
+                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                    End Select
+
+                    RadioButtonList1.SelectedIndex = -1
+                    LogOffButton.BackColor = Drawing.Color.AntiqueWhite
+                    'SelectCount = False
 
 
 
-            Else
-                Application(appstate) = Nothing
-                strScript = "<script>"
-                strScript += "alert('How have you got to here?');"
-                strScript += "window.location='"
-                strScript += machinelabel
-                strScript += "</script>"
-                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                    'Else
+                    '    'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
+                    '    Application(appstate) = Nothing
+                    '    strScript = "<script>"
+                    '    strScript += "alert('How have you got to here?');"
+                    '    strScript += "window.location='"
+                    '    strScript += machinelabel
+                    '    strScript += "</script>"
+                    '    ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                End If
             End If
         End If
 
@@ -291,7 +304,7 @@ Partial Class Traininguc
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = MachineName
-            CType(objDefect, DefectSavePark).ParentControl = 4
+            CType(objDefect, DefectSavePark).ParentControl = 8
             AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
             AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
             'AddHandler CType(objDefect, DefectSavePark).UpdateUnrecoverableClosed Address Of Update
@@ -299,6 +312,7 @@ Partial Class Traininguc
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = MachineName
+            CType(objDefect, DefectSave).ParentControl = 8
         End If
 
         PlaceHolder4.Controls.Add(objDefect)

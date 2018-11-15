@@ -128,9 +128,7 @@
     </asp:UpdatePanel>
     <br />
     <br />
-
-   
-                                   <div style="background-color: Green; height: 30px; width: 400px; margin: 0; padding: 0">
+                                       <div style="background-color: Green; height: 30px; width: 400px; margin: 0; padding: 0">
                                         Today's Repeat Faults
                                        <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table3"
                                            style="font-family: Arial; font-size: 10pt; width: 400px; color: white; border-collapse: collapse; height: 100%;">
