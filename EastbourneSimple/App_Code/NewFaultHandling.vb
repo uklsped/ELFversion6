@@ -8,8 +8,9 @@ Namespace DavesCode
 
     Public Class NewFaultHandling
         'used in Viewopenfaults, DeviceRepeatfault, DeviceSave,DeviceSavePark
-        Public Shared Function InsertRepeatFault(ByVal Description As String, ByVal ReportedBy As String, ByVal DateReported As DateTime, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal Device As String, ByVal IncidentID As Integer, ByVal PatientID As String, ByVal ConcessionNumber As String, ByVal Reportable As Boolean) As Integer
-            Dim LastFault As Integer = IncidentID
+        'Public Shared Function InsertRepeatFault(ByVal Description As String, ByVal ReportedBy As String, ByVal DateReported As DateTime, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal Device As String, ByVal IncidentID As Integer, ByVal PatientID As String, ByVal ConcessionNumber As String, ByVal Reportable As Boolean) As Integer
+        Public Shared Function InsertRepeatFault(ByVal FaultP As DavesCode.FaultParameters) As Integer
+            Dim LastFault As Integer = FaultP.SelectedIncident
             Dim conn As SqlConnection
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString)
@@ -30,31 +31,31 @@ Namespace DavesCode
                     incidentfault.CommandType = CommandType.StoredProcedure
                     incidentfault.Transaction = ObjTransaction
                     incidentfault.Parameters.Add("@Description", System.Data.SqlDbType.NVarChar, 250)
-                    incidentfault.Parameters("@Description").Value = Description
+                    incidentfault.Parameters("@Description").Value = FaultP.FaultDescription
                     incidentfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 50)
-                    incidentfault.Parameters("@ReportedBy").Value = ReportedBy
+                    incidentfault.Parameters("@ReportedBy").Value = FaultP.UserInfo
                     incidentfault.Parameters.Add("@DateReported", System.Data.SqlDbType.DateTime)
-                    incidentfault.Parameters("@DateReported").Value = DateReported
+                    incidentfault.Parameters("@DateReported").Value = FaultP.DateInserted
                     incidentfault.Parameters.Add("@Area", System.Data.SqlDbType.NVarChar, 20)
-                    incidentfault.Parameters("@Area").Value = Area
+                    incidentfault.Parameters("@Area").Value = FaultP.Area
                     incidentfault.Parameters.Add("@Energy", System.Data.SqlDbType.NVarChar, 10)
-                    incidentfault.Parameters("@Energy").Value = Energy
+                    incidentfault.Parameters("@Energy").Value = FaultP.Energy
                     incidentfault.Parameters.Add("@GantryAngle", System.Data.SqlDbType.NVarChar, 3)
-                    incidentfault.Parameters("@GantryAngle").Value = GantryAngle
+                    incidentfault.Parameters("@GantryAngle").Value = FaultP.GantryAngle
                     incidentfault.Parameters.Add("@CollimatorAngle", System.Data.SqlDbType.NVarChar, 3)
-                    incidentfault.Parameters("@CollimatorAngle").Value = CollimatorAngle
+                    incidentfault.Parameters("@CollimatorAngle").Value = FaultP.CollimatorAngle
                     incidentfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
-                    incidentfault.Parameters("@Linac").Value = Device
+                    incidentfault.Parameters("@Linac").Value = FaultP.Linac
                     incidentfault.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
-                    incidentfault.Parameters("@IncidentID").Value = IncidentID
+                    incidentfault.Parameters("@IncidentID").Value = FaultP.SelectedIncident
                     incidentfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.VarChar, 7)
-                    incidentfault.Parameters("@BSUHID").Value = PatientID
+                    incidentfault.Parameters("@BSUHID").Value = FaultP.PatientID
                     incidentfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
-                    incidentfault.Parameters("@ConcessionNumber").Value = ConcessionNumber
+                    incidentfault.Parameters("@ConcessionNumber").Value = FaultP.ConcessionNumber
                     incidentfault.Parameters.Add("@OriginalFaultID", System.Data.SqlDbType.Int)
                     incidentfault.Parameters("@OriginalFaultID").Value = -1
                     incidentfault.Parameters.Add("@RadiationIncident", System.Data.SqlDbType.Bit)
-                    incidentfault.Parameters("@RadiationIncident").Value = Reportable
+                    incidentfault.Parameters("@RadiationIncident").Value = FaultP.RadioIncident
                     incidentfault.ExecuteNonQuery()
                     incidentfault.Parameters.Clear()
 

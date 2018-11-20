@@ -13,13 +13,14 @@ Partial Class controls_DeviceRepeatFaultuc
     Const RepeatFault As String = "Repeatfault"
     Const CancelFaultReturn As String = "Cancel"
     Const EMPTYSTRING As String = ""
+
     'Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
     Public Event UpdateRepeatFault(ByVal Tab As String, ByVal User As String)
     Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        conn = New SqlConnection(connectionString1)
+        'Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        'conn = New SqlConnection(connectionString1)
 
         If Device Like "T?" Then
                 TomoLoad()
@@ -108,42 +109,74 @@ Partial Class controls_DeviceRepeatFaultuc
         End If
     End Sub
     Public Sub SaveRepeatFaultbutton()
+        Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
+        Dim UserInfo As String = String.Empty
+        CreateFaultParams(UserInfo, FaultParams)
         Dim faultid As Integer = -1
-        Dim Energy As String = String.Empty
-        Dim Description As String = String.Empty
-        Dim ReportedBy As String = String.Empty
-        Dim DateReported As DateTime = Now()
-        Dim Area As String = String.Empty
-        Dim CollimatorAngle As String = String.Empty
-        Dim GantryAngle As String = String.Empty
-        Dim PatientId As String = String.Empty
-        Dim RadioIncidentSelected As String
-        If Device Like "T?" Then
-            Area = ErrorTextBox.Text
-            Description = DescriptionBoxT.Text
-            PatientId = PatientIDBoxT.Text
 
-        Else
-            Energy = DropDownListEnergy.SelectedItem.Text
-            If Energy = "Select" Then
-                Energy = String.Empty
-            End If
-            Area = AreaBox.Text
-            GantryAngle = GantryAngleBox.Text
-            CollimatorAngle = CollimatorAngleBox.Text
-            Description = DescriptionBox.Text
-            PatientId = PatientIDBox.Text
 
-        End If
-        RadioIncidentSelected = RadioIncident.SelectedItem.Value
 
-        faultid = DavesCode.NewFaultHandling.InsertRepeatFault(Description, ReportedBy, DateReported, Area, Energy, GantryAngle, CollimatorAngle, Device, IncidentID, PatientId, ConcessionN, RadioIncidentSelected)
+        'Dim Energy As String = String.Empty
+        'Dim Description As String = String.Empty
+        'Dim ReportedBy As String = String.Empty
+        'Dim DateReported As DateTime = Now()
+        'Dim Area As String = String.Empty
+        'Dim CollimatorAngle As String = String.Empty
+        'Dim GantryAngle As String = String.Empty
+        'Dim PatientId As String = String.Empty
+        'Dim RadioIncidentSelected As String
+        'If Device Like "T?" Then
+        '    Area = ErrorTextBox.Text
+        '    Description = DescriptionBoxT.Text
+        '    PatientId = PatientIDBoxT.Text
+
+        'Else
+        '    Energy = DropDownListEnergy.SelectedItem.Text
+        '    If Energy = "Select" Then
+        '        Energy = String.Empty
+        '    End If
+        '    Area = AreaBox.Text
+        '    GantryAngle = GantryAngleBox.Text
+        '    CollimatorAngle = CollimatorAngleBox.Text
+        '    Description = DescriptionBox.Text
+        '    PatientId = PatientIDBox.Text
+
+        'End If
+        'RadioIncidentSelected = RadioIncident.SelectedItem.Value
+
+        faultid = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
         If Not faultid = -1 Then
-            RaiseEvent UpdateRepeatFault(RepeatFault, ReportedBy)
+
+            RaiseEvent UpdateRepeatFault(RepeatFault, UserInfo)
         Else
             RaiseError()
         End If
     End Sub
+    Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultP As DavesCode.FaultParameters)
+        If Device Like "T?" Then
+            FaultP.Area = ErrorTextBox.Text
+            FaultP.FaultDescription = DescriptionBoxT.Text
+            FaultP.PatientID = PatientIDBoxT.Text
+        Else
+            Dim Energy As String = DropDownListEnergy.SelectedItem.Text
+            If Energy = "Select" Then
+                Energy = String.Empty
+            End If
+            FaultP.Area = AreaBox.Text
+            FaultP.GantryAngle = GantryAngleBox.Text
+            FaultP.CollimatorAngle = CollimatorAngleBox.Text
+            FaultP.FaultDescription = DescriptionBox.Text
+            FaultP.PatientID = PatientIDBox.Text
+
+        End If
+        FaultP.SelectedIncident = IncidentID
+        FaultP.Linac = Device
+        FaultP.UserInfo = UserInfo
+        FaultP.DateInserted = Now()
+        FaultP.ConcessionNumber = ConcessionN
+        FaultP.RadioIncident = RadioIncident.SelectedItem.Value
+    End Sub
+
     Protected Sub RaiseError()
         Dim strScript As String = "<script>"
 

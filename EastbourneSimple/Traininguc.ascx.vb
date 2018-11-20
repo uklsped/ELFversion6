@@ -295,7 +295,7 @@ Partial Class Traininguc
         CType(objQA, WebUserControl2).TabName = 8
         PlaceHolder3.Controls.Add(objQA)
 
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
 
         Dim objDefect As UserControl

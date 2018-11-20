@@ -310,7 +310,7 @@ Partial Class ErunupUserControl
         PlaceHolderModalities.Controls.Add(objQA)
 
         'Sets up Defect Control
-        AddHandler CType(Objcon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
+        AddHandler CType(Objcon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
         AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
         Dim objDefect As UserControl
         If LinacName Like "T?" Then

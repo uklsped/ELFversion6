@@ -162,7 +162,7 @@ Partial Class PhysicsQAuc
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = MachineName
 
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
         Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
         CType(objDefect, DefectSave).ID = "DefectDisplay"

@@ -225,11 +225,9 @@ Partial Class ClinicalUserControl
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(objCon)
         PlaceHolder2.Visible = True
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
 
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
         Dim objDefect As UserControl
         If LinacName Like "T?" Then
             objDefect = Page.LoadControl("DefectSavePark.ascx")

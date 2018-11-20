@@ -356,7 +356,7 @@ Partial Class Repairuc
         lockctrl.LinacName = MachineName
 
 
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
         Dim objDefect As UserControl
         If MachineName Like "T?" Then

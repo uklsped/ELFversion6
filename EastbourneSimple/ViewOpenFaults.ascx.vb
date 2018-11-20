@@ -39,7 +39,7 @@ Partial Class ViewOpenFaults
     End Property
 
 
-    Public Event UpDateDefect(ByVal EquipmentName As String, ByVal incidentID As String)
+    Public Event UpdateFaultClosedDisplay(ByVal EquipmentName As String, ByVal incidentID As String)
     Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
 
     Public Property TabName() As String
@@ -49,6 +49,7 @@ Partial Class ViewOpenFaults
         'AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
         AddHandler WriteDatauc3.UserApproved, AddressOf UserApprovedEvent
         AddHandler ManyFaultGriduc.ShowFault, AddressOf NewFaultEvent
+
 
         suspstate = "Suspended" + LinacName
         failstate = "FailState" + LinacName
@@ -75,22 +76,15 @@ Partial Class ViewOpenFaults
         RadRow = HighlightRow()
             bindGridView()
 
-            'If Not IsPostBack Then
-            '    AddEnergyItem()
-
-            'End If
-            Dim loadIncidentNumber As Integer
+        Dim loadIncidentNumber As Integer
             technicalstate = "techstate" + LinacName
             Dim previousstate As String
             Dim SqlDataSource2 As New SqlDataSource()
-            'Dim wrtctrl1 As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
-            'wrtctrl1.LinacName = LinacName
-            Dim wrtctrl3 As WriteDatauc = CType(FindControl("WriteDatauc3"), WriteDatauc)
-            wrtctrl3.LinacName = LinacName
+        Dim wrtctrl3 As WriteDatauc = CType(FindControl("WriteDatauc3"), WriteDatauc)
+        wrtctrl3.LinacName = LinacName
 
-
-            'Dim loadfaultNumber As Integer = 0 ' this makes sure that if there isn't a new fault loadfaultnumber is zero
-            loadIncidentNumber = 0
+        'Dim loadfaultNumber As Integer = 0 ' this makes sure that if there isn't a new fault loadfaultnumber is zero
+        loadIncidentNumber = 0
             Dim conn As SqlConnection
             Dim comm As SqlCommand
             Dim reader As SqlDataReader
@@ -105,12 +99,12 @@ Partial Class ViewOpenFaults
                 reader = comm.ExecuteReader() 'checks to see if there is a new fault - returns true or false if record read
                 If reader.HasRows Then
 
-                    Dim Manyfaultgrid As ManyFaultGriduc = CType(FindControl("ManyFaultGriduc"), ManyFaultGriduc)
-                    Manyfaultgrid.MachineName = LinacName
-                    Manyfaultgrid.NewFault = True
+                'Dim Manyfaultgrid As ManyFaultGriduc = CType(FindControl("ManyFaultGriduc"), ManyFaultGriduc)
+                'Manyfaultgrid.MachineName = LinacName
+                'Manyfaultgrid.NewFault = True
 
-                    'This is to get the page that the fault was reported from - possibly a better way?
-                    Application(laststate) = DavesCode.Reuse.GetLastState(LinacName, -1)
+                'This is to get the page that the fault was reported from - possibly a better way?
+                Application(laststate) = DavesCode.Reuse.GetLastState(LinacName, -1)
                     previousstate = Application(laststate)
                 Else 'If there isn't a new fault then populate the grid with all of the open faults
                     'This could have come from a valid page or opened up again because fault wasn't closed. In that case
@@ -240,7 +234,7 @@ Partial Class ViewOpenFaults
                         exists = DavesCode.NewFaultHandling.InsertNewConcession(ConcessionDescription, LinacName, incidentID, Userinfo, ConcessionAction)
                         If exists = -1 Then
 
-                            RaiseEvent UpDateDefectDisplay(LinacName)
+                            'RaiseEvent UpDateDefectDisplay(LinacName)
                             RaiseError()
                             'strScript += "alert('Problem Updating Fault. Please call Administrator');"
                             'strScript += "</script>"
@@ -253,9 +247,12 @@ Partial Class ViewOpenFaults
                         End If
 
                     Else
-                        TRACKINGID = DavesCode.NewFaultHandling.UpdateTracking(CommentText, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, ConcessionActive)
+                        TRACKINGID = DavesCode.NewFaultHandling.UpdateTracking(CommentText, assignuser, DropDownList1.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, 0)
                         If TRACKINGID = -1 Then
                             RaiseError()
+                        End If
+                        If selecttext = "Closed" Then
+                            RaiseEvent UpdateFaultClosedDisplay(LinacName, incidentID)
                         End If
                     End If
                     CommentBox1.Text = ""
@@ -925,7 +922,7 @@ Partial Class ViewOpenFaults
     End Sub
 
     Public Sub RebindViewFault()
-
+        RadRow = HighlightRow()
         bindGridView()
 
     End Sub

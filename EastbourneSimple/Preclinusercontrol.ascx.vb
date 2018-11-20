@@ -261,14 +261,14 @@ Partial Class Preclinusercontrol
 
         PlaceHolder1.Controls.Add(objCon)
 
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefect, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
         Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = LinacName
         CType(objDefect, DefectSave).ParentControl = 2
         PlaceHolder3.Controls.Add(objDefect)
-        AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
+        'AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
         AddHandler CType(objDefect, DefectSave).UpdateViewFault, AddressOf Update_ViewOpenFaults
 
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)

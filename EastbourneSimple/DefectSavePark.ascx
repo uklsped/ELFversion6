@@ -90,7 +90,28 @@
                         <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
                     </td>
                 </tr>
-                
+                 <tr>
+                   <td class="style2">
+                  <asp:Label ID="Label3" runat="server" Text="Radiation Incident?"></asp:Label>
+                       </td>
+                          <td>
+                                     <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false" enabled="true">
+                                        <asp:ListItem Text="No" Value="False"></asp:ListItem>
+                                        <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                              </td>
+                          <td>
+                        <asp:RequiredFieldValidator 
+            ID="RadioIncidentValidation"
+            runat="server"
+            ControlToValidate="RadioIncident"
+            ErrorMessage="Please complete Radiation Incident Selection"
+                            Display="Dynamic"
+                            validationgroup="defect"
+            >
+        </asp:RequiredFieldValidator>
+                       </td>
+              </tr>
             </table>
             <table>
                 <tr>
@@ -109,11 +130,11 @@
                                         <asp:ListItem Text="No" Value="-1"></asp:ListItem>
                                         <asp:ListItem Text="Yes" Value="1"></asp:ListItem>
                                     </asp:RadioButtonList>
-                                    <asp:Label ID="Label2" runat="server" Text="Radiation Incident?"></asp:Label>
+                                    <%--<asp:Label ID="Label2" runat="server" Text="Radiation Incident?"></asp:Label>
                                      <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false">
                                         <asp:ListItem Text="No" Value="-1"></asp:ListItem>
                                         <asp:ListItem Text="Yes" Value="1"></asp:ListItem>
-                                    </asp:RadioButtonList>
+                                    </asp:RadioButtonList>--%>
                                     <asp:Button ID="UnRecoverableSave" runat="server" CausesValidation="False" Enabled="False" Text="Save" />
                                 </asp:View>
                             </asp:MultiView>
@@ -128,6 +149,7 @@
     </asp:UpdatePanel>
     <br />
     <br />
+   
                                        <div style="background-color: Green; height: 30px; width: 400px; margin: 0; padding: 0">
                                         Today's Repeat Faults
                                        <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table3"

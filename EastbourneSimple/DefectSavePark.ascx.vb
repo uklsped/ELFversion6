@@ -27,6 +27,7 @@ Partial Class DefectSavePark
     Public Event UpdateUnrecoverableClosed(ByVal EquipmentName As String)
     Private Valid As Boolean = False
 
+    Dim SelectedIncident As Integer = 0
     Public Property LinacName() As String
     Public Property ParentControl() As String
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
@@ -243,32 +244,33 @@ Partial Class DefectSavePark
 
     Sub NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
         Dim usergroupselected As Integer = 0
-        Dim LastIncident As Integer
         Dim IncidentID As Integer
         Dim FaultSelected As String = EMPTYSTRING
         Dim GridViewEnergy As GridView
         Dim GridViewImage As GridView
         Dim grdviewI As GridView = Me.Parent.FindControl("GridViewImage")
         Dim Status As String = EMPTYSTRING
-        LastIncident = HiddenField1.Value
+        Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
+        SelectedIncident = HiddenField1.Value
+        CreateFaultParams(UserInfo, FaultParams)
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Try
 
             Using myscope As TransactionScope = New TransactionScope()
 
-                If LastIncident = UnRecoverableID Then
+                If SelectedIncident = UnRecoverableID Then
 
                     FaultSelected = FaultOpenClosed.SelectedItem.Text
                     If FaultSelected.Equals(FaultAnswerYes) Then
                         usergroupselected = DavesCode.Reuse.GetRole(UserInfo)
                         If usergroupselected.Equals(Radiographer) Then
-                            IncidentID = CreateNewFault(UserInfo, "Concession")
+                            IncidentID = DavesCode.NewFaultHandling.InsertNewFault("Concession", FaultParams)
                             Status = Concession
                             BindDefectData()
                             RaiseEvent UpDateDefect(LinacName, IncidentID)
                             RaiseEvent UpdateViewFault(LinacName)
                         Else
-                            IncidentID = CreateNewFault(UserInfo, "Closed")
+                            IncidentID = DavesCode.NewFaultHandling.InsertNewFault("Closed", FaultParams)
                         End If
 
                         'Unrecoverable fault isn't closed
@@ -282,7 +284,7 @@ Partial Class DefectSavePark
                         Dim Comment As String = DaTxtBox.Text
                         Dim iView As Boolean = False
                         Dim XVI As Boolean = False
-                        Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
+
                         Select Case ParentControl
 
                             Case 1, 7
@@ -314,8 +316,7 @@ Partial Class DefectSavePark
 
                 Else 'This is a recoverable fault - So won't have concession number?
                     Dim faultid As Integer = -1
-                    IncidentID = HiddenField1.Value
-                    faultid = DavesCode.NewFaultHandling.InsertRepeatFault(FaultDescription.Text, UserInfo, DateTime.Parse(HiddenField2.Value), Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, LinacName, IncidentID, PatientIDBox.Text, ConcessionNumber, False)
+                    faultid = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
                     If Not faultid = -1 Then
                         'RaiseEvent UpdateRepeatFault(RepeatFault, ReportedBy)
                         BindDefectData()
@@ -333,19 +334,23 @@ Partial Class DefectSavePark
         ClearsForm()
     End Sub
 
-    Protected Function CreateNewFault(ByVal UserInfo As String, ByVal State As String) As Integer
-        Dim IncidentID As Integer = 0
-        Dim DateInserted As DateTime = DateTime.Parse(HiddenField2.Value)
-        Dim Description As String = FaultDescription.Text
-        Dim ConcessionNumber = EMPTYSTRING
-        Dim Assigned = EMPTYSTRING
-        Dim TrackingComment = EMPTYSTRING
-        Dim TrackAction = EMPTYSTRING
-        Dim RadioIncidentSelected As String = False
-        'RadioIncidentSelected = RadioIncident.SelectedItem.Value
-        IncidentID = DavesCode.NewFaultHandling.InsertNewFault(State, LinacName, DateInserted, Description, UserInfo, Accuray.Text, ErrorCode.Text, EMPTYSTRING, EMPTYSTRING, PatientIDBox.Text, FaultDescription.Text, RadAct.Text, RadioIncidentSelected)
-        Return IncidentID
-    End Function
+    Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultParams As DavesCode.FaultParameters)
+
+        FaultParams.SelectedIncident = SelectedIncident
+        FaultParams.Linac = LinacName
+        FaultParams.DateInserted = DateTime.Parse(HiddenField2.Value)
+        FaultParams.UserInfo = UserInfo
+        FaultParams.Area = Accuray.Text
+        FaultParams.Energy = ErrorCode.Text
+        FaultParams.GantryAngle = EMPTYSTRING
+        FaultParams.CollimatorAngle = EMPTYSTRING
+        FaultParams.PatientID = PatientIDBox.Text
+        FaultParams.FaultDescription = FaultDescription.Text
+        FaultParams.ConcessionNumber = Concession
+        FaultParams.RadAct = RadAct.Text
+        FaultParams.RadioIncident = RadioIncident.SelectedItem.Value
+
+    End Sub
 
     Private Sub ForceFocus(ByVal ctrl As Control)
         ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + ctrl.ClientID + "').focus();}, 100);", True)

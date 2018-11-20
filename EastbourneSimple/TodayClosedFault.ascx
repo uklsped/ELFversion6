@@ -20,7 +20,7 @@
        <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" CellPadding="4" 
                         DataKeyNames="incidentID"  
                         style="top: 550px; left: 10px; height: 162px; width: 550px;" 
-                        ForeColor="#333333" GridLines="None" AllowPaging="True"  PageSize="2">
+                        ForeColor="#333333" GridLines="None" AllowPaging="True"  PageSize="10">
                         
 
 <RowStyle BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Center" />

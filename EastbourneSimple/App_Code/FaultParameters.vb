@@ -1,17 +1,20 @@
 ﻿Namespace DavesCode
 
     Public Class FaultParameters
-        Public Linac As String
+
+        Public SelectedIncident As Integer = 0
+        Public Linac As String = String.Empty
         Public DateInserted As DateTime
-        Public FaultDescription As String
-        Public UserInfo As String
-        Public Area As String
-        Public Energy As String
-        Public GantryAngle As String
-        Public CollimatorAngle As String
-        Public PatientID As String
-        Public RadAct As String
-        Public RadioIncident As String
+        Public FaultDescription As String = String.Empty
+        Public UserInfo As String = String.Empty
+        Public Area As String = String.Empty
+        Public Energy As String = String.Empty
+        Public GantryAngle As String = String.Empty
+        Public CollimatorAngle As String = String.Empty
+        Public PatientID As String = String.Empty
+        Public RadAct As String = String.Empty
+        Public ConcessionNumber As String = String.Empty
+        Public RadioIncident As String = String.Empty
     End Class
 
 End Namespace
