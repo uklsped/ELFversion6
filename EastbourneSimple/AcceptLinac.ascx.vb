@@ -21,7 +21,7 @@ Partial Public Class AcceptLinac
     Public Event EngRunuploaded(ByVal connectionString As String)
     Public Event PreRunuploaded(ByVal connectionString As String)
 
-    Private LinacObj As LinacState
+    'Private LinacObj As LinacState
 
     Public Property Tabby() As String
         Get
@@ -82,7 +82,7 @@ Partial Public Class AcceptLinac
 
         Dim reload As String
         Dim clinstate As String = "Clinical"
-        LinacObj = Application(LinacName)
+        'LinacObj = Application(LinacName)
         'reload = LinacObj.LinacStatus
         reload = DavesCode.Reuse.GetLastState(MachineName, 0)
         'from http://spacetech.dk/vb-net-string-compare-not-equal.html

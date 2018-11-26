@@ -3,24 +3,24 @@
 <script runat="server">
 
     Sub Application_Start(ByVal sender As Object, ByVal e As EventArgs)
-        Application("LA1loaded") = 0
-        Application("LA2loaded") = 0
-        Application("LA3loaded") = 0
-        Application("LA4loaded") = 0
-        ' AppConfig.Init()
-        Dim sf As BaseBallTeam = New BaseBallTeam("AppTrial", 9)
-        Application("LA9") = sf
-        Dim E1 As LinacState = New LinacState()
-        Application("E1") = E1
+        'Application("LA1loaded") = 0
+        'Application("LA2loaded") = 0
+        'Application("LA3loaded") = 0
+        'Application("LA4loaded") = 0
+        '' AppConfig.Init()
+        'Dim sf As BaseBallTeam = New BaseBallTeam("AppTrial", 9)
+        'Application("LA9") = sf
+        'Dim E1 As LinacState = New LinacState()
+        'Application("E1") = E1
         ' Code that runs on application startup
     End Sub
 
     Sub Application_End(ByVal sender As Object, ByVal e As EventArgs)
         ' Code that runs on application shutdown
-        Application("LA1loaded") = 0
-        Application("LA2loaded") = 0
-        Application("LA3loaded") = 0
-        Application("LA4loaded") = 0
+        'Application("LA1loaded") = 0
+        'Application("LA2loaded") = 0
+        'Application("LA3loaded") = 0
+        'Application("LA4loaded") = 0
     End Sub
 
     Sub Application_Error(ByVal sender As Object, ByVal e As EventArgs)

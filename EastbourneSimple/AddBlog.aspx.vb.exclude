@@ -1,0 +1,22 @@
+﻿Imports System.Data
+Imports System.Configuration
+Imports System.Data.SqlClient
+Partial Class AddBlog
+
+    Inherits System.Web.UI.Page
+
+    Protected Sub Submit(sender As Object, e As EventArgs)
+        Dim query As String = "INSERT INTO [Blogs] VALUES (@Title, @Body)"
+        Dim conString As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Using con As New SqlConnection(conString)
+            Using cmd As New SqlCommand(query, con)
+                cmd.Parameters.AddWithValue("@Title", txtTitle.Text)
+                cmd.Parameters.AddWithValue("@Body", txtBody.Text)
+                con.Open()
+                cmd.ExecuteNonQuery()
+                con.Close()
+                Response.Redirect("~/BlogPage.aspx")
+            End Using
+        End Using
+    End Sub
+End Class
