@@ -22,10 +22,10 @@ Partial Class DefectSavePark
     Const Closed As String = "Closed"
     Const Radiographer As Integer = 3
     Const EMPTYSTRING As String = ""
-    Public Event UpDateDefect(ByVal EquipmentName As String, ByVal incidentID As String)
-    Public Event UpdateViewFault(ByVal EquipmentName As String)
-    Public Event UpdateUnrecoverableClosed(ByVal EquipmentName As String)
+    Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
+    Public Event UpdateFaultClosedDisplays(ByVal EquipmentName As String, ByVal IncidentID As String)
     Private Valid As Boolean = False
+    Dim ConcessionNumber As String = ""
 
     Dim SelectedIncident As Integer = 0
     Public Property LinacName() As String
@@ -53,7 +53,7 @@ Partial Class DefectSavePark
         Dim Action As String = Application(actionstate)
         'Dim Energy As String
 
-        Dim ConcessionNumber As String = Defect.SelectedItem.ToString
+        ConcessionNumber = Defect.SelectedItem.ToString
         If ConcessionNumber.Contains("ELF") Then
             ConcessionNumber = Left(ConcessionNumber, 7)
         End If
@@ -193,8 +193,8 @@ Partial Class DefectSavePark
         index = Defect.Items.IndexOf(result)
         If Integer.TryParse(incidentIDstring, incidentID) Then
 
-            HiddenField1.Value = incidentID
-            HiddenField2.Value = Now().ToString
+            SelectedIncidentID.Value = incidentID
+            TimeFaultSelected.Value = Now().ToString
 
             conn1 = New SqlConnection(connectionString)
             If incidentID > 0 Then 'concession
@@ -221,7 +221,7 @@ Partial Class DefectSavePark
             End If
 
         Else
-            HiddenField1.Value = -1000
+            SelectedIncidentID.Value = -1000
         End If
 
     End Sub
@@ -234,6 +234,7 @@ Partial Class DefectSavePark
     Protected Sub ClearsForm()
         FaultTypeSave.ActiveViewIndex = -1
         FaultOpenClosed.SelectedIndex = -1
+        RadioIncident.SelectedIndex = -1
         ErrorCode.Text = Nothing
         Accuray.Text = Nothing
         FaultDescription.Text = Nothing
@@ -243,6 +244,7 @@ Partial Class DefectSavePark
     End Sub
 
     Sub NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
+        Dim Result As Boolean = False
         Dim usergroupselected As Integer = 0
         Dim IncidentID As Integer
         Dim FaultSelected As String = EMPTYSTRING
@@ -251,85 +253,95 @@ Partial Class DefectSavePark
         Dim grdviewI As GridView = Me.Parent.FindControl("GridViewImage")
         Dim Status As String = EMPTYSTRING
         Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
-        SelectedIncident = HiddenField1.Value
+        SelectedIncident = SelectedIncidentID.Value
         CreateFaultParams(UserInfo, FaultParams)
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        Try
+        'Try
 
-            Using myscope As TransactionScope = New TransactionScope()
+        'Using myscope As TransactionScope = New TransactionScope()
 
-                If SelectedIncident = UnRecoverableID Then
+        If SelectedIncident = UnRecoverableID Then
 
-                    FaultSelected = FaultOpenClosed.SelectedItem.Text
-                    If FaultSelected.Equals(FaultAnswerYes) Then
-                        usergroupselected = DavesCode.Reuse.GetRole(UserInfo)
-                        If usergroupselected.Equals(Radiographer) Then
-                            IncidentID = DavesCode.NewFaultHandling.InsertNewFault("Concession", FaultParams)
+            FaultSelected = FaultOpenClosed.SelectedItem.Text
+            'If FaultSelected.Equals(FaultAnswerYes) Then
+            Select Case FaultSelected
+                Case FaultAnswerYes
+                    usergroupselected = DavesCode.Reuse.GetRole(UserInfo)
+                    If usergroupselected.Equals(Radiographer) Then
+                        Result = DavesCode.NewFaultHandling.InsertNewFault("Concession", FaultParams)
+                        If Result Then
                             Status = Concession
+                            SetFaults(True)
                             BindDefectData()
-                            RaiseEvent UpDateDefect(LinacName, IncidentID)
-                            RaiseEvent UpdateViewFault(LinacName)
+                            RaiseEvent UpdateViewOpenFaults(LinacName)
                         Else
-                            IncidentID = DavesCode.NewFaultHandling.InsertNewFault("Closed", FaultParams)
+                            RaiseError()
                         End If
+                    Else
+                        Result = DavesCode.NewFaultHandling.InsertNewFault("Closed", FaultParams)
+                        If Result Then
+                            RaiseEvent UpdateFaultClosedDisplays(LinacName, IncidentID)
+                        Else
+                            RaiseError()
+                        End If
+                    End If
+                    'Unrecoverable fault isn't closed
+                Case FaultAnswerNo
+                    'ElseIf FaultSelected.Equals(FaultAnswerNo) Then
+                    'Write equivalent of report fault assume only one fault at a time at the moment
+                    'Close current tab
 
-                        'Unrecoverable fault isn't closed
-                    ElseIf FaultSelected.Equals(FaultAnswerNo) Then
-                        'Write equivalent of report fault assume only one fault at a time at the moment
-                        'Close current tab
-                        Dim result As String
-                        Dim susstate As String = Application(suspstate)
-                        Dim repstate As String = Application(repairstate)
-                        Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
-                        Dim Comment As String = DaTxtBox.Text
-                        Dim iView As Boolean = False
-                        Dim XVI As Boolean = False
+                    Dim susstate As String = Application(suspstate)
+                    Dim repstate As String = Application(repairstate)
+                    Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
+                    Dim Comment As String = DaTxtBox.Text
+                    Dim iView As Boolean = False
+                    Dim XVI As Boolean = False
 
-                        Select Case ParentControl
+                    Select Case ParentControl
 
-                            Case 1, 7
-                                result = DavesCode.NewEngRunup.CommitRunup(GridViewEnergy, GridViewImage, LinacName, ParentControl, UserInfo, Comment, Valid, True, False, FaultParams)
+                        Case 1, 7
+                            Result = DavesCode.NewEngRunup.CommitRunup(GridViewEnergy, GridViewImage, LinacName, ParentControl, UserInfo, Comment, Valid, True, False, FaultParams)
 
-                            Case 2
-                                DavesCode.Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
-                                result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, Comment, iView, XVI, Valid, True, FaultParams)
-                            Case 3
-                                DavesCode.NewCommitClinical.CommitClinical(LinacName, UserInfo, True, FaultParams)
-                                Application(suspstate) = 1
+                        Case 2
+                            DavesCode.Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
+                            Result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, Comment, iView, XVI, Valid, True, FaultParams)
+                        Case 3
+                            Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, UserInfo, True, FaultParams)
+                            Application(suspstate) = 1
 
-                            Case 4, 5, 6, 8
-                                DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
+                        Case 4, 5, 6, 8
+                            Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
 
-                            Case Else
-                                'Application(failstate) = ParentControl
-                                'DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False)
+                        Case Else
+                            'Application(failstate) = ParentControl
+                            'DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False)
 
-                        End Select
+                    End Select
+                    If Result Then
                         Application(appstate) = Nothing
                         'CreateNewFault(UserInfo, "New", connectionString)
 
                         Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
                         Response.Redirect(returnstring & ParentControl & "&comment=" & "")
                     Else
-                        'Error Action
-                    End If
-
-                Else 'This is a recoverable fault - So won't have concession number?
-                    Dim faultid As Integer = -1
-                    faultid = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
-                    If Not faultid = -1 Then
-                        'RaiseEvent UpdateRepeatFault(RepeatFault, ReportedBy)
-                        BindDefectData()
-                    Else
                         RaiseError()
                     End If
+                Case Else
+            End Select
 
-                End If
-                myscope.Complete()
-            End Using
-        Catch ex As Exception
-            DavesCode.NewFaultHandling.LogError(ex)
-        End Try
+        Else 'This is a recoverable fault - So won't have concession number?
+
+            Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
+            If Result Then
+                BindDefectData()
+            Else
+                RaiseError()
+            End If
+
+            'End If
+            'End If
+        End If
         Defect.SelectedIndex = -1
         ClearsForm()
     End Sub
@@ -338,7 +350,7 @@ Partial Class DefectSavePark
 
         FaultParams.SelectedIncident = SelectedIncident
         FaultParams.Linac = LinacName
-        FaultParams.DateInserted = DateTime.Parse(HiddenField2.Value)
+        FaultParams.DateInserted = DateTime.Parse(TimeFaultSelected.Value)
         FaultParams.UserInfo = UserInfo
         FaultParams.Area = Accuray.Text
         FaultParams.Energy = ErrorCode.Text
@@ -346,7 +358,7 @@ Partial Class DefectSavePark
         FaultParams.CollimatorAngle = EMPTYSTRING
         FaultParams.PatientID = PatientIDBox.Text
         FaultParams.FaultDescription = FaultDescription.Text
-        FaultParams.ConcessionNumber = Concession
+        FaultParams.ConcessionNumber = ConcessionNumber
         FaultParams.RadAct = RadAct.Text
         FaultParams.RadioIncident = RadioIncident.SelectedItem.Value
 

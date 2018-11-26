@@ -1,14 +1,11 @@
 ﻿Imports System.Data.SqlClient
-Imports System.Configuration
 Imports System.Data
-Imports System.Web.UI.Page
 Imports System.Drawing
 Imports AjaxControlToolkit
-Imports System.Text
 Imports System.Transactions
 
 Partial Class ClinicalUserControl
-    Inherits System.Web.UI.UserControl
+    Inherits UserControl
 
     Private mpContentPlaceHolder As ContentPlaceHolder
     Private CurrentCID As Integer
@@ -28,6 +25,7 @@ Partial Class ClinicalUserControl
     Private LinacFlag As String
     Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
+    Private TodaydefectPark As DefectSavePark
     Dim BoxChanged As String
     Dim accontrol As AcceptLinac
     Private tabstate As String
@@ -45,19 +43,33 @@ Partial Class ClinicalUserControl
             Return sadIcon
         End If
     End Function
-    Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
+
+    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
         If LinacName = EquipmentID Then
-            Dim todayfault As TodayClosedFault = FindControl("Todaysfaults")
+            Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
             todayfault.SetGrid()
-            Todaydefect = FindControl("DefectDisplay")
-            Todaydefect.ResetDefectDropDown(incidentID)
+            If LinacName Like "T?" Then
+                TodaydefectPark = PlaceHolder1.FindControl("DefectDisplay")
+                TodaydefectPark.ResetDefectDropDown(incidentID)
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.ResetDefectDropDown(incidentID)
+            End If
+
         End If
     End Sub
 
-    Protected Sub Update_Defect(ByVal EquipmentID As String)
+    ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
+    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Todaydefect = FindControl("DefectDisplay")
-            Todaydefect.UpDateDefectsEventHandler()
+            If LinacName Like "T?" Then
+                TodaydefectPark = PlaceHolder1.FindControl("DefectDisplay")
+                TodaydefectPark.UpDateDefectsEventHandler()
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.UpDateDefectsEventHandler()
+            End If
+
         End If
     End Sub
 
@@ -71,7 +83,6 @@ Partial Class ClinicalUserControl
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'The method of finding acceptlinac3 started from here http://forums.asp.net/t/1380670.aspx?Access+Master+page+properties+from+User+Control
 
-        'Dim accontrol As AcceptLinac
         Dim tabcontainer1 As TabContainer
         Page = Me.Page
         mpContentPlaceHolder =
@@ -85,9 +96,8 @@ Partial Class ClinicalUserControl
                 AddHandler accontrol.ClinicalApproved, AddressOf ClinicalApprovedEvent
             End If
         End If
-        'AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
-        AddHandler WriteDatauc2.UserApproved, AddressOf UserApprovedEvent
 
+        AddHandler WriteDatauc2.UserApproved, AddressOf UserApprovedEvent
 
         If Not mpContentPlaceHolder Is Nothing Then
             StateLabel = CType(mpContentPlaceHolder.
@@ -115,57 +125,31 @@ Partial Class ClinicalUserControl
 
         WriteClinicalTable(connectionString)
         Application(suspstate) = Nothing
-        'DavesCode.Reuse.ReturnApplicationState("3")
+
         Dim Textboxcomment As TextBox = FindControl("CommentBox")
         'This looks to see if BoxChanged has a value. if it has the comment has not been saved.
         If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
             'Need to save and then delete app state
             WriteClinicalTableComment(True)
-            'Textboxcomment.Text = Application(BoxChanged).ToString
+
         Else
             'Textboxcomment.Text = comment
         End If
-
+        BindComments()
     End Sub
 
     Public Sub UserApprovedEvent(ByVal tabused As String, ByVal Userinfo As String)
-        'This is called now if the machine is handed over ie the second part. Previously there was a signature
-        'for starting and stopping but that isn't used now so the first part is redundant
+
         Dim Action As String = Application(actionstate)
         Dim machinelabel As String = LinacName & "Page.aspx"
         Dim username As String = Userinfo
         Dim linacstatusid As String = HiddenFieldLinacState.Value
-        Dim result As Boolean = False
-        'If tabused = "3" Then
-        '    'DavesCode.Reuse.ReturnApplicationState(tabused)
-        '    If Action = "Confirm" Then
-        '        Application(LinacFlag) = "Clinical"
-        '        Dim Textboxcomment As TextBox = FindControl("CommentBox")
-        '        Dim strScript As String = "<script>"
-        '        'Application("ClinicalGo") = Nothing
-        '        If Application(treatmentstate) = "Yes" Then
-        '            DavesCode.Reuse.SetStatus(username, "Clinical - Treating", 3, 8, MachineName, 8)
-        '            Tstart.Text = "Stop Treatment"
-        '            Tstart.BackColor = Drawing.Color.Yellow
-        '            Application(treatmentstate) = "No"
-        '            LogOffButton.Visible = True
-        '        ElseIf Application(treatmentstate) = "No" Then
-        '            DavesCode.Reuse.SetStatus(username, "Clinical - Not Treating", 3, 3, MachineName, 3)
-        '            Tstart.Text = "Start Treatment"
-        '            Tstart.BackColor = Drawing.Color.AntiqueWhite
-        '            Application(treatmentstate) = "Yes"
+        Dim Result As Boolean = False
 
-        '            LogOffButton.Visible = True
-        '        End If
-        '        'DavesCode.Reuse.ReturnApplicationState(tabused)
-        '    End If
-        '    HttpContext.Current.Application(BoxChanged) = Nothing
-        '    WriteDatauc1.Visible = False
-        'ElseIf tabused = "handover" Then
         If tabused = "3" Then
             Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
-            result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams)
-            If result Then
+            Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams)
+            If Result Then
                 If Action = "Confirm" Then
                     Dim activity As Integer = 7 'This will always be log off?
                     If Application(treatmentstate) = "No" Then
@@ -175,9 +159,6 @@ Partial Class ClinicalUserControl
                     Else
                         'This has gone wrong
                     End If
-                    'DavesCode.Reuse.SetStatus(username, "Suspended", 5, 7, MachineName, activity)
-
-                    'result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams)
 
                     Application(treatmentstate) = "Yes"
                     Application(appstate) = Nothing
@@ -186,20 +167,12 @@ Partial Class ClinicalUserControl
                     StateLabel.Text = "Suspended"
                     ActivityLabel.Text = "Logged Off"
                     Application(LinacFlag) = "Suspended"
-                    'DavesCode.Reuse.ReturnApplicationState(tabused)
                     Response.Redirect(machinelabel)
-                    'Else
-                    '    RaiseLoadError()
-                    'End If
 
-                    'Else
-                    'DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, Faultparams)
                 End If
             Else
                 RaiseLogOffError()
-                'Application(tabstate) = String.Empty
-                'HttpContext.Current.Application(BoxChanged) = Nothing
-                'WriteDatauc2.Visible = False
+
             End If
         End If
     End Sub
@@ -220,13 +193,13 @@ Partial Class ClinicalUserControl
         "connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
         Dim lastState As String
-        Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
+        Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = LinacName
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(objCon)
         PlaceHolder2.Visible = True
-        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
+        'AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
         Dim objDefect As UserControl
         If LinacName Like "T?" Then
@@ -234,21 +207,19 @@ Partial Class ClinicalUserControl
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = LinacName
             CType(objDefect, DefectSavePark).ParentControl = 3
-            AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
-            AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
-            'AddHandler CType(objDefect, DefectSavePark).UpdateUnrecoverableClosed Address Of Update
+            AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+            AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+
         Else
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = LinacName
             CType(objDefect, DefectSave).ParentControl = 3
+            AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
         PlaceHolder3.Controls.Add(objDefect)
-
-        'BindEnergyData()
-
-        'BindComments()
+        BindComments()
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName
         'Dim wctrl1 As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
@@ -335,64 +306,30 @@ Partial Class ClinicalUserControl
                         Case 0
                             headerRow.Cells(count).BackColor = System.Drawing.Color.Red
                     End Select
-                    'added 16march
-
-
 
                 Next
-                'This is how it used to be done
-                'Dim conn As SqlConnection
-                'Dim comm As SqlCommand
-                'Dim reader As SqlDataReader
-                'Dim count As Integer
-                'Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
-                '"connectionstring").ConnectionString
-                'conn = New SqlConnection(connectionString1)
-                'comm = New SqlCommand("Select  MV6, MV10, MeV6, MeV8, " & _
-                '                          "MeV10, MeV12, MeV15, MeV18, MeV20 from HandoverEnergies where HandoverID  = (Select max(HandoverID) as lastrecord from HandoverEnergies where linac=@linac)", conn)
-                'comm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                'comm.Parameters("@linac").Value = MachineName
 
-                'conn.Open()
-                'reader = comm.ExecuteReader()
-                'While reader.Read()
-                '    For count = 0 To reader.FieldCount - 1
-                '        If Not reader.GetValue(count) Is System.DBNull.Value Then
-                '            energy = reader.GetValue(count)
-                '            Select Case energy
-                '                Case -1
-                '                    headerRow.Cells(count).BackColor = System.Drawing.Color.Green
-                '                Case 0
-                '                    headerRow.Cells(count).BackColor = System.Drawing.Color.Red
-                '            End Select
-
-                '        End If
-                '    Next
-                'End While
-
-                'reader.Close()
             Finally
-                'conn.Close()
-                'GridView2.DataBind()
+
             End Try
         End If
-
 
     End Sub
 
     Private Sub BindComments()
         Dim SqlDateSourceComment As New SqlDataSource()
+
         Dim query As String = "select e.comment, r.Ccomment, c.ClinComment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
         "Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
         "c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac) and " &
         "c.ClinicalID = (Select Max(ClinicalID) as mancount from [ClinicalTable] where linac = @linac)"
+
         SqlDateSourceComment = QuerySqlConnection(LinacName, query)
         GridViewComments.DataSource = SqlDateSourceComment
         GridViewComments.DataBind()
 
+
     End Sub
-
-
 
     Private Sub BindEnergyData(ByVal connectionString As String)
         If LinacName IsNot "T1" Then
@@ -439,18 +376,7 @@ Partial Class ClinicalUserControl
         Else
             GridView2.Visible = False
         End If
-        'Select Case MachineName
-        '    Case "LA1"
-        '        GridView2.Columns(1).Visible = False
 
-        '    Case "LA4"
-        '        GridView2.Columns(10).Visible = True
-        '        For index As Integer = 2 To 8
-        '            GridView2.Columns(index).Visible = False
-        '        Next
-        '    Case Else
-        '        'All columns are valid and are displayed
-        'End Select
     End Sub
     Private Sub SetButtonText()
 
@@ -468,7 +394,6 @@ Partial Class ClinicalUserControl
                 Tstart.Text = "Start Treatment"
                 Application(treatmentstate) = "Yes"
         End Select
-        'DavesCode.Reuse.ReturnApplicationState("Set treatment")
 
     End Sub
     Protected Function QuerySqlConnection(ByVal MachineName As String, ByVal query As String) As SqlDataSource
@@ -521,8 +446,7 @@ Partial Class ClinicalUserControl
             Try
                 Using myscope As TransactionScope = New TransactionScope()
                     If tval = "Yes" Then
-                        '30 october
-                        'DavesCode.Reuse.SetStatus("User", "Clinical - Treating", 3, 8, MachineName, 3)
+
                         DavesCode.NewCommitClinical.SetTreatment("Treating", LinacName, linacstatusid, connectionString)
                         Tstart.Text = "Stop Treatment"
                         Tstart.BackColor = colourstop
@@ -531,7 +455,7 @@ Partial Class ClinicalUserControl
                         ActivityLabel.Text = "Clinical - Treating"
                         BindEnergyData(connectionString)
                     Else
-                        'DavesCode.Reuse.SetStatus("User", "Clinical - Not Treating", 3, 3, MachineName, 8)
+
                         DavesCode.NewCommitClinical.SetTreatment("Not Treating", LinacName, linacstatusid, connectionString)
                         Tstart.Text = "Start Treatment"
                         Tstart.BackColor = colourstart
@@ -548,8 +472,7 @@ Partial Class ClinicalUserControl
                 RaiseStartError()
             End Try
         End If
-        'DavesCode.Reuse.ReturnApplicationState("after set treatment")
-        'End If
+
     End Sub
     Protected Sub RaiseLogOffError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
@@ -575,8 +498,7 @@ Partial Class ClinicalUserControl
         ScriptManager.RegisterStartupScript(Tstart, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
     Protected Sub WriteClinicalTableComment(ByVal recovered As Boolean)
-        'Dim time As DateTime
-        'time = Now()
+
         Dim builder As New StringBuilder
         Dim conn As SqlConnection
         Dim comment As String
@@ -641,8 +563,6 @@ Partial Class ClinicalUserControl
         Dim UserName As String
         Dim conn As SqlConnection
         Dim Clinicalcomment As String
-        'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-        '"connectionstring").ConnectionString
         Dim commCAuthID As SqlCommand
         Dim commclin As SqlCommand
 
@@ -675,7 +595,6 @@ Partial Class ClinicalUserControl
                 conn.Close()
             Else
                 conn.Close()
-
 
             End If
 

@@ -6,11 +6,9 @@ Partial Class DefectSave
     Inherits System.Web.UI.UserControl
     Const EMPTYSTRING As String = ""
     Private actionstate As String
-    Private time As DateTime
     Const RADRESET = -21
     Const MAJORFAULT = -24
-    'Public Event UpDateDefect(ByVal EquipmentName As String, ByVal incidentID As String)
-    Public Event UpdateViewFault(ByVal EquipmentName As String)
+    Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
     Public Property ParentControl() As String
     Public Property LinacName() As String
     Private appstate As String
@@ -202,15 +200,12 @@ Partial Class DefectSave
     End Function
 
     Protected Sub Defect_SelectedIndexChanged(sender As Object, e As System.EventArgs) Handles Defect.SelectedIndexChanged
-        'Dim radreset As String = "Undefined"
+
         Dim incidentIDstring As String = ""
-        'Dim incidentID As Integer
         Dim conn As SqlConnection
         Dim comm1 As SqlCommand
-        'Dim comm2 As SqlCommand
         Dim Region As String = ""
         Dim Queryreturn As String = ""
-        'formatting vs
         Dim reader As SqlDataReader
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim Area As String = ""
@@ -225,8 +220,8 @@ Partial Class DefectSave
             index = Defect.Items.IndexOf(result)
             If Integer.TryParse(incidentIDstring, SelectedIncident) Then
                 DropDownListArea.SelectedIndex = -1
-                HiddenField1.Value = SelectedIncident
-                HiddenField2.Value = Now().ToString
+                SelectedIncidentID.Value = SelectedIncident
+                TimeFaultSelected.Value = Now().ToString
                 conn = New SqlConnection(connectionString)
                 conn.Open()
                 If SelectedIncident > 0 Then
@@ -241,12 +236,11 @@ Partial Class DefectSave
                     reader.Close()
                     conn.Close()
                     DropDownListArea.SelectedItem.Text = Area
-                    HiddenField3.Value = Area
+                    AreaOrAccuray.Value = Area
                     DropDownListArea.Enabled = False
                     RadAct.Text = Action
                     RadAct.ReadOnly = True
 
-                    'ElseIf (incidentID = RADRESET) Or (incidentID = MAJORFAULT) Then
                 ElseIf (SelectedIncident = RADRESET) Then
                     DropDownListArea.Enabled = True
                     DropDownListArea.SelectedValue = "Select"
@@ -269,15 +263,14 @@ Partial Class DefectSave
                     conn.Close()
                     Area = sqlresult.ToString()
                     DropDownListArea.SelectedItem.Text = Area
-                    HiddenField3.Value = Area
+                    AreaOrAccuray.Value = Area
                     DropDownListArea.Enabled = False
                 End If
 
                 SaveDefectButton.Enabled = True
                 SaveDefectButton.BackColor = Drawing.Color.Yellow
             Else
-                HiddenField1.Value = -1000
-                'AreaBox.Text = String.Empty
+                SelectedIncidentID.Value = -1000
                 DropDownListArea.SelectedIndex = -1
             End If
         End If
@@ -336,7 +329,7 @@ Partial Class DefectSave
 
     Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
 
-        HiddenField3.Value = DropDownListArea.SelectedValue.ToString
+        AreaOrAccuray.Value = DropDownListArea.SelectedValue.ToString
     End Sub
 
 
@@ -345,27 +338,25 @@ Partial Class DefectSave
 
         Dim Concession As String = "Concession"
         Dim Status As String = EMPTYSTRING
-        Dim IncidentID As Integer
-        'Dim LastIncident As Integer
-        time = Now()
+        Dim Result As Boolean = False
         Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
-        SelectedIncident = HiddenField1.Value
+        SelectedIncident = SelectedIncidentID.Value
         CreateFaultParams(UserInfo, FaultParams)
         Select Case SelectedIncident
             Case RADRESET
-                IncidentID = DavesCode.NewFaultHandling.InsertNewFault("Concession", FaultParams)
-                If IncidentID > 0 Then
+                Result = DavesCode.NewFaultHandling.InsertNewFault("Concession", FaultParams)
+                If Result Then
                     Status = Concession
                     SetFaults(True)
                     BindDefectData()
-                    'RaiseEvent UpDateDefect(LinacName, IncidentID)
-                    RaiseEvent UpdateViewFault(LinacName)
+                    'This updates the concession list
+                    RaiseEvent UpdateViewOpenFaults(LinacName)
                 Else
                     RaiseError()
                 End If
 
             Case MAJORFAULT
-                Dim result As String = False
+
                 Dim susstate As String = Application(suspstate)
                 Dim repstate As String = Application(repairstate)
                 Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
@@ -378,18 +369,18 @@ Partial Class DefectSave
                 Select Case ParentControl
 
                     Case 1, 7
-                        result = DavesCode.NewEngRunup.CommitRunup(GridViewE, grdviewI, LinacName, ParentControl, UserInfo, Comment, Valid, True, False, FaultParams)
+                        Result = DavesCode.NewEngRunup.CommitRunup(GridViewE, grdviewI, LinacName, ParentControl, UserInfo, Comment, Valid, True, False, FaultParams)
 
                     Case 2
                         DavesCode.Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
-                        result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, Comment, iView, XVI, Valid, True, FaultParams)
+                        Result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, Comment, iView, XVI, Valid, True, FaultParams)
 
                     Case 3
-                        result = DavesCode.NewCommitClinical.CommitClinical(LinacName, UserInfo, True, FaultParams)
+                        Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, UserInfo, True, FaultParams)
                         Application(suspstate) = 1
 
                     Case 4, 5, 6, 8
-                        result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
+                        Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
 
                     Case Else
                         'Put up error message
@@ -397,32 +388,20 @@ Partial Class DefectSave
 
                 End Select
 
-                If result Then
+                If Result Then
                     Application(appstate) = Nothing
-
+                    Application(failstate) = ParentControl
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir
                     PopupAck()
                     Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
-                    Response.Redirect(returnstring & ParentControl & "&comment=" & "", False)
+                    Response.Redirect(returnstring & ParentControl & "&comment=" & Comment, False)
+
                 Else
                     RaiseError()
                 End If
             Case Else
-
-                'Dim Energy As String
-                'Energy = DropDownListEnergy.SelectedItem.Text
-                'If Energy = "Select" Then
-                '    Energy = ""
-                'End If
-                'Dim RadioIncidentSelected As String
-                Dim faultid As Integer = -1
-                'RadioIncidentSelected = RadioIncident.SelectedItem.Value
-                faultid = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
-
-                'faultid = DavesCode.NewFaultHandling.InsertRepeatFault(FaultDescription.Text, UserInfo, DateTime.Parse(HiddenField2.Value), HiddenField3.Value, Energy, GantryAngleBox.Text, CollimatorAngleBox.Text, LinacName, LastIncident, PatientIDBox.Text, ConcessionNumber, RadioIncidentSelected)
-                'BindDefectData()
-                If Not faultid = -1 Then
-                    'RaiseEvent UpdateRepeatFault(RepeatFault, ReportedBy)
+                Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
+                If Result Then
                     BindDefectData()
                 Else
                     RaiseError()
@@ -457,9 +436,9 @@ Partial Class DefectSave
         End If
         FaultParams.SelectedIncident = SelectedIncident
         FaultParams.Linac = LinacName
-        FaultParams.DateInserted = DateTime.Parse(HiddenField2.Value)
+        FaultParams.DateInserted = DateTime.Parse(TimeFaultSelected.Value)
         FaultParams.UserInfo = UserInfo
-        FaultParams.Area = HiddenField3.Value
+        FaultParams.Area = AreaOrAccuray.Value
         FaultParams.Energy = Energy
         FaultParams.GantryAngle = GantryAngleBox.Text
         FaultParams.CollimatorAngle = CollimatorAngleBox.Text

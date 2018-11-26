@@ -17,6 +17,7 @@ Partial Class ErunupUserControl
     Private LinacFlag As String
     Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
+    Private TodaydefectPark As DefectSavePark
     Private BoxChanged As String
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private tabstate As String
@@ -120,21 +121,34 @@ Partial Class ErunupUserControl
 
     End Sub
 
-    Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
+    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
         If LinacName = EquipmentID Then
+
             Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
             todayfault.SetGrid()
-            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            Todaydefect.ResetDefectDropDown(incidentID)
+            If LinacName Like "T?" Then
+                TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+                TodaydefectPark.ResetDefectDropDown(incidentID)
+            Else
+                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+                Todaydefect.ResetDefectDropDown(incidentID)
+            End If
+        End If
+    End Sub
+    ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
+    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            If LinacName Like "T?" Then
+                TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+                TodaydefectPark.UpDateDefectsEventHandler()
+            Else
+                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+                Todaydefect.UpDateDefectsEventHandler()
+            End If
+
         End If
     End Sub
 
-    Protected Sub Update_Defect(ByVal EquipmentID As String)
-        If LinacName = EquipmentID Then
-            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            Todaydefect.UpDateDefectsEventHandler()
-        End If
-    End Sub
     Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
             Objcon = FindControl("ViewOpenFaults")
@@ -144,26 +158,17 @@ Partial Class ErunupUserControl
 
     Public Sub UserApprovedEvent(ByVal Tabset As String, ByVal Userinfo As String)
 
-        'If Tabset = "1" Or "7" Then
+        'If Tabset = "1" Or "7" Then what about 7?
         If (Tabset = "1") Or (Tabset = "666") Then
             Dim Action As String = Application(actionstate)
             Dim machinelabel As String = LinacName & "Page.aspx';"
             Dim Valid As Boolean = False
             Dim strScript As String = "<script>"
-
-            'added for non-LA linac in MachineState
-            'Dim usergroupselected As Integer = 2
-            'Dim Reason As Integer = 2
-            '1 or 7 is engineering tab or emergency run up tab
-            'If Tabset = "1" Or "7" Then
-            'DavesCode.Reuse.ReturnApplicationState(tabcontrol)
             Dim grdview As GridView = FindControl("Gridview1")
             Dim grdviewI As GridView = FindControl("GridViewImage")
             Dim Textboxcomment As TextBox = FindControl("CommentBox")
             Dim Comment As String = Textboxcomment.Text
             Dim Successful As Boolean = False
-            'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-
 
             If Action = "Confirm" Then
                 Valid = True
@@ -276,7 +281,6 @@ Partial Class ErunupUserControl
         objconToday.LinacName = LinacName
         PlaceHolderTodaysclosedfaults.Controls.Add(objconToday)
 
-        'Dim websiteAlreadyAccessed As Boolean = False
         'Sets up Atlas Energies
         Dim objConAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
         CType(objConAtlas, AtlasEnergyViewuc).LinacName = LinacName
@@ -303,29 +307,32 @@ Partial Class ErunupUserControl
             CType(Objcon, ViewOpenFaults).LinacName = LinacName
             PlaceHolderViewopenfaults.Controls.Add(Objcon)
         End If
+        AddHandler CType(Objcon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+        AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
         'Sets up View Modalities
-        Dim objQA As UserControl = Page.LoadControl("WebUserControl2.ascx")
+
+        Dim objQA As WebUserControl2 = Page.LoadControl("WebUserControl2.ascx")
         CType(objQA, WebUserControl2).LinacName = LinacName
         CType(objQA, WebUserControl2).TabName = 1
         PlaceHolderModalities.Controls.Add(objQA)
 
         'Sets up Defect Control
-        AddHandler CType(Objcon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
-        AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
+
         Dim objDefect As UserControl
         If LinacName Like "T?" Then
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = LinacName
             CType(objDefect, DefectSavePark).ParentControl = 1
-            AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
-            AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
+            AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+            AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
         Else
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = LinacName
             CType(objDefect, DefectSave).ParentControl = Tabby
+            AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
         PlaceHolderDefectSave.Controls.Add(objDefect)
@@ -336,7 +343,6 @@ Partial Class ErunupUserControl
         'The solution of how to pass parameter to dynamically loaded user control is from here:
         'http://weblogs.asp.net/aghausman/archive/2009/04/15/how-to-pass-parameters-to-the-dynamically-added-user-control.aspx
 
-        'PlaceHolderWriteData.Visible = True
         Dim ControlName As String = DataName
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
@@ -350,7 +356,7 @@ Partial Class ErunupUserControl
                 'Textboxcomment.Text = comment
             End If
         End If
-        ' websiteAlreadyAccessed = True
+
     End Sub
     Protected Sub SetEnergies(ByVal connectionString As String)
         Dim SelCommand As String = ""
@@ -462,7 +468,7 @@ Partial Class ErunupUserControl
 
     End Function
 
-    Protected Sub chkSelectAll_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs)
+    Protected Sub ChkSelectAll_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs)
         For Each grv As GridViewRow In GridView1.Rows
             Dim cb As CheckBox = CType(grv.FindControl("RowlevelCheckBox"), CheckBox)
             If cb.Enabled = True Then
@@ -509,10 +515,8 @@ Partial Class ErunupUserControl
                             Else
                                 Dim cptrl As ConfirmPage = CType(FindControl("ConfirmPage1"), ConfirmPage)
                                 Dim cpbutton As Button = CType(cptrl.FindControl("AcceptOK"), Button)
-                                'Dim cptext As TextBox = CType(cptrl.FindControl("txtchkUserName"), TextBox)
                                 cpbutton.Text = "Confirm No Imaging"
                                 ConfirmPage1.Visible = True
-                                'ForceFocus(cptext)
 
                             End If
 
@@ -612,7 +616,7 @@ Partial Class ErunupUserControl
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         'has to be tablable to cope with either tab 1 or 7 control
         success = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, "Lockuser", Comment, False, False, True, FaultParams)
-        'DavesCode.Reuse.CommitRunup(grdview, LinacName, Tabby, "Lockuser", Comment, False, False, True)
+
         If success Then
             RaiseEvent BlankGroup(0)
             lockctrl.Visible = True
@@ -707,6 +711,5 @@ Partial Class ErunupUserControl
         WriteDatauc1.Visible = True
         ForceFocus(wctext)
     End Sub
-
 
 End Class

@@ -1,6 +1,6 @@
 ﻿Imports System.Data
 Imports System.Data.SqlClient
-Partial Class controls_DeviceRepeatFaultuc
+Partial Class Controls_DeviceRepeatFaultuc
     Inherits System.Web.UI.UserControl
     Public Property IncidentID() As String
     Public Property Device() As String
@@ -14,21 +14,17 @@ Partial Class controls_DeviceRepeatFaultuc
     Const CancelFaultReturn As String = "Cancel"
     Const EMPTYSTRING As String = ""
 
-    'Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
     Public Event UpdateRepeatFault(ByVal Tab As String, ByVal User As String)
-    Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
+
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
-        'Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        'conn = New SqlConnection(connectionString1)
-
         If Device Like "T?" Then
-                TomoLoad()
-                MultiView1.SetActiveView(Tomo)
-            Else
-                LinacLoad()
-                MultiView1.SetActiveView(Linac)
-            End If
+            TomoLoad()
+            MultiView1.SetActiveView(Tomo)
+        Else
+            LinacLoad()
+            MultiView1.SetActiveView(Linac)
+        End If
 
     End Sub
     Protected Sub LinacLoad()
@@ -112,41 +108,11 @@ Partial Class controls_DeviceRepeatFaultuc
         Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
         Dim UserInfo As String = String.Empty
         CreateFaultParams(UserInfo, FaultParams)
-        Dim faultid As Integer = -1
+        Dim Result As Boolean = False
 
-
-
-        'Dim Energy As String = String.Empty
-        'Dim Description As String = String.Empty
-        'Dim ReportedBy As String = String.Empty
-        'Dim DateReported As DateTime = Now()
-        'Dim Area As String = String.Empty
-        'Dim CollimatorAngle As String = String.Empty
-        'Dim GantryAngle As String = String.Empty
-        'Dim PatientId As String = String.Empty
-        'Dim RadioIncidentSelected As String
-        'If Device Like "T?" Then
-        '    Area = ErrorTextBox.Text
-        '    Description = DescriptionBoxT.Text
-        '    PatientId = PatientIDBoxT.Text
-
-        'Else
-        '    Energy = DropDownListEnergy.SelectedItem.Text
-        '    If Energy = "Select" Then
-        '        Energy = String.Empty
-        '    End If
-        '    Area = AreaBox.Text
-        '    GantryAngle = GantryAngleBox.Text
-        '    CollimatorAngle = CollimatorAngleBox.Text
-        '    Description = DescriptionBox.Text
-        '    PatientId = PatientIDBox.Text
-
-        'End If
-        'RadioIncidentSelected = RadioIncident.SelectedItem.Value
-
-        faultid = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
-        If Not faultid = -1 Then
-
+        Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
+        If Result Then
+            'This triggers UserApprovedEvent in ViewOpenFaults
             RaiseEvent UpdateRepeatFault(RepeatFault, UserInfo)
         Else
             RaiseError()

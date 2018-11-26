@@ -1,10 +1,7 @@
-﻿<%@ Page Title="" Language="VB" MasterPageFile="~/Elf.master"  AutoEventWireup="false" CodeFile="E1page.aspx.vb" Inherits="E1page"  %>
+﻿<%@ Page Title="" Language="VB" MasterPageFile="~/Elf.master"  AutoEventWireup="false" CodeFile="E1pageold.aspx.vb" Inherits="E1page"  %>
 <%@ MasterType VirtualPath="~/Elf.master" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
-
-
-<%--<%@ Register src="ErunupUserControlEast.ascx" tagname="ErunupUserControlEast" tagprefix="uc1" %>--%>
 <%@ Register src="Preclinusercontrol.ascx" tagname="Preclinusercontrol" tagprefix="uc2" %>
 <%@ Register src="ClinicalUserControl.ascx" tagname="ClinicalUserControl" tagprefix="uc3" %>
 
@@ -22,17 +19,9 @@
 
 <%@ Register src="PhysicsQAuc.ascx" tagname="PhysicsQAuc" tagprefix="uc10" %>
 
-<%@ Register src="Emergencyrunupuc.ascx" tagname="Emergencyrunupuc" tagprefix="uc11" %>
-
 <%@ Register src="Traininguc.ascx" tagname="Traininguc" tagprefix="uc12" %>
 
-
-
-
 <%@ Register src="RegisterUseruc.ascx" tagname="RegisterUseruc" tagprefix="uc13" %>
-
-
-
 
 <%@ Register src="ErunupUserControlCommon.ascx" tagname="ErunupUserControlCommon" tagprefix="uc14" %>
 

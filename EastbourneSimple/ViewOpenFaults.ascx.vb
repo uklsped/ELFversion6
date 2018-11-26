@@ -21,6 +21,7 @@ Partial Class ViewOpenFaults
     Const REPEATFAULTSELECTED As String = "REPEAT"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Const EMPTYSTRING As String = ""
+    Const TECH As String = "Tech"
     'from https://forums.asp.net/t/1186195.aspx
     Private Property DynamicControlSelection() As String
         Get
@@ -39,8 +40,9 @@ Partial Class ViewOpenFaults
     End Property
 
 
-    Public Event UpdateFaultClosedDisplay(ByVal EquipmentName As String, ByVal incidentID As String)
-    Public Event UpDateDefectDisplay(ByVal EquipmentName As String)
+    Public Event UpdateFaultClosedDisplays(ByVal EquipmentName As String, ByVal incidentID As String)
+    Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
+    Public Event AddConcessionToDefectDropDownList(ByVal EquipmentName As String, ByVal incidentID As String)
 
     Public Property TabName() As String
     Public Property LinacName() As String
@@ -84,7 +86,8 @@ Partial Class ViewOpenFaults
         wrtctrl3.LinacName = LinacName
 
         'Dim loadfaultNumber As Integer = 0 ' this makes sure that if there isn't a new fault loadfaultnumber is zero
-        loadIncidentNumber = 0
+        If TabName = TECH Then
+            loadIncidentNumber = 0
             Dim conn As SqlConnection
             Dim comm As SqlCommand
             Dim reader As SqlDataReader
@@ -99,12 +102,12 @@ Partial Class ViewOpenFaults
                 reader = comm.ExecuteReader() 'checks to see if there is a new fault - returns true or false if record read
                 If reader.HasRows Then
 
-                'Dim Manyfaultgrid As ManyFaultGriduc = CType(FindControl("ManyFaultGriduc"), ManyFaultGriduc)
-                'Manyfaultgrid.MachineName = LinacName
-                'Manyfaultgrid.NewFault = True
+                    Dim Manyfaultgrid As ManyFaultGriduc = CType(FindControl("ManyFaultGriduc"), ManyFaultGriduc)
+                    Manyfaultgrid.MachineName = LinacName
+                    Manyfaultgrid.NewFault = True
 
-                'This is to get the page that the fault was reported from - possibly a better way?
-                Application(laststate) = DavesCode.Reuse.GetLastState(LinacName, -1)
+                    'This is to get the page that the fault was reported from - possibly a better way?
+                    Application(laststate) = DavesCode.Reuse.GetLastState(LinacName, -1)
                     previousstate = Application(laststate)
                 Else 'If there isn't a new fault then populate the grid with all of the open faults
                     'This could have come from a valid page or opened up again because fault wasn't closed. In that case
@@ -118,6 +121,7 @@ Partial Class ViewOpenFaults
                 conn.Close()
 
             End Try
+        End If
 
     End Sub
     'Not used
@@ -174,7 +178,7 @@ Partial Class ViewOpenFaults
             'this is now triggered by DeviceRepeatFaultuc comment 15/11/18
             incidentID = Label2.Text
             ConcessionGrid.Enabled = True
-            RaiseEvent UpDateDefectDisplay(LinacName)
+            RaiseEvent UpDateDefectDailyDisplay(LinacName)
             bindGridView()
             UpdatePanelRepeatFault.Visible = False
             UpdatePanel4.Visible = True
@@ -232,6 +236,7 @@ Partial Class ViewOpenFaults
                         'if exists = 1 or not 0 or -1 then concession already exists so update tracking. If it gets to there then insertnewconcession has worked
                         'ie returned exists = 1 or not 0 or -1 but hasn't done anything else. If concession updated ok but otherwise update tracking
                         exists = DavesCode.NewFaultHandling.InsertNewConcession(ConcessionDescription, LinacName, incidentID, Userinfo, ConcessionAction)
+
                         If exists = -1 Then
 
                             'RaiseEvent UpDateDefectDisplay(LinacName)
@@ -244,6 +249,8 @@ Partial Class ViewOpenFaults
                             If TRACKINGID = -1 Then
                                 RaiseError()
                             End If
+                        ElseIf exists = 0 Then
+                            RaiseEvent AddConcessionToDefectDropDownList(LinacName, exists)
                         End If
 
                     Else
@@ -252,7 +259,7 @@ Partial Class ViewOpenFaults
                             RaiseError()
                         End If
                         If selecttext = "Closed" Then
-                            RaiseEvent UpdateFaultClosedDisplay(LinacName, incidentID)
+                            RaiseEvent UpdateFaultClosedDisplays(LinacName, incidentID)
                         End If
                     End If
                     CommentBox1.Text = ""

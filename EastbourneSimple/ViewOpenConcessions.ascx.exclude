@@ -5,7 +5,7 @@
 
 <%@ Register src="UpDateIncidentuc.ascx" tagname="UpDateIncidentuc" tagprefix="uc4" %>
 
-<%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc2" %>
+<%@ Register src="NewFaultGriduc.ascx" tagname="NewFaultGriduc" tagprefix="uc2" %>
 
 <style type="text/css">
     .style2
@@ -21,7 +21,7 @@
 
 
 <uc1:WriteDatauc ID="WriteDatauc1"  LinacName ="" Tabby="Updatefault" UserReason="11" Visible="false" runat="server" />
-<uc2:ManyFaultGriduc ID="ManyFaultGriduc" runat="server" />
+<uc2:NewFaultGriduc ID="NewFaultGriduc" runat="server" />
        <asp:UpdatePanel ID="UpdatePanel4"  runat="server">
                 <ContentTemplate>
                  <asp:Label ID="FakeLabel" runat="server" style="display:none;" />

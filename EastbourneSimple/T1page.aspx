@@ -26,17 +26,9 @@
 
 <%@ Register src="PhysicsQAuc.ascx" tagname="PhysicsQAuc" tagprefix="uc10" %>
 
-<%@ Register src="Emergencyrunupuc.ascx" tagname="Emergencyrunupuc" tagprefix="uc11" %>
-
 <%@ Register src="Traininguc.ascx" tagname="Traininguc" tagprefix="uc12" %>
 
-
-
-
 <%@ Register src="RegisterUseruc.ascx" tagname="RegisterUseruc" tagprefix="uc13" %>
-
-
-
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>

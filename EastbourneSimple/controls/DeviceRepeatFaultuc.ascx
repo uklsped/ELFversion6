@@ -1,4 +1,4 @@
-﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="DeviceRepeatFaultuc.ascx.vb" Inherits="controls_DeviceRepeatFaultuc" %>
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="DeviceRepeatFaultuc.ascx.vb" Inherits="Controls_DeviceRepeatFaultuc" %>
 
 
 <asp:MultiView ID="MultiView1" runat="server">

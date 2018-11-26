@@ -580,9 +580,9 @@ Partial Class ViewOpenConcessions
             Case "Faults"
                 'Dim objCon As UserControl = Page.LoadControl("FaultGriduc.ascx")
                 'CType(objCon, FaultGriduc).Incident = IncidentID
-                Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-                CType(objCon, ManyFaultGriduc).NewFault = False
-                CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
+                Dim objCon As UserControl = Page.LoadControl("NewFaultGriduc.ascx")
+                CType(objCon, NewFaultGriduc).NewFault = False
+                CType(objCon, NewFaultGriduc).IncidentID = IncidentID
                 PlaceHolder1.Controls.Add(objCon)
                 UpdatePanel2.Visible = True
                 MultiView1.SetActiveView(View2)

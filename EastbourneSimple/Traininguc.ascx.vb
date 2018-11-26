@@ -18,6 +18,7 @@ Partial Class Traininguc
     Private lastusergroup As String
     Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
+    Private Todaydefectpark As DefectSavePark
     Dim Master As Object
     Dim BoxChanged As String
     Private Event AutoApproved(ByVal Tab As String, ByVal UserName As String)
@@ -104,19 +105,32 @@ Partial Class Traininguc
 
     End Sub
 
-    Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
-        If MachineName = EquipmentID Then
+    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
+        If LinacName = EquipmentID Then
             Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
             todayfault.SetGrid()
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            Todaydefect.ResetDefectDropDown(incidentID)
+            If LinacName Like "T?" Then
+                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark.ResetDefectDropDown(incidentID)
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.ResetDefectDropDown(incidentID)
+            End If
+
         End If
     End Sub
 
-    Protected Sub Update_Defect(ByVal EquipmentID As String)
-        If MachineName = EquipmentID Then
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            Todaydefect.UpDateDefectsEventHandler()
+    ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
+    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            If LinacName Like "T?" Then
+                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark.UpDateDefectsEventHandler()
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.UpDateDefectsEventHandler()
+            End If
+
         End If
     End Sub
     Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
@@ -282,6 +296,7 @@ Partial Class Traininguc
         PlaceHolder5.Controls.Add(objconToday)
 
         Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
+        CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         CType(objCon, ViewOpenFaults).LinacName = MachineName
         CType(objCon, ViewOpenFaults).TabName = "8"
         PlaceHolder1.Controls.Add(objCon)
@@ -295,8 +310,8 @@ Partial Class Traininguc
         CType(objQA, WebUserControl2).TabName = 8
         PlaceHolder3.Controls.Add(objQA)
 
-        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
+        'AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
         Dim objDefect As UserControl
 
@@ -305,14 +320,15 @@ Partial Class Traininguc
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = MachineName
             CType(objDefect, DefectSavePark).ParentControl = 8
-            AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
-            AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
-            'AddHandler CType(objDefect, DefectSavePark).UpdateUnrecoverableClosed Address Of Update
+            AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+            AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+
         Else
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = MachineName
             CType(objDefect, DefectSave).ParentControl = 8
+            AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
         PlaceHolder4.Controls.Add(objDefect)

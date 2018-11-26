@@ -40,7 +40,7 @@ Partial Class PhysicsQAuc
         End If
     End Sub
 
-    Protected Sub Update_Defect(ByVal EquipmentID As String)
+    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If MachineName = EquipmentID Then
             Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
             Todaydefect.UpDateDefectsEventHandler()
@@ -162,8 +162,8 @@ Partial Class PhysicsQAuc
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = MachineName
 
-        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
+        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
         Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = MachineName

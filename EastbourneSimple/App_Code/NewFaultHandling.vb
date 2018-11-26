@@ -7,10 +7,10 @@ Imports System.Net.Mail
 Namespace DavesCode
 
     Public Class NewFaultHandling
-        'used in Viewopenfaults, DeviceRepeatfault, DeviceSave,DeviceSavePark
+        'used in DeviceRepeatfault, DeviceSave,DeviceSavePark
         'Public Shared Function InsertRepeatFault(ByVal Description As String, ByVal ReportedBy As String, ByVal DateReported As DateTime, ByVal Area As String, ByVal Energy As String, ByVal GantryAngle As String, ByVal CollimatorAngle As String, ByVal Device As String, ByVal IncidentID As Integer, ByVal PatientID As String, ByVal ConcessionNumber As String, ByVal Reportable As Boolean) As Integer
         Public Shared Function InsertRepeatFault(ByVal FaultP As DavesCode.FaultParameters) As Integer
-            Dim LastFault As Integer = FaultP.SelectedIncident
+            Dim Result As Boolean = False
             Dim conn As SqlConnection
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString)
@@ -60,20 +60,20 @@ Namespace DavesCode
                     incidentfault.Parameters.Clear()
 
                     ObjTransaction.Commit()
-
+                    Result = True
 
                 Catch ex As Exception
 
                     ObjTransaction.Rollback()
                     LogError(ex)
-                    LastFault = -1
+                    Result = False
                 Finally
                     incidentfault.Parameters.Clear()
                     conn.Close()
 
                 End Try
             End Using
-            Return LastFault
+            Return Result
         End Function
         'Used in ViewOpenFaults to change to concession or to update concession
         Public Shared Function InsertNewConcession(ByVal ConcessionDescription As String, ByVal LinacName As String, ByVal IncidentID As Integer, ByVal ReportedBy As String, ByVal ConcessionAction As String) As Integer
@@ -243,6 +243,7 @@ Namespace DavesCode
         Public Shared Function InsertNewFault(ByVal State As String, ByVal FaultP As DavesCode.FaultParameters) As Integer
             Dim time As DateTime = Now()
             Dim IncidentID As Integer = 0
+            Dim Result As Boolean = False
             Dim LastFault As Integer = 0
             Dim conn As SqlConnection
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
@@ -412,7 +413,7 @@ Namespace DavesCode
 
                     incidentfault.Parameters.Clear()
                     ObjTransaction.Commit()
-
+                    Result = True
                 Catch ex As Exception
 
                     ObjTransaction.Rollback()
@@ -422,7 +423,7 @@ Namespace DavesCode
                 End Try
 
             End Using
-            Return IncidentID
+            Return Result
         End Function
 
         Public Shared Function InsertMajorFault(FaultP As DavesCode.FaultParameters, ByVal connectionString As String) As Integer

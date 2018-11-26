@@ -1,4 +1,5 @@
 ﻿Imports System.Data.SqlClient
+Imports System.Transactions
 Imports AjaxControlToolkit
 Partial Class Repairuc
     Inherits System.Web.UI.UserControl
@@ -52,7 +53,8 @@ Partial Class Repairuc
             StateTextBox.Text = laststate
         End If
     End Sub
-    Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
+    'This works to update closed faults and to remove concession from defect dropdown list.
+    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
         If MachineName = EquipmentID Then
             Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
             todayfault.SetGrid()
@@ -66,8 +68,22 @@ Partial Class Repairuc
 
         End If
     End Sub
+    'Adds new concession created via viewopenfaults to defect drop down list
+    Protected Sub Add_ConcessionToDefectDropDownList(ByVal EquipmentID As String, ByVal IncidentID As Integer)
+        If MachineName = EquipmentID Then
 
-    Protected Sub Update_Defect(ByVal EquipmentID As String)
+            If MachineName Like "T?" Then
+                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark.ResetDefectDropDown(IncidentID)
+            Else
+                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect.ResetDefectDropDown(IncidentID)
+            End If
+
+        End If
+    End Sub
+
+    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If MachineName = EquipmentID Then
             If MachineName Like "T?" Then
                 Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
@@ -117,6 +133,9 @@ Partial Class Repairuc
             Dim Action As String = Application(actionstate)
             Dim Textboxcomment As TextBox = FindControl("CommentBox")
             Dim comment As String = Textboxcomment.Text
+            suspendvalue = Application(suspstate)
+            repairvalue = Application(repairstate)
+            Radioselect = RadioButtonList1.SelectedItem.Value
             result = DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
             If result Then
                 If Action = "Confirm" Then
@@ -128,9 +147,7 @@ Partial Class Repairuc
                     strScript += machinelabel
                     strScript += "</script>"
                     'This could probably be tidied up if clinical not 3,3
-                    suspendvalue = Application(suspstate)
-                    repairvalue = Application(repairstate)
-                    Radioselect = RadioButtonList1.SelectedItem.Value
+
                     'If this fails it writes an error to file but carries on.
                     'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
                     'DavesCode.Reuse.Writerep(MachineName, username, comment, LinacStatusID)
@@ -224,55 +241,55 @@ Partial Class Repairuc
         Dim laststate As String = ""
         Dim lastusername As String = ""
         Dim lastusergroup As Integer
-
+        Dim success As Boolean = True
 
         DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastusername, lastusergroup)
         If laststate = "Fault" Then
-            WriteFaultIDTable()
+            success = WriteFaultIDTable()
         End If
-        If Not RadioButtonList1.SelectedItem Is Nothing Then
-            Application(actionstate) = "Confirm"
-            Radioselect = RadioButtonList1.SelectedItem.Value
-            Select Case Radioselect
-                Case 1
-                    wcbutton.Text = "Go To Engineering Run up"
-                    RaiseEvent AutoApproved(5, lastusername)
-                Case 2
-                    wcbutton.Text = "Needs Pre-clinical Run up"
-                    WriteDatauc1.Visible = True
-                    ForceFocus(wctext)
-                Case 3
-                    wcbutton.Text = "Return to clinical"
-                    WriteDatauc1.Visible = True
-                    ForceFocus(wctext)
-                Case 4
-                    wcbutton.Text = "Go To Planned Maintenance"
-                    RaiseEvent AutoApproved(5, lastusername)
-                Case 6
-                    wcbutton.Text = "Go To Physics QA"
-                    If lastusergroup = 4 Then
+        If success Then
+            If Not RadioButtonList1.SelectedItem Is Nothing Then
+                Application(actionstate) = "Confirm"
+                Radioselect = RadioButtonList1.SelectedItem.Value
+                Select Case Radioselect
+                    Case 1
+                        wcbutton.Text = "Go To Engineering Run up"
                         RaiseEvent AutoApproved(5, lastusername)
-                    Else
+                    Case 2
+                        wcbutton.Text = "Needs Pre-clinical Run up"
                         WriteDatauc1.Visible = True
                         ForceFocus(wctext)
-                    End If
+                    Case 3
+                        wcbutton.Text = "Return to clinical"
+                        WriteDatauc1.Visible = True
+                        ForceFocus(wctext)
+                    Case 4
+                        wcbutton.Text = "Go To Planned Maintenance"
+                        RaiseEvent AutoApproved(5, lastusername)
+                    Case 6
+                        wcbutton.Text = "Go To Physics QA"
+                        If lastusergroup = 4 Then
+                            RaiseEvent AutoApproved(5, lastusername)
+                        Else
+                            WriteDatauc1.Visible = True
+                            ForceFocus(wctext)
+                        End If
 
-                Case 102
-                    wclabel.Text = "Are you sure? This is the End of Day"
-                    wcbutton.Text = "End of Day"
-                    WriteDatauc1.Visible = True
-                    ForceFocus(wctext)
-                Case 8
-                    wcbutton.Text = "Go To Training/Development"
-                    RaiseEvent AutoApproved(5, lastusername)
-            End Select
-            'Application("SelectCount") = "False"
+                    Case 102
+                        wclabel.Text = "Are you sure? This is the End of Day"
+                        wcbutton.Text = "End of Day"
+                        WriteDatauc1.Visible = True
+                        ForceFocus(wctext)
+                    Case 8
+                        wcbutton.Text = "Go To Training/Development"
+                        RaiseEvent AutoApproved(5, lastusername)
+                End Select
 
-            'WritepmComments()
-            'WriteDatauc1.Visible = True
+            Else
+                RaiseLogOffError()
+            End If
         Else
-            'tell the user to select a value
-            'or stop it getting to here anyway
+            RaiseLogOffError()
         End If
 
     End Sub
@@ -312,16 +329,10 @@ Partial Class Repairuc
         WaitButtons("Tech")
         '    'The solution of how to pass parameter to dynamically loaded user control is from here:
         '    'http://weblogs.asp.net/aghausman/archive/2009/04/15/how-to-pass-parameters-to-the-dynamically-added-user-control.aspx
-        Dim tabActive As Integer
+
         Dim lastusergroup As Integer
-        'Dim previousstate As String
         Dim Repairlist As RadioButtonList
 
-
-        'Dim objCon As UserControl = Page.LoadControl("singlemachinefaultuc.ascx")
-        'CType(objCon, Singlemachinefaultuc).LinacName = MachineName
-        'CType(objCon, Singlemachinefaultuc).Tabs = "Tech"
-        'PlaceHolder1.Controls.Add(objCon)
         objconToday = Page.LoadControl("TodayClosedFault.ascx")
         objconToday.ID = "Todaysfaults"
         objconToday.LinacName = MachineName
@@ -332,11 +343,9 @@ Partial Class Repairuc
         CType(objCon, ViewOpenFaults).TabName = "Tech"
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(objCon)
-
-        'Dim objCon As UserControl = Page.LoadControl("ViewOpenConcessions.ascx")
-        'CType(objCon, ViewOpenConcessions).LinacName = MachineName
-        'CType(objCon, ViewOpenConcessions).TabName = "Tech"
-        'PlaceHolder1.Controls.Add(objCon)
+        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        AddHandler CType(objCon, ViewOpenFaults).AddConcessionToDefectDropDownList, AddressOf Add_ConcessionToDefectDropDownList
 
         Dim objAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
         CType(objAtlas, AtlasEnergyViewuc).LinacName = MachineName
@@ -355,42 +364,40 @@ Partial Class Repairuc
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = MachineName
 
-
-        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
         Dim objDefect As UserControl
         If MachineName Like "T?" Then
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = MachineName
-            CType(objDefect, DefectSavePark).ParentControl = 4
-            AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
-            AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
-            'AddHandler CType(objDefect, DefectSavePark).UpdateUnrecoverableClosed Address Of Update
+            CType(objDefect, DefectSavePark).ParentControl = 5
+            AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+            AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+
         Else
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = MachineName
+            CType(objDefect, DefectSave).ParentControl = 5
+            AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
         PlaceHolder4.Controls.Add(objDefect)
 
-
         Dim Textboxcomment As TextBox = FindControl("CommentBox")
         If Not IsPostBack Then
             If MachineName Like "LA?" Then
-                RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up","1", False))
-                RadioButtonList1.Items.Add(New ListItem("Requires Pre-Clinical Run up","2", False))
-                RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical","3", False))
-                RadioButtonList1.Items.Add(New ListItem("Go To Planned Maintenance","4", False))
-                RadioButtonList1.Items.Add(New ListItem("Go To Training/Development","8", False))
-                RadioButtonList1.Items.Add(New ListItem("End of Day","102", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+                RadioButtonList1.Items.Add(New ListItem("Requires Pre-Clinical Run up", "2", False))
+                RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Planned Maintenance", "4", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Training/Development", "8", False))
+                RadioButtonList1.Items.Add(New ListItem("End of Day", "102", False))
             Else
-                RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up","1", False))
-                RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical","3", False))
-                RadioButtonList1.Items.Add(New ListItem("Go To Planned Maintenance","4", False))
-                RadioButtonList1.Items.Add(New ListItem("Go To Training/Development","8", False))
-                RadioButtonList1.Items.Add(New ListItem("End of Day","102", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+                RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Planned Maintenance", "4", False))
+                RadioButtonList1.Items.Add(New ListItem("Go To Training/Development", "8", False))
+                RadioButtonList1.Items.Add(New ListItem("End of Day", "102", False))
             End If
             If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
                 Textboxcomment.Text = Application(BoxChanged).ToString
@@ -403,7 +410,7 @@ Partial Class Repairuc
             Dim conn As SqlConnection
             Dim comm As SqlCommand
             Dim reader As SqlDataReader
-            Dim connectionString1 As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             conn = New SqlConnection(connectionString1)
             comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
@@ -445,46 +452,46 @@ Partial Class Repairuc
                             Select Case Application(failstate)
                                 Case 0
                                     If Application(repairstate) = 1 Then
-                                        if MachineName Like "LA?" Then
-                                        RadioButtonList1.Items.FindByValue(2).Enabled = True
-                                        StateTextBox.Text = "Engineering Approved"
-                                            Else
-                                        RadioButtonList1.Items.FindByValue(3).Enabled = True
-                                        StateTextBox.Text = "Clinical - Not Treating"
+                                        If MachineName Like "LA?" Then
+                                            RadioButtonList1.Items.FindByValue(2).Enabled = True
+                                            StateTextBox.Text = "Engineering Approved"
+                                        Else
+                                            RadioButtonList1.Items.FindByValue(3).Enabled = True
+                                            StateTextBox.Text = "Clinical - Not Treating"
                                         End If
                                     End If
                                 Case 2 ' this can only happen for LA machines
                                     RadioButtonList1.Items.FindByValue(2).Enabled = True
                                     StateTextBox.Text = "Engineering Approved"
                                 Case 3
-                                    if MachineName Like "LA?" Then
-                                    RadioButtonList1.Items.FindByValue(2).Enabled = True
+                                    If MachineName Like "LA?" Then
+                                        RadioButtonList1.Items.FindByValue(2).Enabled = True
                                     End If
                                     RadioButtonList1.Items.FindByValue(3).Enabled = True
                                     StateTextBox.Text = "Clinical - Not Treating"
                                 Case 4, 5, 8
                                     If Application(suspstate) = 1 Then
-                                        if MachineName Like "LA?" Then
-                                        RadioButtonList1.Items.FindByValue(2).Enabled = True
+                                        If MachineName Like "LA?" Then
+                                            RadioButtonList1.Items.FindByValue(2).Enabled = True
                                         End If
                                         RadioButtonList1.Items.FindByValue(3).Enabled = True
                                         StateTextBox.Text = "Suspended"
                                     ElseIf Application(repairstate) = 1 Then
-                                        if MachineName Like "LA?" Then
-                                        RadioButtonList1.Items.FindByValue(2).Enabled = True
-                                        StateTextBox.Text = "Engineering Approved"
-                                            Else
-                                             RadioButtonList1.Items.FindByValue(3).Enabled = True
-                                        StateTextBox.Text = "Clinical - Not Treating"
-                                            End If
+                                        If MachineName Like "LA?" Then
+                                            RadioButtonList1.Items.FindByValue(2).Enabled = True
+                                            StateTextBox.Text = "Engineering Approved"
+                                        Else
+                                            RadioButtonList1.Items.FindByValue(3).Enabled = True
+                                            StateTextBox.Text = "Clinical - Not Treating"
+                                        End If
                                     End If
                                 Case Else
                                     'StateTextBox.Text = "Linac Unauthorised"
                             End Select
 
                         ElseIf Application(suspstate) = 1 Then
-                            if MachineName Like "LA?" Then
-                            RadioButtonList1.Items.FindByValue(2).Enabled = True
+                            If MachineName Like "LA?" Then
+                                RadioButtonList1.Items.FindByValue(2).Enabled = True
                             End If
                             RadioButtonList1.Items.FindByValue(3).Enabled = True
                             StateTextBox.Text = "Suspended"
@@ -492,12 +499,12 @@ Partial Class Repairuc
                             'Application("Failstate") = 0
                             Dim rtab As String = Application(repairstate)
                         ElseIf Application(repairstate) = 1 Then
-                            if MachineName Like "LA?" Then
-                                   RadioButtonList1.Items.FindByValue(2).Enabled = True
-                                   StateTextBox.Text = "Engineering Approved"
+                            If MachineName Like "LA?" Then
+                                RadioButtonList1.Items.FindByValue(2).Enabled = True
+                                StateTextBox.Text = "Engineering Approved"
                             Else
-                                   RadioButtonList1.Items.FindByValue(3).Enabled = True
-                                   StateTextBox.Text = "Clinical - Not Treating"
+                                RadioButtonList1.Items.FindByValue(3).Enabled = True
+                                StateTextBox.Text = "Clinical - Not Treating"
                             End If
                         End If
 
@@ -512,39 +519,6 @@ Partial Class Repairuc
         End If
 
     End Sub
-
-
-    'Sub BindConcessionGrid()
-    '    Dim SqlDataSource2 As New SqlDataSource()
-    '    SqlDataSource2.ID = "SqlDataSource2"
-    '    SqlDataSource2.ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-    '    SqlDataSource2.SelectCommand = "select distinct f.incidentID,  f.Dateinserted, c.ConcessionDescription, c.ConcessionNumber, c.Action, f.linac " & _
-    '       "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber where f.linac=@linac and f.Status in('Open','Concession') order by incidentid desc"
-    '    'Open was added to allow use with singlemachinefaultuc it will only be appropriate for the repair page
-
-    '    'SqlDataSource2.SelectCommand = "select r.FaultID, r.Description, r.ReportedBy, r.DateReported, r.FaultStatus, t.ConcessionNumber, r.linac " & _
-    '    '   "from reportfault r left outer join Faulttracking t on r.FaultID=t.FaultID where r.linac=@linac and r.faultstatus=t.status and FaultStatus in('Concession') order by faultid desc"
-    '    'SqlDataSource2.SelectCommand = "select * from reportfault where linac=@linac and FaultStatus in('Concession')"
-    '    SqlDataSource2.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-    '    SqlDataSource2.SelectParameters.Add("linac", MachineName)
-    '    GridView1.DataSource = SqlDataSource2
-    '    GridView1.DataBind()
-    'End Sub
-
-    'Protected Sub OnPaging(ByVal sender As Object, ByVal e As GridViewPageEventArgs) Handles GridView1.PageIndexChanging
-    '    GridView1.PageIndex = e.NewPageIndex
-    '    GridView1.DataBind()
-    'End Sub
-
-    'Sub FaultGridView_RowCommand(ByVal sender As Object, ByVal e As GridViewCommandEventArgs)
-
-    'End Sub
-    'Protected Sub GridView1_PageIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewPageEventArgs) Handles GridView1.PageIndexChanging
-
-    '    GridView1.PageIndex = e.NewPageIndex
-    '    BindConcessionGrid()
-
-    'End Sub
 
     Protected Sub LockElf_Click(sender As Object, e As System.EventArgs) Handles LockElf.Click
         RemoteLockElf(True)
@@ -589,18 +563,12 @@ Partial Class Repairuc
         End If
         If Not realbut Then
             username = "System lock"
-            '    faultstate = DavesCode.Reuse.GetLastState(MachineName, 0)
-            '    If faultstate = "Fault" Then
-            '        'radioselect = 101
-            '        breakdown = True
-            '    End If
-            'Else
-            '    radioselect = 101
+
         End If
         Dim lock As Boolean
         lock = Not lockctrl.Visible
         If lock Then
-            'If this fails it writes an error to file but carries on.
+
             Dim success As Boolean = False
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             'has to be tablable to cope with either tab 1 or 7 control
@@ -634,47 +602,51 @@ Partial Class Repairuc
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 
-    Public Sub WriteFaultIDTable()
+    Public Function WriteFaultIDTable() As Boolean
         'There might have been multiple faults open while repair tab was opened so need to update all of them when leaving.
         Dim laststateid As Integer
+        Dim Success As Boolean = False
         Dim conn As SqlConnection
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
-        "connectionstring").ConnectionString
-
-        Dim updatefault As SqlCommand
-        Dim getlaststateid As SqlCommand
-        conn = New SqlConnection(connectionString)
-
-        'need to close all faults that have been opened before repair page could be left. Find out what last stateid is then update all records with that time.
-        'get last stateid
-        getlaststateid = New SqlCommand(("SELECT TOP(1)  [StatusID] FROM FaultIDTable where Linac = @linac ORDER BY [IncidentID] DESC"), conn)
-        getlaststateid.Parameters.AddWithValue("@linac", MachineName)
-
         Try
-            conn.Open()
-            'getlaststateid.ExecuteNonQuery()
-            laststateid = DirectCast(getlaststateid.ExecuteScalar(), Integer)
-            conn.Close()
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+            Using myscope As TransactionScope = New TransactionScope()
+
+                Dim updatefault As SqlCommand
+                Dim getlaststateid As SqlCommand
+                conn = New SqlConnection(connectionString)
+
+                'need to close all faults that have been opened before repair page could be left. Find out what last stateid is then update all records with that time.
+                'get last stateid
+                getlaststateid = New SqlCommand(("SELECT TOP(1)  [StatusID] FROM FaultIDTable where Linac = @linac ORDER BY [IncidentID] DESC"), conn)
+                getlaststateid.Parameters.AddWithValue("@linac", MachineName)
+
+
+                conn.Open()
+
+                laststateid = DirectCast(getlaststateid.ExecuteScalar(), Integer)
+                conn.Close()
+
+                updatefault = New SqlCommand("UPDATE  FaultIDTable SET ReportClosed = @ReportClosed where StatusID  = @statusId", conn)
+                'updatefault = New SqlCommand("UPDATE  FaultIDTable SET ReportClosed = @ReportClosed where IncidentID  = (Select max(IncidentID) as lastrecord from FaultIDtable where linac=@linac)", conn)
+                updatefault.Parameters.Add("@ReportClosed", System.Data.SqlDbType.DateTime)
+                updatefault.Parameters("@ReportClosed").Value = Now()
+                updatefault.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                updatefault.Parameters("@linac").Value = MachineName
+                updatefault.Parameters.Add("@statusID", System.Data.SqlDbType.Int)
+                updatefault.Parameters("@statusID").Value = CInt(laststateid)
+
+                conn.Open()
+                updatefault.ExecuteNonQuery()
+                myscope.Complete()
+                Success = True
+
+            End Using
         Catch ex As Exception
-
+            RaiseLogOffError()
         End Try
-        updatefault = New SqlCommand("UPDATE  FaultIDTable SET ReportClosed = @ReportClosed where StatusID  = @statusId", conn)
-        'updatefault = New SqlCommand("UPDATE  FaultIDTable SET ReportClosed = @ReportClosed where IncidentID  = (Select max(IncidentID) as lastrecord from FaultIDtable where linac=@linac)", conn)
-        updatefault.Parameters.Add("@ReportClosed", System.Data.SqlDbType.DateTime)
-        updatefault.Parameters("@ReportClosed").Value = Now()
-        updatefault.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-        updatefault.Parameters("@linac").Value = MachineName
-        updatefault.Parameters.Add("@statusID", System.Data.SqlDbType.Int)
-        updatefault.Parameters("@statusID").Value = CInt(laststateid)
 
-        Try
-            conn.Open()
-            updatefault.ExecuteNonQuery()
-
-        Finally
-            conn.Close()
-        End Try
-    End Sub
+        Return Success
+    End Function
     Private Sub WaitButtons(ByVal WaitType As String)
 
         Select Case WaitType

@@ -28,7 +28,7 @@ Partial Class Planned_Maintenanceuc
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
     Public Property LinacName() As String
 
-    Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
+    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
         If LinacName = EquipmentID Then
             Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
             todayfault.SetGrid()
@@ -43,13 +43,8 @@ Partial Class Planned_Maintenanceuc
         End If
     End Sub
 
-    'Protected Sub Update_TodayClosedFault(ByVal EquipmentID As String)
-    '    If LinacName = EquipmentID Then
-
-    '    End If
-    'End Sub
     ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
-    Protected Sub Update_Defect(ByVal EquipmentID As String)
+    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
             If LinacName Like "T?" Then
                 Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
@@ -113,15 +108,16 @@ Partial Class Planned_Maintenanceuc
             Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
             wctrl.Visible = False
             Dim Action As String = Application(actionstate)
+            suspendvalue = Application(suspstate)
+            repairvalue = Application(repairstate)
+            Radioselect = RadioButtonList1.SelectedItem.Value
             result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
             If result Then
                 If Action = "Confirm" Then
                     'DavesCode.Reuse.ReturnApplicationState(Tabused)
                     'Dim Textboxcomment As TextBox = FindControl("CommentBox")
                     'Dim comment As String = Textboxcomment.Text
-                    suspendvalue = Application(suspstate)
-                    repairvalue = Application(repairstate)
-                    Radioselect = RadioButtonList1.SelectedItem.Value
+
 
                     'result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
                     Application(tabstate) = String.Empty
@@ -206,6 +202,8 @@ Partial Class Planned_Maintenanceuc
         CType(Objcon, ViewOpenFaults).TabName = "5"
         CType(Objcon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(Objcon)
+        AddHandler CType(Objcon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+        AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
         Dim objAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
         CType(objAtlas, AtlasEnergyViewuc).LinacName = LinacName
@@ -222,23 +220,21 @@ Partial Class Planned_Maintenanceuc
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
         Dim objDefect As UserControl
-        AddHandler CType(Objcon, ViewOpenFaults).UpDateFaultClosedDisplay, AddressOf Update_Today
-        AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
+
         If LinacName Like "T?" Then
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = LinacName
             CType(objDefect, DefectSavePark).ParentControl = 4
-            'AddHandler CType(objDefect, DefectSavePark).UpDateDefect, AddressOf Update_Today
-            AddHandler CType(objDefect, DefectSavePark).UpdateViewFault, AddressOf Update_ViewOpenFaults
+            AddHandler CType(objDefect, DefectSavePark).UpDateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+            AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
         Else
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = LinacName
             CType(objDefect, DefectSave).ParentControl = 4
-            'AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
-            AddHandler CType(objDefect, DefectSave).UpdateViewFault, AddressOf Update_ViewOpenFaults
+            AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
         PlaceHolder4.Controls.Add(objDefect)

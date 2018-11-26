@@ -32,9 +32,9 @@
                         font-size: medium;
                      }
                  </style>
-<asp:HiddenField ID="HiddenField1" Value="" runat="server" />
-<asp:HiddenField ID="HiddenField2" Value="" runat="server" />
-<asp:HiddenField ID="HiddenField3" Value="" runat="server" />
+<asp:HiddenField ID="SelectedIncidentID" Value="" runat="server" />
+<asp:HiddenField ID="TimeFaultSelected" Value="" runat="server" />
+<asp:HiddenField ID="AreaOrAccuray" Value="" runat="server" />
 <%-- NO requirement 23/11/16 --%>
 <%-- Added back in 26/03/18 --%>
 This is for rad reset

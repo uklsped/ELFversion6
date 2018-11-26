@@ -1,53 +1,9 @@
-﻿Imports System.Globalization
-Imports System.Data.SqlClient
-Imports System.Configuration
-Imports System.Drawing
+﻿Imports System.Data.SqlClient
 Imports System.Data
 Partial Class TodayClosedFault
-    Inherits System.Web.UI.UserControl
-    Private machinename As String
+    Inherits UserControl
 
     Public Property LinacName() As String
-        Get
-            Return machinename
-        End Get
-        Set(ByVal value As String)
-            machinename = value
-        End Set
-    End Property
-
-
-    'Function GetconcessionData(ByVal machineselected As String) As DataTable
-    '    Dim dt As DataTable = New DataTable()
-    '    Dim conn As SqlConnection
-    '    Dim connectionstring As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-    '    Dim querystring As String
-    '    Dim adapter As SqlDataAdapter
-
-    '    conn = New SqlConnection(connectionstring)
-    '    querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, f.status, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " & _
-    '    "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac = @linac and c.ConcessionNumber != '' order by c.concessionnumber"
-    '    adapter = New SqlDataAdapter()
-    '    Dim command As SqlCommand = New SqlCommand(querystring, conn)
-    '    adapter.SelectCommand = command
-
-    '    command.Parameters.AddWithValue("@linac", SqlDbType.NVarChar).Value = machineselected
-
-
-    '    Try
-    '        ' Connect to the database and run the query.
-    '        ' Fill the DataSet.
-    '        adapter.Fill(dt)
-
-    '    Catch ex As Exception
-
-    '        ' The connection failed. Display an error message.
-
-    '    End Try
-
-    '    Return dt
-
-    'End Function
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
@@ -59,10 +15,6 @@ Partial Class TodayClosedFault
         Dim today As Date = DateTime.Today
         Dim todayplusone As DateTime = today.AddDays(1)
         Dim dt As DataTable = New DataTable()
-        ' Dim returntable As DataTable
-
-        'returntable = GetData()
-
         Dim conn As SqlConnection
         Dim connectionstring As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         Dim querystring As String
@@ -70,13 +22,13 @@ Partial Class TodayClosedFault
 
 
         conn = New SqlConnection(connectionstring)
-        querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " & _
+        querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " &
         "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and f.dateclosed between @StartDate and @EndDate order by Dateclosed desc"
         adapter = New SqlDataAdapter()
         Dim command As SqlCommand = New SqlCommand(querystring, conn)
         adapter.SelectCommand = command
 
-        command.Parameters.AddWithValue("@linac", SqlDbType.NVarChar).Value = machinename
+        command.Parameters.AddWithValue("@linac", SqlDbType.NVarChar).Value = LinacName
         command.Parameters.Add("@StartDate", System.Data.SqlDbType.DateTime).Value = today
         command.Parameters.Add("@EndDate", System.Data.SqlDbType.DateTime).Value = todayplusone
 
@@ -89,8 +41,6 @@ Partial Class TodayClosedFault
             Dim incidentID As String = ""
             Dim description As String = ""
 
-
-
             If dt.Rows.Count > 0 Then
 
                 For Each dataRow As DataRow In dt.Rows
@@ -98,7 +48,6 @@ Partial Class TodayClosedFault
                     incidentID = dataRow("incidentID")
 
                     description = dataRow("Description")
-
 
                 Next
             End If
@@ -108,8 +57,6 @@ Partial Class TodayClosedFault
             ' The connection failed. Display an error message.
 
         End Try
-
-
 
         ViewState("FaultsDataTable") = dt
         GridView1.DataSource = dt
@@ -144,9 +91,6 @@ Partial Class TodayClosedFault
             grid.Rows(0).Cells(0).HorizontalAlign = HorizontalAlign.Center
             grid.Rows(0).Cells(0).ForeColor = Drawing.Color.Black
             grid.Rows(0).Cells(0).Font.Bold = True
-
-
-            'grid.Rows(0).Visible = False
 
         End If
     End Sub
@@ -264,7 +208,6 @@ Partial Class TodayClosedFault
     '    Listfaults("0")
     '    ListHistory("0")
     'End Sub
-
 
 End Class
 

@@ -31,9 +31,9 @@
         font-size: medium;
     }
 </style>
-<asp:HiddenField ID="HiddenField1" Value="" runat="server" />
-<asp:HiddenField ID="HiddenField2" Value="" runat="server" />
-<asp:HiddenField ID="HiddenField3" Value="" runat="server" />
+<asp:HiddenField ID="SelectedIncidentID" Value="" runat="server" />
+<asp:HiddenField ID="TimeFaultSelected" Value="" runat="server" />
+<asp:HiddenField ID="AreaOrAccuray" Value="" runat="server" />
 <%-- NO requirement 23/11/16 --%><%-- Added back in 26/03/18 --%>
 <uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="12" Tabby="Defect" WriteName="Defect" Visible="false" runat="server" />
 
@@ -148,43 +148,38 @@
         </ContentTemplate>
     </asp:UpdatePanel>
     <br />
-    <br />
    
-                                       <div style="background-color: Green; height: 30px; width: 400px; margin: 0; padding: 0">
-                                        Today's Repeat Faults
-                                       <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table3"
-                                           style="font-family: Arial; font-size: 10pt; width: 400px; color: white; border-collapse: collapse; height: 100%;">
-                                           <tr>
-                                               <td style="width: 150px; text-align: center">Repeat Fault</td>
-                                               <td style="width: 80px; text-align: center">Time</td>
-                                               <td style="width: 180px; text-align: center">Description</td>
-                                           </tr>
-                                       </table>
-                                   </div>
     <div style="width: 400px">
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
             <ContentTemplate>
+          
                 <div style="height: 150px; width: 400px; overflow: auto;">
-                    <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeader="false"
+                    <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeader="true"
                         DataKeyNames="ConcessionNumber" BackColor="White" Width="400px"
                         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
                         GridLines="Horizontal" Font-Size="smaller">
                         <RowStyle BackColor="White" ForeColor="#333333" />
                         <Columns>
-                            <asp:BoundField DataField="ConcessionNumber" HeaderText="Fault Identifier" ItemStyle-Width="150px"
-                                SortExpression="ConcessionNumber" />
-                            <asp:BoundField DataField="DefectTime" HeaderText="DefectTime" ItemStyle-Width="80px"
-                                SortExpression="DefectTime" />
+                            <asp:BoundField DataField="ConcessionNumber" HeaderText="Fault" ItemStyle-Width="150px"
+                                SortExpression="ConcessionNumber" HeaderStyle-HorizontalAlign="Left">
+                            <ItemStyle Width="150px" />
+                            </asp:BoundField>
+                            <asp:BoundField DataField="DefectTime" HeaderText="Time" ItemStyle-Width="80px"
+                                SortExpression="DefectTime" >
+                            <ItemStyle Width="80px" />
+                            </asp:BoundField>
                             <asp:BoundField DataField="Description" HeaderText="Description" ItemStyle-Width="160px"
-                                SortExpression="Description" />
+                                SortExpression="Description" HeaderStyle-HorizontalAlign="Left">
+                            <ItemStyle Width="160px" />
+                            </asp:BoundField>
                         </Columns>
                         <FooterStyle BackColor="White" ForeColor="#333333" />
                         <PagerStyle BackColor="#336666" ForeColor="White" HorizontalAlign="Center" />
                         <SelectedRowStyle BackColor="#339966" Font-Bold="True" ForeColor="White" />
-                        <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
+                        <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" HorizontalAlign="Left" />
                     </asp:GridView>
                 </div>
-                </div>
+               <%-- </div>--%>
             </ContentTemplate>
         </asp:UpdatePanel>
     </div>

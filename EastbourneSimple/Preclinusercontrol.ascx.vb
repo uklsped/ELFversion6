@@ -136,16 +136,7 @@ Partial Class Preclinusercontrol
         'End Try
     End Sub
 
-    Protected Sub Update_Today(ByVal EquipmentID As String, ByVal incidentID As String)
-        If LinacName = EquipmentID Then
-            Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
-            todayfault.SetGrid()
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            Todaydefect.ResetDefectDropDown(incidentID)
-        End If
-    End Sub
-
-    Protected Sub Update_Defect(ByVal EquipmentID As String)
+    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
             Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
             Todaydefect.UpDateDefectsEventHandler()
@@ -199,7 +190,6 @@ Partial Class Preclinusercontrol
                     Dim returnstring As String = LinacName + "page.aspx?tabref=3"
                     Application(tabstate) = String.Empty
                     HttpContext.Current.Application(BoxChanged) = Nothing
-                    'added application suspstate 31 march 2016
                     Application(suspstate) = 1
                     Response.Redirect(returnstring)
                 Else
@@ -228,9 +218,7 @@ Partial Class Preclinusercontrol
     End Sub
     Protected Sub RaiseError()
         Dim message As String
-
         message = "alert('Problem recording Pre-clin run up. Logging off without Approving for Clinical');"
-
 
         Dim strScript As String = "<script>"
         Dim machinelabel As String = LinacName & "Page.aspx';"
@@ -251,25 +239,25 @@ Partial Class Preclinusercontrol
         objconToday.ID = "Todaysfaults"
         objconToday.LinacName = LinacName
         PlaceHolder5.Controls.Add(objconToday)
-        Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
+        Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = LinacName
         CType(objCon, ViewOpenFaults).TabName = "2"
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
+        'AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
+        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
         Dim button1 As Button = FindControl("clinHandoverButton")
         Dim button2 As Button = FindControl("LogOff")
 
         PlaceHolder1.Controls.Add(objCon)
 
-        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDisplay, AddressOf Update_Defect
         Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = LinacName
         CType(objDefect, DefectSave).ParentControl = 2
         PlaceHolder3.Controls.Add(objDefect)
         'AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
-        AddHandler CType(objDefect, DefectSave).UpdateViewFault, AddressOf Update_ViewOpenFaults
+        AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
@@ -283,10 +271,6 @@ Partial Class Preclinusercontrol
         Dim Textboxcomment As TextBox = FindControl("CommentBox")
 
         If Not IsPostBack Then
-
-            'BindGridview2()
-            'BindComments()
-
 
             'removes engineer comments from display in grid
             GridView2.Columns(13).Visible = False
@@ -326,8 +310,6 @@ Partial Class Preclinusercontrol
             End If
             Application(faultviewstate) = 1
 
-            '2/12/16
-            'SetImaging()
         End If
 
     End Sub
@@ -389,7 +371,7 @@ Partial Class Preclinusercontrol
 
     End Sub
 
-    Protected Sub clinHandoverButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles clinHandoverButton.Click
+    Protected Sub ClinHandoverButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles clinHandoverButton.Click
 
         Dim counter As Integer = 0
 
@@ -412,10 +394,8 @@ Partial Class Preclinusercontrol
         Else
             Dim cptrl As ConfirmPage = CType(FindControl("ConfirmPage1"), ConfirmPage)
             Dim cpbutton As Button = CType(cptrl.FindControl("AcceptOK"), Button)
-            'Dim cptext As TextBox = CType(cptrl.FindControl("txtchkUserName"), TextBox)
             cpbutton.Text = "Confirm No Imaging"
             ConfirmPage1.Visible = True
-            'ForceFocus(cptext)
 
         End If
 
