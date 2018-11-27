@@ -47,8 +47,8 @@ Partial Public Class E2page
     Private lsctrl As LinacStatusuc
     Private RegistrationState As String = "regstateE2"
     Private loadup As String = Nothing
-
-
+    Public Event EngRunuploaded(ByVal connectionString As String)
+    'Public Event DayEnded(ByVal Tab As String, ByVal UserName As String)
 
     Protected Sub Update_ReturnButtons()
 
@@ -75,14 +75,14 @@ Partial Public Class E2page
 
     End Sub
 
-    Protected Property ActiveTabIndex() As Integer
-        Get
-            Return If(ViewState("ActiveTabIndex") IsNot Nothing, Convert.ToInt32(ViewState("ActiveTabIndex")), 0)
-        End Get
-        Set(ByVal value As Integer)
-            ViewState("ActiveTabIndex") = value
-        End Set
-    End Property
+    'Protected Property ActiveTabIndex() As Integer
+    '    Get
+    '        Return If(ViewState("ActiveTabIndex") IsNot Nothing, Convert.ToInt32(ViewState("ActiveTabIndex")), 0)
+    '    End Get
+    '    Set(ByVal value As Integer)
+    '        ViewState("ActiveTabIndex") = value
+    '    End Set
+    'End Property
 
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
@@ -186,7 +186,7 @@ Partial Public Class E2page
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
         Dim Reload As Boolean = False
-        Dim panelcontrol As TabPanel
+        'Dim panelcontrol As TabPanel
         Dim Fcancel As String = ""
         AddHandler AcceptLinac1.ShowName, AddressOf SetUser
         AddHandler AcceptLinac4.ShowName, AddressOf SetUser
@@ -240,10 +240,16 @@ Partial Public Class E2page
         'DavesCode.Reuse.ReturnApplicationState("First Start")
 
         If Not IsPostBack Then
+            'Dim loadstate As String = Application("E2loaded")
+            'If loadstate = "Albert" Then
+            'Statelabel.Text = loadstate
+            'End If
+
             'added 16/11/17 to check for end of day
             If Not Request.QueryString("loadup") Is Nothing Then
 
                 ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
+
                 Select Case ResetDay
                     Case "Ignore"
                         'Ignore
@@ -256,6 +262,7 @@ Partial Public Class E2page
 
             Dim userIP As String = DavesCode.Reuse.GetIPAddress()
             Label5.Text = userIP
+            'Label5.Text = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
             ' 20 April handle direct open to repair page
 
             If Not Request.QueryString("recovered") Is Nothing Then
@@ -363,9 +370,9 @@ Partial Public Class E2page
                         'TabPanel6.Enabled = "true"
                         'added 9/10/17
                         If EquipmentID Like "LA_" Then
-                        TabPanel7.Enabled = "true"
+                            TabPanel7.Enabled = "true"
                             TabPanel7.HeaderText = EquipmentID + " Emergency Runup"
-                            End If
+                        End If
                         TabPanel8.Enabled = "True"
 
 
@@ -442,15 +449,17 @@ Partial Public Class E2page
 
                 End Select
             End If
+
         End If
+
     End Sub
 
 
     Protected Sub TabButton_Click(ByVal sender As Object, ByVal e As EventArgs)
         Dim TabString As String
         Dim tabbutton As Button = sender
-        Dim linacstatusuc As LinacStatusuc
-        Dim tabcontainer1 As TabContainer
+        'Dim linacstatusuc As LinacStatusuc
+        'Dim tabcontainer1 As TabContainer
         TabString = tabbutton.ID
         'Get Tab number
         Dim returnstring As String = EquipmentID + "page.aspx?tabclicked=" + TabString.Substring(9)
@@ -491,10 +500,10 @@ Partial Public Class E2page
                 statusmultiview.Visible = False
                 Dim setView As View = statusmultiview.FindControl("View0")
                 statusmultiview.SetActiveView(setView)
-                Dim B1 As Button = linacstatusuc.FindControl("Button1")
+                Dim E2 As Button = linacstatusuc.FindControl("Button1")
                 Dim B2 As Button = linacstatusuc.FindControl("Button2")
                 Dim B3 As Button = linacstatusuc.FindControl("Button3")
-                B1.Visible = True
+                E2.Visible = True
                 B2.Visible = True
                 B3.Visible = True
                 Dim hidfield1 As HiddenField = linacstatusuc.FindControl("HiddenField1")
@@ -608,16 +617,15 @@ Partial Public Class E2page
                 modalpopupextendername = modalpopupextendername & tabActive
 
                 Dim logcontrol As AcceptLinac = tcl.ActiveTab.FindControl(logcontrolId)
-                Dim rucontrol As UserControl = tcl.ActiveTab.FindControl(runupcontrolId)
-                Dim preccontrol As UserControl = tcl.ActiveTab.FindControl(preclincontrolID)
-                Dim clincontrol As UserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                Dim plancontrol As UserControl = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
-                Dim repcontrol As UserControl = tcl.ActiveTab.FindControl(repcontrolId)
-                Dim webcontrol As UserControl = tcl.ActiveTab.FindControl(webusercontrol21ID)
-                Dim writecontrol As UserControl = tcl.ActiveTab.FindControl(writedatacontrolID)
+                Dim rucontrol As ErunupUserControl = tcl.ActiveTab.FindControl(runupcontrolId)
+                Dim preccontrol As Preclinusercontrol = tcl.ActiveTab.FindControl(preclincontrolID)
+                Dim clincontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                Dim plancontrol As Planned_Maintenanceuc = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+                Dim repcontrol As Repairuc = tcl.ActiveTab.FindControl(repcontrolId)
+                Dim writecontrol As WriteDatauc = tcl.ActiveTab.FindControl(writedatacontrolID)
                 Dim physicscontrol As UserControl = tcl.ActiveTab.FindControl(physicscontrolID)
-                Dim emergencycontrol As UserControl = tcl.ActiveTab.FindControl(emergencycontrolID)
-                Dim trainingcontrol As UserControl = tcl.ActiveTab.FindControl(trainingcontrolID)
+                Dim emergencycontrol As ErunupUserControl = tcl.ActiveTab.FindControl(emergencycontrolID)
+                Dim trainingcontrol As Traininguc = tcl.ActiveTab.FindControl(trainingcontrolID)
                 'Dim activepanel As Control = tcl.FindControl(tabpanelId)
 
                 'moved panel.visible 030316
@@ -662,9 +670,15 @@ Partial Public Class E2page
                                     End If
                                 End If
                             Else
+
                                 Select Case tabref
-                                    Case 1, 4, 5, 6, 8
+                                    Case 1
+                                        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                                         AcceptOKnosigpass(tabref, lastuser, lastusergroup)
+                                        rucontrol.EngLogOnEvent(connectionString)
+                                    Case 4, 5, 6, 8
+                                        AcceptOKnosigpass(tabref, lastuser, lastusergroup)
+
                                     Case Else
                                         If (Not logcontrol Is Nothing) Then
                                             Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
@@ -899,77 +913,77 @@ Partial Public Class E2page
     Public Event MyEventE2 As System.EventHandler
 
 
-    Protected Sub ReportFault_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ReportFault.Click
-        'This takes account of if fault is reported while on status tab but logged in to another tab
-        'If already logged in but on tab 0 then don't change session
-        'Otherwise make sure session is uptodate?
-        Dim Tabindex As String
-        If tcl.ActiveTabIndex = 0 And Application(appstate) = 1 Then
-            'user is already logged on and has clicked on tab 0 then reported a fault. Want to send live tab to fault page.
-            'Tabindex = CType(Session.Item("ActiveTabIdx"), String)
-            Tabindex = Application(activetabstate)
-        Else
-            Session("ActiveTabIdx") = tcl.ActiveTabIndex
-            Tabindex = CType(Session.Item("ActiveTabIdx"), String)
-        End If
+    'Protected Sub ReportFault_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ReportFault.Click
+    '    'This takes account of if fault is reported while on status tab but logged in to another tab
+    '    'If already logged in but on tab 0 then don't change session
+    '    'Otherwise make sure session is uptodate?
+    '    Dim Tabindex As String
+    '    If tcl.ActiveTabIndex = 0 And Application(appstate) = 1 Then
+    '        'user is already logged on and has clicked on tab 0 then reported a fault. Want to send live tab to fault page.
+    '        'Tabindex = CType(Session.Item("ActiveTabIdx"), String)
+    '        Tabindex = Application(activetabstate)
+    '    Else
+    '        Session("ActiveTabIdx") = tcl.ActiveTabIndex
+    '        Tabindex = CType(Session.Item("ActiveTabIdx"), String)
+    '    End If
 
 
-        'Dim tabActive As Integer
-        'tabActive = tcl.ActiveTabIndex
-        'New stuff
-        Dim UserControlid As String
-        Dim comment As TextBox
-        Dim textcomment As String
-        Dim containerID As String = "TabContent" & Tabindex
-        'if suspended there will be no active tab
-        Dim sus As String = Application(suspstate)
+    '    'Dim tabActive As Integer
+    '    'tabActive = tcl.ActiveTabIndex
+    '    'New stuff
+    '    Dim UserControlid As String
+    '    Dim comment As TextBox
+    '    Dim textcomment As String
+    '    Dim containerID As String = "TabContent" & Tabindex
+    '    'if suspended there will be no active tab
+    '    Dim sus As String = Application(suspstate)
 
-        Select Case Tabindex
-            Case 0, 3 'This takes care of a fault reported when system suspended although this shouldn't happen
-                'only 0 if no one logged in or if suspended
-                UserControlid = ""
-                textcomment = Nothing
-            Case 1
-                UserControlid = "ErunupUserControl1"
-            Case 2
-                UserControlid = "Preclinusercontrol1"
-                'Case 3
-                'Don't need comment from clinicalusercontrol because it is saved
-                'UserControlid = "ClinicalUserControl"
+    '    Select Case Tabindex
+    '        Case 0, 3 'This takes care of a fault reported when system suspended although this shouldn't happen
+    '            'only 0 if no one logged in or if suspended
+    '            UserControlid = ""
+    '            textcomment = Nothing
+    '        Case 1
+    '            UserControlid = "ErunupUserControl1"
+    '        Case 2
+    '            UserControlid = "Preclinusercontrol1"
+    '            'Case 3
+    '            'Don't need comment from clinicalusercontrol because it is saved
+    '            'UserControlid = "ClinicalUserControl"
 
-            Case 4
-                UserControlid = "PlannedMaintenanceuc1"
-            Case 5
-                UserControlid = "Repairuc1"
-            Case 6
-                UserControlid = "PhysicsQAuc1"
-            Case 7
-                UserControlid = "Emergencyrunupuc1"
-            Case 8
-                UserControlid = "Traininguc1"
-            Case Else
-                'if it gets to here with no active tab then autorecover
-                WriteRecovery()
-        End Select
-        'Why does it find panel?
-        Dim panel As Panel = tcl.ActiveTab.FindControl(containerID)
-        'Why is it called clincontrol?
+    '        Case 4
+    '            UserControlid = "PlannedMaintenanceuc1"
+    '        Case 5
+    '            UserControlid = "Repairuc1"
+    '        Case 6
+    '            UserControlid = "PhysicsQAuc1"
+    '        Case 7
+    '            UserControlid = "Emergencyrunupuc1"
+    '        Case 8
+    '            UserControlid = "Traininguc1"
+    '        Case Else
+    '            'if it gets to here with no active tab then autorecover
+    '            WriteRecovery()
+    '    End Select
+    '    'Why does it find panel?
+    '    Dim panel As Panel = tcl.ActiveTab.FindControl(containerID)
+    '    'Why is it called clincontrol?
 
 
-        Dim clincontrol As UserControl = tcl.ActiveTab.FindControl(UserControlid)
-        If Not clincontrol Is Nothing Then
-            comment = CType(clincontrol.FindControl("CommentBox"), TextBox)
-            If Not comment Is Nothing Then
-                textcomment = comment.Text
-            End If
-        Else
-            'Labelcomment.Text = "Cannot find comment box."
-        End If
-        'Response.Redirect("faultPage.aspx?val=E2&Tabindex=" & Tabindex & "&commentbox=" & textcomment)
-        Dim returnstring As String = "faultPage.aspx?val=" + EquipmentID + "&Tabindex=" + Tabindex + "&commentbox=" & textcomment
-        Response.Redirect(returnstring)
+    '    Dim clincontrol As UserControl = tcl.ActiveTab.FindControl(UserControlid)
+    '    If Not clincontrol Is Nothing Then
+    '        comment = CType(clincontrol.FindControl("CommentBox"), TextBox)
+    '        If Not comment Is Nothing Then
+    '            textcomment = comment.Text
+    '        End If
+    '    Else
+    '        'Labelcomment.Text = "Cannot find comment box."
+    '    End If
+    '    'Response.Redirect("faultPage.aspx?val=E2&Tabindex=" & Tabindex & "&commentbox=" & textcomment)
+    '    Dim returnstring As String = "faultPage.aspx?val=" + EquipmentID + "&Tabindex=" + Tabindex + "&commentbox=" & textcomment
+    '    Response.Redirect(returnstring)
 
-    End Sub
+    'End Sub
 
     Protected Sub tcl_ActiveTabChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles tcl.ActiveTabChanged
         'This doesn't do anything. just playing with the dynamiccontextkey
@@ -1026,7 +1040,7 @@ Partial Public Class E2page
         Dim url As String = Poppage
         Dim PageName As String = PageType
         PageName = "popup_window_" & PageName
-        Dim DiagResult As Integer
+        'Dim DiagResult As Integer
         'DiagResult = Integer.Parse(inpHide.Value)
         Dim path As String = HttpContext.Current.Request.Url.AbsolutePath
         'from http://www.codestore.net/store.nsf/unid/DOMM-4PYJ3S?OpenDocument
@@ -1043,31 +1057,33 @@ Partial Public Class E2page
         'Amended because a user could click button before it was hidden SPR 30
 
         'EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
-        Dim mpContentPlaceHolder As ContentPlaceHolder
-        mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-        If Not mpContentPlaceHolder Is Nothing Then
-            Dim lastState As String
-            lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
-            If (Application(appstate) = 1) Or (lastState = "Fault") Then
-                'tell user it can't be done
-                Dim strScript As String = "<script>"
-                If Application(appstate) = 1 Then
-                    strScript += "alert('Please complete current action first');"
-                Else
-                    strScript += "alert('Please Clear fault first');"
-                End If
-                strScript += "</script>"
-                ScriptManager.RegisterStartupScript(EndOfDay, Me.GetType(), "JSCR", strScript.ToString(), False)
-            Else
-                wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
-                Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
-                wcbutton.Text = "End Of Day"
-                Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-                Application(actionstate) = "Confirm"
-                wctrl.Visible = True
-                ForceFocus(wctext)
-            End If
-        End If
+        EndofDayElf("EndDay")
+        'put here to end back in
+        'Dim mpContentPlaceHolder As ContentPlaceHolder
+        'mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        'If Not mpContentPlaceHolder Is Nothing Then
+        '    Dim lastState As String
+        '    lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
+        '    If (Application(appstate) = 1) Or (lastState = "Fault") Then
+        '        'tell user it can't be done
+        '        Dim strScript As String = "<script>"
+        '        If Application(appstate) = 1 Then
+        '            strScript += "alert('Please complete current action first');"
+        '        Else
+        '            strScript += "alert('Please Clear fault first');"
+        '        End If
+        '        strScript += "</script>"
+        '        ScriptManager.RegisterStartupScript(EndOfDay, Me.GetType(), "JSCR", strScript.ToString(), False)
+        '    Else
+        '        wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
+        '        Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+        '        wcbutton.Text = "End Of Day"
+        '        Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+        '        Application(actionstate) = "Confirm"
+        '        wctrl.Visible = True
+        '        ForceFocus(wctext)
+        '    End If
+        'End If
 
     End Sub
 
@@ -1094,7 +1110,6 @@ Partial Public Class E2page
         Statelabel.Text = message
     End Sub
 
-   
     Public Shared Sub CloseMessage()
         'DavesCode.Reuse.CloseBrowser()
         'Need to put in a check here to see if is a fault because hidden field not refreshed in writeauc
@@ -1126,15 +1141,15 @@ Partial Public Class E2page
 
         Protected Sub EndofDayElf(ByVal Caller As String)
         Dim returnstring As String = EquipmentID + "page.aspx"
-        Dim mrucontrol As UserControl
-        Dim mpreccontrol As UserControl
-        Dim mclincontrol As UserControl
-        Dim mplancontrol As UserControl
+        Dim mrucontrol As ErunupUserControl
+        Dim mpreccontrol As Preclinusercontrol
+        Dim mclincontrol As ClinicalUserControl
+        Dim mplancontrol As Planned_Maintenanceuc
         Dim mrepcontrol As Repairuc
-        Dim mwebcontrol As UserControl = tcl.ActiveTab.FindControl(webusercontrol21ID)
-        Dim mwritecontrol As UserControl = tcl.ActiveTab.FindControl(writedatacontrolID)
+        'Dim mwebcontrol As UserControl = tcl.ActiveTab.FindControl(webusercontrol21ID)
+        'Dim mwritecontrol As UserControl = tcl.ActiveTab.FindControl(writedatacontrolID)
         Dim mphysicscontrol As UserControl
-        Dim mtrainingcontrol As UserControl
+        Dim mtrainingcontrol As Traininguc
         Dim grdview As GridView
         Dim Commentbox As TextBox
         Dim Comment As String
@@ -1144,13 +1159,12 @@ Partial Public Class E2page
         Dim activetab As String
         Dim suspendnull As String = Nothing
         Dim repairstatenull As String = Nothing
-
         Dim NumOpen As Integer
         Dim conn As SqlConnection
         Dim comm As SqlCommand
         Dim reader As SqlDataReader
         Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-
+        Dim Successful As Boolean = False
 
         lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
             conn = New SqlConnection(connectionString1)
@@ -1171,87 +1185,99 @@ Partial Public Class E2page
         Label2.Text = "Last state " + lastState
 
         If Application(appstate) = 1 Then
-                'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
-                'Dim tabActive As String
-                activetab = Application(activetabstate)
-                'tabActive = CType(Session.Item("ActiveTabIdx"), Integer)
-                tcl.ActiveTabIndex = activetab
-                'This is superfluous
-                'If Not Breakdown Then and was also breaking application states
-                '    suspstate = Nothing
-                '    repairstate = Nothing
-                'End If
-                Label3.Text = "Tab is " + activetab
-                Select Case activetab
-                    Case 1, 7
-                        If activetab = 1 Then
-                            mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
-                        Else
-                            mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
-                        End If
+            'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
+            'Dim tabActive As String
+            activetab = Application(activetabstate)
+            'tabActive = CType(Session.Item("ActiveTabIdx"), Integer)
+            'tcl.ActiveTabIndex = activetab
+            'This is superfluous
+            'If Not Breakdown Then and was also breaking application states
+            '    suspstate = Nothing
+            '    repairstate = Nothing
+            'End If
+            Label3.Text = "Tab is " + activetab
+            Application(actionstate) = False
+            Select Case activetab
 
-                        grdview = mrucontrol.FindControl("Gridview1")
-                        Commentbox = mrucontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                     'blank grid view 17/11/17
-                        DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
-                    Case 2
-                        mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
-                        Commentbox = mpreccontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        DavesCode.Reuse.CommitPreClin(EquipmentID, Logoffuser, Comment, False, False, False, Breakdown)
-                    Case 3
-                        mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                        DavesCode.Reuse.CommitClinical(EquipmentID, Logoffuser, Breakdown)
+                Case 1, 7
+                    If activetab = 1 Then
+                        mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
+                    Else
+                        mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
+                    End If
+
+                    grdview = mrucontrol.FindControl("Gridview1")
+                    Commentbox = mrucontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    'blank grid view 17/11/17
+                    'RaiseEvent DayEnded(activetab, Logoffuser)
+                    'all of these commits removed because each control is called up directly
+                    'At the moment if it fails it 
+                    'Successful = DavesCode.NewEngRunup.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
+                    mrucontrol.UserApprovedEvent(activetab, Logoffuser)
+                Case 2
+                    mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
+                    Commentbox = mpreccontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    'DavesCode.Reuse.CommitPreClin(EquipmentID, Logoffuser, Comment, False, False, False, Breakdown)
+                    mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
+                Case 3
+                    mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                    mclincontrol.userapprovedevent(activetab, Logoffuser)
+                    'DavesCode.NewCommitClinical.CommitClinical(EquipmentID, Logoffuser, Breakdown)
                         'Next line not used because commitclinical modified to remove two step process of suspended then log off
                         'DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 0)
-                    Case 4
-                        mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
-                        Commentbox = mplancontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 4, Breakdown, suspendnull, repairstatenull, False)
-                    Case 5
-                        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
-                        Commentbox = mrepcontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        'mrepcontrol.RemoteLockElf()
-                        If Breakdown Then
-                            'This means there are still open faults
-                           If Caller = "EndDay" Then
+                Case 4
+                    mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+                    Commentbox = mplancontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    mplancontrol.UserApprovedEvent(activetab, Logoffuser)
+                    'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 4, Breakdown, suspendnull, repairstatenull, False)
+
+                Case 5
+                    mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
+                    Commentbox = mrepcontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    'mrepcontrol.RemoteLockElf()
+                    If Breakdown Then
+                        'This means there are still open faults
+                        If Caller = "EndDay" Then
                             WriteRecovery()
                         Else
                             mrepcontrol.RemoteLockElf(False)
                         End If
-                        Else
-                            If lastState = "Fault" Then
-                                'This means there were open faults but they have been closed so need to close them off.
-                                mrepcontrol.WriteFaultIDTable()
-                            End If
-                            DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 5, Breakdown, suspendnull, repairstatenull, False)
+                    Else
+                        If lastState = "Fault" Then
+                            'This means there were open faults but they have been closed so need to close them off.
+                            mrepcontrol.WriteFaultIDTable()
                         End If
-
-                    Case 6
-                        mphysicscontrol = tcl.ActiveTab.FindControl(physicscontrolID)
-                        Commentbox = mphysicscontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 6, Breakdown, suspendnull, repairstatenull, False)
-                    Case 8
-                        mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
-                        Commentbox = mtrainingcontrol.FindControl("CommentBox")
-                        Comment = Commentbox.Text
-                        DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 8, Breakdown, suspendnull, repairstatenull, False)
-
-                End Select
-            Else
-                If Breakdown = False Then
-                    'this is to make sure that equivalent of end of day happens
-                    'Only want this to happen if repairstate or suspended but no one is logged on.
-                    If Application(suspstate) = 1 Or Application(repairstate) = 1 Then
-                        DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 10)
+                        'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 5, Breakdown, suspendnull, repairstatenull, False)
+                        mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
                     End If
+
+                Case 6
+                    mphysicscontrol = tcl.ActiveTab.FindControl(physicscontrolID)
+                    Commentbox = mphysicscontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 6, Breakdown, suspendnull, repairstatenull, False)
+                Case 8
+                    mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
+                    Commentbox = mtrainingcontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    mtrainingcontrol.userapprovedevent(activetab, Logoffuser)
+                    'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 8, Breakdown, suspendnull, repairstatenull, False)
+
+            End Select
+        Else
+            If Breakdown = False Then
+                'this is to make sure that equivalent of end of day happens
+                'Only want this to happen if repairstate or suspended but no one is logged on.
+                If Application(suspstate) = 1 Or Application(repairstate) = 1 Then
+                    DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 10)
                 End If
             End If
-            If Not Breakdown Then
+        End If
+        If Not Breakdown Then
                 Application(suspstate) = Nothing
                 Application(appstate) = Nothing
                 Application(failstate) = Nothing
@@ -1285,16 +1311,19 @@ Partial Public Class E2page
         ScriptManager.RegisterStartupScript(RestoreButton, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
     Sub WriteRecovery()
+        Application(actionstate) = False
+        Dim activetab As String
         Dim susstate As String = Nothing
         Dim repstate As String = Nothing
         Dim Userinfo As String = "Restored"
+        Dim Logoffuser As String = "Restored"
         Dim reader As SqlDataReader
         Dim Status As String = ""
         Dim Activity As Integer
         Dim Radio As String = "101"
         Dim conn As SqlConnection
         Dim conActivity As SqlCommand
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
         "connectionstring").ConnectionString
         Dim mpContentPlaceHolder As ContentPlaceHolder
         Dim grdview As GridView
@@ -1308,11 +1337,17 @@ Partial Public Class E2page
         strScript += EquipmentID
         strScript += "</script>"
         Dim returnstring As String
+        Dim mrucontrol As ErunupUserControl
+        Dim mpreccontrol As Preclinusercontrol
+        Dim mclincontrol As ClinicalUserControl
+        Dim mplancontrol As Planned_Maintenanceuc
+        Dim mrepcontrol As Repairuc
+        Dim mphysicscontrol As UserControl
+        Dim mtrainingcontrol As Traininguc
+        activetab = Application(activetabstate)
 
         breakdown = DavesCode.Reuse.CheckForOpenFault(EquipmentID)
-        mpContentPlaceHolder = _
-        CType(FindControl("ContentPlaceHolder1"),  _
-        ContentPlaceHolder)
+        mpContentPlaceHolder = CType(FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             grdview = CType(mpContentPlaceHolder.FindControl("DummyGridview"), GridView)
         End If
@@ -1334,33 +1369,43 @@ Partial Public Class E2page
         Else
             Status = "Fault"
             Activity = 5
+            activetab = 5
         End If
 
-        'Need to cater for when there is a fault but for some reason the last state is not fault
-        'so look for if there is an open fault and then set last state to fault and user reason to 5
 
 
 
-        'If Status = "Fault" Then
-        '    breakdown = True
-        'Else
-        '    breakdown = False
-        'End If
-
-
-        Select Case Activity
+        Select Case activetab
             'Case 7
             '        DavesCode.Reuse.SetStatus(Userinfo, "Linac Unauthorised", 5, 7, MachineName, 0)
-            Case 1
-                DavesCode.Reuse.CommitRunup(grdview, EquipmentID, 666, Userinfo, Comment, Valid, False, False) ' 666 means that blank gridview is written
-                Application(repairstate) = Nothing
+            Case 1, 7
+                'only need dummy gridview when passing to commit run up not when using runup control
+                'tab 666 is for commit run up - same as for fault condition
+                If activetab = 1 Then
+                    mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
+                Else
+                    mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
+                End If
+
+                'grdview = mrucontrol.FindControl("Gridview1")
+                'Commentbox = mrucontrol.FindControl("CommentBox")
+                'Comment = Commentbox.Text
+                'blank grid view 17/11/17
+                'RaiseEvent DayEnded(activetab, Logoffuser)
+                'Successful = DavesCode.NewEngRunup.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
+                mrucontrol.UserApprovedEvent("666", Logoffuser)
+                'DavesCode.NewEngRunup.CommitRunupNew(grdview, EquipmentID, 666, Userinfo, Comment, Valid, False, False) ' 666 means that blank gridview is written
+                'Application(repairstate) = Nothing
 
             Case 2
-                DavesCode.Reuse.CommitPreClin(EquipmentID, Userinfo, Comment, False, False, False, breakdown)
+                mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
+                mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
                 Application(repairstate) = 1
             Case 3
+                mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                mclincontrol.UserApprovedEvent(activetab, Logoffuser)
+                'DavesCode.Reuse.CommitClinical(EquipmentID, Userinfo, breakdown)
                 Application(treatmentstate) = "Yes"
-                DavesCode.Reuse.CommitClinical(EquipmentID, Userinfo, breakdown)
             Case 4, 5, 6, 8
                 If (Not HttpContext.Current.Application(suspstate) Is Nothing) Then
                     susstate = HttpContext.Current.Application(suspstate).ToString
@@ -1372,7 +1417,18 @@ Partial Public Class E2page
 
                 Else
                 End If
-                DavesCode.Reuse.WriteAuxTables(EquipmentID, Userinfo, Comment, Radio, Activity, breakdown, susstate, repstate, False)
+                Select Case activetab
+                    Case 4
+                        mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+                        mplancontrol.UserApprovedEvent(activetab, Logoffuser)
+                    Case 5
+                        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
+                        mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
+                    Case 8
+                        mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
+                        mtrainingcontrol.UserApprovedEvent(activetab, Logoffuser)
+                End Select
+                ' DavesCode.Reuse.WriteAuxTables(EquipmentID, Userinfo, Comment, Radio, Activity, breakdown, susstate, repstate, False)
             Case Else
                 'This caters for when the system is already idling as it were.
                 returnstring = EquipmentID + "page.aspx"

@@ -97,6 +97,7 @@ Partial Class DefectSavePark
             newFault = False
             SetFaults(newFault)
 
+
         End If
         'WriteDatauc1 no longer used 23/11/16
         'Added back in for RAD RESET 26/3/18 SEE SPR

@@ -13,7 +13,7 @@
 
 <%@ Register src="Repairuc.ascx" tagname="Repairuc" tagprefix="uc7" %>
 
-<%@ Register src="WebUserControl2.ascx" tagname="WebUserControl2" tagprefix="uc8" %>
+<%--<%@ Register src="WebUserControl2.ascx" tagname="WebUserControl2" tagprefix="uc8" %>--%>
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc9" %>
 
@@ -156,9 +156,9 @@
        </asp:UpdatePanel>
        
    
-<asp:Button ID="ReportFault" runat="server" BackColor="#FF3300" ForeColor="#FFFF66" 
+<%--<asp:Button ID="ReportFault" runat="server" BackColor="#FF3300" ForeColor="#FFFF66" 
         Height="25px" Text="Report Fault" Width="150px" CausesValidation="False" 
-                Font-Bold="True" Font-Size="Medium" />
+                Font-Bold="True" Font-Size="Medium" />--%>
 
     
   <asp:Button ID="EndOfDay" runat="server" Text="End of Day"  causesvalidation="false"/>              

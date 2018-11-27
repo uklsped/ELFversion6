@@ -25,7 +25,7 @@
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>
 
 
-<%@ Register src="WebUserControl2.ascx" tagname="WebUserControl2" tagprefix="uc10" %>
+<%@ Register src="Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc10" %>
 
 
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc11" %>

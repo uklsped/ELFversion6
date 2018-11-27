@@ -209,9 +209,9 @@ Partial Class Planned_Maintenanceuc
         CType(objAtlas, AtlasEnergyViewuc).LinacName = LinacName
         PlaceHolder2.Controls.Add(objAtlas)
 
-        Dim objQA As UserControl = Page.LoadControl("WebUserControl2.ascx")
-        CType(objQA, WebUserControl2).LinacName = LinacName
-        CType(objQA, WebUserControl2).TabName = 4
+        Dim objQA As UserControl = Page.LoadControl("Modalitiesuc.ascx")
+        CType(objQA, Modalitiesuc).LinacName = LinacName
+        CType(objQA, Modalitiesuc).TabName = 4
         PlaceHolder3.Controls.Add(objQA)
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName

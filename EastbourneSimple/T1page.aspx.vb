@@ -613,7 +613,6 @@ Partial Public Class T1page
                 Dim clincontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                 Dim plancontrol As Planned_Maintenanceuc = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
                 Dim repcontrol As Repairuc = tcl.ActiveTab.FindControl(repcontrolId)
-                Dim webcontrol As WebUserControl2 = tcl.ActiveTab.FindControl(webusercontrol21ID)
                 Dim writecontrol As WriteDatauc = tcl.ActiveTab.FindControl(writedatacontrolID)
                 Dim physicscontrol As UserControl = tcl.ActiveTab.FindControl(physicscontrolID)
                 Dim emergencycontrol As ErunupUserControl = tcl.ActiveTab.FindControl(emergencycontrolID)

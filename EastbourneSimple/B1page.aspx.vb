@@ -622,7 +622,6 @@ Partial Public Class B1page
                 Dim clincontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                 Dim plancontrol As Planned_Maintenanceuc = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
                 Dim repcontrol As Repairuc = tcl.ActiveTab.FindControl(repcontrolId)
-                Dim webcontrol As WebUserControl2 = tcl.ActiveTab.FindControl(webusercontrol21ID)
                 Dim writecontrol As WriteDatauc = tcl.ActiveTab.FindControl(writedatacontrolID)
                 Dim physicscontrol As UserControl = tcl.ActiveTab.FindControl(physicscontrolID)
                 Dim emergencycontrol As ErunupUserControl = tcl.ActiveTab.FindControl(emergencycontrolID)
@@ -914,77 +913,77 @@ Partial Public Class B1page
     Public Event MyEventB1 As System.EventHandler
 
 
-    Protected Sub ReportFault_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ReportFault.Click
-        'This takes account of if fault is reported while on status tab but logged in to another tab
-        'If already logged in but on tab 0 then don't change session
-        'Otherwise make sure session is uptodate?
-        Dim Tabindex As String
-        If tcl.ActiveTabIndex = 0 And Application(appstate) = 1 Then
-            'user is already logged on and has clicked on tab 0 then reported a fault. Want to send live tab to fault page.
-            'Tabindex = CType(Session.Item("ActiveTabIdx"), String)
-            Tabindex = Application(activetabstate)
-        Else
-            Session("ActiveTabIdx") = tcl.ActiveTabIndex
-            Tabindex = CType(Session.Item("ActiveTabIdx"), String)
-        End If
+    'Protected Sub ReportFault_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ReportFault.Click
+    '    'This takes account of if fault is reported while on status tab but logged in to another tab
+    '    'If already logged in but on tab 0 then don't change session
+    '    'Otherwise make sure session is uptodate?
+    '    Dim Tabindex As String
+    '    If tcl.ActiveTabIndex = 0 And Application(appstate) = 1 Then
+    '        'user is already logged on and has clicked on tab 0 then reported a fault. Want to send live tab to fault page.
+    '        'Tabindex = CType(Session.Item("ActiveTabIdx"), String)
+    '        Tabindex = Application(activetabstate)
+    '    Else
+    '        Session("ActiveTabIdx") = tcl.ActiveTabIndex
+    '        Tabindex = CType(Session.Item("ActiveTabIdx"), String)
+    '    End If
 
 
-        'Dim tabActive As Integer
-        'tabActive = tcl.ActiveTabIndex
-        'New stuff
-        Dim UserControlid As String
-        Dim comment As TextBox
-        Dim textcomment As String
-        Dim containerID As String = "TabContent" & Tabindex
-        'if suspended there will be no active tab
-        Dim sus As String = Application(suspstate)
+    '    'Dim tabActive As Integer
+    '    'tabActive = tcl.ActiveTabIndex
+    '    'New stuff
+    '    Dim UserControlid As String
+    '    Dim comment As TextBox
+    '    Dim textcomment As String
+    '    Dim containerID As String = "TabContent" & Tabindex
+    '    'if suspended there will be no active tab
+    '    Dim sus As String = Application(suspstate)
 
-        Select Case Tabindex
-            Case 0, 3 'This takes care of a fault reported when system suspended although this shouldn't happen
-                'only 0 if no one logged in or if suspended
-                UserControlid = ""
-                textcomment = Nothing
-            Case 1
-                UserControlid = "ErunupUserControl1"
-            Case 2
-                UserControlid = "Preclinusercontrol1"
-                'Case 3
-                'Don't need comment from clinicalusercontrol because it is saved
-                'UserControlid = "ClinicalUserControl"
+    '    Select Case Tabindex
+    '        Case 0, 3 'This takes care of a fault reported when system suspended although this shouldn't happen
+    '            'only 0 if no one logged in or if suspended
+    '            UserControlid = ""
+    '            textcomment = Nothing
+    '        Case 1
+    '            UserControlid = "ErunupUserControl1"
+    '        Case 2
+    '            UserControlid = "Preclinusercontrol1"
+    '            'Case 3
+    '            'Don't need comment from clinicalusercontrol because it is saved
+    '            'UserControlid = "ClinicalUserControl"
 
-            Case 4
-                UserControlid = "PlannedMaintenanceuc1"
-            Case 5
-                UserControlid = "Repairuc1"
-            Case 6
-                UserControlid = "PhysicsQAuc1"
-            Case 7
-                UserControlid = "Emergencyrunupuc1"
-            Case 8
-                UserControlid = "Traininguc1"
-            Case Else
-                'if it gets to here with no active tab then autorecover
-                WriteRecovery()
-        End Select
-        'Why does it find panel?
-        Dim panel As Panel = tcl.ActiveTab.FindControl(containerID)
-        'Why is it called clincontrol?
+    '        Case 4
+    '            UserControlid = "PlannedMaintenanceuc1"
+    '        Case 5
+    '            UserControlid = "Repairuc1"
+    '        Case 6
+    '            UserControlid = "PhysicsQAuc1"
+    '        Case 7
+    '            UserControlid = "Emergencyrunupuc1"
+    '        Case 8
+    '            UserControlid = "Traininguc1"
+    '        Case Else
+    '            'if it gets to here with no active tab then autorecover
+    '            WriteRecovery()
+    '    End Select
+    '    'Why does it find panel?
+    '    Dim panel As Panel = tcl.ActiveTab.FindControl(containerID)
+    '    'Why is it called clincontrol?
 
 
-        Dim clincontrol As UserControl = tcl.ActiveTab.FindControl(UserControlid)
-        If Not clincontrol Is Nothing Then
-            comment = CType(clincontrol.FindControl("CommentBox"), TextBox)
-            If Not comment Is Nothing Then
-                textcomment = comment.Text
-            End If
-        Else
-            'Labelcomment.Text = "Cannot find comment box."
-        End If
-        'Response.Redirect("faultPage.aspx?val=B1&Tabindex=" & Tabindex & "&commentbox=" & textcomment)
-        Dim returnstring As String = "faultPage.aspx?val=" + EquipmentID + "&Tabindex=" + Tabindex + "&commentbox=" & textcomment
-        Response.Redirect(returnstring)
+    '    Dim clincontrol As UserControl = tcl.ActiveTab.FindControl(UserControlid)
+    '    If Not clincontrol Is Nothing Then
+    '        comment = CType(clincontrol.FindControl("CommentBox"), TextBox)
+    '        If Not comment Is Nothing Then
+    '            textcomment = comment.Text
+    '        End If
+    '    Else
+    '        'Labelcomment.Text = "Cannot find comment box."
+    '    End If
+    '    'Response.Redirect("faultPage.aspx?val=B1&Tabindex=" & Tabindex & "&commentbox=" & textcomment)
+    '    Dim returnstring As String = "faultPage.aspx?val=" + EquipmentID + "&Tabindex=" + Tabindex + "&commentbox=" & textcomment
+    '    Response.Redirect(returnstring)
 
-    End Sub
+    'End Sub
 
     Protected Sub tcl_ActiveTabChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles tcl.ActiveTabChanged
         'This doesn't do anything. just playing with the dynamiccontextkey

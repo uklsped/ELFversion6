@@ -2,11 +2,9 @@
     Inherits="Traininguc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc1" %>
-<%--<%@ Register Src="ErunupUserControl.ascx" TagName="ErunupUserControl" TagPrefix="uc1" %>--%>
-<%@ Register Src="Singlemachinefaultuc.ascx" TagName="Singlemachinefaultuc" TagPrefix="uc2" %>
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc3" %>
 <%@ Register Src="AtlasEnergyViewuc.ascx" TagName="AtlasEnergyViewuc" TagPrefix="uc4" %>
-<%@ Register Src="WebUserControl2.ascx" TagName="WebUserControl2" TagPrefix="uc5" %>
+<%@ Register Src="Modalitiesuc.ascx" TagName="Modalitiesuc" TagPrefix="uc5" %>
 <%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc6" %>
 <%@ Register Src="ViewCommentsuc.ascx" TagName="ViewCommentsuc" TagPrefix="uc7" %>
 <%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>

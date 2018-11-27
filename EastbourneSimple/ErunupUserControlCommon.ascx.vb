@@ -311,9 +311,9 @@ Partial Class ErunupUserControl
         AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
         'Sets up View Modalities
 
-        Dim objQA As WebUserControl2 = Page.LoadControl("WebUserControl2.ascx")
-        CType(objQA, WebUserControl2).LinacName = LinacName
-        CType(objQA, WebUserControl2).TabName = 1
+        Dim objQA As Modalitiesuc = Page.LoadControl("Modalitiesuc.ascx")
+        CType(objQA, Modalitiesuc).LinacName = LinacName
+        CType(objQA, Modalitiesuc).TabName = 1
         PlaceHolderModalities.Controls.Add(objQA)
 
         'Sets up Defect Control

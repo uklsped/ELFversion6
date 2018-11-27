@@ -6,7 +6,7 @@ Imports System.Configuration
 Imports Microsoft.VisualBasic
 
 
-Partial Class WebUserControl2
+Partial Class Modalitiesuc
     Inherits System.Web.UI.UserControl
     Private MachineName As String
     Private keyfieldvalue As Integer
@@ -60,8 +60,8 @@ Partial Class WebUserControl2
                 If Not Me.Parent.FindControl("RadioButtonlist1") Is Nothing Then
                     Repairlist = Me.Parent.FindControl("RadioButtonlist1")
                     'modified for E1 etc that don't have pre-clin now 9/10/17
-                    If MachineName Like "LA?" then
-                    Repairlist.Items.FindByValue(2).Enabled = False
+                    If MachineName Like "LA?" Then
+                        Repairlist.Items.FindByValue(2).Enabled = False
                     End If
                     Repairlist.Items.FindByValue(3).Enabled = False
                     If Not Repairlist.Items.FindByValue(4) Is Nothing Then
@@ -82,7 +82,7 @@ Partial Class WebUserControl2
                     Dim time As DateTime
                     time = Now()
                     Dim conn As SqlConnection
-                    Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+                    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
                     "connectionstring").ConnectionString
                     conn = New SqlConnection(connectionString)
                     Dim commupdate As New SqlCommand("update PhysicsEnergies set Approved=@Approved, ApprovedBy=@ApprovedBy, DateApproved=@DateApproved, Comment=@Comment, linac=@linac where EnergyID=@EnergyID", conn)
@@ -125,7 +125,7 @@ Partial Class WebUserControl2
             Else
                 Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
                 wctrl.Visible = False
-               
+
                 GridView1.EditIndex = -1
                 BindGridData()
                 strScript = "<script>alert('You do not have permission to reinstate a modality. Modality Not Updated');</script>"
@@ -140,7 +140,7 @@ Partial Class WebUserControl2
                 '    strScript += "</script>"
                 '    ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
             End If
-            
+
 
         Else
 
@@ -205,7 +205,7 @@ Partial Class WebUserControl2
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         WriteDatauc1.Visible = True
         ForceFocus(wctext)
-        
+
         'The event handler stuff used to be done here
 
     End Sub
@@ -255,8 +255,8 @@ Partial Class WebUserControl2
     End Sub
 
     'Add force focus 9/10/17
-     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
+    Private Sub ForceFocus(ByVal ctrl As Control)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 End Class

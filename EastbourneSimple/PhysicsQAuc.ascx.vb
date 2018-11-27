@@ -153,8 +153,8 @@ Partial Class PhysicsQAuc
         CType(objAtlas, AtlasEnergyViewuc).LinacName = MachineName
         PlaceHolder2.Controls.Add(objAtlas)
 
-        Dim objQA As UserControl = Page.LoadControl("WebUserControl2.ascx")
-        CType(objQA, WebUserControl2).linacName = MachineName
+        Dim objQA As UserControl = Page.LoadControl("Modalitiesuc.ascx")
+        CType(objQA, Modalitiesuc).LinacName = MachineName
         PlaceHolder3.Controls.Add(objQA)
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = MachineName
@@ -168,7 +168,7 @@ Partial Class PhysicsQAuc
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = MachineName
         PlaceHolder4.Controls.Add(objDefect)
-        Dim lastState As String
+
         Dim Textboxcomment As TextBox = FindControl("CommentBox")
         If Not IsPostBack Then
             If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then

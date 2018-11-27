@@ -1,0 +1,24 @@
+﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="DisplayBlog.aspx.vb" Inherits="DisplayBlog" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title></title>
+    <style type="text/css">
+        body
+        {
+            font-family: Arial;
+            font-size: 10pt;
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <h2>
+        <asp:Label ID="lblTitle" runat="server" /></h2>
+    <hr />
+    <asp:Label ID="lblBody" runat="server" />
+    </form>
+</body>
+</html>

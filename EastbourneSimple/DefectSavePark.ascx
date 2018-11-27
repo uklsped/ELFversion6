@@ -148,13 +148,24 @@
         </ContentTemplate>
     </asp:UpdatePanel>
     <br />
-   
+    Today's Repeat Faults
+                                   <div style =" background-color:Green; 
+        height:30px;width:400px; margin:0;padding:0">
+        <table cellspacing="0" cellpadding = "0" rules="all" border="1" id="Table3" 
+         style="font-family:Arial;font-size:10pt;width:400px;color:white;
+         border-collapse:collapse;height:100%;">
+            <tr>
+               <td style ="width:150px;text-align:center">Repeat Fault</td>
+               <td style ="width:80px;text-align:center">Time</td>
+               <td style ="width:180px;text-align:center">Description</td>
+               </tr></table></div>
     <div style="width: 400px">
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
             <ContentTemplate>
           
                 <div style="height: 150px; width: 400px; overflow: auto;">
-                    <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeader="true"
+
+                    <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeader="false"
                         DataKeyNames="ConcessionNumber" BackColor="White" Width="400px"
                         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
                         GridLines="Horizontal" Font-Size="smaller">

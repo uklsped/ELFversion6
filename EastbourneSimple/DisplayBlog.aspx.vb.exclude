@@ -1,0 +1,35 @@
+﻿
+Imports System.Data
+Imports System.Configuration
+Imports System.Data.SqlClient
+
+Partial Class DisplayBlog
+    Inherits System.Web.UI.Page
+
+    Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+        If Not Me.IsPostBack Then
+            Me.PopulateBlog()
+        End If
+    End Sub
+
+    Private Sub PopulateBlog()
+        Dim blogId As String = Me.Page.RouteData.Values("BlogId").ToString()
+        Dim query As String = "SELECT [Title], [Body] FROM [Blogs] WHERE [BlogId] = @BlogId"
+        Dim conString As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Using con As New SqlConnection(conString)
+            Using cmd As New SqlCommand(query)
+                Using sda As New SqlDataAdapter()
+                    cmd.Parameters.AddWithValue("@BlogId", blogId)
+                    cmd.Connection = con
+                    sda.SelectCommand = cmd
+                    Using dt As New DataTable()
+                        sda.Fill(dt)
+                        lblTitle.Text = dt.Rows(0)("Title").ToString()
+                        lblBody.Text = dt.Rows(0)("Body").ToString()
+                    End Using
+                End Using
+            End Using
+        End Using
+    End Sub
+
+End Class

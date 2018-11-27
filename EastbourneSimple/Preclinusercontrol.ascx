@@ -6,7 +6,7 @@
     <%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc2" %>
 <%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc3" %>
-<%@ Register src="Singlemachinefaultuc.ascx" tagname="Singlemachinefaultuc" tagprefix="uc4" %>
+
 <%@ Register src="ViewCommentsuc.ascx" tagname="ViewCommentsuc" tagprefix="uc5" %>
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc6" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>

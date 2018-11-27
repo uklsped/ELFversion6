@@ -351,9 +351,9 @@ Partial Class Repairuc
         CType(objAtlas, AtlasEnergyViewuc).LinacName = MachineName
         PlaceHolder2.Controls.Add(objAtlas)
 
-        Dim objQA As UserControl = Page.LoadControl("WebUserControl2.ascx")
-        CType(objQA, WebUserControl2).LinacName = MachineName
-        CType(objQA, WebUserControl2).TabName = 5
+        Dim objQA As UserControl = Page.LoadControl("Modalitiesuc.ascx")
+        CType(objQA, Modalitiesuc).LinacName = MachineName
+        CType(objQA, Modalitiesuc).TabName = 5
         PlaceHolder3.Controls.Add(objQA)
 
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)

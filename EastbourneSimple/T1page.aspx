@@ -20,8 +20,6 @@
 
 <%@ Register src="Repairuc.ascx" tagname="Repairuc" tagprefix="uc7" %>
 
-<%@ Register src="WebUserControl2.ascx" tagname="WebUserControl2" tagprefix="uc8" %>
-
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc9" %>
 
 <%@ Register src="PhysicsQAuc.ascx" tagname="PhysicsQAuc" tagprefix="uc10" %>

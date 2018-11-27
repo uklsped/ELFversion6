@@ -1,4 +1,4 @@
-﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="WebUserControl2.ascx.vb" Inherits="WebUserControl2" %>
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="Modalitiesuc.ascx.vb" Inherits="Modalitiesuc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
