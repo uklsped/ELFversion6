@@ -14,6 +14,9 @@
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc7" %>
 
 
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc8" %>
+
+
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
 <%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
 
@@ -128,6 +131,9 @@
         </div>          
        
             
+           
+       
+            
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
                Width="1100px" >
                <asp:TableRow ID="r1" runat="server" Width="1100px" HorizontalAlign="Left" BorderColor="White">
@@ -175,13 +181,16 @@
                                <td>Clinical Comment
                                </td></tr>
                                <tr><td>
-                               <asp:TextBox ID="CommentBox" runat="server" MaxLength="250" Rows="5" 
-                TextMode="MultiLine" Width="300px" Height="100px"></asp:TextBox>
+<%--                               <asp:TextBox ID="CommentBox" runat="server" MaxLength="250" Rows="5" 
+                TextMode="MultiLine" Width="300px" Height="100px"></asp:TextBox>--%>
+                                   <asp:UpdatePanel ID="UpdatePanelcomments" runat="server" UpdateMode="Conditional"><ContentTemplate>
+                    <uc8:CommentBoxuc ID="CommentBox" runat="server" /><asp:Button ID="SaveText" runat="server" Text="Save" CausesValidation="False" />
+                                       </ContentTemplate><Triggers><asp:AsyncPostBackTrigger ControlID ="SaveText" eventname="click"/></Triggers></asp:UpdatePanel>
                 </td>
                 </tr>
                 <tr>
                 <td>
-                <asp:Button ID="SaveText" runat="server" Text="Save" CausesValidation="False" />
+                <%--<asp:Button ID="SaveText" runat="server" Text="Save" CausesValidation="False" />--%>
                                </td>
                                 </tr>
                            <tr>
@@ -240,19 +249,11 @@
 <asp:TableRow>
 <asp:TableCell>
 
-
-
 </asp:TableCell></asp:TableRow>
 
 </asp:Table>
-
-                   
+               
                    </asp:TableCell>
-
-
-
-
-
 
                    <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
@@ -275,26 +276,11 @@
                <asp:TableCell>
                
                </asp:TableCell>
-                  
-                           
-       
-                   
+      
+                 
                </asp:TableRow>
                           </asp:Table>
-
-                       
-
-                       
-
-                       
-
-                       
-
-                       
-
-                       
-
-                       
+                 
 
                        <asp:UpdatePanel ID="faultupdatePanel" runat="server" Visible="true">
         <ContentTemplate>
@@ -304,11 +290,7 @@
         <asp:PlaceHolder ID="PlaceHolder4" runat="server">
         <uc2:WriteDatauc ID="WriteDatauc2" LinacName="" UserReason="3"  Tabby="3"  WriteName="Handover" visible="false" runat="server" />
          </asp:PlaceHolder>
-             
-
-     
-
-                        
+                         
             </asp:Panel>
                    </div>   
          

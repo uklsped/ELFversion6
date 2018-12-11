@@ -4,6 +4,7 @@ Imports System.Drawing
 Imports AjaxControlToolkit
 Imports System.Transactions
 
+
 Partial Class ClinicalUserControl
     Inherits UserControl
 
@@ -29,6 +30,7 @@ Partial Class ClinicalUserControl
     Dim BoxChanged As String
     Dim accontrol As AcceptLinac
     Private tabstate As String
+    Private TodayComment As controls_CommentBoxuc
 
     Public Property LinacName() As String
 
@@ -37,7 +39,7 @@ Partial Class ClinicalUserControl
         Dim happyIcon As String = "Images/check_mark.jpg"
         'Dim sadIcon As String = "Images/sad.gif"
         Dim sadIcon As String = "Images/box_with_x.jpg"
-        If (energy) Then
+        If energy Then
             Return happyIcon
         Else
             Return sadIcon
@@ -126,11 +128,11 @@ Partial Class ClinicalUserControl
         WriteClinicalTable(connectionString)
         Application(suspstate) = Nothing
 
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
         'This looks to see if BoxChanged has a value. if it has the comment has not been saved.
-        If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+        If Not HttpContext.Current.Application(BoxChanged) Is Nothing Then
             'Need to save and then delete app state
-            WriteClinicalTableComment(True)
+            'WriteClinicalTableComment(True)
 
         Else
             'Textboxcomment.Text = comment
@@ -226,9 +228,9 @@ Partial Class ClinicalUserControl
         'wctrl1.LinacName = MachineName
         Dim wctrl2 As WriteDatauc = CType(FindControl("Writedatauc2"), WriteDatauc)
         wctrl2.LinacName = LinacName
-
-
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        CommentBox.BoxChanged = BoxChanged
+        CommentBox.Currentcomment = ""
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
 
         If Not IsPostBack Then
 
@@ -403,7 +405,7 @@ Partial Class ClinicalUserControl
         Dim SqlDataSource1 As New SqlDataSource With {
             .ID = "SqlDataSource1",
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
-            .SelectCommand = (query)
+            .SelectCommand = query
         }
         SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource1.SelectParameters.Add("linac", MachineName)
@@ -431,8 +433,12 @@ Partial Class ClinicalUserControl
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
     Protected Sub SaveText_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveText.Click
-        WriteClinicalTableComment(False)
 
+        WriteClinicalTableComment(False)
+        TodayComment = CType(FindControl("CommentBox"), controls_CommentBoxuc)
+        'Page_Load(Page, EventArgs.Empty)
+
+        CommentBox.ResetCommentBox()
     End Sub
 
     Protected Sub Tstart_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Tstart.Click
@@ -509,11 +515,11 @@ Partial Class ClinicalUserControl
         Dim theTime As String
         theTime = DateTime.Now.ToString("h:mm tt")
         'if recovered then Boxchanged has a value so that should be written to the table and then displayed. If not take the comment that has been entered and write to table
-        If recovered Then
-            comment = Application(BoxChanged).ToString
-        Else
-            comment = CommentBox.Text
-        End If
+        'If recovered Then
+        comment = Application(BoxChanged).ToString
+        'Else
+        'comment = CommentBox.Currentcomment
+        'End If
 
         ' Append the time to the stringBuilder
         builder.Append(theTime)
@@ -543,8 +549,8 @@ Partial Class ClinicalUserControl
 
         Finally
             'Once table entry is written then set text to Nothing
-            CommentBox.Text = Nothing
-            Application(BoxChanged) = Nothing
+            CommentBox.Currentcomment = String.Empty
+            Application(BoxChanged) = String.Empty
             GridViewComments.DataBind()
             conn.Close()
 
@@ -560,14 +566,14 @@ Partial Class ClinicalUserControl
         Dim CTID As Integer
         Dim ClinD As Integer
         Dim StatusID As Integer
-        Dim UserName As String
+        Dim UserName As String = String.Empty
         Dim conn As SqlConnection
-        Dim Clinicalcomment As String
+        Dim Clinicalcomment As String = String.Empty
         Dim commCAuthID As SqlCommand
         Dim commclin As SqlCommand
 
 
-        Clinicalcomment = CommentBox.Text
+        'Clinicalcomment = CommentBox.Currentcomment
         conn = New SqlConnection(connectionString)
 
         commCAuthID = New SqlCommand("Select CHandID, LogOutStatusID from ClinicalHandover where CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)", conn)
@@ -648,7 +654,7 @@ Partial Class ClinicalUserControl
                 commclin.ExecuteNonQuery()
 
             Finally
-                CommentBox.Text = Nothing
+                CommentBox.ResetCommentBox()
                 conn.Close()
 
             End Try
@@ -665,10 +671,10 @@ Partial Class ClinicalUserControl
 
 
     End Sub
-    Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-        Application(BoxChanged) = CommentBox.Text
-        'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    End Sub
+    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
+    '    Application(BoxChanged) = CommentBox.Text
+    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
+    'End Sub
     Private Sub WaitButtons(ByVal WaitType As String)
 
         Select Case WaitType
