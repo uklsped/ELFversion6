@@ -24,6 +24,7 @@ Partial Class Traininguc
     Private Event AutoApproved(ByVal Tab As String, ByVal UserName As String)
     Private tabstate As String
     Private Objcon As ViewOpenFaults
+    Dim comment As String
 
 
     Public Property LinacName() As String
@@ -165,8 +166,10 @@ Partial Class Traininguc
         Dim suspendvalue As String
         Dim repairvalue As String
         Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
-        DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
-        HttpContext.Current.Application(BoxChanged) = Nothing
+        Dim EndofDay As Integer = 102
+        Dim Recovery As Integer = 101
+        'DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
+        'HttpContext.Current.Application(BoxChanged) = Nothing
         If Tabused = "8" Then
             Dim strScript As String = "<script>"
             strScript += "window.location='"
@@ -175,13 +178,27 @@ Partial Class Traininguc
             Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
             wctrl.Visible = False
             Dim Action As String = Application(actionstate)
-            Dim Textboxcomment As TextBox = FindControl("CommentBox")
-            Dim comment As String = Textboxcomment.Text
+            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+            'Dim comment As String = Textboxcomment.Text
             Dim result As Boolean = False
 
             suspendvalue = Application(suspstate)
             repairvalue = Application(repairstate)
-            Radioselect = RadioButtonList1.SelectedItem.Value
+            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+                comment = HttpContext.Current.Application(BoxChanged).ToString
+            Else
+                comment = String.Empty
+            End If
+            If Action = "EndOfDay" Then
+                Radioselect = EndofDay
+                Action = "Confirm"
+                Userinfo = "System"
+            ElseIf Action = "False" Then
+                Radioselect = Recovery
+            Else
+                Radioselect = RadioButtonList1.SelectedItem.Value
+            End If
+
             result = DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
 
             If result Then
@@ -196,6 +213,7 @@ Partial Class Traininguc
                     'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
                     Application(appstate) = Nothing
                     Application(tabstate) = String.Empty
+                    CommentBox.ResetCommentBox()
                     Select Case Radioselect
                         Case 1
                             'LinacStateID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, 7, MachineName, 5)
@@ -332,9 +350,9 @@ Partial Class Traininguc
         End If
 
         PlaceHolder4.Controls.Add(objDefect)
-
+        CommentBox.BoxChanged = BoxChanged
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
 
         wctrl.LinacName = MachineName
         'If Application("SelectCount") = "True" Then
@@ -358,11 +376,11 @@ Partial Class Traininguc
             '    RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
             '    RadioButtonList1.Items.Add(New ListItem("End of Day", "102", False))
             'End If
-            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
-                Textboxcomment.Text = Application(BoxChanged).ToString
-            Else
-                'Textboxcomment.Text = comment
-            End If
+            'If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+            '    Textboxcomment.Text = Application(BoxChanged).ToString
+            'Else
+            '    'Textboxcomment.Text = comment
+            'End If
             Application(faultviewstate) = 1
             Application(atlasviewstate) = 1
             Application(qaviewstate) = 1
@@ -521,10 +539,10 @@ Partial Class Traininguc
             PhysicsQA.Text = "View Physics Energies/Imaging"
         End If
     End Sub
-    Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-        Application(BoxChanged) = CommentBox.Text
-        'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    End Sub
+    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
+    '    Application(BoxChanged) = CommentBox.Text
+    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
+    'End Sub
     Private Sub ForceFocus(ByVal ctrl As Control)
         ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
         ctrl.ClientID + "').focus();}, 100);", True)

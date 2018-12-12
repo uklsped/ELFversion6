@@ -10,6 +10,7 @@
 <%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc9" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc10" %>
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
 <%--<link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />--%>
 
 <div>
@@ -18,6 +19,7 @@
         
         <uc3:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="8" Tabby="8" Visible="false"
             runat="server" />
+        
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" Width="1509px">
             <asp:TableRow ID="r1" runat="server">
                 <asp:TableCell ID="c1" runat="server" Width="250px" HorizontalAlign="Left">
@@ -36,9 +38,10 @@
                 <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="150px">
                     <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
                        Training Comments</legend>
-                    <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine"
+                    <uc2:CommentBoxuc ID="CommentBox" runat="server" />
+                   <%-- <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine"
                         Text="">
-                    </asp:TextBox>
+                    </asp:TextBox>--%>
                 </asp:TableCell>
                 <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel3" runat="server">

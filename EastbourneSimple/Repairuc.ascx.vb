@@ -30,6 +30,7 @@ Partial Class Repairuc
     Private tabstate As String
     Private Objcon As ViewOpenFaults
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
+    Private comment As String
 
     Public Property LinacName() As String
         Get
@@ -127,18 +128,34 @@ Partial Class Repairuc
         Dim suspendvalue As String = Nothing
         Dim repairvalue As String = Nothing
         Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
+        Dim EndofDay As Integer = 102
+        Dim Recovery As Integer = 101
         Dim result As Boolean = False
 
         If Tabused = "5" Then
             Dim Action As String = Application(actionstate)
-            Dim Textboxcomment As TextBox = FindControl("CommentBox")
-            Dim comment As String = Textboxcomment.Text
+            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+                comment = HttpContext.Current.Application(BoxChanged).ToString
+            Else
+                comment = String.Empty
+            End If
             suspendvalue = Application(suspstate)
             repairvalue = Application(repairstate)
-            Radioselect = RadioButtonList1.SelectedItem.Value
+            If Action = "EndOfDay" Then
+                Radioselect = EndofDay
+                Action = "Confirm"
+                Userinfo = "System"
+            ElseIf Action = "False" Then
+                Radioselect = Recovery
+            Else
+                Radioselect = RadioButtonList1.SelectedItem.Value
+            End If
+
             result = DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
             If result Then
                 If Action = "Confirm" Then
+
+                    CommentBox.ResetCommentBox()
                     'DavesCode.Reuse.ReturnApplicationState(Tabused)
                     'Dim Textboxcomment As TextBox = FindControl("CommentBox")
                     'Dim comment As String = Textboxcomment.Text
@@ -157,7 +174,7 @@ Partial Class Repairuc
                     'Dim output As String = Application(appstate)
                     'Me.Page.GetType.InvokeMember("UpdateHiddenLAField", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
                     SelectCount = False
-                    HttpContext.Current.Application(BoxChanged) = Nothing
+                    'HttpContext.Current.Application(BoxChanged) = Nothing
                     Select Case Radioselect
 
                         Case 1
@@ -209,16 +226,8 @@ Partial Class Repairuc
                     RadioButtonList1.SelectedIndex = -1
                     LogOffButton.BackColor = Drawing.Color.AntiqueWhite
                 Else
-                    'do nothing already done at top
-                    'handles end of day at midnight or start up
-                    'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
-                    'Application(appstate) = Nothing
-                    'Dim strScript As String = "<script>"
-                    'strScript += "alert('What? Logging Off');"
-                    'strScript += "window.location='"
-                    'strScript += machinelabel
-                    'strScript += "</script>"
-                    'ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                    'Nothing needs to be done here now. This is called from end of day and recovery 
+                    'And they reset all of the application states when this returns to them.
                 End If
             Else
                 RaiseLogOffError()
@@ -332,7 +341,7 @@ Partial Class Repairuc
 
         Dim lastusergroup As Integer
         Dim Repairlist As RadioButtonList
-
+        CommentBox.BoxChanged = BoxChanged
         objconToday = Page.LoadControl("TodayClosedFault.ascx")
         objconToday.ID = "Todaysfaults"
         objconToday.LinacName = MachineName
@@ -383,7 +392,7 @@ Partial Class Repairuc
 
         PlaceHolder4.Controls.Add(objDefect)
 
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
         If Not IsPostBack Then
             If MachineName Like "LA?" Then
                 RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
@@ -399,11 +408,11 @@ Partial Class Repairuc
                 RadioButtonList1.Items.Add(New ListItem("Go To Training/Development", "8", False))
                 RadioButtonList1.Items.Add(New ListItem("End of Day", "102", False))
             End If
-            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
-                Textboxcomment.Text = Application(BoxChanged).ToString
-            Else
-                'Textboxcomment.Text = comment
-            End If
+            'If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+            '    Textboxcomment.Text = Application(BoxChanged).ToString
+            'Else
+            '    'Textboxcomment.Text = comment
+            'End If
             Application(atlasviewstate) = 1
             Application(qaviewstate) = 1
             Dim NumOpen As Integer
@@ -546,8 +555,9 @@ Partial Class Repairuc
         Dim suspendvalue As String
         Dim repairvalue As String
         Dim username As String = "Lockuser"
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
-        Dim comment As String = Textboxcomment.Text
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        'Dim comment As String = Textboxcomment.Text
+        comment = CommentBox.Currentcomment
         suspendvalue = Application(suspstate)
         repairvalue = Application(repairstate)
         Dim tabused As Integer = 5
@@ -593,10 +603,10 @@ Partial Class Repairuc
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(LockElf, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
-    Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-        Application(BoxChanged) = CommentBox.Text
-        'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    End Sub
+    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
+    '    Application(BoxChanged) = CommentBox.Text
+    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
+    'End Sub
     Private Sub ForceFocus(ByVal ctrl As Control)
         ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
         ctrl.ClientID + "').focus();}, 100);", True)

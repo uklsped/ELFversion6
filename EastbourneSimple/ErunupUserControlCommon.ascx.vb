@@ -25,14 +25,16 @@ Partial Class ErunupUserControl
     'Private EngLoad As String
     Dim accontrol1 As AcceptLinac
     Dim accontrol7 As AcceptLinac
+    'Dim ObjComment As controls_CommentBoxuc
+    Dim comment As String
     Private Obpage As Page
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
 
-    Public ReadOnly Property CurrentComment() As String
-        Get
-            Return CommentBox.Text
-        End Get
-    End Property
+    'Public ReadOnly Property CurrentComment() As String
+    '    Get
+    '        Return CommentBoxuc1.Text
+    '    End Get
+    'End Property
 
     Public Property DataName() As String
     Public Property LinacName() As String
@@ -166,62 +168,77 @@ Partial Class ErunupUserControl
             Dim strScript As String = "<script>"
             Dim grdview As GridView = FindControl("Gridview1")
             Dim grdviewI As GridView = FindControl("GridViewImage")
-            Dim Textboxcomment As TextBox = FindControl("CommentBox")
-            Dim Comment As String = Textboxcomment.Text
+            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+                comment = HttpContext.Current.Application(BoxChanged).ToString
+            Else
+                comment = String.Empty
+            End If
+            'comment = CommentBox.Currentcomment
+
+            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+            'Dim Comment As String = Textboxcomment.Text
+            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+            'Dim Comment As String = Textboxcomment.Text
             Dim Successful As Boolean = False
 
-            If Action = "Confirm" Then
-                Valid = True
-                Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, Comment, Valid, False, False, FaultParams)
-                If Successful Then
-                    'This app sets for repair, maintenance and physics tab to know that run up was done
-                    Application(repairstate) = 1
-                    'Valid = True
-                    Application(appstate) = Nothing
-                    Application(tabstate) = String.Empty
-                    HttpContext.Current.Application(BoxChanged) = Nothing
+                If Action = "Confirm" Then
+                    Valid = True
+                    Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, comment, Valid, False, False, FaultParams)
+                    If Successful Then
+                        'This app sets for repair, maintenance and physics tab to know that run up was done
+                        Application(repairstate) = 1
+                        'Valid = True
+                        Application(appstate) = Nothing
+                        Application(tabstate) = String.Empty
+                    CommentBox.ResetCommentBox()
                     'Moved dal to newengrunup 19/9/18 to aid error handling
                     'Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, username, Comment, Valid, False, False)
                     'If Successful Then
                     If LinacName Like "LA?" Then
-                        Application(LinacFlag) = "Engineering Approved"
+                            Application(LinacFlag) = "Engineering Approved"
+                            strScript += "window.location='"
+                            strScript += machinelabel
+                            strScript += "</script>"
+                            ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                        Else
+                            Application(LinacFlag) = "Clinical"
+                            Dim returnstring As String = LinacName + "page.aspx?tabref=3"
+                            Application(suspstate) = 1
+                            Response.Redirect(returnstring)
+                        End If
+                    Else
+                        RaiseError("WriteEnergies")
+                    End If
+
+                Else
+                    Valid = False
+                    If Tabset = "666" Then
+                        grdview = CType(mpContentPlaceHolder.FindControl("DummyGridview"), GridView)
+                    End If
+                    Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, comment, Valid, False, False, FaultParams)
+                    If Successful Then
+                        Application(LinacFlag) = "Linac Unauthorised"
+                        Application(repairstate) = Nothing
+                        Application(appstate) = Nothing
+                        Application(tabstate) = String.Empty
+                        If Not Userinfo = "Restored" Then
+                        CommentBox.ResetCommentBox()
+                    End If
+                        If LinacName Like "LA?" Then
+                            strScript += "alert('No Energies Approved Logging Off');"
+                        Else
+                            strScript += "alert('Not Approved For Clinical Use. Logging Off');"
+                        End If
                         strScript += "window.location='"
                         strScript += machinelabel
                         strScript += "</script>"
                         ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                     Else
-                        Application(LinacFlag) = "Clinical"
-                        Dim returnstring As String = LinacName + "page.aspx?tabref=3"
-                        Application(suspstate) = 1
-                        Response.Redirect(returnstring)
+                        RaiseError("WriteEnergies")
                     End If
-                Else
-                    RaiseError("WriteEnergies")
                 End If
 
-            Else
-                Valid = False
-                If Tabset = "666" Then
-                    grdview = CType(mpContentPlaceHolder.FindControl("DummyGridview"), GridView)
-                End If
-                Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, Comment, Valid, False, False, FaultParams)
-                If Successful Then
-                    Application(LinacFlag) = "Linac Unauthorised"
-                    Application(repairstate) = Nothing
-                    Application(appstate) = Nothing
-                    Application(tabstate) = String.Empty
-                    HttpContext.Current.Application(BoxChanged) = Nothing
-                    strScript += "alert('No Energies Approved Logging Off');"
-                    strScript += "window.location='"
-                    strScript += machinelabel
-                    strScript += "</script>"
-                    ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                Else
-                    RaiseError("WriteEnergies")
-                End If
             End If
-
-        End If
     End Sub
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
@@ -253,7 +270,7 @@ Partial Class ErunupUserControl
         Application(LinacFlag) = "Linac Unauthorised"
         Application(repairstate) = Nothing
         Application(appstate) = Nothing
-        HttpContext.Current.Application(BoxChanged) = Nothing
+        CommentBox.ResetCommentBox()
         Application(tabstate) = String.Empty
         strScript += message
         strScript += "window.location='"
@@ -326,6 +343,7 @@ Partial Class ErunupUserControl
             CType(objDefect, DefectSavePark).ParentControl = 1
             AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
             AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+            engHandoverButton.Text = "Approve for Clinical Use"
 
         Else
             objDefect = Page.LoadControl("DefectSave.ascx")
@@ -333,9 +351,15 @@ Partial Class ErunupUserControl
             CType(objDefect, DefectSave).LinacName = LinacName
             CType(objDefect, DefectSave).ParentControl = Tabby
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+            If LinacName Like "LA?" Then
+                engHandoverButton.Text = "Approve Energies"
+            Else
+                engHandoverButton.Text = "Approve for Clinical Use"
+            End If
         End If
 
         PlaceHolderDefectSave.Controls.Add(objDefect)
+
 
 
 
@@ -348,14 +372,20 @@ Partial Class ErunupUserControl
         wctrl.LinacName = LinacName
         wctrl.UserReason = UserReason
         wctrl.Tabby = Tabby
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
-        If Not IsPostBack Then
-            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
-                Textboxcomment.Text = Application(BoxChanged).ToString
-            Else
-                'Textboxcomment.Text = comment
-            End If
-        End If
+        'comment = CommentBoxuc1.Currentcomment
+        'ObjComment = CType(FindControl("CommentBox"), controls_CommentBoxuc)
+        'CType(ObjComment, controls_CommentBoxuc).LinacName = LinacName
+        'CType(ObjComment, controls_CommentBoxuc).BoxChanged = BoxChanged
+        'CommentBox.LinacName = LinacName
+        CommentBox.BoxChanged = BoxChanged
+        'If Not IsPostBack Then
+        '    If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+        '        CommentBox.Currentcomment = Application(BoxChanged).ToString
+        '        'Textboxcomment.Text = Application(BoxChanged).ToString
+        '    Else
+        '        'Textboxcomment.Text = comment
+        '    End If
+        'End If
 
     End Sub
     Protected Sub SetEnergies(ByVal connectionString As String)
@@ -598,10 +628,10 @@ Partial Class ErunupUserControl
     End Sub
 
 
-    Protected Sub CommentBox_TextChanged(sender As Object, e As EventArgs) Handles CommentBox.TextChanged
-        Application(BoxChanged) = CommentBox.Text
-        'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    End Sub
+    'Protected Sub CommentBox_TextChanged(sender As Object, e As EventArgs) Handles CommentBox.TextChanged
+    '    Application(BoxChanged) = CommentBox.Text
+    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
+    'End Sub
 
     '15 April Added this control as a result of Bug 11
     Protected Sub LockElf_Click(sender As Object, e As EventArgs) Handles LockElf.Click
@@ -610,12 +640,13 @@ Partial Class ErunupUserControl
         Dim lockctrltext As TextBox = CType(lockctrl.FindControl("txtchkUserName"), TextBox)
         Dim grdview As GridView = FindControl("Gridview1")
         Dim grdviewI As GridView = FindControl("GridViewImage")
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
-        Dim Comment As String = Textboxcomment.Text
+        comment = CommentBox.Currentcomment
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        'Dim Comment As String = Textboxcomment.Text
         Dim success As Boolean = False
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         'has to be tablable to cope with either tab 1 or 7 control
-        success = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, "Lockuser", Comment, False, False, True, FaultParams)
+        success = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, "Lockuser", comment, False, False, True, FaultParams)
 
         If success Then
             RaiseEvent BlankGroup(0)
@@ -706,7 +737,12 @@ Partial Class ErunupUserControl
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        wcbutton.Text = "Confirm Energies"
+        If LinacName Like "LA?" Then
+            wcbutton.Text = "Confirm Energies"
+        Else
+            wcbutton.Text = "Confirm for Clinical Use"
+        End If
+
         Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
         WriteDatauc1.Visible = True
         ForceFocus(wctext)

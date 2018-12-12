@@ -17,6 +17,7 @@ Partial Class Preclinusercontrol
     Dim accontrol As AcceptLinac
     Public Property LinacName() As String
     Public Property DataName() As String
+    Dim comment As String
 
     Public Function FormatImage(ByVal energy As Boolean) As String
         'Dim happyIcon As String = "Images/happy.gif"
@@ -58,7 +59,7 @@ Partial Class Preclinusercontrol
         tabstate = "ActTab" + LinacName
 
     End Sub
-    Protected Sub Preclinloaded(ByVal connectionString As String)
+    Public Sub Preclinloaded(ByVal connectionString As String)
         BindGridview2(connectionString)
         BindComments(connectionString)
         SetImaging(connectionString)
@@ -169,9 +170,13 @@ Partial Class Preclinusercontrol
         Dim XVI As Boolean = False
         Dim Successful As Boolean = False
         If Tabused = "2" Then
-
-            Dim Textboxcomment As TextBox = FindControl("CommentBox")
-            Dim comment As String = Textboxcomment.Text
+            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+                comment = HttpContext.Current.Application(BoxChanged).ToString
+            Else
+                comment = String.Empty
+            End If
+            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+            'Dim comment As String = Textboxcomment.Text
             'Dim Imagecheck As CheckBoxList
             'Imagecheck = FindControl("Imaging")
             Dim strScript As String = "<script>"
@@ -189,7 +194,8 @@ Partial Class Preclinusercontrol
                 If Successful Then
                     Dim returnstring As String = LinacName + "page.aspx?tabref=3"
                     Application(tabstate) = String.Empty
-                    HttpContext.Current.Application(BoxChanged) = Nothing
+                    'HttpContext.Current.Application(BoxChanged) = Nothing
+                    CommentBox.ResetCommentBox()
                     Application(suspstate) = 1
                     Response.Redirect(returnstring)
                 Else
@@ -199,18 +205,21 @@ Partial Class Preclinusercontrol
             Else
                 Application(LinacFlag) = "Engineering Approved"
                 Valid = False
-                HttpContext.Current.Application(BoxChanged) = Nothing
+                'HttpContext.Current.Application(BoxChanged) = Nothing
                 strScript += "alert('No Pre-clinical RunUp Logging Off');"
                 Successful = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False, FaultP)
                 If Successful Then
+                    If Not Userinfo = "Restored" Then
+                        CommentBox.ResetCommentBox()
+                    End If
                     strScript += "window.location='"
-                    strScript += machinelabel
-                    strScript += "</script>"
-                    ScriptManager.RegisterStartupScript(LogOff, Me.GetType(), "JSCR", strScript.ToString(), False)
-                Else
-                    RaiseError()
+                        strScript += machinelabel
+                        strScript += "</script>"
+                        ScriptManager.RegisterStartupScript(LogOff, Me.GetType(), "JSCR", strScript.ToString(), False)
+                    Else
+                        RaiseError()
                 End If
-                HttpContext.Current.Application(BoxChanged) = Nothing
+                'HttpContext.Current.Application(BoxChanged) = Nothing
             End If
         End If
 
@@ -224,7 +233,7 @@ Partial Class Preclinusercontrol
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Application(LinacFlag) = "Linac Unauthorised"
         Application(appstate) = Nothing
-        HttpContext.Current.Application(BoxChanged) = Nothing
+        CommentBox.ResetCommentBox()
         Application(tabstate) = String.Empty
         strScript += message
         strScript += "window.location='"
@@ -268,8 +277,8 @@ Partial Class Preclinusercontrol
         'http://weblogs.asp.net/aghausman/archive/2009/04/15/how-to-pass-parameters-to-the-dynamically-added-user-control.aspx
 
         PlaceHolder2.Visible = True
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
-
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        CommentBox.BoxChanged = BoxChanged
         If Not IsPostBack Then
 
             'removes engineer comments from display in grid
@@ -303,11 +312,11 @@ Partial Class Preclinusercontrol
             End Select
             GridView2.Columns(0).Visible = False
 
-            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
-                Textboxcomment.Text = Application(BoxChanged).ToString
-            Else
-                'Textboxcomment.Text = comment
-            End If
+            'If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+            '    Textboxcomment.Text = Application(BoxChanged).ToString
+            'Else
+            '    'Textboxcomment.Text = comment
+            'End If
             Application(faultviewstate) = 1
 
         End If
@@ -431,10 +440,10 @@ Partial Class Preclinusercontrol
 
     End Function
 
-    Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-        Application(BoxChanged) = CommentBox.Text
+    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
+    '    Application(BoxChanged) = CommentBox.Text
 
-    End Sub
+    'End Sub
     Private Sub WaitButtons(ByVal WaitType As String)
 
         Select Case WaitType

@@ -11,64 +11,10 @@
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc6" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>
 <%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
       
-    <script type="text/javascript">
-//    function pageLoad() {
-//    var popup = $find('check_ModalPopupExtender');
-//popup.add_showing(calledWhenShown);
-//        if (popup != null) {
-//            popup.show();
-//        }
-//     }
-    function AcceptClin() {
-        var pipup = $find('clinHandoverButton_ModalPopupExtender');
-        return true;
-    }
-     function runup() {
-         var apopup = $find('check_ModalPopupExtender');
-
-         apopup.add_showing(rkunup);
-
-}
-function rkunup() {
-    alert('I am called!');
-}
-
-   
-
-    function calledWhenShown() {
-
-        alert('I am called when the ModalPopup is shown');
-
-    }
-
-function ClearUI() {
-    $find("textvalidator1").hide();
-    $get("txtUsername").value = "";
-}
-
-function IsValid() {
-    var textbox = $get("txtUsername");
-    if (textbox.value == "") {
-        return false;
-    }
-    else
-        return true;
-}
-
-
-function DoClose() {
-
-    
-   
-    
-    // return true so that submit will happen
-    return true;
-}
-
-
-</script>        
+     
    <div>
        <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
         BorderStyle="Solid">
@@ -167,10 +113,9 @@ function DoClose() {
         </div>
         </div>
 
-        <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
-               Width="1430px">
+           
+           <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" Width="1430px">
                <asp:TableRow ID="r1" runat="server">
-                   
                    <asp:TableCell ID="c1" runat="server" Width="50px">
                        
                    <asp:Button ID="clinHandoverButton" Height="150px"  runat="server" 
@@ -178,7 +123,7 @@ function DoClose() {
 
 
 </asp:TableCell>
-<asp:TableCell ID="c2" runat="server" HorizontalAlign="Left" Width="100px">
+                   <asp:TableCell ID="c2" runat="server" HorizontalAlign="Left" Width="100px">
  <%--<asp:TableCell ID="TableCell1" runat="server" Width="250px" HorizontalAlign="Left">--%>
                    <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" >
             <Columns>
@@ -199,16 +144,15 @@ function DoClose() {
     <asp:ListItem Text="XVI" Enabled="False" />
     </asp:CheckBoxList>--%>
 </asp:TableCell>
-                   
-            
                    <asp:TableCell ID="PreclinicalComments" runat="server" HorizontalAlign="left" Width="250px">
                                <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Pre-clinical Comments</legend>
-                              <asp:TextBox ID="CommentBox" runat="server" MaxLength="250" Rows="5" 
-                TextMode="MultiLine" Width="250px" Height="150px" ReadOnly="false" AutoPostBack="true"></asp:TextBox>
+                              <uc4:CommentBoxuc ID="CommentBox" runat="server" />
+                      <%-- <asp:TextBox ID="CommentBox" runat="server" MaxLength="10" Rows="5"  
+                TextMode="Multiline" Width="150px" Height="300px" onkeyup="Count()" ClientIDMode="Static"></asp:TextBox>
+                       <br/> <asp:Label ID="CommentWordCount" runat="server" Text="" ClientIDMode="Static"></asp:Label>--%>
 
                        </asp:TableCell>
-                       
-                       <asp:TableCell ID="c3" runat="server" HorizontalAlign="Left" Width="250px" VerticalAlign="Top" BackColor="White">
+                   <asp:TableCell ID="c3" runat="server" BackColor="White" HorizontalAlign="Left" VerticalAlign="Top" Width="250px">
                                                         <div style =" background-color:Green;  
         height:30px;width:355px; margin:0;padding:0">
         <table cellspacing="0" cellpadding = "0" rules="all" border="1" id="Table3" 
@@ -257,7 +201,7 @@ function DoClose() {
                                <%--<asp:TextBox ID="TextBox2" runat="server" MaxLength="250" Rows="5" 
                 TextMode="MultiLine" Width="250px" Height="150px" ReadOnly="true"></asp:TextBox>--%>
                 </asp:TableCell>
-                <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
+                   <asp:TableCell ID="c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
 <asp:PlaceHolder ID="PlaceHolder3" runat="server">
@@ -266,8 +210,7 @@ function DoClose() {
 
 </asp:UpdatePanel>
                        </asp:TableCell>
-
-                       <asp:TableCell VerticalAlign="Top">
+                   <asp:TableCell VerticalAlign="Top">
 <asp:UpdatePanel ID="UpdatePanel3" runat="server" UpdateMode="Conditional">
                <ContentTemplate>
                    <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
@@ -276,32 +219,27 @@ function DoClose() {
                 </asp:PlaceHolder>
                 </ContentTemplate></asp:UpdatePanel>
                </asp:TableCell>
-
                </asp:TableRow>
-               
-                          </asp:Table>
-                          
-                          <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1038px">
-         <asp:TableRow ID ="t2r1" runat="server">
-         <asp:TableCell ID="t2c1" runat="server" Width="160px" HorizontalAlign="Left">
+           </asp:Table>
+           <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1038px">
+               <asp:TableRow ID="t2r1" runat="server">
+                   <asp:TableCell ID="t2c1" runat="server" HorizontalAlign="Left" Width="160px">
                      
  </asp:TableCell>
-                              <asp:TableCell ID="t2c2" runat="server">
+                   <asp:TableCell ID="t2c2" runat="server">
                <asp:Button ID="LogOff" runat="server" Text="Log Off Without Approving For Clinical Use" CausesValidation="False" />
                </asp:TableCell>
-                        </asp:TableRow>
-               </asp:Table>
-
-                       <asp:UpdatePanel ID="faultupdatePanel" runat="server" Visible="true">
-                       
-        <ContentTemplate>
-        <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
-         </ContentTemplate>
-        </asp:UpdatePanel>
-        <asp:PlaceHolder ID="PlaceHolder2" runat="server">
-        <uc2:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="2"  Tabby="2"  WriteName="PreClinData" visible="false" runat="server" />
-            <uc3:ConfirmPage ID="ConfirmPage1" Visible="false" runat="server" />
-         </asp:PlaceHolder>
+               </asp:TableRow>
+           </asp:Table>
+           <asp:UpdatePanel ID="faultupdatePanel" runat="server" Visible="true">
+               <ContentTemplate>
+                   <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
+               </ContentTemplate>
+           </asp:UpdatePanel>
+           <asp:PlaceHolder ID="PlaceHolder2" runat="server">
+               <uc2:WriteDatauc ID="WriteDatauc1" runat="server" LinacName="" Tabby="2" UserReason="2" visible="false" WriteName="PreClinData" />
+               <uc3:ConfirmPage ID="ConfirmPage1" runat="server" Visible="false" />
+           </asp:PlaceHolder>
                           
             <br />
            

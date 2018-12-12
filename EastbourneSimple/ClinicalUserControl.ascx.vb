@@ -321,14 +321,21 @@ Partial Class ClinicalUserControl
     Private Sub BindComments()
         Dim SqlDateSourceComment As New SqlDataSource()
 
-        Dim query As String = "select e.comment, r.Ccomment, c.ClinComment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
-        "Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
-        "c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac) and " &
-        "c.ClinicalID = (Select Max(ClinicalID) as mancount from [ClinicalTable] where linac = @linac)"
+        'Dim query As String = "select e.comment, r.Ccomment, c.ClinComment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
+        '"Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
+        '"c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac) and " &
+        '"c.ClinicalID = (Select Max(ClinicalID) as mancount from [ClinicalTable] where linac = @linac)"
+        'Dim query As String = "select e.comment, r.Ccomment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
+        '"Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
+        '"c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac)"
+        Dim query As String = "select e.comment, r.Ccomment from handoverenergies e left outer join clinicalhandover r On e.handoverid=r.ehandid " &
+         "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
 
         SqlDateSourceComment = QuerySqlConnection(LinacName, query)
-        GridViewComments.DataSource = SqlDateSourceComment
-        GridViewComments.DataBind()
+        GridViewPreEng.DataSource = SqlDateSourceComment
+        GridViewPreEng.DataBind()
+        'GridViewComments.DataSource = SqlDateSourceComment
+        'GridViewComments.DataBind()
 
 
     End Sub
@@ -338,10 +345,10 @@ Partial Class ClinicalUserControl
             Dim SqlDataSource1 As New SqlDataSource()
             'the distinct takes care of when suspended returns via pre-clinical because then there are two pre ids for one runup id
             'Dim query As String = "Select distinct handoverID, MV6, MV10, MeV6, MeV8, " & _
-            '                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) as lastrecord from HandoverEnergies where linac=@linac)"
+            '                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r On e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) As lastrecord from HandoverEnergies where linac=@linac)"
             'Added isnull as per energy displayuc
-            Dim query As String = "Select distinct handoverID, MV6, ISNULL(MV6FFF, 0) as ""MV6FFF"", MV10 ,ISNULL(MV10FFF, 0) as ""MV10FFF"",ISNULL(MeV4,0) as ""MeV4"", MeV6, MeV8, " &
-                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)"
+            Dim query As String = "Select distinct handoverID, MV6, ISNULL(MV6FFF, 0) As ""MV6FFF"", MV10 ,ISNULL(MV10FFF, 0) As ""MV10FFF"",ISNULL(MeV4,0) As ""MeV4"", MeV6, MeV8, " &
+                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r On e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) As lastrecord from ClinicalHandover where linac=@linac)"
 
             SqlDataSource1 = QuerySqlConnection(LinacName, query)
             GridView2.DataSource = SqlDataSource1
@@ -429,7 +436,7 @@ Partial Class ClinicalUserControl
 
     End Sub
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(Function(){$Get('" +
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
     Protected Sub SaveText_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveText.Click

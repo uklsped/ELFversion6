@@ -70,13 +70,13 @@ Namespace DavesCode
         ''' <param name="LinacName">Name of the linac.</param>
         ''' <param name="tabby">The tabby.</param>
         ''' <param name="LogOffName">Name of the log off.</param>
-        ''' <param name="TextBoxc">The text boxc.</param>
+        ''' <param name="TextBox">The text boxc.</param>
         ''' <param name="Valid">if set to <c>true</c> [valid].</param>
         ''' <param name="Fault">if set to <c>true</c> [fault].</param>
         ''' <param name="lock">if set to <c>true</c> [lock].</param>
         ''' <param name="ConnectionString">The connection string.</param>
         ''' <returns></returns>
-        Public Shared Function CommitRunupNew(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean, ByVal ConnectionString As String) As String
+        Public Shared Function CommitRunupNew(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBox As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean, ByVal ConnectionString As String) As String
             Dim time As DateTime
             time = Now()
             Dim commitusername As String = LogOffName
@@ -84,7 +84,7 @@ Namespace DavesCode
             Dim cb As CheckBox
             Dim conn As SqlConnection
             Dim comm As SqlCommand
-            Dim TextBox As String = TextBoxc
+            'Dim TextBox As String = TextBoxc
             Dim GridView1 As GridView = GridviewE
             Dim machinename As String = LinacName
             Dim tablabel As Integer = tabby 'this is inconsistent

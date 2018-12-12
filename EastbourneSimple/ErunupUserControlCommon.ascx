@@ -4,6 +4,9 @@
 <%@ Register src="AtlasEnergyViewuc.ascx" tagname="AtlasEnergyViewuc" tagprefix="uc2" %>
 
 
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc3" %>
+
+
 <%--<%@ Register src="UpDateIncidentuc.ascx" tagname="UpDateIncidentuc" tagprefix="uc3" %>--%>
 
 
@@ -48,42 +51,22 @@
 
 <%--<%@ Register src="Singlemachinefaultuc.ascx" tagname="Singlemachinefaultuc" tagprefix="uc2" %>--%>
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="1" Tabby="1" visible="false" runat="server" />
-<script type="text/javascript">
+<%--<script type="text/javascript">
     function Count() {
          var i = document.getElementById("CommentBox").value.length;
-        if (i < 21)
-            document.getElementById("Label2").innerHTML = 20 - i;
+        if (i < 251)
+            document.getElementById("CommentWordCount").innerHTML = 250 - i;
         else
-            document.getElementById("Label2").innerHTML = "You have exceeded the max text please delete some characters";
+            document.getElementById("CommentWordCount").innerHTML = "You have exceeded the max text please delete some characters";
         return;
     }
     
-   
-//doesn't work
-function checkLength(oObject) 
-{
-if (oObject.value.length<10) 
-return true;
-else  
-{ 
-if ((event.keyCode>=37 && event.keyCode<=40) || (event.keyCode==8) || (event.keyCode==46)) 
-event.returnValue = true;
-
-else
-event.returnValue = false;  
-}
-
-}
-
-
-
-
-
-
-</script>
+</script>--%>
 <asp:Label ID="CheckUser" runat="server" Text=""  visible="true" display="none" causesvalidation="false"></asp:Label>
  <asp:GridView ID="DummyGridView" runat="server">
         </asp:GridView>     
+
+ 
 
  <div>
  
@@ -138,17 +121,17 @@ event.returnValue = false;
                    
                    <asp:TableCell ID="c2" runat="server" Width="50px">
                        
-                   <asp:Button ID="engHandoverButton" runat="server" Text="Approve Energies" causesvalidation="false"  Height="150px" BackColor="#FFCC00"/>
+                   <asp:Button ID="engHandoverButton" runat="server" Text="" causesvalidation="false"  Height="150px" BackColor="#FFCC00"/>
 
 
 </asp:TableCell>
                    <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="250px">
                                <%--<legend align="top" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Run-up Comments</legend>--%>
-                             <asp:TextBox ID="CommentBox" runat="server" MaxLength="10" Rows="5"  
-                TextMode="Multiline" Width="150px" Height="300px" onkeyup="Count()" ClientIDMode="Static"></asp:TextBox>
-                       <br/> <asp:Label ID="Label2" runat="server" Text="" ClientIDMode="Static"></asp:Label>
+                           <uc3:CommentBoxuc ID="CommentBox" runat="server" />
+                       <%--<asp:TextBox ID="CommentBoxold" runat="server" MaxLength="10" Rows="5"  
+                TextMode="Multiline" Width="150px" Height="300px" onkeyup="Count()" ClientIDMode="Static"></asp:TextBox>--%>
+                      <%-- <br/> <asp:Label ID="CommentWordCount" runat="server" Text="" ClientIDMode="Static"></asp:Label>--%>
                       
-<%--<asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="CommentBox" ErrorMessage="Only 250 characters"> </asp:RequiredFieldValidator>--%>
                        </asp:TableCell>
                        <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel1" runat="server">

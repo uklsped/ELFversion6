@@ -187,6 +187,41 @@
                     <uc8:CommentBoxuc ID="CommentBox" runat="server" /><asp:Button ID="SaveText" runat="server" Text="Save" CausesValidation="False" />
                                        </ContentTemplate><Triggers><asp:AsyncPostBackTrigger ControlID ="SaveText" eventname="click"/></Triggers></asp:UpdatePanel>
                 </td>
+                                   <td> <div style =" background-color:Green;  
+        height:30px;width:355px; margin:0;padding:0">
+        <table cellspacing="0" cellpadding = "0" rules="all" border="1" id="Table5" 
+         style="font-family:Arial;font-size:10pt;width:350px;color:white;
+         border-collapse:collapse;height:100%;">
+            <tr>
+               
+               <td style ="width:175px;text-align:center">Pre-Clinical Comment</td>
+               <td style ="width:175px;text-align:center">Engineering Comment</td>
+            </tr>
+        </table>
+        </div>
+
+           
+        <div style ="height:175px; width:355px; overflow:auto;">
+        <asp:GridView ID="GridViewPreEng" runat="server" AutoGenerateColumns="False" showheader="false"
+        DataKeyNames="Comment" BackColor="White" 
+        BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4" 
+        GridLines="Horizontal" >
+        <RowStyle BackColor="White" ForeColor="#333333" />
+        <Columns>
+     
+            <asp:BoundField DataField="Ccomment" HeaderText="PreClinical" ItemStyle-Width="175px" 
+                SortExpression="PreClinical" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" />
+                <asp:BoundField DataField="comment" HeaderText="Engineering" ItemStyle-Width="175px" 
+                SortExpression="Engineering" ItemStyle-VerticalAlign="Top" ItemStyle-HorizontalAlign="Left" />
+            </Columns>
+        <FooterStyle BackColor="White" ForeColor="#333333" />
+        <PagerStyle BackColor="#336666" ForeColor="White" HorizontalAlign="Center" />
+        <SelectedRowStyle BackColor="#339966" Font-Bold="True" ForeColor="White" />
+        <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
+    </asp:GridView>              
+               </div>    
+                       
+</td>
                 </tr>
                 <tr>
                 <td>
@@ -202,8 +237,8 @@
          border-collapse:collapse;height:100%;">
             <tr>
                <td style ="width:175px;text-align:center">Clinical Comment</td>
-               <td style ="width:175px;text-align:center">Pre-Clinical Comment</td>
-               <td style ="width:175px;text-align:center">Engineering Comment</td>
+              <%-- <td style ="width:175px;text-align:center">Pre-Clinical Comment</td>
+               <td style ="width:175px;text-align:center">Engineering Comment</td>--%>
             </tr>
         </table>
         </div>
@@ -219,10 +254,10 @@
         <Columns>
       <asp:BoundField DataField="Clincomment" HeaderText="Clinical" ItemStyle-Width="175px" 
                 SortExpression="Clinical" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
-            <asp:BoundField DataField="Ccomment" HeaderText="PreClinical" ItemStyle-Width="175px" 
+           <%-- <asp:BoundField DataField="Ccomment" HeaderText="PreClinical" ItemStyle-Width="175px" 
                 SortExpression="PreClinical" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" />
                 <asp:BoundField DataField="comment" HeaderText="Engineering" ItemStyle-Width="175px" 
-                SortExpression="Engineering" ItemStyle-VerticalAlign="Top" ItemStyle-HorizontalAlign="Left" />
+                SortExpression="Engineering" ItemStyle-VerticalAlign="Top" ItemStyle-HorizontalAlign="Left" />--%>
             </Columns>
         <FooterStyle BackColor="White" ForeColor="#333333" />
         <PagerStyle BackColor="#336666" ForeColor="White" HorizontalAlign="Center" />

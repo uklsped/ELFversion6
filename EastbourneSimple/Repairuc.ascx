@@ -1,5 +1,6 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="Repairuc.ascx.vb" Inherits="Repairuc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc1" %>
 <%--<%@ Register src="Singlemachinefaultuc.ascx" tagname="Singlemachinefaultuc" tagprefix="uc1" %>--%>
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc2" %>
@@ -17,6 +18,8 @@
 <div>
        <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
         BorderStyle="Solid">
+                                 
+           
                                  
            <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
                Width="1459px">
@@ -39,9 +42,9 @@
                     </asp:TableCell>
                    <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="150px">
                   <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Repair Comments</legend>
-                       <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine" Text="">
-                       </asp:TextBox>
-                       
+<%--                       <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine" Text="">
+                       </asp:TextBox>--%>
+                       <uc1:CommentBoxuc ID="CommentBox" runat="server" />
 </asp:TableCell>
 <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel2" runat="server">

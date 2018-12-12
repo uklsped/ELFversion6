@@ -3,6 +3,7 @@
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc1" %>
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc10" %>
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
 <%--<%@ Register Src="ErunupUserControl.ascx" TagName="ErunupUserControl" TagPrefix="uc1" %>--%>
 
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc3" %>
@@ -39,6 +40,9 @@
         <uc1:LockElfuc ID="LockElfuc1" LinacName="" UserReason="4" Tabby="4"  visible="false" runat="server" />
             
         
+        
+            
+        
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
             Width="1509px">
             <asp:TableRow ID="r1" runat="server">
@@ -57,11 +61,11 @@
                     <%--<fieldset style="text-align:left;">--%>
                         <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
                         Maintenance Comments</legend>
-
+                    <uc2:CommentBoxuc ID="CommentBox" runat="server" />
                     <%--</fieldset>--%>
-                    <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine"
+<%--                    <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine"
                         Text="">
-                    </asp:TextBox>
+                    </asp:TextBox>--%>
                 </asp:TableCell>
                 <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel3" runat="server">

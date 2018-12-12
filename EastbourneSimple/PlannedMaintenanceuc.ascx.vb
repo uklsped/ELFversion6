@@ -27,6 +27,7 @@ Partial Class Planned_Maintenanceuc
     Private Objcon As ViewOpenFaults
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
     Public Property LinacName() As String
+    Private comment As String
 
     Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
         If LinacName = EquipmentID Then
@@ -96,11 +97,16 @@ Partial Class Planned_Maintenanceuc
         Dim suspendvalue As String = Nothing
         Dim repairvalue As String = Nothing
         Dim EndofDay As Integer = 102
+        Dim Recovery As Integer = 101
         Dim result As Boolean = False
 
         If Tabused = "4" Then
-            Dim Textboxcomment As TextBox = FindControl("CommentBox")
-            Dim comment As String = Textboxcomment.Text
+            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+                comment = HttpContext.Current.Application(BoxChanged).ToString
+            Else
+                comment = String.Empty
+            End If
             Dim strScript As String = "<script>"
             strScript += "window.location='"
             strScript += machinelabel
@@ -110,76 +116,79 @@ Partial Class Planned_Maintenanceuc
             Dim Action As String = Application(actionstate)
             suspendvalue = Application(suspstate)
             repairvalue = Application(repairstate)
-            Radioselect = RadioButtonList1.SelectedItem.Value
-            result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
-            If result Then
-                If Action = "Confirm" Then
-                    'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                    'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-                    'Dim comment As String = Textboxcomment.Text
+            If Action = "EndOfDay" Then
+                Radioselect = EndofDay
+                Action = "Confirm"
 
-
-                    'result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
-                    Application(tabstate) = String.Empty
-                    Application(appstate) = Nothing
-                    HttpContext.Current.Application(BoxChanged) = Nothing
-                    Select Case Radioselect
-                        Case 1
-                            Application(failstate) = Nothing
-                            Application(repairstate) = Nothing
-                            Application(suspstate) = Nothing
-                            Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                            Response.Redirect(returnstring)
-                        Case 2
-                            Application(suspstate) = Nothing
-                            Application(failstate) = Nothing
-                            Application(repairstate) = 1
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        Case 3
-                            Application(suspstate) = 1
-                            Application(failstate) = Nothing
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        Case 5
-                            Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                            Response.Redirect(returnstring)
-                        Case 6
-                            Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                            Response.Redirect(returnstring)
-                        Case 102
-                            Application(failstate) = Nothing
-                            Application(repairstate) = Nothing
-                            Application(suspstate) = Nothing
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        Case 8
-                            Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                            Response.Redirect(returnstring)
-                    End Select
-                    LogOffButton.BackColor = Drawing.Color.AntiqueWhite
-                    RadioButtonList1.SelectedIndex = -1
-
-                    'Else
-                    '    'This now responds to end of day at midnight and on start up
-                    '    DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, EndofDay, Tabused, False, suspendvalue, repairvalue, False)
-                    'Application(appstate) = Nothing
-                    'strScript = "<script>"
-                    'strScript += "alert('How have you got to here?');"
-                    'strScript += "window.location='"
-                    'strScript += machinelabel
-                    'strScript += "</script>"
-                    'ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-
-                End If
+            ElseIf Action = "False" Then
+                Radioselect = Recovery
             Else
-                RaiseLogOffError()
+                Radioselect = RadioButtonList1.SelectedItem.Value
             End If
-        End If
+
+            result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
+                If result Then
+                    If Action = "Confirm" Then
+
+                        'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+                        'Dim comment As String = Textboxcomment.Text
+
+
+                        'result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
+                        Application(tabstate) = String.Empty
+                        Application(appstate) = Nothing
+                        CommentBox.ResetCommentBox()
+                        Select Case Radioselect
+                            Case 1
+                                Application(failstate) = Nothing
+                                Application(repairstate) = Nothing
+                                Application(suspstate) = Nothing
+                                Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                                Response.Redirect(returnstring)
+                            Case 2
+                                Application(suspstate) = Nothing
+                                Application(failstate) = Nothing
+                                Application(repairstate) = 1
+                                'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            Case 3
+                                Application(suspstate) = 1
+                                Application(failstate) = Nothing
+                                'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            Case 5
+                                Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                                Response.Redirect(returnstring)
+                            Case 6
+                                Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                                Response.Redirect(returnstring)
+                            Case 102
+                                Application(failstate) = Nothing
+                                Application(repairstate) = Nothing
+                                Application(suspstate) = Nothing
+                                'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                                ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            Case 8
+                                Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                                Response.Redirect(returnstring)
+                        End Select
+                        LogOffButton.BackColor = Drawing.Color.AntiqueWhite
+                        RadioButtonList1.SelectedIndex = -1
+
+                    Else
+                        'Nothing needs to be done here now. This is called from end of day and recovery 
+                        'And they reset all of the application states when this returns to them.
+
+                    End If
+                Else
+                    RaiseLogOffError()
+                End If
+            End If
 
     End Sub
     Protected Sub RaiseLogOffError()
@@ -192,6 +201,7 @@ Partial Class Planned_Maintenanceuc
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         WaitButtons("Tech")
+        CommentBox.BoxChanged = BoxChanged
         objconToday = Page.LoadControl("TodayClosedFault.ascx")
         objconToday.ID = "Todaysfaults"
         objconToday.LinacName = LinacName
@@ -238,7 +248,7 @@ Partial Class Planned_Maintenanceuc
         End If
 
         PlaceHolder4.Controls.Add(objDefect)
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
 
         If Not IsPostBack Then
             If LinacName Like "LA?" Then
@@ -256,11 +266,11 @@ Partial Class Planned_Maintenanceuc
                 RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
             End If
 
-            If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
-                Textboxcomment.Text = Application(BoxChanged).ToString
-            Else
-                'Textboxcomment.Text = comment
-            End If
+            'If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
+            '    Textboxcomment.Text = Application(BoxChanged).ToString
+            'Else
+            '    'Textboxcomment.Text = comment
+            'End If
 
             Application(faultviewstate) = 1
             Application(atlasviewstate) = 1
@@ -386,8 +396,9 @@ Partial Class Planned_Maintenanceuc
         Dim suspendvalue As String
         Dim repairvalue As String
         Dim username As String = "Lockuser"
-        Dim Textboxcomment As TextBox = FindControl("CommentBox")
-        Dim comment As String = Textboxcomment.Text
+        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+        'Dim comment As String = Textboxcomment.Text
+        comment = CommentBox.Currentcomment
         suspendvalue = Application(suspstate)
         repairvalue = Application(repairstate)
         Dim tabused As Integer = 4
@@ -413,10 +424,10 @@ Partial Class Planned_Maintenanceuc
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(LockElf, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
-    Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-        Application(BoxChanged) = CommentBox.Text
-        'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    End Sub
+    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
+    '    Application(BoxChanged) = CommentBox.Text
+    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
+    'End Sub
 
     Private Sub ForceFocus(ByVal ctrl As Control)
         ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
