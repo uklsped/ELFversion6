@@ -35,9 +35,9 @@ Partial Class ClinicalUserControl
     Public Property LinacName() As String
 
     Public Function FormatImage(ByVal energy As Boolean) As String
-        'Dim happyIcon As String = "Images/happy.gif"
+
         Dim happyIcon As String = "Images/check_mark.jpg"
-        'Dim sadIcon As String = "Images/sad.gif"
+
         Dim sadIcon As String = "Images/box_with_x.jpg"
         If energy Then
             Return happyIcon
@@ -123,21 +123,15 @@ Partial Class ClinicalUserControl
 
     Public Sub ClinicalApprovedEvent(ByVal connectionString As String)
         'This is the point that the gridviews are displayed and Clinical Table Data is written
-        BindEnergyData(connectionString)
+        BindEnergyData()
 
-        WriteClinicalTable(connectionString)
-        Application(suspstate) = Nothing
-
-        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
         'This looks to see if BoxChanged has a value. if it has the comment has not been saved.
         If Not HttpContext.Current.Application(BoxChanged) Is Nothing Then
-            'Need to save and then delete app state
-            'WriteClinicalTableComment(True)
-
-        Else
-            'Textboxcomment.Text = comment
+            HiddenFieldLinacState.Value = DavesCode.NewCommitClinical.NewWriteClinicalTable(LinacName, HttpContext.Current.Application(BoxChanged), connectionString)
+            CommentBox.ResetCommentBox()
         End If
         BindComments()
+        Application(suspstate) = Nothing
     End Sub
 
     Public Sub UserApprovedEvent(ByVal tabused As String, ByVal Userinfo As String)
@@ -145,10 +139,10 @@ Partial Class ClinicalUserControl
         Dim Action As String = Application(actionstate)
         Dim machinelabel As String = LinacName & "Page.aspx"
         Dim username As String = Userinfo
-        Dim linacstatusid As String = HiddenFieldLinacState.Value
+        'Dim linacstatusid As String = HiddenFieldLinacState.Value
         Dim Result As Boolean = False
 
-        If tabused = "3" Then
+        If tabused = "3" Or tabused = "Recover" Then
             Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
             Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams)
             If Result Then
@@ -161,7 +155,7 @@ Partial Class ClinicalUserControl
                     Else
                         'This has gone wrong
                     End If
-
+                    CommentBox.ResetCommentBox()
                     Application(treatmentstate) = "Yes"
                     Application(appstate) = Nothing
                     Application(suspstate) = 1
@@ -174,7 +168,10 @@ Partial Class ClinicalUserControl
                 End If
             Else
                 RaiseLogOffError()
-
+                If tabused = "Recover" Then
+                    'if this is from restore then don't want to go back to recovery
+                    Response.Redirect("/Errorpages/Oops.aspx")
+                End If
             End If
         End If
     End Sub
@@ -185,22 +182,13 @@ Partial Class ClinicalUserControl
         objconToday.ID = "Todaysfaults"
         objconToday.LinacName = LinacName
         PlaceHolder5.Controls.Add(objconToday)
-        'added 16march
-        'Dim objImage As UserControl = Page.LoadControl("UpdateImaginguc.ascx")
-        'CType(objImage, UpdateImaginguc).LinacName = MachineName
-        'PlaceHolder6.Controls.Add(objImage)
 
-        Dim conn As SqlConnection
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
-        conn = New SqlConnection(connectionString1)
-        Dim lastState As String
         Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = LinacName
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(objCon)
         PlaceHolder2.Visible = True
-        'AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
+
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
         Dim objDefect As UserControl
@@ -221,17 +209,17 @@ Partial Class ClinicalUserControl
         End If
 
         PlaceHolder3.Controls.Add(objDefect)
-        BindComments()
+
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName
-        'Dim wctrl1 As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-        'wctrl1.LinacName = MachineName
+        Dim laststate As String
         Dim wctrl2 As WriteDatauc = CType(FindControl("Writedatauc2"), WriteDatauc)
         wctrl2.LinacName = LinacName
         CommentBox.BoxChanged = BoxChanged
-        CommentBox.Currentcomment = ""
-        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-
+        Dim conn As SqlConnection
+        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
+        "connectionstring").ConnectionString
+        conn = New SqlConnection(connectionString1)
         If Not IsPostBack Then
 
             Dim treatval As String = Application(treatmentstate)
@@ -270,18 +258,15 @@ Partial Class ClinicalUserControl
         End If
 
     End Sub
+
+
     Protected Sub EnergyGridView_DataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView2.RowDataBound
 
         Dim headerRow As GridViewRow = e.Row
         Dim energy As Integer
         Dim query As String
         Dim SqlDataSource1 As New SqlDataSource()
-        'Query modified 14/12/16 to fix bug 36
-        'query = "Select  MV6, MV10, MeV6, MeV8, " & _
-        '                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) as lastrecord from HandoverEnergies where linac=@linac)"
 
-        'query = "Select  MV6, MV10, MeV6, MeV8, MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI, r.CHandID from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) as lastrecord from HandoverEnergies where linac=@linac)" & _
-        '"and r.CHandID = (Select MAX(CHandID) from ClinicalHandover where linac=@linac)"
         query = "Select distinct MV6,MV6FFF, MV10,MV10FFF,MeV4, MeV6, MeV8, " &
                   "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)"
 
@@ -321,26 +306,25 @@ Partial Class ClinicalUserControl
     Private Sub BindComments()
         Dim SqlDateSourceComment As New SqlDataSource()
 
-        'Dim query As String = "select e.comment, r.Ccomment, c.ClinComment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
-        '"Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
-        '"c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac) and " &
-        '"c.ClinicalID = (Select Max(ClinicalID) as mancount from [ClinicalTable] where linac = @linac)"
-        'Dim query As String = "select e.comment, r.Ccomment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
-        '"Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
-        '"c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac)"
         Dim query As String = "select e.comment, r.Ccomment from handoverenergies e left outer join clinicalhandover r On e.handoverid=r.ehandid " &
          "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
 
         SqlDateSourceComment = QuerySqlConnection(LinacName, query)
         GridViewPreEng.DataSource = SqlDateSourceComment
         GridViewPreEng.DataBind()
-        'GridViewComments.DataSource = SqlDateSourceComment
-        'GridViewComments.DataBind()
 
+        query = "select c.DateTime, c.ClinComment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
+        "Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
+        "c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac) order by c.datetime desc"
+
+        SqlDateSourceComment = QuerySqlConnection(LinacName, query)
+
+        GridViewComments.DataSource = SqlDateSourceComment
+        GridViewComments.DataBind()
 
     End Sub
 
-    Private Sub BindEnergyData(ByVal connectionString As String)
+    Private Sub BindEnergyData()
         If LinacName IsNot "T1" Then
             Dim SqlDataSource1 As New SqlDataSource()
             'the distinct takes care of when suspended returns via pre-clinical because then there are two pre ids for one runup id
@@ -440,11 +424,21 @@ Partial Class ClinicalUserControl
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
     Protected Sub SaveText_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveText.Click
+        Dim statusid As Integer
+        Try
+            Using myscope As TransactionScope = New TransactionScope()
+                Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                statusid = DavesCode.NewCommitClinical.NewWriteClinicalTable(LinacName, HttpContext.Current.Application(BoxChanged), connectionString1)
+                BindComments()
+                myscope.Complete()
+            End Using
 
-        WriteClinicalTableComment(False)
-        TodayComment = CType(FindControl("CommentBox"), controls_CommentBoxuc)
-        'Page_Load(Page, EventArgs.Empty)
-
+            HiddenFieldLinacState.Value = statusid
+            'GridViewComments.DataBind()
+        Catch ex As Exception
+            DavesCode.NewFaultHandling.LogError(ex, Application(BoxChanged))
+            RaiseWriteError()
+        End Try
         CommentBox.ResetCommentBox()
     End Sub
 
@@ -466,7 +460,7 @@ Partial Class ClinicalUserControl
                         Application(treatmentstate) = "No"
                         LogOffButton.Visible = True
                         ActivityLabel.Text = "Clinical - Treating"
-                        BindEnergyData(connectionString)
+                        BindEnergyData()
                     Else
 
                         DavesCode.NewCommitClinical.SetTreatment("Not Treating", LinacName, linacstatusid, connectionString)
@@ -510,178 +504,95 @@ Partial Class ClinicalUserControl
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(Tstart, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
-    Protected Sub WriteClinicalTableComment(ByVal recovered As Boolean)
 
-        Dim builder As New StringBuilder
-        Dim conn As SqlConnection
-        Dim comment As String
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
-        Dim commCAuthID As SqlCommand
-        'Dim theDate As DateTime = System.DateTime.Now
-        Dim theTime As String
-        theTime = DateTime.Now.ToString("h:mm tt")
-        'if recovered then Boxchanged has a value so that should be written to the table and then displayed. If not take the comment that has been entered and write to table
-        'If recovered Then
-        comment = Application(BoxChanged).ToString
-        'Else
-        'comment = CommentBox.Currentcomment
-        'End If
-
-        ' Append the time to the stringBuilder
-        builder.Append(theTime)
-        builder.Append(" <br/>")
-        ' Append the comment to the StringBuilder
-        builder.Append(comment)
-        ' Append a line break
-        builder.Append(" <br/>")
-
-
-        ' Get internal String value from StringBuilder
-        Dim ClinicalComment As String = builder.ToString
-
-        conn = New SqlConnection(connectionString)
-        commCAuthID = New SqlCommand("Update ClinicalTable Set ClinComment = ClinComment + @Clincomment where ClinicalID  = (Select max(ClinicalID) as lastrecord from ClinicalTable where linac=@linac)", conn)
-        'This should check for the length of the text already stored
-        commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-        commCAuthID.Parameters("@linac").Value = LinacName
-        commCAuthID.Parameters.Add("@clinComment", System.Data.SqlDbType.NVarChar, 250)
-        commCAuthID.Parameters("@clinComment").Value = ClinicalComment
-        Try
-            conn.Open()
-            commCAuthID.ExecuteNonQuery()
-        Catch SQLExec As SqlException
-            Dim err As String = SQLExec.ToString()
-            ScriptManager.RegisterStartupScript(Page, Me.GetType(), "Alertmessagebox", "alert('Comment length exceeded');", True)
-
-        Finally
-            'Once table entry is written then set text to Nothing
-            CommentBox.Currentcomment = String.Empty
-            Application(BoxChanged) = String.Empty
-            GridViewComments.DataBind()
-            conn.Close()
-
-        End Try
-
+    Protected Sub RaiseWriteError()
+        Dim machinelabel As String = LinacName & "Page.aspx';"
+        Dim strScript As String = "<script>"
+        strScript += "alert('Problem Writing Comment. Please call Administrator');"
+        'strScript += "window.location='"
+        'strScript += machinelabel
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(Tstart, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
+
     'This happens on log on to create the comments table. Create TreatmentTable as well
-    Protected Sub WriteClinicalTable(ByVal connectionString As String)
-        Dim time As DateTime
-        time = Now()
-        Dim reader As SqlDataReader
-        Dim CID As Integer
-        Dim CTID As Integer
-        Dim ClinD As Integer
-        Dim StatusID As Integer
-        Dim UserName As String = String.Empty
-        Dim conn As SqlConnection
-        Dim Clinicalcomment As String = String.Empty
-        Dim commCAuthID As SqlCommand
-        Dim commclin As SqlCommand
+
+    'Protected Function NewWriteClinicalTable(ByVal LinacName As String, ByVal connectionString As String) As Integer
+    '    Dim time As DateTime
+    '    time = Now()
+    '    Dim reader As SqlDataReader
+    '    Dim CID As Integer
+    '    Dim CTID As Integer
+    '    'Dim ClinD As Integer
+    '    Dim StatusID As Integer = 0
+    '    Dim UserName As String = String.Empty
+    '    Dim conn As SqlConnection
+    '    Dim Clinicalcomment As String = String.Empty
+    '    Dim commCAuthID As SqlCommand
+    '    Dim commclin As SqlCommand
+
+    '    Clinicalcomment = Application(BoxChanged)
+    '    conn = New SqlConnection(connectionString)
+
+    '    commCAuthID = New SqlCommand("Select CHandID, LogOutStatusID from ClinicalHandover where CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)", conn)
+    '    commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+    '    commCAuthID.Parameters("@linac").Value = LinacName
+    '    conn.Open()
+    '    CID = 0
+    '    reader = commCAuthID.ExecuteReader()
+    '    If reader.Read() Then
+    '        CID = reader.Item("CHandID")
+    '        CTID = reader.Item("LogOutStatusID")
+    '        reader.Close()
+    '        conn.Close()
+    '    End If
+    '    If Not CID = 0 Then
+    '        'Remove user name as this is not the correct name anyway
+    '        commCAuthID = New SqlCommand("Select StateID from LinacStatus where StateID  = (Select max(StateID) as lastrecord from LinacStatus where linac=@linac)", conn)
+    '        commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+    '        commCAuthID.Parameters("@linac").Value = LinacName
+    '        conn.Open()
+    '        reader = commCAuthID.ExecuteReader()
+    '        If reader.Read() Then
+    '            StatusID = reader.Item("StateID")
+
+    '            reader.Close()
+    '            conn.Close()
+    '        End If
+
+    '        commclin = New SqlCommand("INSERT INTO ClinicalTable (PreClinID,LinacStatusID, clinComment,linac, DateTime, Username) " &
+    '                            "VALUES ( @PreclinID, @LinacStatusID,@clincomment, @linac, @DateTime, @UserName)", conn)
+
+    '        commclin.Parameters.Add("@PreClinID", System.Data.SqlDbType.Int)
+    '        commclin.Parameters("@PreclinID").Value = CID
+    '        commclin.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.Int)
+    '        commclin.Parameters("@LinacStatusID").Value = StatusID
+    '        commclin.Parameters.Add("@clinComment", System.Data.SqlDbType.NVarChar, 250)
+    '        commclin.Parameters("@clinComment").Value = Clinicalcomment
+    '        commclin.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+    '        commclin.Parameters("@linac").Value = LinacName
+    '        commclin.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
+    '        commclin.Parameters("@DateTime").Value = time
+    '        commclin.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 25)
+    '        commclin.Parameters("@UserName").Value = String.Empty
 
 
-        'Clinicalcomment = CommentBox.Currentcomment
-        conn = New SqlConnection(connectionString)
+    '        conn.Open()
+    '        commclin.ExecuteNonQuery()
 
-        commCAuthID = New SqlCommand("Select CHandID, LogOutStatusID from ClinicalHandover where CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)", conn)
-        commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-        commCAuthID.Parameters("@linac").Value = LinacName
-        conn.Open()
-        CID = 0
-        reader = commCAuthID.ExecuteReader()
-        If reader.Read() Then
-            CID = reader.Item("CHandID")
-            CTID = reader.Item("LogOutStatusID")
-            reader.Close()
-            conn.Close()
-        End If
-        If Not CID = 0 Then
-            commCAuthID = New SqlCommand("Select ClinicalID from ClinicalTable where PreClinID = @CID", conn)
-            commCAuthID.Parameters.Add("@CID", System.Data.SqlDbType.NVarChar, 10)
-            commCAuthID.Parameters("@CID").Value = CID
-            conn.Open()
-            reader = commCAuthID.ExecuteReader()
-
-            If reader.Read() Then
-                ClinD = reader.Item("clinicalID")
-                reader.Close()
-                conn.Close()
-            Else
-                conn.Close()
-
-            End If
+    '        conn.Close()
 
 
-            commCAuthID = New SqlCommand("Select ClinComment from ClinicalTable where PreClinID = @CID and ClinicalID = (Select max(ClinicalID) from ClinicalTable where linac=@linac)", conn)
-            commCAuthID.Parameters.Add("@CID", System.Data.SqlDbType.NVarChar, 10)
-            commCAuthID.Parameters("@CID").Value = CID
-            commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            commCAuthID.Parameters("@linac").Value = LinacName
-            conn.Open()
-            reader = commCAuthID.ExecuteReader()
 
-            If reader.Read() Then
-                Clinicalcomment = reader.Item("ClinComment")
-                reader.Close()
-                conn.Close()
-            Else
-                conn.Close()
+    '    End If
 
-            End If
-            commCAuthID = New SqlCommand("Select StateID, Username from LinacStatus where StateID  = (Select max(StateID) as lastrecord from LinacStatus where linac=@linac)", conn)
-            commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            commCAuthID.Parameters("@linac").Value = LinacName
-            conn.Open()
-            reader = commCAuthID.ExecuteReader()
-            If reader.Read() Then
-                StatusID = reader.Item("StateID")
-                UserName = reader.Item("Username")
-                reader.Close()
-                conn.Close()
-            End If
+    '    Return StatusID
 
-            commclin = New SqlCommand("INSERT INTO ClinicalTable (PreClinID,LinacStatusID, clinComment,linac, DateTime, Username) " &
-                                "VALUES ( @PreclinID, @LinacStatusID,@clincomment, @linac, @DateTime, @UserName)", conn)
+    '    'from http://msdn.microsoft.com/en-us/library/system.string.isnullorempty(v=vs.110).aspx
 
-            commclin.Parameters.Add("@PreClinID", System.Data.SqlDbType.Int)
-            commclin.Parameters("@PreclinID").Value = CID
-            commclin.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.Int)
-            commclin.Parameters("@LinacStatusID").Value = StatusID
-            commclin.Parameters.Add("@clinComment", System.Data.SqlDbType.NVarChar, 250)
-            commclin.Parameters("@clinComment").Value = Clinicalcomment
-            commclin.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            commclin.Parameters("@linac").Value = LinacName
-            commclin.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
-            commclin.Parameters("@DateTime").Value = time
-            commclin.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 25)
-            commclin.Parameters("@UserName").Value = UserName
-
-            Try
-                conn.Open()
-                commclin.ExecuteNonQuery()
-
-            Finally
-                CommentBox.ResetCommentBox()
-                conn.Close()
-
-            End Try
-
-        End If
-        HiddenFieldLinacState.Value = StatusID
-        'End If
-        GridViewComments.DataBind()
+    'End Function
 
 
-        'from http://msdn.microsoft.com/en-us/library/system.string.isnullorempty(v=vs.110).aspx
-        'If Not String.IsNullOrEmpty(CTID) Then
-        'End If
-
-
-    End Sub
-    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-    '    Application(BoxChanged) = CommentBox.Text
-    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    'End Sub
     Private Sub WaitButtons(ByVal WaitType As String)
 
         Select Case WaitType

@@ -175,16 +175,15 @@
 <asp:TableCell ID="Clinicalcomments" runat="server" HorizontalAlign="left" Width="250px">
                    <div>
                        <table style="width: 100%;">
-                           <tr>
-                           <td></td></tr>
+<%--                           <tr>
+                           <td></td></tr>--%>
                            <tr>
                                <td>Clinical Comment
                                </td></tr>
                                <tr><td>
-<%--                               <asp:TextBox ID="CommentBox" runat="server" MaxLength="250" Rows="5" 
-                TextMode="MultiLine" Width="300px" Height="100px"></asp:TextBox>--%>
+
                                    <asp:UpdatePanel ID="UpdatePanelcomments" runat="server" UpdateMode="Conditional"><ContentTemplate>
-                    <uc8:CommentBoxuc ID="CommentBox" runat="server" /><asp:Button ID="SaveText" runat="server" Text="Save" CausesValidation="False" />
+                    <uc8:CommentBoxuc ID="CommentBox" runat="server" /><br /><asp:Button ID="SaveText" runat="server" Text="Save" CausesValidation="False" />
                                        </ContentTemplate><Triggers><asp:AsyncPostBackTrigger ControlID ="SaveText" eventname="click"/></Triggers></asp:UpdatePanel>
                 </td>
                                    <td> <div style =" background-color:Green;  
@@ -236,6 +235,7 @@
          style="font-family:Arial;font-size:10pt;width:350px;color:white;
          border-collapse:collapse;height:100%;">
             <tr>
+                <td style ="width:175px;text-align:center">Time</td>
                <td style ="width:175px;text-align:center">Clinical Comment</td>
               <%-- <td style ="width:175px;text-align:center">Pre-Clinical Comment</td>
                <td style ="width:175px;text-align:center">Engineering Comment</td>--%>
@@ -247,11 +247,13 @@
            
         <div style ="height:175px; width:355px; overflow:auto;">
         <asp:GridView ID="GridViewComments" runat="server" AutoGenerateColumns="False" showheader="false"
-        DataKeyNames="Comment" BackColor="White" 
+        DataKeyNames="Clincomment" BackColor="White" 
         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4" 
         GridLines="Horizontal" >
         <RowStyle BackColor="White" ForeColor="#333333" />
         <Columns>
+            <asp:BoundField DataField="DateTime" HeaderText="Time" ItemStyle-Width="175px" 
+                SortExpression="Time" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
       <asp:BoundField DataField="Clincomment" HeaderText="Clinical" ItemStyle-Width="175px" 
                 SortExpression="Clinical" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
            <%-- <asp:BoundField DataField="Ccomment" HeaderText="PreClinical" ItemStyle-Width="175px" 
@@ -274,7 +276,7 @@
                            
                        </table>
                        </div>
-                       <asp:Table ID="Table3" runat="server">
+                       <%--<asp:Table ID="Table3" runat="server">
 <asp:TableRow>
 <asp:TableCell>
 
@@ -286,7 +288,7 @@
 
 </asp:TableCell></asp:TableRow>
 
-</asp:Table>
+</asp:Table>--%>
                
                    </asp:TableCell>
 
@@ -308,9 +310,9 @@
                 </asp:PlaceHolder>
                 </ContentTemplate></asp:UpdatePanel>
                </asp:TableCell>
-               <asp:TableCell>
+<%--               <asp:TableCell>
                
-               </asp:TableCell>
+               </asp:TableCell>--%>
       
                  
                </asp:TableRow>
