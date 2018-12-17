@@ -199,7 +199,7 @@
                                 <td>
                                     <div style="background-color: Green; height: 30px; width: 355px; margin: 0; padding: 0">
                                         <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table2"
-                                            style="font-family: Arial; font-size: 10pt; width: 350px; color: white; border-collapse: collapse; height: 100%;">
+                                            style="font-family: Arial; font-size: 10pt; width: 355px; color: white; border-collapse: collapse; height: 100%;">
                                             <tr>
                                                 <td style="width: 60px; text-align: center">Time</td>
                                                 <td style="width: 240px; text-align: center">Clinical Comment</td>
@@ -216,9 +216,9 @@
                                                     GridLines="Horizontal">
                                                     <RowStyle BackColor="White" ForeColor="#333333" />
                                                     <Columns>
-                                                        <asp:BoundField DataField="DateTime" HeaderText="Time" ItemStyle-Width="60px"
+                                                        <asp:BoundField DataField="DateTime"  ItemStyle-Width="60px"
                                                             SortExpression="Time" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
-                                                        <asp:BoundField DataField="Clincomment" HeaderText="Clinical" ItemStyle-Width="350px"
+                                                        <asp:BoundField DataField="Clincomment"  ItemStyle-Width="350px"
                                                             SortExpression="Clinical" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
 
                                                     </Columns>
@@ -241,7 +241,7 @@
                         <tr>
                             <td>
                                 <div style="background-color: Green; height: 30px; width: 355px; margin: 0; padding: 0">
-                                    <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table5" style="font-family: Arial; font-size: 10pt; width: 350px; color: white; border-collapse: collapse; height: 100%;">
+                                    <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table5" style="font-family: Arial; font-size: 10pt; width: 355px; color: white; border-collapse: collapse; height: 100%;">
                                         <tr>
                                             <td style="width: 60px; text-align: center">Time</td>
                                             <td style="width: 240px; text-align: center">Pre-Clinical Comment</td>
@@ -252,16 +252,16 @@
                         </tr>
                         <tr>
                             <td>
-                                <div style="height: 175px; width: 355px; overflow: auto;">
+                                <div style="height:100px; width: 355px; overflow: auto;">
                                     <asp:GridView ID="GridViewPre" runat="server" AutoGenerateColumns="False" ShowHeader="false"
                                         DataKeyNames="Ccomment" BackColor="White"
                                         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
                                         GridLines="Horizontal">
                                         <RowStyle BackColor="White" ForeColor="#333333" />
                                         <Columns>
-                                            <asp:BoundField DataField="DateTime" HeaderText="Time" ItemStyle-Width="60px"
+                                            <asp:BoundField DataField="DateTime"  ItemStyle-Width="60px"
                                                 SortExpression="Time" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
-                                            <asp:BoundField DataField="Ccomment" HeaderText="PreClinical" ItemStyle-Width="350px"
+                                            <asp:BoundField DataField="Ccomment"  ItemStyle-Width="350px"
                                                 SortExpression="PreClinical" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" />
 
                                         </Columns>
@@ -278,7 +278,7 @@
                             <td>
                                 <div style="background-color: Green; height: 30px; width: 355px; margin: 0; padding: 0">
                                     <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table6"
-                                        style="font-family: Arial; font-size: 10pt; width: 350px; color: white; border-collapse: collapse; height: 100%;">
+                                        style="font-family: Arial; font-size: 10pt; width: 355px; color: white; border-collapse: collapse; height: 100%;">
                                         <tr>
                                             <td style="width: 60px; text-align: center">Time</td>
                                             <td style="width: 240px; text-align: center">Engineering Comment</td>
@@ -286,16 +286,16 @@
                                     </table>
                                 </div>
 
-                                <div style="height: 175px; width: 355px; overflow: auto;">
+                                <div style="height:100px; width: 355px; overflow: auto;">
                                     <asp:GridView ID="GridViewEng" runat="server" AutoGenerateColumns="False" ShowHeader="false"
                                         DataKeyNames="Comment" BackColor="White"
                                         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
                                         GridLines="Horizontal">
                                         <RowStyle BackColor="White" ForeColor="#333333" />
                                         <Columns>
-                                            <asp:BoundField DataField="DateTime" HeaderText="Time" ItemStyle-Width="60px"
+                                            <asp:BoundField DataField="DateTime"  ItemStyle-Width="60px"
                                                 SortExpression="Time" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
-                                            <asp:BoundField DataField="comment" HeaderText="Engineering" ItemStyle-Width="350px"
+                                            <asp:BoundField DataField="comment"  ItemStyle-Width="350px"
                                                 SortExpression="Engineering" ItemStyle-VerticalAlign="Top" ItemStyle-HorizontalAlign="Left" />
                                         </Columns>
                                         <FooterStyle BackColor="White" ForeColor="#333333" />
@@ -307,6 +307,7 @@
 
                             </td>
                         </tr>
+                        
                     </table>
                 </asp:TableCell>
                 <asp:TableCell HorizontalAlign="Left" Width="375px">
