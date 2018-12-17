@@ -14,8 +14,8 @@
     }
     
 </script>
-<asp:TextBox ID="CommentBox" runat="server" TextMode="Multiline" Width="150px" Height="300px" onkeyup="Count()" ClientIDMode="Static"  ViewStateMode="Disabled"></asp:TextBox>
+<asp:TextBox ID="CommentBox" runat="server" TextMode="Multiline"  onkeyup="Count()" ClientIDMode="Static"  ViewStateMode="Disabled"></asp:TextBox>
                        <br/>
-<asp:Literal ID="Literal1" runat="server">Characters Remaining:</asp:Literal>
-<br />
+<asp:Literal ID="Literal1" runat="server">Characters Remaining: </asp:Literal>
+
 <asp:Label ID="CommentWordCount" runat="server" Text="" ClientIDMode="Static"></asp:Label>

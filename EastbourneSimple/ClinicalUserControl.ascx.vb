@@ -306,14 +306,14 @@ Partial Class ClinicalUserControl
     Private Sub BindComments()
         Dim SqlDateSourceComment As New SqlDataSource()
 
-        Dim query As String = "select e.comment from handoverenergies e " &
+        Dim query As String = "select convert(Varchar(5),e.LogOutDate, 108) as DateTime, e.comment from handoverenergies e " &
          "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
 
         SqlDateSourceComment = QuerySqlConnection(LinacName, query)
         GridViewEng.DataSource = SqlDateSourceComment
         GridViewEng.DataBind()
 
-        query = "select r.Ccomment from handoverenergies e left outer join clinicalhandover r On e.handoverid=r.ehandid " &
+        query = "select convert(Varchar(5),r.LogOutDate, 108) as DateTime, r.Ccomment from handoverenergies e left outer join clinicalhandover r On e.handoverid=r.ehandid " &
          "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
 
         SqlDateSourceComment = QuerySqlConnection(LinacName, query)

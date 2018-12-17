@@ -79,15 +79,22 @@ Namespace DavesCode
             commHAuthID.Parameters("@linac").Value = LinacName
             conn.Open()
             reader = commHAuthID.ExecuteReader()
+
             If reader.Read() Then 'this means there is an entry so
                 'checking for null from http://www.triconsole.com/dotnet/sqldatareader_class.php#isdbnull
                 If reader.IsDBNull(1) Then
+                    reader.Close()
+                    conn.Close()
                     SetTreatment("Not Treating", LinacName, logInStatusID, connectionString)
+                Else
+                    reader.Close()
+                    conn.Close()
                 End If
+            Else
                 reader.Close()
-
+                conn.Close()
             End If
-            conn.Close()
+
             'This is here because this sub is also called from the fault page in order to write the linacstatus and to write clinicalhandover table
             If breakdown Then
                 LinacStatusID = DavesCode.Reuse.SetStatusNew(LogOutName, "Fault", 5, 103, LinacName, -1, connectionString)
@@ -135,25 +142,25 @@ Namespace DavesCode
         End Function
         Public Shared Sub SetTreatment(ByVal State As String, ByVal linacid As String, ByVal linacstate As String, ByVal connectionString As String)
             Dim time As DateTime
-            Dim MachineType As String = linacid
-            Dim StateType As String = State
-            Dim Linacstatusid As String = linacstate
+
+            ' Dim StateType As String = State
+
             Dim conn As SqlConnection
             'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             '"connectionstring").ConnectionString
             Dim commstatus As SqlCommand
             time = Now()
             conn = New SqlConnection(connectionString)
-            If StateType = "Treating" Then
+            If State = "Treating" Then
                 commstatus = New SqlCommand("INSERT INTO TreatmentTable ( TreatmentStartTime, LinacStatusId,linac) " &
                                             "VALUES ( @TreatmentStartTime, @LinacStatusID, @linac)", conn)
 
                 commstatus.Parameters.Add("@TreatmentStartTime", System.Data.SqlDbType.DateTime)
                 commstatus.Parameters("@TreatmentStartTime").Value = time
                 commstatus.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.NVarChar, 10)
-                commstatus.Parameters("@LinacStatusId").Value = Linacstatusid
+                commstatus.Parameters("@LinacStatusId").Value = linacstate
                 commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                commstatus.Parameters("@linac").Value = MachineType
+                commstatus.Parameters("@linac").Value = linacid
             Else
                 'Update command changed 12 April because it should update last row not all rows with same LinacStatusId
                 'commstatus = New SqlCommand("UPDATE  TreatmentTable SET TreatmentStopTime = @TreatmentStopTime where LinacStatusid = @LinacStatusID", conn)
@@ -161,7 +168,7 @@ Namespace DavesCode
                 commstatus.Parameters.Add("@TreatmentStopTime", System.Data.SqlDbType.DateTime)
                 commstatus.Parameters("@TreatmentStopTime").Value = time
                 commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                commstatus.Parameters("@linac").Value = MachineType
+                commstatus.Parameters("@linac").Value = linacid
 
             End If
             'Try
@@ -173,6 +180,78 @@ Namespace DavesCode
             'End Try
 
         End Sub
+
+        Public Shared Function NewWriteClinicalTable(ByVal LinacName As String, ByVal Clinicalcomment As String, ByVal connectionString As String) As Integer
+            Dim time As DateTime
+            time = Now()
+            Dim reader As SqlDataReader
+            Dim CID As Integer
+            Dim CTID As Integer
+            'Dim ClinD As Integer
+            Dim StatusID As Integer = 0
+            Dim UserName As String = String.Empty
+            Dim conn As SqlConnection
+            'Dim Clinicalcomment As String = String.Empty
+            Dim commCAuthID As SqlCommand
+            Dim commclin As SqlCommand
+
+            'Clinicalcomment = Application(BoxChanged)
+            conn = New SqlConnection(connectionString)
+
+            commCAuthID = New SqlCommand("Select CHandID, LogOutStatusID from ClinicalHandover where CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)", conn)
+            commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            commCAuthID.Parameters("@linac").Value = LinacName
+            conn.Open()
+            CID = 0
+            reader = commCAuthID.ExecuteReader()
+            If reader.Read() Then
+                CID = reader.Item("CHandID")
+                CTID = reader.Item("LogOutStatusID")
+                reader.Close()
+                conn.Close()
+            End If
+            If Not CID = 0 Then
+                'Remove user name as this is not the correct name anyway
+                commCAuthID = New SqlCommand("Select StateID from LinacStatus where StateID  = (Select max(StateID) as lastrecord from LinacStatus where linac=@linac)", conn)
+                commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                commCAuthID.Parameters("@linac").Value = LinacName
+                conn.Open()
+                reader = commCAuthID.ExecuteReader()
+                If reader.Read() Then
+                    StatusID = reader.Item("StateID")
+
+                    reader.Close()
+                    conn.Close()
+                End If
+
+                commclin = New SqlCommand("INSERT INTO ClinicalTable (PreClinID,LinacStatusID, clinComment,linac, DateTime, Username) " &
+                                    "VALUES ( @PreclinID, @LinacStatusID,@clincomment, @linac, @DateTime, @UserName)", conn)
+
+                commclin.Parameters.Add("@PreClinID", System.Data.SqlDbType.Int)
+                commclin.Parameters("@PreclinID").Value = CID
+                commclin.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.Int)
+                commclin.Parameters("@LinacStatusID").Value = StatusID
+                commclin.Parameters.Add("@clinComment", System.Data.SqlDbType.NVarChar, 250)
+                commclin.Parameters("@clinComment").Value = Clinicalcomment
+                commclin.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                commclin.Parameters("@linac").Value = LinacName
+                commclin.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
+                commclin.Parameters("@DateTime").Value = time
+                commclin.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 25)
+                commclin.Parameters("@UserName").Value = String.Empty
+
+                conn.Open()
+                commclin.ExecuteNonQuery()
+
+                conn.Close()
+
+            End If
+
+            Return StatusID
+
+            'from http://msdn.microsoft.com/en-us/library/system.string.isnullorempty(v=vs.110).aspx
+
+        End Function
 
     End Class
 End Namespace

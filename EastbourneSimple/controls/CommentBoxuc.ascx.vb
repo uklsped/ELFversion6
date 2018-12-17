@@ -8,10 +8,14 @@ Partial Class controls_CommentBoxuc
 
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+        CommentBox.Width = Unit.Pixel(355)
+        CommentBox.Height = Unit.Pixel(120)
         If Not IsPostBack Then
+
             If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
                 Currentcomment = HttpContext.Current.Application(BoxChanged).ToString
                 CommentBox.Text = Currentcomment
+
                 'CommentWordCount.Text = MAXCHARCOUNT - Currentcomment.Length
             End If
         End If
@@ -26,7 +30,7 @@ Partial Class controls_CommentBoxuc
     End Sub
     Public Sub ResetCommentBox()
         Currentcomment = String.Empty
-        Application(BoxChanged) = Currentcomment
+        Application(BoxChanged) = Nothing
         CommentBox.Text = Currentcomment
         CommentWordCount.Text = MAXCHARCOUNT - Currentcomment.Length
 

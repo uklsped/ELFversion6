@@ -604,6 +604,40 @@ Namespace DavesCode
 
         End Sub
 
+        Public Shared Sub LogError(ByVal ex As Exception, ByVal texbox As String)
+            Dim message As String = String.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"))
+            message += Environment.NewLine
+            message += "-----------------------------------------------------------"
+            message += Environment.NewLine
+            message += String.Format("Message: {0}", ex.Message)
+            message += Environment.NewLine
+            message += String.Format("TextBox: {0}", texbox)
+            message += Environment.NewLine
+            message += String.Format("StackTrace: {0}", ex.StackTrace)
+            message += Environment.NewLine
+            message += String.Format("Source: {0}", ex.Source)
+            message += Environment.NewLine
+            message += String.Format("TargetSite: {0}", ex.TargetSite.ToString())
+            message += Environment.NewLine
+            message += "-----------------------------------------------------------"
+            message += Environment.NewLine
+            'Dim path As String = System.Web.HttpContext.Current.Server.MapPath("~/ErrorLog/ErrorLog.txt")
+            Dim path As String = System.Web.HttpContext.Current.Server.MapPath("~/ErrorLog/")
+            If (Not Directory.Exists(path)) Then
+                Directory.CreateDirectory(path)
+            End If
+            Dim shortfilename As String = DateTime.Today.ToString("dd-MM-yy") + ".txt"
+            path = path + shortfilename ' Text File Name
+            If (Not File.Exists(path)) Then
+                File.Create(path).Dispose()
+            End If
+            Using writer As New StreamWriter(path, True)
+                writer.WriteLine(message)
+                writer.Close()
+            End Using
+
+        End Sub
+
         Public Shared Sub LogAnomaly(ByVal LinacName As String, ByVal Procedure As String, ByVal Anomaly As String)
             Dim message As String = String.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"))
             message += Environment.NewLine

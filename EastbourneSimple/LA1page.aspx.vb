@@ -1413,7 +1413,7 @@ Partial Public Class LA1page
                 Application(repairstate) = 1
             Case 3
                 mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                mclincontrol.UserApprovedEvent(activetab, Logoffuser)
+                mclincontrol.UserApprovedEvent("Recover", Logoffuser)
                 'DavesCode.Reuse.CommitClinical(EquipmentID, Userinfo, breakdown)
                 Application(treatmentstate) = "Yes"
             Case 4, 5, 6, 8

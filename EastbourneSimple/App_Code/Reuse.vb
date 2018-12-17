@@ -2511,7 +2511,7 @@ Namespace DavesCode
             'Dim commstatus As SqlCommand
 
             If Activity <> 0 Then
-                CalculateDuration(MachineType, time, StartTime, minutesDuration)
+                'CalculateDuration(MachineType, time, StartTime, minutesDuration)
             End If
 
             conn = New SqlConnection(ConnectionString)
