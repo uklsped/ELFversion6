@@ -422,13 +422,12 @@ Partial Class ClinicalUserControl
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         wcbutton.Text = "Log off Linac"
         Application(actionstate) = "Confirm"
-        WriteDatauc2.Visible = True
+        wctrl.Visible = True
         ForceFocus(wctext)
 
     End Sub
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(Function(){$Get('" +
-        ctrl.ClientID + "').focus();}, 100);", True)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(Function(){$Get('" + ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
     Protected Sub SaveText_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveText.Click
         Dim statusid As Integer
