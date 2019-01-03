@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="VB" MasterPageFile="~/Elf.master"  AutoEventWireup="false" CodeFile="E1page.aspx.vb" Inherits="E1page"  %>
+﻿<%@ Page Title="" Language="VB" MasterPageFile="~/Elf.master"  AutoEventWireup="false" CodeFile="T2page.aspx.vb" Inherits="T2page"  %>
 <%@ MasterType VirtualPath="~/Elf.master" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <%@ Register src="ErunupUserControlCommon.ascx" tagname="ErunupUserControlCommon" tagprefix="uc1" %>
@@ -21,7 +21,7 @@
 
 <%@ Register src="RegisterUseruc.ascx" tagname="RegisterUseruc" tagprefix="uc13" %>
 
-<asp:Content ID="ContenE1" ContentPlaceHolderID="head" Runat="Server">
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 
@@ -172,7 +172,7 @@
     <asp:UpdatePanel ID="UpdatePanel2" runat="server">
             <ContentTemplate>
              <asp:PlaceHolder ID="PlaceHolder4" runat="server">
-            <uc9:WriteDatauc ID="WriteDatauc1" LinacName="E1" UserReason="10"  Tabby="EndDay"  WriteName="EndDayData"   Visible="False" runat="server" />
+            <uc9:WriteDatauc ID="WriteDatauc1" LinacName="T2" UserReason="10"  Tabby="EndDay"  WriteName="EndDayData"   Visible="False" runat="server" />
            
             </asp:PlaceHolder>
             </ContentTemplate>
@@ -183,8 +183,8 @@
     <asp:TabContainer ID="tcl" runat="server"  activetabindex="0" 
           OnClientActiveTabChanged="loadTabPanel"  height="930px" >
          
-<asp:TabPanel runat="server" HeaderText="E1 Status" ID="TabPanel0"><HeaderTemplate>
-E1 Status
+<asp:TabPanel runat="server" HeaderText="T2 Status" ID="TabPanel0"><HeaderTemplate>
+T2 Status
 </HeaderTemplate>
 <ContentTemplate>
 <asp:UpdatePanel ID="linacstatus" runat="server" >
@@ -195,7 +195,7 @@ E1 Status
             <asp:Button ID="TabButton0" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
             <asp:Panel ID="Panel0" runat="server" >
            
-                    <uc5:LinacStatusuc ID="LinacStatusuc1" LinacName="E1" runat="server" />
+                    <uc5:LinacStatusuc ID="LinacStatusuc1" LinacName="T2" runat="server" />
                     </asp:Panel></ContentTemplate></asp:UpdatePanel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -204,15 +204,15 @@ E1 Status
 
 <%--This is the engineering run up tab--%>
         
-<asp:TabPanel ID="TabPanel1" runat="server" HeaderText="E1 Engineering Runup" DynamicContextKey='Engrunup' CssClass="ajax__tab_header"><ContentTemplate>
+<asp:TabPanel ID="TabPanel1" runat="server" HeaderText="T2 Engineering Runup" DynamicContextKey='Engrunup' CssClass="ajax__tab_header"><ContentTemplate>
 <asp:UpdatePanel ID="signin" runat="server"
 ><ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel1" runat="server" >
 <ContentTemplate>
 <asp:Button ID="TabButton1" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
-<asp:Panel ID="TabContenE1" runat="server" Visible="False">
-<uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "E1"  Tabby="1" UserReason = "1" visible="false" />
-    <uc1:ErunupUserControlCommon ID="ErunupUserControl1" LinacName="E1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server" />
+<asp:Panel ID="TabContent1" runat="server" Visible="False">
+<uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "T2"  Tabby="1" UserReason = "1" visible="false" />
+    <uc1:ErunupUserControlCommon ID="ErunupUserControl1" LinacName="T2" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server" />
 
 </asp:Panel>
 </ContentTemplate>
@@ -234,8 +234,8 @@ E1 Status
 <asp:UpdatePanel ID="UpdatePaneln" updatemode ="Conditional"  runat="server">
 <ContentTemplate><asp:Button ID="TabButton2" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent2" runat="server" Visible="false"
-><uc4:AcceptLinac ID="AcceptLinac2" LinacName="E1" UserReason="2" Tabby="2" runat="server" visible="false"/>
-<uc2:Preclinusercontrol ID="Preclinusercontrol1" LinacName = "E1" DataName="PreData" runat="server"/>
+><uc4:AcceptLinac ID="AcceptLinac2" LinacName="T2" UserReason="2" Tabby="2" runat="server" visible="false"/>
+<uc2:Preclinusercontrol ID="Preclinusercontrol1" LinacName = "T2" DataName="PreData" runat="server"/>
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -246,15 +246,15 @@ E1 Status
 
 <%-- This is the Clinical Tab --%>
         
-<asp:TabPanel ID="TabPanel3" runat="server" HeaderText="E1 Clinical">
+<asp:TabPanel ID="TabPanel3" runat="server" HeaderText="T2 Clinical">
         <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel3" runat="server" >
 <ContentTemplate><asp:UpdatePanel ID="UpdatePanelClinical" Updatemode="Conditional" runat="server">
 <ContentTemplate>
 <asp:Button ID="TabButton3" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
 <asp:Panel ID="TabContent3" runat="server" Visible="false">
-<uc4:AcceptLinac ID="AcceptLinac3" LinacName="E1" UserReason="3" Tabby="3" runat="server"  />
-<uc3:ClinicalUserControl ID="ClinicalUserControl1"  LinacName="E1" DataName="ClinData" runat="server" visible="false"/>
+<uc4:AcceptLinac ID="AcceptLinac3" LinacName="T2" UserReason="3" Tabby="3" runat="server"  />
+<uc3:ClinicalUserControl ID="ClinicalUserControl1"  LinacName="T2" DataName="ClinData" runat="server" visible="false"/>
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -264,15 +264,15 @@ E1 Status
 </asp:TabPanel>
         
         
-<asp:TabPanel ID="TabPanel4" runat="server" HeaderText="E1 Planned Maintenance" >
+<asp:TabPanel ID="TabPanel4" runat="server" HeaderText="T2 Planned Maintenance" >
         <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel4" runat="server" >
 <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanelMaintenance" runat="server">
 <ContentTemplate><asp:Button ID="TabButton4" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
 <asp:Panel ID="TabContent4" runat="server" Visible="false">
-<uc4:AcceptLinac ID="AcceptLinac4" LinacName="E1" UserReason="4" Tabby="4" runat="server" visible="false"/>
-<uc6:PlannedMaintenanceuc ID="PlannedMaintenanceuc1" linacname="E1" runat="server" Visible="false" />
+<uc4:AcceptLinac ID="AcceptLinac4" LinacName="T2" UserReason="4" Tabby="4" runat="server" visible="false"/>
+<uc6:PlannedMaintenanceuc ID="PlannedMaintenanceuc1" linacname="T2" runat="server" Visible="false" />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -282,7 +282,7 @@ E1 Status
 </asp:TabPanel>
   
         
-  <asp:TabPanel ID="TabPanel5" runat="server" HeaderText="E1 Repair" >
+  <asp:TabPanel ID="TabPanel5" runat="server" HeaderText="T2 Repair" >
         <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel5" runat="server" >
 <ContentTemplate>
@@ -290,8 +290,8 @@ E1 Status
 <ContentTemplate>
 <asp:Button ID="TabButton5" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
 <asp:Panel ID="TabContent5" runat="server" Visible="false">
-<uc4:AcceptLinac ID="AcceptLinac5" LinacName="E1" UserReason="5" Tabby="5" runat="server" visible="false"/>
-<uc7:Repairuc ID="Repairuc1" LinacName="E1" runat="server" Visible="false" />
+<uc4:AcceptLinac ID="AcceptLinac5" LinacName="T2" UserReason="5" Tabby="5" runat="server" visible="false"/>
+<uc7:Repairuc ID="Repairuc1" LinacName="T2" runat="server" Visible="false" />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
@@ -307,9 +307,9 @@ E1 Status
 <asp:UpdatePanel ID="UpdatePhysicsQA" runat="server">
 <ContentTemplate>
 <asp:Button ID="Button1" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
-<asp:Panel ID="TabContent6" runat="server" Visible="false"><uc4:AcceptLinac ID="AcceptLinac6" LinacName="E1" UserReason="6" Tabby="6" runat="server" visible="false"/>
+<asp:Panel ID="TabContent6" runat="server" Visible="false"><uc4:AcceptLinac ID="AcceptLinac6" LinacName="T2" UserReason="6" Tabby="6" runat="server" visible="false"/>
 
- <uc10:PhysicsQAuc ID="PhysicsQAuc1" LinacName="E1"  Visible="false" runat="server" />
+ <uc10:PhysicsQAuc ID="PhysicsQAuc1" LinacName="T2"  Visible="false" runat="server" />
  </asp:Panel>
  </ContentTemplate>
  </asp:UpdatePanel>
@@ -325,8 +325,8 @@ E1 Status
 <asp:UpdatePanel ID="UpdatePanelEmergency" runat="server" >
 <ContentTemplate><asp:Button ID="TabButton7" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent7" runat="server" Visible="False">
-<uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "E1"  Tabby="7" UserReason = "9" visible="false" />
- <uc1:ErunupUserControlCommon ID="ErunupUserControl2" LinacName="E1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
+<uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "T2"  Tabby="7" UserReason = "9" visible="false" />
+ <uc1:ErunupUserControlCommon ID="ErunupUserControl2" LinacName="T2" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
 
 </asp:Panel>
 </ContentTemplate>
@@ -336,13 +336,13 @@ E1 Status
 </ContentTemplate>
  </asp:TabPanel>
 
-<asp:TabPanel ID="TabPanel8" runat="server" HeaderText="E1 Development/Training" DynamicContextKey='Devel' CssClass="ajax__tab_header"><ContentTemplate>
+<asp:TabPanel ID="TabPanel8" runat="server" HeaderText="T2 Development/Training" DynamicContextKey='Devel' CssClass="ajax__tab_header"><ContentTemplate>
 <asp:UpdatePanel ID="UpdateDevel" runat="server">
 <ContentTemplate>
 <asp:Button ID="TabButton8" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent8" runat="server" Visible="False">
-<uc4:AcceptLinac ID="AcceptLinac8" runat="server" LinacName= "E1"  Tabby="8" UserReason = "8" visible="false" />
-<uc12:Traininguc ID="Traininguc1" LinacName = "E1" Tabby="8" UserReason="8" Visible="false" runat="server" />
+<uc4:AcceptLinac ID="AcceptLinac8" runat="server" LinacName= "T2"  Tabby="8" UserReason = "8" visible="false" />
+<uc12:Traininguc ID="Traininguc1" LinacName = "T2" Tabby="8" UserReason="8" Visible="false" runat="server" />
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>

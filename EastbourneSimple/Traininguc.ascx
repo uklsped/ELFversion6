@@ -20,7 +20,7 @@
         <uc3:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="8" Tabby="8" Visible="false"
             runat="server" />
         
-        <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" Width="1509px">
+        <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" Width="1875px">
             <asp:TableRow ID="r1" runat="server">
                 <asp:TableCell ID="c1" runat="server" Width="250px" HorizontalAlign="Left">
                     <asp:Label ID="StateLabel" runat="server" Text="Last State:"></asp:Label>

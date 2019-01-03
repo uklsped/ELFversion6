@@ -238,9 +238,12 @@
                 </asp:TableCell>
                 <asp:TableCell VerticalAlign="Top">
                     <table>
+                        <asp:Panel ID="PanelPreclincomments" runat="server">
                         <tr>
+                            
                             <td>
-                                <div style="background-color: Green; height: 30px; width: 355px; margin: 0; padding: 0">
+                                
+                                <div style="background-color: Green; height: 30px; width: 355px; margin: 0; padding: 0" >
                                     <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table5" style="font-family: Arial; font-size: 10pt; width: 355px; color: white; border-collapse: collapse; height: 100%;">
                                         <tr>
                                             <td style="width: 60px; text-align: center">Time</td>
@@ -252,7 +255,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <div style="height:100px; width: 355px; overflow: auto;">
+                                <div style="height:135px; width: 355px; overflow: auto;">
                                     <asp:GridView ID="GridViewPre" runat="server" AutoGenerateColumns="False" ShowHeader="false"
                                         DataKeyNames="Ccomment" BackColor="White"
                                         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
@@ -272,8 +275,9 @@
                                     </asp:GridView>
                                 </div>
                             </td>
+                           
                         </tr>
-
+                        </asp:Panel>
                         <tr>
                             <td>
                                 <div style="background-color: Green; height: 30px; width: 355px; margin: 0; padding: 0">
@@ -286,7 +290,7 @@
                                     </table>
                                 </div>
 
-                                <div style="height:100px; width: 355px; overflow: auto;">
+                                <div style="height:135px; width: 355px; overflow: auto;">
                                     <asp:GridView ID="GridViewEng" runat="server" AutoGenerateColumns="False" ShowHeader="false"
                                         DataKeyNames="Comment" BackColor="White"
                                         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"

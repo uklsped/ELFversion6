@@ -500,10 +500,10 @@ Partial Public Class E1page
                 statusmultiview.Visible = False
                 Dim setView As View = statusmultiview.FindControl("View0")
                 statusmultiview.SetActiveView(setView)
-                Dim E1 As Button = linacstatusuc.FindControl("Button1")
+                Dim B1 As Button = linacstatusuc.FindControl("Button1")
                 Dim B2 As Button = linacstatusuc.FindControl("Button2")
                 Dim B3 As Button = linacstatusuc.FindControl("Button3")
-                E1.Visible = True
+                B1.Visible = True
                 B2.Visible = True
                 B3.Visible = True
                 Dim hidfield1 As HiddenField = linacstatusuc.FindControl("HiddenField1")
@@ -622,7 +622,6 @@ Partial Public Class E1page
                 Dim clincontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                 Dim plancontrol As Planned_Maintenanceuc = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
                 Dim repcontrol As Repairuc = tcl.ActiveTab.FindControl(repcontrolId)
-                'Dim webcontrol As Modalitiesuc = tcl.ActiveTab.FindControl(webusercontrol21ID)
                 Dim writecontrol As WriteDatauc = tcl.ActiveTab.FindControl(writedatacontrolID)
                 Dim physicscontrol As UserControl = tcl.ActiveTab.FindControl(physicscontrolID)
                 Dim emergencycontrol As ErunupUserControl = tcl.ActiveTab.FindControl(emergencycontrolID)
@@ -657,45 +656,52 @@ Partial Public Class E1page
                             End Select
 
                         Else
-                            If recover = 1 Then
+                            'If recover = 1 Then
 
-                                If (Not logcontrol Is Nothing) Then
-                                    Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
-                                    Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
-                                    logcontrol.Visible = True
-                                    'added 50416
-                                    ForceFocus(textboxmodal)
-                                    If (Not modalid Is Nothing) Then
-                                        modalid.Show()
+                            '    If (Not logcontrol Is Nothing) Then
+                            '        Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
+                            '        Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
+                            '        logcontrol.Visible = True
+                            '        'added 50416
+                            '        ForceFocus(textboxmodal)
+                            '        If (Not modalid Is Nothing) Then
+                            '            modalid.Show()
 
-                                    End If
-                                End If
-                            Else
+                            '        End If
+                            '    End If
+                            'Else
+                            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                            Select Case tabref
 
-                                Select Case tabref
-                                    Case 1
-                                        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-                                        AcceptOKnosigpass(tabref, lastuser, lastusergroup)
-                                        rucontrol.EngLogOnEvent(connectionString)
-                                    Case 4, 5, 6, 8
-                                        AcceptOKnosigpass(tabref, lastuser, lastusergroup)
+                                Case 1
+                                    'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                    AcceptOKnosigpass(tabref, lastuser, lastusergroup)
+                                    rucontrol.EngLogOnEvent(connectionString)
+                                Case 4, 5, 6, 8
+                                    AcceptOKnosigpass(tabref, lastuser, lastusergroup)
+                                Case 2
+                                    AcceptOKnosigpass(tabref, lastuser, lastusergroup)
+                                    preccontrol.Preclinloaded(connectionString)
+                                Case 3
 
-                                    Case Else
-                                        If (Not logcontrol Is Nothing) Then
-                                            Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
-                                            Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
-                                            logcontrol.Visible = True
-                                            'added 50416
-                                            ForceFocus(textboxmodal)
-                                            If (Not modalid Is Nothing) Then
-                                                modalid.Show()
-                                            End If
+
+                                Case Else
+                                    If (Not logcontrol Is Nothing) Then
+                                        Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
+                                        Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
+                                        logcontrol.Visible = True
+                                        'added 50416
+                                        ForceFocus(textboxmodal)
+                                        If (Not modalid Is Nothing) Then
+                                            modalid.Show()
                                         End If
-                                End Select
-                            End If
+                                    End If
+                            End Select
+                            'End If
                         End If
                     End If
-                    Dim textbox As TextBox
+                    'Dim textbox As TextBox
+
                     'instrumentation code
                     'Dim userlabel As Label
                     Dim Activity As String = ""
@@ -710,15 +716,15 @@ Partial Public Class E1page
                             SetUser(lastusergroup)
                             'User = "Engineer/Physicist"
                             rucontrol.Visible = True
-                            textbox = rucontrol.FindControl("commentbox")
-                            '020316
-                            'If there is something in application state write it to box. There will be if text change is activated.
-                            'Have to check it exists
-                            If (Not HttpContext.Current.Application("EngBoxChanged") Is Nothing) Then
-                                textbox.Text = Application("EngBoxChanged").ToString
-                            Else
-                                textbox.Text = comment
-                            End If
+                            'textbox = rucontrol.FindControl("commentbox")
+                            ''020316
+                            ''If there is something in application state write it to box. There will be if text change is activated.
+                            ''Have to check it exists
+                            'If (Not HttpContext.Current.Application("EngBoxChanged") Is Nothing) Then
+                            '    textbox.Text = Application("EngBoxChanged").ToString
+                            'Else
+                            '    textbox.Text = comment
+                            'End If
                             'writecontrol.Visible = True
                             Dim panelcontrol As TabPanel = tcl.FindControl("TabPanel5")
                             If (Not panelcontrol Is Nothing) Then
@@ -738,8 +744,8 @@ Partial Public Class E1page
                             Activity = "Pre-clinical Run Up"
                             UserGroupLabel.Text = "Radiographer"
                             preccontrol.Visible = True
-                            textbox = preccontrol.FindControl("commentbox")
-                            textbox.Text = comment
+                            'textbox = preccontrol.FindControl("commentbox")
+                            'textbox.Text = comment
                             tcl.ActiveTabIndex = 2
                             UpdatePaneln.Update()
                         Case 3
@@ -761,8 +767,8 @@ Partial Public Class E1page
                             SetUser(lastusergroup)
                             'User = "Engineer/Physicist"
                             plancontrol.Visible = True
-                            textbox = plancontrol.FindControl("commentbox")
-                            textbox.Text = comment
+                            'textbox = plancontrol.FindControl("commentbox")
+                            'textbox.Text = comment
                             'instrumentation code
                             'userlabel = plancontrol.FindControl("userlabel")
                             If Not Application(suspstate) = 1 Then
@@ -781,8 +787,8 @@ Partial Public Class E1page
                             SetUser(lastusergroup)
                             'User = "Engineer/Physicist"
                             repcontrol.Visible = True
-                            textbox = repcontrol.FindControl("commentbox")
-                            textbox.Text = comment
+                            'textbox = repcontrol.FindControl("commentbox")
+                            'textbox.Text = comment
                             If (refpage <> "Fault") Then
                                 'Commented out 1 April no need to disable this button
                                 'If lastusergroup <> 4 Then
@@ -812,8 +818,8 @@ Partial Public Class E1page
                             SetUser(lastusergroup)
                             'User = "Physicist"
                             physicscontrol.Visible = True
-                            textbox = physicscontrol.FindControl("commentbox")
-                            textbox.Text = comment
+                            'textbox = physicscontrol.FindControl("commentbox")
+                            'textbox.Text = comment
                             If Not Application(suspstate) = 1 Then
                                 If Application(repairstate) = 1 Then
                                     Statelabel.Text = "Engineering Approved"
@@ -828,8 +834,8 @@ Partial Public Class E1page
                             UserGroupLabel.Text = "Radiographer"
                             'User = "Radiographer"
                             emergencycontrol.Visible = True
-                            textbox = emergencycontrol.FindControl("commentbox")
-                            textbox.Text = comment
+                            'textbox = emergencycontrol.FindControl("commentbox")
+                            'textbox.Text = comment
                         Case 8
                             Activity = "Training/Development"
                             DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
@@ -1041,7 +1047,7 @@ Partial Public Class E1page
         Dim url As String = Poppage
         Dim PageName As String = PageType
         PageName = "popup_window_" & PageName
-        'Dim DiagResult As Integer
+        Dim DiagResult As Integer
         'DiagResult = Integer.Parse(inpHide.Value)
         Dim path As String = HttpContext.Current.Request.Url.AbsolutePath
         'from http://www.codestore.net/store.nsf/unid/DOMM-4PYJ3S?OpenDocument
@@ -1057,34 +1063,33 @@ Partial Public Class E1page
 
         'Amended because a user could click button before it was hidden SPR 30
 
-        'EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
-        EndofDayElf("EndDay")
-        'put here to end back in
-        'Dim mpContentPlaceHolder As ContentPlaceHolder
-        'mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-        'If Not mpContentPlaceHolder Is Nothing Then
-        '    Dim lastState As String
-        '    lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
-        '    If (Application(appstate) = 1) Or (lastState = "Fault") Then
-        '        'tell user it can't be done
-        '        Dim strScript As String = "<script>"
-        '        If Application(appstate) = 1 Then
-        '            strScript += "alert('Please complete current action first');"
-        '        Else
-        '            strScript += "alert('Please Clear fault first');"
-        '        End If
-        '        strScript += "</script>"
-        '        ScriptManager.RegisterStartupScript(EndOfDay, Me.GetType(), "JSCR", strScript.ToString(), False)
-        '    Else
-        '        wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
-        '        Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
-        '        wcbutton.Text = "End Of Day"
-        '        Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        '        Application(actionstate) = "Confirm"
-        '        wctrl.Visible = True
-        '        ForceFocus(wctext)
-        '    End If
-        'End If
+        EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
+
+        Dim mpContentPlaceHolder As ContentPlaceHolder
+        mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        If Not mpContentPlaceHolder Is Nothing Then
+            Dim lastState As String
+            lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
+            If (Application(appstate) = 1) Or (lastState = "Fault") Then
+                'tell user it can't be done
+                Dim strScript As String = "<script>"
+                If Application(appstate) = 1 Then
+                    strScript += "alert('Please complete current action first');"
+                Else
+                    strScript += "alert('Please Clear fault first');"
+                End If
+                strScript += "</script>"
+                ScriptManager.RegisterStartupScript(EndOfDay, Me.GetType(), "JSCR", strScript.ToString(), False)
+            Else
+                wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
+                Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+                wcbutton.Text = "End Of Day"
+                Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+                Application(actionstate) = "Confirm"
+                wctrl.Visible = True
+                ForceFocus(wctext)
+            End If
+        End If
 
     End Sub
 
@@ -1208,8 +1213,8 @@ Partial Public Class E1page
                     End If
 
                     grdview = mrucontrol.FindControl("Gridview1")
-                    Commentbox = mrucontrol.FindControl("CommentBox")
-                    Comment = Commentbox.Text
+                    'Commentbox = mrucontrol.FindControl("CommentBox")
+                    'Comment = Commentbox.Text
                     'blank grid view 17/11/17
                     'RaiseEvent DayEnded(activetab, Logoffuser)
                     'all of these commits removed because each control is called up directly
@@ -1218,8 +1223,8 @@ Partial Public Class E1page
                     mrucontrol.UserApprovedEvent(activetab, Logoffuser)
                 Case 2
                     mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
-                    Commentbox = mpreccontrol.FindControl("CommentBox")
-                    Comment = Commentbox.Text
+                    'Commentbox = mpreccontrol.FindControl("CommentBox")
+                    'Comment = Commentbox.Text
                     'DavesCode.Reuse.CommitPreClin(EquipmentID, Logoffuser, Comment, False, False, False, Breakdown)
                     mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
                 Case 3
@@ -1230,15 +1235,16 @@ Partial Public Class E1page
                         'DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 0)
                 Case 4
                     mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
-                    Commentbox = mplancontrol.FindControl("CommentBox")
-                    Comment = Commentbox.Text
+                    'Commentbox = mplancontrol.FindControl("CommentBox")
+                    'Comment = Commentbox.Text
+                    Application(actionstate) = "EndOfDay"
                     mplancontrol.UserApprovedEvent(activetab, Logoffuser)
                     'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 4, Breakdown, suspendnull, repairstatenull, False)
 
                 Case 5
                     mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
-                    Commentbox = mrepcontrol.FindControl("CommentBox")
-                    Comment = Commentbox.Text
+                    'Commentbox = mrepcontrol.FindControl("CommentBox")
+                    'Comment = Commentbox.Text
                     'mrepcontrol.RemoteLockElf()
                     If Breakdown Then
                         'This means there are still open faults
@@ -1253,6 +1259,7 @@ Partial Public Class E1page
                             mrepcontrol.WriteFaultIDTable()
                         End If
                         'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 5, Breakdown, suspendnull, repairstatenull, False)
+                        Application(actionstate) = "EndOfDay"
                         mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
                     End If
 
@@ -1263,8 +1270,9 @@ Partial Public Class E1page
                     DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 6, Breakdown, suspendnull, repairstatenull, False)
                 Case 8
                     mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
-                    Commentbox = mtrainingcontrol.FindControl("CommentBox")
-                    Comment = Commentbox.Text
+                    'Commentbox = mtrainingcontrol.FindControl("CommentBox")
+                    'Comment = Commentbox.Text
+                    Application(actionstate) = "EndOfDay"
                     mtrainingcontrol.userapprovedevent(activetab, Logoffuser)
                     'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 8, Breakdown, suspendnull, repairstatenull, False)
 
@@ -1316,7 +1324,7 @@ Partial Public Class E1page
         Dim activetab As String
         Dim susstate As String = Nothing
         Dim repstate As String = Nothing
-        Dim Userinfo As String = "Restored"
+        'Dim Userinfo As String = "Restored"
         Dim Logoffuser As String = "Restored"
         Dim reader As SqlDataReader
         Dim Status As String = ""
@@ -1404,7 +1412,7 @@ Partial Public Class E1page
                 Application(repairstate) = 1
             Case 3
                 mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                mclincontrol.UserApprovedEvent(activetab, Logoffuser)
+                mclincontrol.UserApprovedEvent("Recover", Logoffuser)
                 'DavesCode.Reuse.CommitClinical(EquipmentID, Userinfo, breakdown)
                 Application(treatmentstate) = "Yes"
             Case 4, 5, 6, 8
@@ -1418,6 +1426,7 @@ Partial Public Class E1page
 
                 Else
                 End If
+
                 Select Case activetab
                     Case 4
                         mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)

@@ -3,9 +3,9 @@ Imports System.Data
 Imports AjaxControlToolkit
 Imports System.Web.Services
 
-Partial Public Class B1page
+Partial Public Class T2page
     Inherits System.Web.UI.Page
-    Private EquipmentID As String = "B1"
+    Private EquipmentID As String = "T2"
     'Private IPaddress As String = "10.179.85.164"
     Private Reg As String
     Private refpage As String
@@ -15,15 +15,15 @@ Partial Public Class B1page
     Private mpContentPlaceHolder As ContentPlaceHolder
     Private wctrl As WriteDatauc
     Private cusctrl As AcceptLinac
-    Private LinacFlag As String = "StateB1"
-    Private appstate As String = "LogOnB1"
-    Private suspstate As String = "SuspendedB1"
-    Private actionstate As String = "ActionStateB1"
-    Private repairstate As String = "rppTabB1"
-    Private failstate As String = "FailStateB1"
-    Private clinicalstate As String = "ClinicalOnB1"
-    Private treatmentstate As String = "TreatmentB1"
-    Private activetabstate As String = "ActTabB1"
+    Private LinacFlag As String = "StateT2"
+    Private appstate As String = "LogOnT2"
+    Private suspstate As String = "SuspendedT2"
+    Private actionstate As String = "ActionStateT2"
+    Private repairstate As String = "rppTabT2"
+    Private failstate As String = "FailStateT2"
+    Private clinicalstate As String = "ClinicalOnT2"
+    Private treatmentstate As String = "TreatmentT2"
+    Private activetabstate As String = "ActTabT2"
     Private runupcontrolId As String = "ERunupUserControl1"
     Private preclincontrolID As String = "PreclinUserControl1"
     Private ClinicalUserControlID As String = "ClinicalUserControl1"
@@ -39,13 +39,13 @@ Partial Public Class B1page
     Private TodayTraining As Traininguc
     Private TodayPM As Planned_Maintenanceuc
     Private TodayRep As Repairuc
-    Private faultstate As String = "faultstateB1"
-    Private linacloaded As String = "B1loaded"
-    Private returnclinical As String = "ReturnClinicalB1"
-    Private technicalstate As String = "techstateB1"
+    Private faultstate As String = "faultstateT2"
+    Private linacloaded As String = "T2loaded"
+    Private returnclinical As String = "ReturnClinicalT2"
+    Private technicalstate As String = "techstateT2"
     Private recover As String = Nothing
     Private lsctrl As LinacStatusuc
-    Private RegistrationState As String = "regstateB1"
+    Private RegistrationState As String = "regstateT2"
     Private loadup As String = Nothing
     Public Event EngRunuploaded(ByVal connectionString As String)
     'Public Event DayEnded(ByVal Tab As String, ByVal UserName As String)
@@ -240,7 +240,7 @@ Partial Public Class B1page
         'DavesCode.Reuse.ReturnApplicationState("First Start")
 
         If Not IsPostBack Then
-            'Dim loadstate As String = Application("B1loaded")
+            'Dim loadstate As String = Application("T2loaded")
             'If loadstate = "Albert" Then
             'Statelabel.Text = loadstate
             'End If
@@ -917,7 +917,7 @@ Partial Public Class B1page
 
     End Sub
 
-    Public Event MyEventB1 As System.EventHandler
+    Public Event MyEventT2 As System.EventHandler
 
 
     'Protected Sub ReportFault_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ReportFault.Click
@@ -986,7 +986,7 @@ Partial Public Class B1page
     '    Else
     '        'Labelcomment.Text = "Cannot find comment box."
     '    End If
-    '    'Response.Redirect("faultPage.aspx?val=B1&Tabindex=" & Tabindex & "&commentbox=" & textcomment)
+    '    'Response.Redirect("faultPage.aspx?val=T2&Tabindex=" & Tabindex & "&commentbox=" & textcomment)
     '    Dim returnstring As String = "faultPage.aspx?val=" + EquipmentID + "&Tabindex=" + Tabindex + "&commentbox=" & textcomment
     '    Response.Redirect(returnstring)
 
@@ -1019,7 +1019,7 @@ Partial Public Class B1page
 
     '    'Session("ActiveTabIdx") = tcl.ActiveTabIndex
     '    'Dim Tabindex As String = CType(Session.Item("ActiveTabIdx"), String)
-    '    'Response.Redirect("RegisterUser.aspx?val=B1&Tabindex=" & Tabindex)
+    '    'Response.Redirect("RegisterUser.aspx?val=T2&Tabindex=" & Tabindex)
     'End Sub
 
     'Protected Sub Admin_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Admin.Click
@@ -1121,12 +1121,12 @@ Partial Public Class B1page
         'Need to put in a check here to see if is a fault because hidden field not refreshed in writeauc
         Try
             Dim lastState As String
-            lastState = DavesCode.Reuse.GetLastState("B1", 0)
+            lastState = DavesCode.Reuse.GetLastState("T2", 0)
             Select Case lastState
                 Case "Repair", "Fault"
-                    DavesCode.Reuse.SetStatus("No User", "Repair", 5, 7, "B1", 0)
+                    DavesCode.Reuse.SetStatus("No User", "Repair", 5, 7, "T2", 0)
                 Case Else
-                    DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, "B1", 0)
+                    DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, "T2", 0)
             End Select
         Finally
 

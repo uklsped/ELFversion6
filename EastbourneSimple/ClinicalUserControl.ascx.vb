@@ -221,7 +221,9 @@ Partial Class ClinicalUserControl
         "connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
         If Not IsPostBack Then
-
+            If Not LinacName Like "LA?" Then
+                PanelPreclincomments.Visible = False
+            End If
             Dim treatval As String = Application(treatmentstate)
 
             Application(faultviewstate) = 1

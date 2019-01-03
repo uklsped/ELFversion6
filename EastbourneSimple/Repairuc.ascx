@@ -22,7 +22,7 @@
            
                                  
            <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
-               Width="1459px">
+               Width="1875px">
                <asp:TableRow ID="r1" runat="server">
                    <asp:TableCell ID="c1" runat="server" Width="300px" HorizontalAlign="Left">
                     

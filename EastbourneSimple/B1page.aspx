@@ -227,7 +227,7 @@ B1 Status
 <%--  This is the Pre-clinical tab  --%>    
         
         
-<asp:TabPanel ID="TabPanel2" runat="server" HeaderText="B1 Pre-clinical Runup" >
+<asp:TabPanel ID="TabPanel2" runat="server" hidden="true" Enabled="false">
         <ContentTemplate>
 <asp:UpdatePanel ID="updatemod2" runat="server" >
 <ContentTemplate>
@@ -318,7 +318,7 @@ B1 Status
 </ContentTemplate>
 </asp:TabPanel>
 
-<asp:TabPanel ID="TabPanel7" runat="server" HeaderText="B1 Emergency Runup" DynamicContextKey='Emerunup' CssClass="ajax__tab_header">
+<asp:TabPanel ID="TabPanel7" runat="server" DynamicContextKey='Emerunup' CssClass="ajax__tab_header" hidden="true" Enabled="false">
      <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel7" runat="server">
 <ContentTemplate>

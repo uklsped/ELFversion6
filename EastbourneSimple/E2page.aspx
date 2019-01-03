@@ -13,8 +13,6 @@
 
 <%@ Register src="Repairuc.ascx" tagname="Repairuc" tagprefix="uc7" %>
 
-<%--<%@ Register src=".ascx" tagname="WebUserControl2" tagprefix="uc8" %>--%>
-
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc9" %>
 
 <%@ Register src="PhysicsQAuc.ascx" tagname="PhysicsQAuc" tagprefix="uc10" %>
@@ -229,7 +227,7 @@ E2 Status
 <%--  This is the Pre-clinical tab  --%>    
         
         
-<asp:TabPanel ID="TabPanel2" runat="server" HeaderText="E2 Pre-clinical Runup" >
+<asp:TabPanel ID="TabPanel2" runat="server" hidden="true" Enabled="false">
         <ContentTemplate>
 <asp:UpdatePanel ID="updatemod2" runat="server" >
 <ContentTemplate>
@@ -320,7 +318,7 @@ E2 Status
 </ContentTemplate>
 </asp:TabPanel>
 
-<asp:TabPanel ID="TabPanel7" runat="server" HeaderText="E2 Emergency Runup" DynamicContextKey='Emerunup' CssClass="ajax__tab_header">
+<asp:TabPanel ID="TabPanel7" runat="server" DynamicContextKey='Emerunup' CssClass="ajax__tab_header" hidden="true" Enabled="false">
      <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel7" runat="server">
 <ContentTemplate>

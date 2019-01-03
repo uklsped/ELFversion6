@@ -38,13 +38,9 @@
         BorderStyle="Solid">
         <uc3:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="4" Tabby="4" Visible="false" runat="server" />
         <uc1:LockElfuc ID="LockElfuc1" LinacName="" UserReason="4" Tabby="4"  visible="false" runat="server" />
-            
-        
-        
-            
-        
+          
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
-            Width="1509px">
+            Width="1875px">
             <asp:TableRow ID="r1" runat="server">
                 <asp:TableCell ID="c1" runat="server" Width="300px" HorizontalAlign="Left">
                     <asp:Label ID="StateLabel" runat="server" Text="Last State:"></asp:Label>
@@ -58,26 +54,22 @@
                         Enabled="False" Height="150px" />
                 </asp:TableCell>
                 <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="150px">
-                    <%--<fieldset style="text-align:left;">--%>
+                   
                         <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
                         Maintenance Comments</legend>
                     <uc2:CommentBoxuc ID="CommentBox" runat="server" />
-                    <%--</fieldset>--%>
-<%--                    <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine"
-                        Text="">
-                    </asp:TextBox>--%>
+
                 </asp:TableCell>
                 <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
                        <asp:UpdatePanel ID="UpdatePanel3" runat="server">
-<ContentTemplate>
-<asp:PlaceHolder ID="PlaceHolder4" runat="server">
-</asp:PlaceHolder>
-</ContentTemplate>
-
-</asp:UpdatePanel>
-                       </asp:TableCell>
-                        <asp:TableCell VerticalAlign="Top">
-<asp:UpdatePanel ID="UpdatePanel4" runat="server" UpdateMode="Conditional">
+                        <ContentTemplate>
+                        <asp:PlaceHolder ID="PlaceHolder4" runat="server">
+                        </asp:PlaceHolder>
+                        </ContentTemplate>
+                        </asp:UpdatePanel>
+                </asp:TableCell>
+                <asp:TableCell VerticalAlign="Top">
+                <asp:UpdatePanel ID="UpdatePanel4" runat="server" UpdateMode="Conditional">
                <ContentTemplate>
                    <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
                    <br></br>

@@ -1063,34 +1063,33 @@ Partial Public Class LA1page
 
         'Amended because a user could click button before it was hidden SPR 30
 
-        'EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
-        EndofDayElf("EndDay")
-        'put here to end back in
-        'Dim mpContentPlaceHolder As ContentPlaceHolder
-        'mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-        'If Not mpContentPlaceHolder Is Nothing Then
-        '    Dim lastState As String
-        '    lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
-        '    If (Application(appstate) = 1) Or (lastState = "Fault") Then
-        '        'tell user it can't be done
-        '        Dim strScript As String = "<script>"
-        '        If Application(appstate) = 1 Then
-        '            strScript += "alert('Please complete current action first');"
-        '        Else
-        '            strScript += "alert('Please Clear fault first');"
-        '        End If
-        '        strScript += "</script>"
-        '        ScriptManager.RegisterStartupScript(EndOfDay, Me.GetType(), "JSCR", strScript.ToString(), False)
-        '    Else
-        '        wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
-        '        Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
-        '        wcbutton.Text = "End Of Day"
-        '        Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        '        Application(actionstate) = "Confirm"
-        '        wctrl.Visible = True
-        '        ForceFocus(wctext)
-        '    End If
-        'End If
+        EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
+
+        Dim mpContentPlaceHolder As ContentPlaceHolder
+        mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        If Not mpContentPlaceHolder Is Nothing Then
+            Dim lastState As String
+            lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
+            If (Application(appstate) = 1) Or (lastState = "Fault") Then
+                'tell user it can't be done
+                Dim strScript As String = "<script>"
+                If Application(appstate) = 1 Then
+                    strScript += "alert('Please complete current action first');"
+                Else
+                    strScript += "alert('Please Clear fault first');"
+                End If
+                strScript += "</script>"
+                ScriptManager.RegisterStartupScript(EndOfDay, Me.GetType(), "JSCR", strScript.ToString(), False)
+            Else
+                wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
+                Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+                wcbutton.Text = "End Of Day"
+                Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+                Application(actionstate) = "Confirm"
+                wctrl.Visible = True
+                ForceFocus(wctext)
+            End If
+        End If
 
     End Sub
 
