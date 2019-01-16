@@ -76,7 +76,54 @@ Namespace DavesCode
             Return Result
         End Function
         'Used in ViewOpenFaults to change to concession or to update concession
-        Public Shared Function InsertNewConcession(ByVal ConcessionDescription As String, ByVal LinacName As String, ByVal IncidentID As Integer, ByVal ReportedBy As String, ByVal ConcessionAction As String) As Integer
+        'Public Shared Function InsertNewConcession(ByVal ConcessionDescription As String, ByVal LinacName As String, ByVal IncidentID As Integer, ByVal ReportedBy As String, ByVal ConcessionAction As String) As Integer
+        Public Shared Function CreateObject(ByVal IncidentID As Integer, ByVal Linac As String, ByRef ConcessP As DavesCode.ConcessionParameters) As Integer
+            Dim success As Boolean = False
+            Dim conn As SqlConnection
+            Dim comm As SqlCommand
+            Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+            conn = New SqlConnection(connectionString1)
+            comm = New SqlCommand("select distinct f.status, ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, ISNULL(c.action, '') as Action, ISNULL(c.AssignedTo, 'Unassigned') as AssignedTo " _
+            & "from FaultIDTable f left outer join ConcessionTable c on f.ConcessionNumber=c.ConcessionNumber where f.incidentID = @incidentID", conn)
+            comm.Parameters.AddWithValue("@incidentID", IncidentID)
+
+            Try
+                conn.Open()
+                Dim da As New SqlDataAdapter(comm)
+                Dim dt As New DataTable()
+
+                da.Fill(dt)
+                If dt.Rows.Count > 0 Then
+
+                    For Each dataRow As DataRow In dt.Rows
+
+                        ConcessP.FaultState = dataRow("Status")
+                        ConcessP.ConcessionNumber = dataRow("ConcessionNumber")
+                        ConcessP.ConcessionDescription = dataRow("ConcessionDescription")
+                        ConcessP.ConcessionAction = dataRow("action")
+                        ConcessP.AssignedTo = dataRow("AssignedTo")
+
+                    Next
+                    ConcessP.IncidentID = IncidentID
+                    ConcessP.Linac = Linac
+                    ConcessP.UserInfo = String.Empty
+                    success = True
+                Else
+                    success = False
+                End If
+
+            Catch ex As Exception
+                    LogError(ex)
+                success = False
+            Finally
+                    conn.Close()
+
+                End Try
+            'End Using
+
+            Return success
+        End Function
+        Public Shared Function InsertNewConcession(ByVal ConcessP As DavesCode.ConcessionParameters) As Integer
             Dim Countcommandtext As String = "select count(*) from Concessiontable where incidentID=@incidentID"
             Dim Getfaultstatus As String = "select Status From FaultIDTable where incidentID = @incidentID"
             Dim Status As String
@@ -100,14 +147,14 @@ Namespace DavesCode
                     incidentfault.CommandType = CommandType.Text
                     incidentfault.Transaction = ObjTransaction
                     incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    incidentfault.Parameters("@incidentID").Value = IncidentID
+                    incidentfault.Parameters("@incidentID").Value = ConcessP.IncidentID
                     Status = CType(incidentfault.ExecuteScalar(), String)
                     incidentfault.Parameters.Clear()
 
                     incidentfault.CommandText = Countcommandtext
                     incidentfault.CommandType = CommandType.Text
                     incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    incidentfault.Parameters("@incidentID").Value = IncidentID
+                    incidentfault.Parameters("@incidentID").Value = ConcessP.IncidentID
                     exists = CInt(incidentfault.ExecuteScalar())
                     incidentfault.Parameters.Clear()
 
@@ -118,17 +165,19 @@ Namespace DavesCode
                         incidentfault.CommandText = "usp_CreateNewConcession"
                         incidentfault.CommandType = CommandType.StoredProcedure
                         incidentfault.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 25)
-                        incidentfault.Parameters("@ConcessionDescription").Value = ConcessionDescription
+                        incidentfault.Parameters("@ConcessionDescription").Value = ConcessP.ConcessionDescription
                         incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                        incidentfault.Parameters("@incidentID").Value = IncidentID
+                        incidentfault.Parameters("@incidentID").Value = ConcessP.IncidentID
                         incidentfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
-                        incidentfault.Parameters("@Linac").Value = LinacName
+                        incidentfault.Parameters("@Linac").Value = ConcessP.Linac
                         incidentfault.Parameters.Add("@ConcessionActive", System.Data.SqlDbType.Bit)
                         incidentfault.Parameters("@ConcessionActive").Value = 1
                         incidentfault.Parameters.Add("@Action", System.Data.SqlDbType.NVarChar, 250)
-                        incidentfault.Parameters("@Action").Value = ConcessionAction
+                        incidentfault.Parameters("@Action").Value = ConcessP.ConcessionAction
+                        incidentfault.Parameters.Add("@AssignedTo", System.Data.SqlDbType.NVarChar, 50)
+                        incidentfault.Parameters("@AssignedTo").Value = ConcessP.AssignedTo
                         incidentfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 250)
-                        incidentfault.Parameters("@ReportedBy").Value = ReportedBy
+                        incidentfault.Parameters("@ReportedBy").Value = ConcessP.UserInfo
                         incidentfault.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
                         incidentfault.Parameters("@Lastupdatedon").Value = time
                         Dim outPutParameter = New SqlParameter With {
@@ -144,7 +193,7 @@ Namespace DavesCode
                     ElseIf (((exists = 0) And (Status = "Concession")) Or ((exists = 1) And (Not Status = "Concession"))) Then
                         exists = -1
                         ObjTransaction.Rollback()
-                        LogAnomaly(LinacName, "InsertNewConcession", "Error exists = 0 but Status = Concession")
+                        LogAnomaly(ConcessP.Linac, "InsertNewConcession", "Error exists = 0 but Status = Concession")
                     End If
                 Catch ex As Exception
                     ObjTransaction.Rollback()
@@ -159,12 +208,25 @@ Namespace DavesCode
             Return exists
         End Function
         'Used to update tracking in ViewOpenFaults
-        Public Shared Function UpdateTracking(ByVal TrackingComment As String, ByVal Assigned As String, ByVal Status As String, ByVal ReportedBy As String, ByVal LinacName As String, ByVal Action As String, ByVal IncidentID As Integer, ByVal concess As Integer) As String
+        'Public Shared Function UpdateTracking(ByVal TrackingComment As String, ByVal Assigned As String, ByVal Status As String, ByVal ReportedBy As String, ByVal LinacName As String, ByVal Action As String, ByVal IncidentID As Integer, ByVal concess As Integer) As String
+        Public Shared Function UpdateTracking(ByVal ConcessP As DavesCode.ConcessionParameters) As String
+
             Dim time As DateTime = Now()
             Dim conn As SqlConnection
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString)
             Dim trackingID As Integer = 0
+            Dim ConcessionActive As Integer
+            If ConcessP.FaultState = "Concession" Then
+                ConcessionActive = 1
+            Else
+                ConcessionActive = 0
+            End If
+            'If Status = "Concession" Then
+            '        ConcessionActive = 1
+            '    Else
+            '        ConcessionActive = 0
+            'End If
             Using (conn)
 
                 Dim incidentfault As New SqlCommand With {
@@ -180,24 +242,40 @@ Namespace DavesCode
                     incidentfault.CommandText = "usp_ClassicFaultTracking"
                     incidentfault.CommandType = CommandType.StoredProcedure
                     incidentfault.Transaction = ObjTransaction
+                    'incidentfault.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
+                    'incidentfault.Parameters("@Trackingcomment").Value = TrackingComment
+                    'incidentfault.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
+                    'incidentfault.Parameters("@AssignedTo").Value = Assigned
+                    'incidentfault.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
+                    'incidentfault.Parameters("@Status").Value = Status
+                    'incidentfault.Parameters.Add("@LastupdatedBy", System.Data.SqlDbType.NVarChar, 50)
+                    'incidentfault.Parameters("@LastupdatedBy").Value = ReportedBy
+                    'incidentfault.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
+                    'incidentfault.Parameters("@Lastupdatedon").Value = time
+                    'incidentfault.Parameters.Add("@linacName", System.Data.SqlDbType.NVarChar, 10)
+                    'incidentfault.Parameters("@linacName").Value = LinacName
+                    'incidentfault.Parameters.Add("@action", System.Data.SqlDbType.NVarChar, 250)
+                    'incidentfault.Parameters("@action").Value = Action
+                    'incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                    'incidentfault.Parameters("@incidentID").Value = IncidentID
                     incidentfault.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
-                    incidentfault.Parameters("@Trackingcomment").Value = TrackingComment
+                    incidentfault.Parameters("@Trackingcomment").Value = ConcessP.ConcessionComment
                     incidentfault.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
-                    incidentfault.Parameters("@AssignedTo").Value = Assigned
+                    incidentfault.Parameters("@AssignedTo").Value = ConcessP.AssignedTo
                     incidentfault.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
-                    incidentfault.Parameters("@Status").Value = Status
+                    incidentfault.Parameters("@Status").Value = ConcessP.FaultState
                     incidentfault.Parameters.Add("@LastupdatedBy", System.Data.SqlDbType.NVarChar, 50)
-                    incidentfault.Parameters("@LastupdatedBy").Value = ReportedBy
+                    incidentfault.Parameters("@LastupdatedBy").Value = ConcessP.UserInfo
                     incidentfault.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
                     incidentfault.Parameters("@Lastupdatedon").Value = time
                     incidentfault.Parameters.Add("@linacName", System.Data.SqlDbType.NVarChar, 10)
-                    incidentfault.Parameters("@linacName").Value = LinacName
+                    incidentfault.Parameters("@linacName").Value = ConcessP.Linac
                     incidentfault.Parameters.Add("@action", System.Data.SqlDbType.NVarChar, 250)
-                    incidentfault.Parameters("@action").Value = Action
+                    incidentfault.Parameters("@action").Value = ConcessP.ConcessionAction
                     incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                    incidentfault.Parameters("@incidentID").Value = IncidentID
+                    incidentfault.Parameters("@incidentID").Value = ConcessP.IncidentID
                     incidentfault.Parameters.Add("@concess", System.Data.SqlDbType.Int)
-                    incidentfault.Parameters("@concess").Value = concess
+                    incidentfault.Parameters("@concess").Value = ConcessionActive
                     Dim outPutParameter = New SqlParameter With {
                         .ParameterName = "@TrackingID",
                         .SqlDbType = System.Data.SqlDbType.Int,
@@ -214,7 +292,7 @@ Namespace DavesCode
                     incidentfault.CommandType = CommandType.StoredProcedure
                     incidentfault.Transaction = ObjTransaction
                     incidentfault.Parameters.Add("@IncidentID", Data.SqlDbType.Int)
-                    incidentfault.Parameters("@IncidentID").Value = IncidentID
+                    incidentfault.Parameters("@IncidentID").Value = ConcessP.IncidentID
                     incidentfault.Parameters.Add("@TrackingID", System.Data.SqlDbType.Int)
                     incidentfault.Parameters("@TrackingID").Value = trackingID
                     incidentfault.Parameters.Add("@Acknowledge", Data.SqlDbType.Bit)
@@ -362,7 +440,7 @@ Namespace DavesCode
                             incidentfault.CommandText = "usp_CreateNewConcession"
                             incidentfault.CommandType = CommandType.StoredProcedure
                             incidentfault.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 25)
-                            incidentfault.Parameters("@ConcessionDescription").Value = FaultP.FaultDescription
+                            incidentfault.Parameters("@ConcessionDescription").Value = String.Empty
                             incidentfault.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
                             incidentfault.Parameters("@incidentID").Value = IncidentID
                             incidentfault.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
@@ -371,6 +449,8 @@ Namespace DavesCode
                             incidentfault.Parameters("@ConcessionActive").Value = 1
                             incidentfault.Parameters.Add("@Action", System.Data.SqlDbType.NVarChar, 250)
                             incidentfault.Parameters("@Action").Value = FaultP.RadAct
+                            incidentfault.Parameters.Add("@AssignedTo", System.Data.SqlDbType.NVarChar, 50)
+                            incidentfault.Parameters("@AssignedTo").Value = "Unassigned"
                             incidentfault.Parameters.Add("@ReportedBy", System.Data.SqlDbType.NVarChar, 250)
                             incidentfault.Parameters("@ReportedBy").Value = FaultP.UserInfo
                             incidentfault.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
