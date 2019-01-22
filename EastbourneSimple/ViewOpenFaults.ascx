@@ -14,6 +14,11 @@
 
 
 
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>
+
+
+
+
 <style type="text/css">
     .style2 {
         width: 474px;
@@ -149,7 +154,7 @@
                                            <asp:Label ID="Label3" runat="server" Text="Problem ID"></asp:Label>
                                        </asp:TableCell>
                                        <asp:TableCell>
-                                           <asp:Label ID="Label4" runat="server" Text=""></asp:Label>
+                                           <asp:Label ID="IncidentNumber" runat="server" Text=""></asp:Label>
                                        </asp:TableCell>
                                        <asp:TableCell>
                                        </asp:TableCell>
@@ -157,12 +162,12 @@
                                        </asp:TableCell>
                                     </asp:TableRow>
                                 </asp:Table>
-                                <asp:Table ID="Table1" runat="server" Width="943px">
+                                <asp:Table ID="Table1" runat="server" Width="1500px">
                                    <asp:TableRow>
                                        <asp:TableCell>
-                                           <fieldset style="width: 550px;">
+                                           <fieldset style="width: 1000px;">
                                                <legend>Details</legend>
-                                                    <table style="width: 160px;">
+                                                    <table style="width: 250px;">
                                                         <tr>
                                                             <td>
                                                                 <asp:Label ID="StatusLabel" runat="server" Text="Current Status:"></asp:Label>
@@ -177,7 +182,7 @@
                                                         </td>
                                                         <td>
                                                         <asp:Panel ID="Panel5" runat="server">
-                                                        <asp:DropDownList ID="DropDownList1" AutoPostBack="true" runat="server">
+                                                        <asp:DropDownList ID="FaultOptionList" AutoPostBack="true" runat="server">
                                                         <asp:ListItem>Select</asp:ListItem>
                                                         <asp:ListItem>Open</asp:ListItem>
                                                         <asp:ListItem>Concession</asp:ListItem>
@@ -196,7 +201,7 @@
                                                         <asp:Label ID="AssignedLabel" runat="server" Text="Assigned To"></asp:Label>
                                                         </td>
                                                         <td>
-                                                        <asp:DropDownList ID="DropDownList2" runat="server">
+                                                        <asp:DropDownList ID="AssignedToList" runat="server">
                                                         <asp:ListItem>Unassigned</asp:ListItem>
                                                         <asp:ListItem>Engineering</asp:ListItem>
                                                         <asp:ListItem>Physics</asp:ListItem>
@@ -207,7 +212,10 @@
                                                         <asp:Label ID="ConcessiondescriptionLabel" runat="server" Text="Concession Description"></asp:Label>
                                                         </td>
                                                         <td>
-                                                        <asp:TextBox ID="ConcessiondescriptionBox" runat="server" ReadOnly="True" TextMode="MultiLine" Visible="True" MaxLength="250"></asp:TextBox>
+                                                        <%--<asp:TextBox ID="ConcessiondescriptionBox" runat="server" ReadOnly="True" TextMode="MultiLine" Visible="True" MaxLength="250"></asp:TextBox>--%>
+                                                            <asp:Panel ID="CDescriptionPanel" enabled=false runat="server">
+                                                            <uc4:CommentBoxuc ID="ConcessiondescriptionBoxC" MaxCount="50" runat="server" />
+                                                            </asp:Panel>
                                                         </td>
                                                         </tr>
                                                         <tr>
@@ -215,29 +223,30 @@
                                                         <asp:Label ID="commentLabel" runat="server" Text="Comment"></asp:Label>
                                                         </td>
                                                         <td>
-                                                        <asp:PlaceHolder ID="CommentPlace" runat="server">
-                                                        <asp:UpdatePanel ID="CommentBoxUpdatePanel" runat="server">
-                                                        <ContentTemplate>
-                                                        <asp:TextBox ID="CommentBox1" runat="server" ReadOnly="true" Visible="false" TextMode="MultiLine" MaxLength="250" EnableViewState="true"></asp:TextBox>
-                                                        <asp:Button ID="CommentBoxButton" runat="server" Text="" Style="display: none" CausesValidation="False" />
-                                                        </ContentTemplate>
-                                                        <Triggers>
-                                                        <asp:AsyncPostBackTrigger ControlID="DropDownList1" EventName="SelectedIndexChanged" />
-                                                        <asp:AsyncPostBackTrigger ControlID="CommentBoxButton" EventName="Click" />
-                                                        </Triggers>
-                                                        </asp:UpdatePanel>
-                                                        </asp:PlaceHolder>
+                                                            <asp:Panel ID="CCommentPanel" Enabled="false" runat="server" >
+                                                            <uc4:CommentBoxuc ID="ConcessionCommentBox" runat="server" />
+                                                                <asp:Button ID="ClearCommentButton" runat="server" Text="Clear" CausesValidation="False" CssClass="buttonmargin" />
+                                                                </asp:Panel>
+
                                                         </td>
                                                         <td>
                                                         <asp:Label ID="ActionLabel" runat="server" Text="Concession Action"></asp:Label>
                                                         </td>
                                                         <td>
-                                                        <asp:TextBox ID="ActionBox" TextMode="MultiLine" MaxLength="250" ReadOnly="true" runat="server"></asp:TextBox>
+                                                        <%--<asp:TextBox ID="ActionBox" TextMode="MultiLine" MaxLength="250" ReadOnly="true" runat="server"></asp:TextBox>--%>
+                                                           <%-- <asp:UpdatePanel ID="UpdatePanel5" runat="server">
+                                                                <ContentTemplate>--%>
+                                                            <asp:Panel ID="CActionPanel" Enabled="false" runat="server">
+                                                               
+                                                            <uc4:CommentBoxuc ID="ConcessionActionBox" runat="server" />
+                                                               <asp:Button ID="ClearActionButton" runat="server" Text="Clear" CausesValidation="False" CssClass="buttonmargin" />
+                                                                                                                                  
+                                                                </asp:Panel>
                                                         </td>
                                                         </tr>
                                                         <tr>
                                                         <td>
-                                                        <asp:Button ID="SaveAFault" runat="server" Text="Save" CausesValidation="false" />
+                                                        <asp:Button ID="SaveAFault" runat="server" Text="Save" Enabled="false" CausesValidation="false" />
                                                         </td>
                                                         <td>
                                                         <asp:Button ID="CancelButton" runat="server" Text="Cancel/Close" CausesValidation="false" />
@@ -253,6 +262,9 @@
                                                 </asp:TableCell>
                                             </asp:TableRow>
                                         </asp:Table>
+                                    
+                                    
+                                    
                                     </asp:Panel>
 
                                     <asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow">
@@ -339,6 +351,7 @@
     
 </asp:Panel>
 <asp:Button ID="Hidefaults" runat="server" CausesValidation="False" Visible="false" Text="Close" />
+
 
 
 
