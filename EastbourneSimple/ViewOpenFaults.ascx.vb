@@ -216,7 +216,7 @@ Partial Class ViewOpenFaults
             UpdatePanelRepeatFault.Visible = False
             UpdatePanel4.Visible = True
             Me.DynamicControlSelection = String.Empty
-        ElseIf Tabused = "incident" Then
+        ElseIf Tabused = "exincident" Then
             incidentID = ConcessParamsTrial.IncidentID
             'This stops it popping up again when it shouldn't
 

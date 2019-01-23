@@ -212,7 +212,7 @@
                                                         <asp:Label ID="ConcessiondescriptionLabel" runat="server" Text="Concession Description"></asp:Label>
                                                         </td>
                                                         <td>
-                                                        <%--<asp:TextBox ID="ConcessiondescriptionBox" runat="server" ReadOnly="True" TextMode="MultiLine" Visible="True" MaxLength="250"></asp:TextBox>--%>
+                                                        
                                                             <asp:Panel ID="CDescriptionPanel" enabled=false runat="server">
                                                             <uc4:CommentBoxuc ID="ConcessiondescriptionBoxC" MaxCount="50" runat="server" />
                                                             </asp:Panel>
@@ -233,9 +233,7 @@
                                                         <asp:Label ID="ActionLabel" runat="server" Text="Concession Action"></asp:Label>
                                                         </td>
                                                         <td>
-                                                        <%--<asp:TextBox ID="ActionBox" TextMode="MultiLine" MaxLength="250" ReadOnly="true" runat="server"></asp:TextBox>--%>
-                                                           <%-- <asp:UpdatePanel ID="UpdatePanel5" runat="server">
-                                                                <ContentTemplate>--%>
+                                                      
                                                             <asp:Panel ID="CActionPanel" Enabled="false" runat="server">
                                                                
                                                             <uc4:CommentBoxuc ID="ConcessionActionBox" runat="server" />
