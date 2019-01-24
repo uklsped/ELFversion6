@@ -88,7 +88,7 @@ Partial Class controls_FaultTrackinguc
         wrtctrl3.LinacName = LinacName
 
         If Not IsPostBack Then
-            success = ConcessParamsTrial.CreateObject(IncidentID, LinacName)
+            success = ConcessParamsTrial.CreateObject(IncidentID)
             If success Then
                 'Application(ParamApplication) = ConcessParamsTrial
                 'BindTrackingGridTech(IncidentID)

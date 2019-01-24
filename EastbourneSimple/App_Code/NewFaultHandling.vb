@@ -97,7 +97,7 @@ Namespace DavesCode
 
                     For Each dataRow As DataRow In dt.Rows
 
-                        ConcessP.FaultState = dataRow("Status")
+                        ConcessP.PresentFaultState = dataRow("Status")
                         ConcessP.ConcessionNumber = dataRow("ConcessionNumber")
                         ConcessP.ConcessionDescription = dataRow("ConcessionDescription")
                         ConcessP.ConcessionAction = dataRow("action")
@@ -217,7 +217,7 @@ Namespace DavesCode
             conn = New SqlConnection(connectionString)
             Dim trackingID As Integer = 0
             Dim ConcessionActive As Integer
-            If ConcessP.FaultState = "Concession" Then
+            If ConcessP.FutureFaultState = "Concession" Then
                 ConcessionActive = 1
             Else
                 ConcessionActive = 0
@@ -263,7 +263,7 @@ Namespace DavesCode
                     incidentfault.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
                     incidentfault.Parameters("@AssignedTo").Value = ConcessP.AssignedTo
                     incidentfault.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
-                    incidentfault.Parameters("@Status").Value = ConcessP.FaultState
+                    incidentfault.Parameters("@Status").Value = ConcessP.FutureFaultState
                     incidentfault.Parameters.Add("@LastupdatedBy", System.Data.SqlDbType.NVarChar, 50)
                     incidentfault.Parameters("@LastupdatedBy").Value = ConcessP.UserInfo
                     incidentfault.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
