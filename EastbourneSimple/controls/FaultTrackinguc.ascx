@@ -146,10 +146,12 @@
                                             <Columns>
                                                 <asp:BoundField DataField="TrackingID" HeaderText="TrackingID"
                                                     InsertVisible="False" ReadOnly="True" SortExpression="TrackingID" Visible="false" />
-                                                <asp:BoundField DataField="TrackingComment" HeaderText="Comment"
-                                                    SortExpression="Comment" />
+                                                <asp:BoundField DataField="Description" HeaderText="Concession Description"
+                                                    SortExpression="Action" />
                                                 <asp:BoundField DataField="Action" HeaderText="Concession Action"
                                                     SortExpression="Action" />
+                                                <asp:BoundField DataField="TrackingComment" HeaderText="Comment"
+                                                    SortExpression="Comment" />
                                                 <asp:BoundField DataField="AssignedTo" HeaderText="AssignedTo"
                                                     SortExpression="AssignedTo" />
                                                 <asp:BoundField DataField="Status" HeaderText="Status"

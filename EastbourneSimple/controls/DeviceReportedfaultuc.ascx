@@ -73,6 +73,15 @@
                   <asp:TextBox ID="OriginalOpenDateBoxL" runat="server" ReadOnly="True"></asp:TextBox>
               </td>
         </tr>
+                     <tr>
+                  <td> <asp:Label ID="RadiationIncidentLabel" runat="server" Text="Radiation Incident"></asp:Label></td>
+                  <td>
+                       <asp:RadioButtonList ID="OriginalRadioIncident" runat="server" AutoPostBack="false" enabled="false">
+                                        <asp:ListItem Text="No" Value="False"></asp:ListItem>
+                                        <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                  </td>
+              </tr>
     </table>
         </asp:View>
     <asp:View ID="Tomo" runat="server">
@@ -133,6 +142,15 @@
                   <asp:TextBox ID="OriginalOpenDateBoxT" runat="server" ReadOnly="True"></asp:TextBox>
               </td>
         </tr>
+              <tr>
+                  <td> <asp:Label ID="RadiationIncidentLabelT" runat="server" Text="Radiation Incident"></asp:Label></td>
+                  <td>
+                       <asp:RadioButtonList ID="OriginalRadioIncidentT" runat="server" AutoPostBack="false" enabled="false">
+                                        <asp:ListItem Text="No" Value="False"></asp:ListItem>
+                                        <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                  </td>
+              </tr>
     </table>
     </asp:View>
     </asp:MultiView>

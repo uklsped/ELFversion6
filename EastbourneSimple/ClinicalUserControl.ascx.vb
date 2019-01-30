@@ -31,6 +31,7 @@ Partial Class ClinicalUserControl
     Dim accontrol As AcceptLinac
     Private tabstate As String
     Private TodayComment As controls_CommentBoxuc
+    Const CLINICAL As String = "3"
 
     Public Property LinacName() As String
 
@@ -128,7 +129,7 @@ Partial Class ClinicalUserControl
         'This looks to see if BoxChanged has a value. if it has the comment has not been saved.
         If Not HttpContext.Current.Application(BoxChanged) Is Nothing Then
             HiddenFieldLinacState.Value = DavesCode.NewCommitClinical.NewWriteClinicalTable(LinacName, HttpContext.Current.Application(BoxChanged), connectionString)
-            CommentBox.ResetCommentBox()
+            CommentBox.ResetCommentBox(String.Empty)
         End If
         BindComments()
         Application(suspstate) = Nothing
@@ -142,7 +143,7 @@ Partial Class ClinicalUserControl
         'Dim linacstatusid As String = HiddenFieldLinacState.Value
         Dim Result As Boolean = False
 
-        If tabused = "3" Or tabused = "Recover" Then
+        If tabused = CLINICAL Or tabused = "Recover" Then
             Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
             Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams)
             If Result Then
@@ -155,7 +156,7 @@ Partial Class ClinicalUserControl
                     Else
                         'This has gone wrong
                     End If
-                    CommentBox.ResetCommentBox()
+                    CommentBox.ResetCommentBox(String.Empty)
                     Application(treatmentstate) = "Yes"
                     Application(appstate) = Nothing
                     Application(suspstate) = 1
@@ -186,6 +187,7 @@ Partial Class ClinicalUserControl
         Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = LinacName
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
+        CType(objCon, ViewOpenFaults).ParentControl = CLINICAL
         PlaceHolder1.Controls.Add(objCon)
         PlaceHolder2.Visible = True
 
@@ -196,7 +198,7 @@ Partial Class ClinicalUserControl
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = LinacName
-            CType(objDefect, DefectSavePark).ParentControl = 3
+            CType(objDefect, DefectSavePark).ParentControl = CLINICAL
             AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
             AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
@@ -204,7 +206,7 @@ Partial Class ClinicalUserControl
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = LinacName
-            CType(objDefect, DefectSave).ParentControl = 3
+            CType(objDefect, DefectSave).ParentControl = CLINICAL
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
@@ -447,7 +449,7 @@ Partial Class ClinicalUserControl
             DavesCode.NewFaultHandling.LogError(ex, Application(BoxChanged))
             RaiseWriteError()
         End Try
-        CommentBox.ResetCommentBox()
+        CommentBox.ResetCommentBox(String.Empty)
     End Sub
 
     Protected Sub Tstart_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Tstart.Click

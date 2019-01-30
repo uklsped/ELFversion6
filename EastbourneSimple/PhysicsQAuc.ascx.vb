@@ -146,7 +146,7 @@ Partial Class PhysicsQAuc
 
         Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = MachineName
-        CType(objCon, ViewOpenFaults).TabName = "Tech"
+        CType(objCon, ViewOpenFaults).ParentControl = "6"
         PlaceHolder1.Controls.Add(objCon)
 
         Dim objAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")

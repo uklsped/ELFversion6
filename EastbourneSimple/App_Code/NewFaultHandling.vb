@@ -276,6 +276,8 @@ Namespace DavesCode
                     incidentfault.Parameters("@incidentID").Value = ConcessP.IncidentID
                     incidentfault.Parameters.Add("@concess", System.Data.SqlDbType.Int)
                     incidentfault.Parameters("@concess").Value = ConcessionActive
+                    incidentfault.Parameters.Add("@ConcessionDescription", System.Data.SqlDbType.NVarChar, 250)
+                    incidentfault.Parameters("@ConcessionDescription").Value = ConcessP.ConcessionDescription
                     Dim outPutParameter = New SqlParameter With {
                         .ParameterName = "@TrackingID",
                         .SqlDbType = System.Data.SqlDbType.Int,

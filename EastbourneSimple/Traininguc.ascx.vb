@@ -25,6 +25,7 @@ Partial Class Traininguc
     Private tabstate As String
     Private Objcon As ViewOpenFaults
     Dim comment As String
+    Const TRAINING As String = "8"
 
 
     Public Property LinacName() As String
@@ -38,19 +39,7 @@ Partial Class Traininguc
 
     'Public Sub UpdateTrainingHandler(ByVal EquipmentID As String)
     Public Sub UpdateReturnButtonsHandler()
-        'Now find which user group is logged on
-        'removed references to physics QA tab 31 March 2016
-        'Removed these commands for E1 and E2
-        'If MachineName Like "LA?" Then
-        '         RadioButtonList1.Items.FindByValue(2).Enabled = False
-        '    End If
-        ' RadioButtonList1.Items.FindByValue(1).Enabled = False
-        ' RadioButtonList1.Items.FindByValue(3).Enabled = False
-        'RadioButtonList1.Items.FindByValue(4).Enabled = False
-        'RadioButtonList1.Items.FindByValue(5).Enabled = False
-        'RadioButtonList1.Items.FindByValue(6).Enabled = False
 
-        'This is what sets buttons now with addition of E1 and E2
         If Not IsPostBack Then
             If MachineName Like "LA?" Then
                 RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
@@ -74,9 +63,7 @@ Partial Class Traininguc
             If (lastusergroup = 2) Or (lastusergroup = 4) Then
                 RadioButtonList1.Items.FindByValue(4).Enabled = True
                 RadioButtonList1.Items.FindByValue(5).Enabled = True
-                'If (lastusergroup = 4) Then
-                '    RadioButtonList1.Items.FindByValue(6).Enabled = True
-                'End If
+
 
             End If
             '5 caters for autosign from last tab
@@ -85,11 +72,9 @@ Partial Class Traininguc
                 RadioButtonList1.Items.FindByValue(1).Enabled = True
                 RadioButtonList1.Items.FindByValue(4).Enabled = True
                 RadioButtonList1.Items.FindByValue(5).Enabled = True
-                'If lastusergroup = 4 Then
-                '    RadioButtonList1.Items.FindByValue(6).Enabled = True
-                'End If
 
-        ElseIf (laststate = "Engineering Approved") Then
+
+            ElseIf (laststate = "Engineering Approved") Then
                 If MachineName Like "LA?" Then
                 RadioButtonList1.Items.FindByValue(2).Enabled = True
                 End If
@@ -170,7 +155,7 @@ Partial Class Traininguc
         Dim Recovery As Integer = 101
         'DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
         'HttpContext.Current.Application(BoxChanged) = Nothing
-        If Tabused = "8" Then
+        If Tabused = TRAINING Then
             Dim strScript As String = "<script>"
             strScript += "window.location='"
             strScript += machinelabel
@@ -203,20 +188,13 @@ Partial Class Traininguc
 
             If result Then
                 If Action = "Confirm" Then
-                    'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                    'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-                    'Dim comment As String = Textboxcomment.Text
-                    'suspendvalue = Application(suspstate)
-                    'repairvalue = Application(repairstate)
-                    'Radioselect = RadioButtonList1.SelectedItem.Value
-                    'If this fails it writes an error to file but carries on.
-                    'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
+
                     Application(appstate) = Nothing
                     Application(tabstate) = String.Empty
-                    CommentBox.ResetCommentBox()
+                    CommentBox.ResetCommentBox(String.Empty)
                     Select Case Radioselect
                         Case 1
-                            'LinacStateID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, 7, MachineName, 5)
+
                             Application(failstate) = Nothing
                             Application(repairstate) = Nothing
                             Application(suspstate) = Nothing
@@ -259,9 +237,7 @@ Partial Class Traininguc
                                 ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                             End If
                         Case 5
-                            'LinacStateID = DavesCode.Reuse.SetStatus(username, "Planned Maintenance", 5, 7, MachineName, 5)
-                            'ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+
                             If lastusergroup <> 3 Then
                                 Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
                                 Response.Redirect(returnstring)
@@ -286,19 +262,7 @@ Partial Class Traininguc
 
                     RadioButtonList1.SelectedIndex = -1
                     LogOffButton.BackColor = Drawing.Color.AntiqueWhite
-                    'SelectCount = False
 
-
-
-                    'Else
-                    '    'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False)
-                    '    Application(appstate) = Nothing
-                    '    strScript = "<script>"
-                    '    strScript += "alert('How have you got to here?');"
-                    '    strScript += "window.location='"
-                    '    strScript += machinelabel
-                    '    strScript += "</script>"
-                    '    ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                 End If
             End If
         End If
@@ -316,7 +280,7 @@ Partial Class Traininguc
         Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         CType(objCon, ViewOpenFaults).LinacName = MachineName
-        CType(objCon, ViewOpenFaults).TabName = "8"
+        CType(objCon, ViewOpenFaults).ParentControl = TRAINING
         PlaceHolder1.Controls.Add(objCon)
 
         Dim objAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
@@ -325,10 +289,9 @@ Partial Class Traininguc
 
         Dim objQA As UserControl = Page.LoadControl("Modalitiesuc.ascx")
         CType(objQA, Modalitiesuc).LinacName = MachineName
-        CType(objQA, Modalitiesuc).TabName = 8
+        CType(objQA, Modalitiesuc).TabName = TRAINING
         PlaceHolder3.Controls.Add(objQA)
 
-        'AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
         Dim objDefect As UserControl
@@ -337,7 +300,7 @@ Partial Class Traininguc
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = MachineName
-            CType(objDefect, DefectSavePark).ParentControl = 8
+            CType(objDefect, DefectSavePark).ParentControl = TRAINING
             AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
             AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
@@ -345,80 +308,20 @@ Partial Class Traininguc
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = MachineName
-            CType(objDefect, DefectSave).ParentControl = 8
+            CType(objDefect, DefectSave).ParentControl = TRAINING
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
         PlaceHolder4.Controls.Add(objDefect)
         CommentBox.BoxChanged = BoxChanged
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-
         wctrl.LinacName = MachineName
-        'If Application("SelectCount") = "True" Then
-        '    LogOffButton.Enabled = True
-        'End If
-        'Dim lastState As String
-        'Not used?
-        'DavesCode.Reuse.GetLastTech(MachineName, 8, laststate, lastuser, lastusergroup)
+
         If Not IsPostBack Then
-            'If MachineName Like "LA?" Then
-            '    RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
-            '    RadioButtonList1.Items.Add(New ListItem("Requires Pre-Clinical Run up", "2", False))
-            '    RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
-            '    RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
-            '    RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
-            '    RadioButtonList1.Items.Add(New ListItem("End of Day", "102", False))
-            'Else
-            '    RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
-            '    RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
-            '    RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
-            '    RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
-            '    RadioButtonList1.Items.Add(New ListItem("End of Day", "102", False))
-            'End If
-            'If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
-            '    Textboxcomment.Text = Application(BoxChanged).ToString
-            'Else
-            '    'Textboxcomment.Text = comment
-            'End If
             Application(faultviewstate) = 1
             Application(atlasviewstate) = 1
             Application(qaviewstate) = 1
         End If
-        'Application("SelectCount") = "False"
-        'lastState = DavesCode.Reuse.GetLastState(MachineName, 0)
-        'StateTextBox.Text = lastState
-        'If lastState = ("Engineering Approved") Then
-        '    RadioButtonList1.Items(1).Enabled = True
-        'End If
-        'Dim test As String = Application("Suspended")
-        'If Application("Suspended") = 1 Then
-        '    RadioButtonList1.Items(1).Enabled = True
-        '    RadioButtonList1.Items(2).Enabled = True
-        'End If
-        ' Select Application("Failstate")
-        '    Case 2
-        '        RadioButtonList1.Items(1).Enabled = True
-        '    Case 3
-        '        RadioButtonList1.Items(1).Enabled = True
-        '        RadioButtonList1.Items(2).Enabled = True
-        'End Select
-        'StateTextBox.Text = "Linac Unauthorised"
-        'If Application(suspstate) = 1 Then
-        '    RadioButtonList1.Items(1).Enabled = True
-        '    RadioButtonList1.Items(2).Enabled = True
-        '    StateTextBox.Text = "Suspended"
-        'End If
-
-
-        'If Application(repairstate) = 1 Then
-        '    RadioButtonList1.Items(1).Enabled = True
-        '    StateTextBox.Text = "Engineering Approved"
-        'End If
-
-
-
-        'End If
 
     End Sub
 
@@ -448,7 +351,7 @@ Partial Class Traininguc
             Case 1
                 wcbutton.Text = "Go To Engineering Run up"
                 If lastusergroup <> 3 Then
-                    RaiseEvent AutoApproved(8, lastuser)
+                    RaiseEvent AutoApproved(TRAINING, lastuser)
                 Else
                     WriteDatauc1.Visible = True
                     ForceFocus(wctext)
@@ -456,7 +359,7 @@ Partial Class Traininguc
             Case 2
                 wcbutton.Text = "Needs Pre-clinical Run up"
                 If lastusergroup = 3 Then
-                    RaiseEvent AutoApproved(8, lastuser)
+                    RaiseEvent AutoApproved(TRAINING, lastuser)
                 Else
                     WriteDatauc1.Visible = True
                     ForceFocus(wctext)
@@ -465,7 +368,7 @@ Partial Class Traininguc
             Case 3
                 wcbutton.Text = "Return to clinical"
                 If lastusergroup = 3 Then
-                    RaiseEvent AutoApproved(8, lastuser)
+                    RaiseEvent AutoApproved(TRAINING, lastuser)
                 Else
                     WriteDatauc1.Visible = True
                     ForceFocus(wctext)
@@ -474,12 +377,12 @@ Partial Class Traininguc
             Case 4
                 wcbutton.Text = "Go To Planned Maintenance"
                 If lastusergroup <> 3 Then
-                    RaiseEvent AutoApproved(8, lastuser)
+                    RaiseEvent AutoApproved(TRAINING, lastuser)
                 End If
             Case 5
                 wcbutton.Text = "Go To Repair"
                 If lastusergroup <> 3 Then
-                    RaiseEvent AutoApproved(8, lastuser)
+                    RaiseEvent AutoApproved(TRAINING, lastuser)
                 Else
                     WriteDatauc1.Visible = True
                     ForceFocus(wctext)
@@ -487,7 +390,7 @@ Partial Class Traininguc
             Case 6
                 wcbutton.Text = "Go To Physics QA"
                 If lastusergroup <> 3 Then
-                    RaiseEvent AutoApproved(8, lastuser)
+                    RaiseEvent AutoApproved(TRAINING, lastuser)
                 Else
                     WriteDatauc1.Visible = True
                     ForceFocus(wctext)
@@ -498,20 +401,16 @@ Partial Class Traininguc
                 WriteDatauc1.Visible = True
                 ForceFocus(wctext)
         End Select
-        'Application("SelectCount") = "False"
 
-        'WritepmComments()
-        'WriteDatauc1.Visible = True
 
     End Sub
 
 
     Protected Sub RadioButtonList1_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles RadioButtonList1.SelectedIndexChanged
-        'If Not Application("SelectCount") = "True" Then
+
         LogOffButton.Enabled = True
         LogOffButton.BackColor = Drawing.Color.Yellow
-        'Application("SelectCount") = "True"
-        'End If
+
     End Sub
 
     Protected Sub ViewAtlasButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewAtlasButton.Click
@@ -539,10 +438,7 @@ Partial Class Traininguc
             PhysicsQA.Text = "View Physics Energies/Imaging"
         End If
     End Sub
-    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-    '    Application(BoxChanged) = CommentBox.Text
-    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    'End Sub
+
     Private Sub ForceFocus(ByVal ctrl As Control)
         ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
         ctrl.ClientID + "').focus();}, 100);", True)

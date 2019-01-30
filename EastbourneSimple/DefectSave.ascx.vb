@@ -19,7 +19,10 @@ Partial Class DefectSave
     Const RADIO As Integer = 103
     Dim ConcessionNumber As String = ""
     Dim SelectedIncident As Integer = 0
-
+    Private FaultDescriptionChanged As String
+    Private RadActDescriptionChanged As String
+    Private Comment As String
+    Private RadActComment As String
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
@@ -32,11 +35,13 @@ Partial Class DefectSave
         suspstate = "Suspended" + LinacName
         failstate = "FailState" + LinacName
         repairstate = "rppTab" + LinacName
+        FaultDescriptionChanged = "defectFault" + LinacName
+        RadActDescriptionChanged = "radact" + LinacName
     End Sub
     'This updates the defect display for the day when a repeat fault is registered by viewopenfaults and then planned maintenance etc.
     Public Sub UpDateDefectsEventHandler()
         BindDefectData()
-        'SetFaults()
+
     End Sub
 
     'No need to pass any references now or to have if statements. Analysis 23/11/16 Back in 29/03/18
@@ -66,7 +71,16 @@ Partial Class DefectSave
     Protected Sub SaveDefectButton_Click(sender As Object, e As System.EventArgs) Handles SaveDefectButton.Click
         'No need for reference to WriteDatauc if no signature - March 2016
         'Back in 26/03/2108
-
+        'Set Validation Controls
+        Select Case Defect.SelectedItem.Value
+            Case RADRESET
+                FaultDescription.SetValidation("defect", "Please Enter a fault description")
+                RadActC.SetValidation("defect", "Please Enter the Corrective Action Taken")
+                AreaValidation.ValidationGroup = "defect"
+            Case MAJORFAULT
+                FaultDescription.SetValidation("defect", "Please Enter a fault description")
+                AreaValidation.ValidationGroup = "defect"
+        End Select
         Dim strScript As String = "<script>"
         Page.Validate("defect")
         If Page.IsValid Then
@@ -91,14 +105,17 @@ Partial Class DefectSave
                 UserApprovedEvent("Defect", "")
             End If
             'reset the validation controls
-            FaultDescriptionValidation.ValidationGroup = ""
-            RadActValidation.ValidationGroup = ""
+            FaultDescription.SetValidation("", "")
+            RadActC.SetValidation("", "")
             AreaValidation.ValidationGroup = ""
         Else
-            'Makes sure Area is still available after failed validation
+            'Makes sure Area is still available after failed validation - also add descriptions!
             If (Defect.SelectedItem.Value = RADRESET) Or (Defect.SelectedItem.Value = MAJORFAULT) Then
+                'Dim reading As String = Application(FaultDescriptionChanged)
                 DropDownListArea.Enabled = True
+
             End If
+            FormError()
 
         End If
 
@@ -109,6 +126,8 @@ Partial Class DefectSave
         ClearButton.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(ClearButton, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         actionstate = "ActionState" + LinacName
         Dim newFault As Boolean
+        FaultDescription.BoxChanged = FaultDescriptionChanged
+        RadActC.BoxChanged = RadActDescriptionChanged
         If Not IsPostBack Then
             newFault = False
             SetFaults(newFault)
@@ -117,8 +136,10 @@ Partial Class DefectSave
         End If
         'WriteDatauc1 no longer used 23/11/16
         'Added back in for RAD RESET 26/3/18 SEE SPR
-        Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
-        wctrl.LinacName = LinacName
+        Dim wctrl1 As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
+        wctrl1.LinacName = LinacName
+        Dim wctrl2 As WriteDatauc = CType(FindControl("Writedatauc2"), WriteDatauc)
+        wctrl2.LinacName = LinacName
         BindDefectData()
     End Sub
     Public Sub ResetDefectDropDown(ByVal incidentid As String)
@@ -214,6 +235,10 @@ Partial Class DefectSave
         If incidentIDstring = "Select" Then
             ClearsForm()
         Else
+            FaultPanel.Enabled = True
+            ActPanel.Enabled = False
+            RadActC.ResetCommentBox(String.Empty)
+            FaultDescription.ResetCommentBox(String.Empty)
             Dim result As ListItem
             result = Defect.Items.FindByValue(incidentIDstring)
             Dim index As Integer
@@ -224,6 +249,7 @@ Partial Class DefectSave
                 TimeFaultSelected.Value = Now().ToString
                 conn = New SqlConnection(connectionString)
                 conn.Open()
+
                 If SelectedIncident > 0 Then
                     comm1 = New SqlCommand("Select r.Area, c.Action from ReportFault r left outer join ConcessionTable c on r.incidentid = c.incidentid where r.incidentID=@incidentID", conn)
                     comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
@@ -238,22 +264,18 @@ Partial Class DefectSave
                     DropDownListArea.SelectedItem.Text = Area
                     AreaOrAccuray.Value = Area
                     DropDownListArea.Enabled = False
-                    RadAct.Text = Action
-                    RadAct.ReadOnly = True
+                    RadActC.ResetCommentBox(Action)
+
 
                 ElseIf (SelectedIncident = RADRESET) Then
                     DropDownListArea.Enabled = True
                     DropDownListArea.SelectedValue = "Select"
-                    RadAct.ReadOnly = False
-                    FaultDescriptionValidation.ValidationGroup = "defect"
-                    RadActValidation.ValidationGroup = "defect"
-                    AreaValidation.ValidationGroup = "defect"
+                    ActPanel.Enabled = True
+
                 ElseIf (SelectedIncident = MAJORFAULT) Then
                     DropDownListArea.Enabled = True
                     DropDownListArea.SelectedValue = "Select"
-                    RadAct.ReadOnly = False
-                    FaultDescriptionValidation.ValidationGroup = "defect"
-                    AreaValidation.ValidationGroup = "defect"
+
                 Else
                     comm1 = New SqlCommand("SELECT Area from DefectTable where incidentID=@incidentID", conn)
                     comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
@@ -265,6 +287,7 @@ Partial Class DefectSave
                     DropDownListArea.SelectedItem.Text = Area
                     AreaOrAccuray.Value = Area
                     DropDownListArea.Enabled = False
+
                 End If
 
                 SaveDefectButton.Enabled = True
@@ -319,11 +342,13 @@ Partial Class DefectSave
         DropDownListEnergy.SelectedIndex = -1
         GantryAngleBox.Text = Nothing
         CollimatorAngleBox.Text = Nothing
-        FaultDescription.Text = Nothing
+        FaultDescription.ResetCommentBox(EMPTYSTRING)
         PatientIDBox.Text = Nothing
-        RadAct.Text = Nothing
+        RadActC.ResetCommentBox(EMPTYSTRING)
         SaveDefectButton.BackColor = Drawing.Color.LightGray
         SaveDefectButton.Enabled = False
+        FaultPanel.Enabled = False
+        ActPanel.Enabled = False
 
     End Sub
 
@@ -359,8 +384,11 @@ Partial Class DefectSave
 
                 Dim susstate As String = Application(suspstate)
                 Dim repstate As String = Application(repairstate)
-                Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
+                'This gets comment box from tab that defectsave is on
+                Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
+                Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
                 Dim Comment As String = DaTxtBox.Text
+
                 Dim GridViewE As GridView = Me.Parent.FindControl("Gridview1")
                 Dim grdviewI As GridView = Me.Parent.FindControl("GridViewImage")
                 Dim iView As Boolean = False
@@ -392,7 +420,10 @@ Partial Class DefectSave
                     Application(appstate) = Nothing
                     Application(failstate) = ParentControl
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir
-                    PopupAck()
+                    'PopupAck()
+                    Comment = String.Empty
+                    Dim Boxchanged As String = ParentCommentControl.BoxChanged
+                    Application(Boxchanged) = String.Empty
                     Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
                     Response.Redirect(returnstring & ParentControl & "&comment=" & Comment, False)
 
@@ -406,11 +437,8 @@ Partial Class DefectSave
                 Else
                     RaiseError()
                 End If
-                ' End If
+
         End Select
-
-        'ClearsForm()
-
 
     End Sub
     Protected Sub PopupAck()
@@ -426,9 +454,25 @@ Partial Class DefectSave
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
+    Protected Sub FormError()
+        Dim strScript As String = "<script>"
+        strScript += "alert('Please Correct Form Errors');"
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(SaveDefectButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+    End Sub
 
     Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultParams As DavesCode.FaultParameters)
+        If (Not HttpContext.Current.Application(FaultDescriptionChanged) Is Nothing) Then
+            Comment = HttpContext.Current.Application(FaultDescriptionChanged).ToString
+        Else
+            Comment = String.Empty
+        End If
 
+        If (Not HttpContext.Current.Application(RadActDescriptionChanged) Is Nothing) Then
+            RadActComment = HttpContext.Current.Application(RadActDescriptionChanged).ToString
+        Else
+            RadActComment = String.Empty
+        End If
         Dim Energy As String
         Energy = DropDownListEnergy.SelectedItem.Text
         If Energy = "Select" Then
@@ -443,9 +487,10 @@ Partial Class DefectSave
         FaultParams.GantryAngle = GantryAngleBox.Text
         FaultParams.CollimatorAngle = CollimatorAngleBox.Text
         FaultParams.PatientID = PatientIDBox.Text
-        FaultParams.FaultDescription = FaultDescription.Text
+        'FaultParams.FaultDescription = FaultDescription.Text
+        FaultParams.FaultDescription = Comment
         FaultParams.ConcessionNumber = ConcessionNumber
-        FaultParams.RadAct = RadAct.Text
+        FaultParams.RadAct = RadActComment
         FaultParams.RadioIncident = RadioIncident.SelectedItem.Value
 
     End Sub

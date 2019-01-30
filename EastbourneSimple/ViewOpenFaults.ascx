@@ -11,10 +11,9 @@
 
 <%@ Register Src="controls/DeviceRepeatFaultuc.ascx" TagName="DeviceRepeatFaultuc" TagPrefix="uc3" %>
 
-
-
-
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>
+
+<%@ Register src="controls/FaultTrackinguc.ascx" tagname="FaultTrackinguc" tagprefix="uc6" %>
 
 
 
@@ -146,9 +145,14 @@
              <asp:MultiView ID="MultiView2" runat="server">
                  <asp:View ID="statustech" runat="server">
                      <asp:Panel ID="statustechpanel" runat="server" Visible="false">
+                        <asp:UpdatePanel ID="UpdatePanel5" runat="server"><ContentTemplate>
+                            <uc6:FaultTrackinguc ID="FaultTrackinguc1" runat="server" />
+                         
+                         </ContentTemplate></asp:UpdatePanel>
+                         
                          <uc1:WriteDatauc ID="WriteDatauc3" LinacName="" UserReason="4" Tabby="incident" WriteName="incident" Visible="false" runat="server" />
-                             <asp:Panel ID="Panel2" runat="server" BorderColor="#33CC33" BorderStyle="Solid">
-                                 <asp:Table ID="Table2" runat="server">
+                             <%--<asp:Panel ID="Panel2" runat="server" BorderColor="#33CC33" BorderStyle="Solid">
+                                <asp:Table ID="Table2" runat="server">
                                     <asp:TableRow>
                                        <asp:TableCell>
                                            <asp:Label ID="Label3" runat="server" Text="Problem ID"></asp:Label>
@@ -263,9 +267,9 @@
                                     
                                     
                                     
-                                    </asp:Panel>
+                                    </asp:Panel>--%>
 
-                                    <asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow">
+                                    <%--<asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow">
                                         <asp:GridView ID="GridView5" runat="server" AllowPaging="True"
                                             AutoGenerateColumns="False" CellPadding="4" DataKeyNames="TrackingID"
                                             EnableViewState="False" ForeColor="#333333" GridLines="None">
@@ -294,8 +298,12 @@
                                             <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
                                             <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
                                         </asp:GridView>
+                                        
+                                        
+                                        
+                                    </asp:Panel>--%>
                                     </asp:Panel>
-                                    </asp:Panel>
+                        
                      </asp:View>
                  <asp:View ID="statusother" runat="server">
                      <asp:Panel ID="UpdatePanel1" runat="server" Visible="false">

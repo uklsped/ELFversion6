@@ -18,6 +18,7 @@ Partial Class Preclinusercontrol
     Public Property LinacName() As String
     Public Property DataName() As String
     Dim comment As String
+    Const PRECLIN As String = "2"
 
     Public Function FormatImage(ByVal energy As Boolean) As String
         'Dim happyIcon As String = "Images/happy.gif"
@@ -195,7 +196,7 @@ Partial Class Preclinusercontrol
                     Dim returnstring As String = LinacName + "page.aspx?tabref=3"
                     Application(tabstate) = String.Empty
                     'HttpContext.Current.Application(BoxChanged) = Nothing
-                    CommentBox.ResetCommentBox()
+                    CommentBox.ResetCommentBox(String.Empty)
                     Application(suspstate) = 1
                     Response.Redirect(returnstring)
                 Else
@@ -210,7 +211,7 @@ Partial Class Preclinusercontrol
                 Successful = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False, FaultP)
                 If Successful Then
                     If Not Userinfo = "Restored" Then
-                        CommentBox.ResetCommentBox()
+                        CommentBox.ResetCommentBox(String.Empty)
                     End If
                     strScript += "window.location='"
                         strScript += machinelabel
@@ -233,7 +234,7 @@ Partial Class Preclinusercontrol
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Application(LinacFlag) = "Linac Unauthorised"
         Application(appstate) = Nothing
-        CommentBox.ResetCommentBox()
+        CommentBox.ResetCommentBox(String.Empty)
         Application(tabstate) = String.Empty
         strScript += message
         strScript += "window.location='"
@@ -250,7 +251,7 @@ Partial Class Preclinusercontrol
         PlaceHolder5.Controls.Add(objconToday)
         Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = LinacName
-        CType(objCon, ViewOpenFaults).TabName = "2"
+        CType(objCon, ViewOpenFaults).ParentControl = PRECLIN
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         'AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
@@ -263,7 +264,7 @@ Partial Class Preclinusercontrol
         Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = LinacName
-        CType(objDefect, DefectSave).ParentControl = 2
+        CType(objDefect, DefectSave).ParentControl = PRECLIN
         PlaceHolder3.Controls.Add(objDefect)
         'AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
         AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults

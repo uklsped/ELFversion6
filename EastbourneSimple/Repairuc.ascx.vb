@@ -31,6 +31,7 @@ Partial Class Repairuc
     Private Objcon As ViewOpenFaults
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
     Private comment As String
+    Const REPAIR As String = "5"
 
     Public Property LinacName() As String
         Get
@@ -132,7 +133,7 @@ Partial Class Repairuc
         Dim Recovery As Integer = 101
         Dim result As Boolean = False
 
-        If Tabused = "5" Then
+        If Tabused = REPAIR Then
             Dim Action As String = Application(actionstate)
             If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
                 comment = HttpContext.Current.Application(BoxChanged).ToString
@@ -155,7 +156,7 @@ Partial Class Repairuc
             If result Then
                 If Action = "Confirm" Then
 
-                    CommentBox.ResetCommentBox()
+                    CommentBox.ResetCommentBox(String.Empty)
                     'DavesCode.Reuse.ReturnApplicationState(Tabused)
                     'Dim Textboxcomment As TextBox = FindControl("CommentBox")
                     'Dim comment As String = Textboxcomment.Text
@@ -349,7 +350,7 @@ Partial Class Repairuc
 
         Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).LinacName = MachineName
-        CType(objCon, ViewOpenFaults).TabName = "Tech"
+        CType(objCon, ViewOpenFaults).ParentControl = REPAIR
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         PlaceHolder1.Controls.Add(objCon)
         AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
@@ -362,7 +363,7 @@ Partial Class Repairuc
 
         Dim objQA As UserControl = Page.LoadControl("Modalitiesuc.ascx")
         CType(objQA, Modalitiesuc).LinacName = MachineName
-        CType(objQA, Modalitiesuc).TabName = 5
+        CType(objQA, Modalitiesuc).TabName = REPAIR
         PlaceHolder3.Controls.Add(objQA)
 
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
@@ -378,7 +379,7 @@ Partial Class Repairuc
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = MachineName
-            CType(objDefect, DefectSavePark).ParentControl = 5
+            CType(objDefect, DefectSavePark).ParentControl = REPAIR
             AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
             AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
@@ -386,7 +387,7 @@ Partial Class Repairuc
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = MachineName
-            CType(objDefect, DefectSave).ParentControl = 5
+            CType(objDefect, DefectSave).ParentControl = REPAIR
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 

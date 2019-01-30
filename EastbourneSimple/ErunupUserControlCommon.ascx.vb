@@ -29,7 +29,8 @@ Partial Class ErunupUserControl
     Dim comment As String
     Private Obpage As Page
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
-
+    Const ENG As String = "1"
+    Const RAD As String = "7"
     'Public ReadOnly Property CurrentComment() As String
     '    Get
     '        Return CommentBoxuc1.Text
@@ -38,7 +39,7 @@ Partial Class ErunupUserControl
 
     Public Property DataName() As String
     Public Property LinacName() As String
-    Public Property Tabby() As String
+    'Dim Property Tabby() As String
     Public Property UserReason() As Integer
 
 
@@ -80,7 +81,7 @@ Partial Class ErunupUserControl
             tabcontainer1 = CType(mpContentPlaceHolder.
                 FindControl("tcl"), TabContainer)
             If Not tabcontainer1 Is Nothing Then
-                If Tabby = 1 Then
+                If UserReason = 1 Then
                     Dim panelcontrol1 As TabPanel = tabcontainer1.FindControl("TabPanel1")
                     accontrol1 = panelcontrol1.FindControl("AcceptLinac1")
                     AddHandler accontrol1.EngRunuploaded, AddressOf EngLogOnEvent
@@ -190,7 +191,7 @@ Partial Class ErunupUserControl
                         'Valid = True
                         Application(appstate) = Nothing
                         Application(tabstate) = String.Empty
-                    CommentBox.ResetCommentBox()
+                    CommentBox.ResetCommentBox(String.Empty)
                     'Moved dal to newengrunup 19/9/18 to aid error handling
                     'Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, username, Comment, Valid, False, False)
                     'If Successful Then
@@ -222,7 +223,7 @@ Partial Class ErunupUserControl
                         Application(appstate) = Nothing
                         Application(tabstate) = String.Empty
                         If Not Userinfo = "Restored" Then
-                        CommentBox.ResetCommentBox()
+                        CommentBox.ResetCommentBox(String.Empty)
                     End If
                         If LinacName Like "LA?" Then
                             strScript += "alert('No Energies Approved Logging Off');"
@@ -270,7 +271,7 @@ Partial Class ErunupUserControl
         Application(LinacFlag) = "Linac Unauthorised"
         Application(repairstate) = Nothing
         Application(appstate) = Nothing
-        CommentBox.ResetCommentBox()
+        CommentBox.ResetCommentBox(String.Empty)
         Application(tabstate) = String.Empty
         strScript += message
         strScript += "window.location='"
@@ -312,15 +313,15 @@ Partial Class ErunupUserControl
         'Sets up view open faults and Lock Elf
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = LinacName
-        If Tabby = 1 Then
+        If UserReason = 1 Then
 
-            CType(Objcon, ViewOpenFaults).TabName = Tabby
+            CType(Objcon, ViewOpenFaults).ParentControl = ENG
             CType(Objcon, ViewOpenFaults).LinacName = LinacName
             PlaceHolderViewopenfaults.Controls.Add(Objcon)
         Else
             'Hide lock elf button if rad run up
             LockElf.Visible = False
-            CType(Objcon, ViewOpenFaults).TabName = Tabby
+            CType(Objcon, ViewOpenFaults).ParentControl = RAD
             CType(Objcon, ViewOpenFaults).LinacName = LinacName
             PlaceHolderViewopenfaults.Controls.Add(Objcon)
         End If
@@ -340,7 +341,7 @@ Partial Class ErunupUserControl
             objDefect = Page.LoadControl("DefectSavePark.ascx")
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = LinacName
-            CType(objDefect, DefectSavePark).ParentControl = 1
+            CType(objDefect, DefectSavePark).ParentControl = ENG
             AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
             AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
             engHandoverButton.Text = "Approve for Clinical Use"
@@ -349,7 +350,7 @@ Partial Class ErunupUserControl
             objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefect, DefectSave).ID = "DefectDisplay"
             CType(objDefect, DefectSave).LinacName = LinacName
-            CType(objDefect, DefectSave).ParentControl = Tabby
+            CType(objDefect, DefectSave).ParentControl = ENG
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
             If LinacName Like "LA?" Then
                 engHandoverButton.Text = "Approve Energies"
@@ -360,9 +361,6 @@ Partial Class ErunupUserControl
 
         PlaceHolderDefectSave.Controls.Add(objDefect)
 
-
-
-
         'Wire up the event (UserApproved) to the event handler (UserApprovedEvent)
         'The solution of how to pass parameter to dynamically loaded user control is from here:
         'http://weblogs.asp.net/aghausman/archive/2009/04/15/how-to-pass-parameters-to-the-dynamically-added-user-control.aspx
@@ -371,26 +369,19 @@ Partial Class ErunupUserControl
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
         wctrl.UserReason = UserReason
-        wctrl.Tabby = Tabby
-        'comment = CommentBoxuc1.Currentcomment
-        'ObjComment = CType(FindControl("CommentBox"), controls_CommentBoxuc)
-        'CType(ObjComment, controls_CommentBoxuc).LinacName = LinacName
-        'CType(ObjComment, controls_CommentBoxuc).BoxChanged = BoxChanged
-        'CommentBox.LinacName = LinacName
+        If UserReason = 9 Then
+            wctrl.Tabby = RAD
+        Else
+            wctrl.Tabby = ENG
+        End If
+
         CommentBox.BoxChanged = BoxChanged
-        'If Not IsPostBack Then
-        '    If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
-        '        CommentBox.Currentcomment = Application(BoxChanged).ToString
-        '        'Textboxcomment.Text = Application(BoxChanged).ToString
-        '    Else
-        '        'Textboxcomment.Text = comment
-        '    End If
-        'End If
+
 
     End Sub
     Protected Sub SetEnergies(ByVal connectionString As String)
         Dim SelCommand As String = ""
-        If Tabby = 1 Then
+        If UserReason = ENG Then
             'added imaging
             SelCommand = "SELECT * FROM [physicsenergies] where linac= @linac and Energy not in ('iView','XVI')"
         Else
@@ -415,7 +406,7 @@ Partial Class ErunupUserControl
         Dim count As Integer = 0
         'Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         conn = New SqlConnection(connectionString)
-        If Tabby = 1 Then
+        If UserReason = ENG Then
             'added imaging
             comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy not in ('iView','XVI')", conn)
         Else
@@ -628,11 +619,6 @@ Partial Class ErunupUserControl
     End Sub
 
 
-    'Protected Sub CommentBox_TextChanged(sender As Object, e As EventArgs) Handles CommentBox.TextChanged
-    '    Application(BoxChanged) = CommentBox.Text
-    '    'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
-    'End Sub
-
     '15 April Added this control as a result of Bug 11
     Protected Sub LockElf_Click(sender As Object, e As EventArgs) Handles LockElf.Click
         '15 April test mod next 6 lines
@@ -641,12 +627,11 @@ Partial Class ErunupUserControl
         Dim grdview As GridView = FindControl("Gridview1")
         Dim grdviewI As GridView = FindControl("GridViewImage")
         comment = CommentBox.Currentcomment
-        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-        'Dim Comment As String = Textboxcomment.Text
+
         Dim success As Boolean = False
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         'has to be tablable to cope with either tab 1 or 7 control
-        success = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, "Lockuser", comment, False, False, True, FaultParams)
+        success = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, ENG, "Lockuser", comment, False, False, True, FaultParams)
 
         If success Then
             RaiseEvent BlankGroup(0)

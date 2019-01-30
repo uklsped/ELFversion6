@@ -1,5 +1,6 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="DefectSave.ascx.vb" Inherits="DefectSave" %>
 <%@ Register assembly="AjaxControlToolkit" namespace="AjaxControlToolkit" tagprefix="asp" %>
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
 <%--No need now for WriteDatauc Analysis 23/11/16 --%>
 <%--Added back in 26/03/18 --%>
                  <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
@@ -37,11 +38,9 @@
 <asp:HiddenField ID="AreaOrAccuray" Value="" runat="server" />
 <%-- NO requirement 23/11/16 --%>
 <%-- Added back in 26/03/18 --%>
-This is for rad reset
+
 <uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11"  Tabby="Defect"  WriteName="Defect" visible="false"  runat="server" />
 <uc1:WriteDatauc ID="WriteDatauc2" LinacName="" UserReason="103"  Tabby="Major"  WriteName="Major" visible="false"  runat="server" />
-
-                 <%--<asp:TableCell ID="c2" runat="server" HorizontalAlign="left" Width="250px">Radiographer Cleared Fault <br />--%>
                  
                        <div style ="width:401px">
                            Record Repeat Fault<br />
@@ -68,10 +67,8 @@ This is for rad reset
         <tr>
             <td class="style3">
                 Area:
-                <%--comment out 21/11/16 to replace with text box
-                 <span class = "redcolor"> * </span><br /> </td>--%>
             <td class="style4">
-                <%--<asp:UpdatePanel ID="UpdatePanelArea" runat="server" UpdateMode="Conditional" ><ContentTemplate>--%>
+               
            <asp:DropDownList ID="DropDownListArea" runat="server"  enabled ="false" enableviewstate="false">
                 <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
                 <asp:ListItem Text="Machine" Value="Machine"></asp:ListItem>
@@ -80,7 +77,7 @@ This is for rad reset
                 <asp:ListItem Text="IT" Value="IT"></asp:ListItem>
                 <asp:ListItem Text="Other" Value="Other"></asp:ListItem>
             </asp:DropDownList>
-                <asp:RequiredFieldValidator ID="AreaValidation" ControlToValidate="DropDownListArea" runat="server" InitialValue="Select" ErrorMessage="Please Select Area"></asp:RequiredFieldValidator>
+                <asp:RequiredFieldValidator ID="AreaValidation" ControlToValidate="DropDownListArea" runat="server" InitialValue="Select" ErrorMessage="Please Select Area" Font-Bold="True" Display="Dynamic"></asp:RequiredFieldValidator>
             </td>
         </tr>
         <tr>
@@ -124,20 +121,18 @@ This is for rad reset
         <td class="style2">
                 Fault Description:</td>
             <td>
-              <asp:TextBox ID="FaultDescription" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
-                 <asp:RequiredFieldValidator ID="FaultDescriptionValidation" ControlToValidate="FaultDescription"  runat="server" ErrorMessage="Please Enter a Fault Description" Display="Dynamic"></asp:RequiredFieldValidator>
-                </td>
+                <asp:Panel ID="FaultPanel" runat="server" Enabled="False">
+                <uc2:CommentBoxuc ID="FaultDescription" runat ="server" />
+                    </asp:Panel>
         </tr>
       <tr>
           <td class="style2">
               Corrective Action:
           </td>
           <td>
-              <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible ="true"></asp:TextBox>
-          
-          <asp:RequiredFieldValidator ID="RadActValidation" ControlToValidate="RadAct" runat="server" ErrorMessage="Please Enter the Corrective Action Taken" Display="Dynamic"></asp:RequiredFieldValidator>
-              </td>
-      </tr>
+              <asp:Panel ID="ActPanel" Enabled="false" runat="server">
+              <uc2:CommentBoxuc ID="RadActC" runat ="server" />
+              </asp:Panel>
          <tr>
             <td class="style2">
                 Patient ID:</td>
@@ -183,11 +178,7 @@ This is for rad reset
                                </td>
                               </tr>
                               </table>
-<%--                              <table>
-                           <tr>
-                               <td class="style1">
-                               
-                                   <br />--%>
+
                                    Today's Repeat Faults
                                    <div style =" background-color:Green; 
         height:30px;width:400px; margin:0;padding:0">
@@ -209,24 +200,21 @@ This is for rad reset
         GridLines="Horizontal" Font-Size="smaller" >
         <RowStyle BackColor="White" ForeColor="#333333" />
         <Columns>
-            <%--<asp:BoundField DataField="RRFId" HeaderText="RRFId" InsertVisible="False" 
-                ReadOnly="True" SortExpression="RRFId" />--%>
+
             <asp:BoundField DataField="ConcessionNumber" HeaderText="Fault Identifier" ItemStyle-Width="150px" 
                 SortExpression="ConcessionNumber" />
             <asp:BoundField DataField="DefectTime" HeaderText="DefectTime" ItemStyle-Width="80px" 
                 SortExpression="DefectTime" />
                 <asp:BoundField DataField="Description" HeaderText="Description" ItemStyle-Width="160px" 
                 SortExpression="Description" />
-            <%--<asp:BoundField DataField="RadSig" HeaderText="RadSig" 
-                SortExpression="RadSig" />
-            <asp:BoundField DataField="CAuthId" HeaderText="CAuthId" 
-                SortExpression="CAuthId" />--%></Columns><FooterStyle BackColor="White" ForeColor="#333333" />
+
+        </Columns><FooterStyle BackColor="White" ForeColor="#333333" />
         <PagerStyle BackColor="#336666" ForeColor="White" HorizontalAlign="Center" />
         <SelectedRowStyle BackColor="#339966" Font-Bold="True" ForeColor="White" />
         <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
     </asp:GridView>              
                </div>
-               <%--</table>--%>
+
                </div>
 
                </ContentTemplate>
@@ -234,9 +222,3 @@ This is for rad reset
 </div>
 
 </div>
-
- 
-
-
-
- 

@@ -51,22 +51,10 @@
 
 <%--<%@ Register src="Singlemachinefaultuc.ascx" tagname="Singlemachinefaultuc" tagprefix="uc2" %>--%>
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="1" Tabby="1" visible="false" runat="server" />
-<%--<script type="text/javascript">
-    function Count() {
-         var i = document.getElementById("CommentBox").value.length;
-        if (i < 251)
-            document.getElementById("CommentWordCount").innerHTML = 250 - i;
-        else
-            document.getElementById("CommentWordCount").innerHTML = "You have exceeded the max text please delete some characters";
-        return;
-    }
-    
-</script>--%>
+
 <asp:Label ID="CheckUser" runat="server" Text=""  visible="true" display="none" causesvalidation="false"></asp:Label>
  <asp:GridView ID="DummyGridView" runat="server">
         </asp:GridView>     
-
- 
 
  <div>
  
@@ -75,10 +63,13 @@
            <asp:Label ID="lblError" runat="server" Text="" EnableViewState="False"></asp:Label>
            
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
-               Width="1500px">
+               Width="1875px">
                <asp:TableRow ID="r1" runat="server">
-                   <asp:TableCell ID="c1" runat="server" Width="250px" HorizontalAlign="Left">
-                   <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" visible="false">
+                   <asp:TableCell ID="c1" runat="server" HorizontalAlign="Left">
+                       <table style="width: 350px;">
+                           <tr>
+                               <td>
+<asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" visible="false" >
             <Columns>
             
                 <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
@@ -98,10 +89,9 @@
             </asp:TemplateField>
             </Columns>
         </asp:GridView>
-               
-</asp:TableCell>
-                   <asp:TableCell ID="imagingcell" runat="server" Width =" 250px" HorizontalAlign="Left">
-                       <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" Visible="false" >
+                               </td>
+                               <td>
+                                   <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" Visible="false" >
             <Columns>
             
                 <asp:BoundField DataField="Energy" HeaderText="Select Imaging" 
@@ -115,7 +105,75 @@
                       </asp:TemplateField>
             </Columns>
         </asp:GridView>
-                   </asp:TableCell>
+                               </td>
+                               
+                           </tr>
+                           <tr>
+                               <td>
+                                    
+                               </td>
+                           </tr>
+                          
+                       </table>
+                       <table style="width: 350px;">
+                           <tr>
+                               <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
+                               
+                           </tr>
+                           <tr>
+                               <td><uc3:CommentBoxuc ID="CommentBox" runat="server" /></td>
+                               
+                           </tr>
+                       </table>
+   
+                           
+                                   
+                                 
+                                   
+                              
+                          
+                                  
+                           
+                       
+                   <%--<asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" visible="false">
+            <Columns>
+            
+                <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
+                    SortExpression="Energy" />
+                    <asp:TemplateField>  
+            <HeaderTemplate>  
+                <asp:CheckBox ID="chkSelectAll"   
+                    runat="server" 
+                    AutoPostBack="true"  
+                    OncheckedChanged="checked"
+                     />  
+            </HeaderTemplate>
+                    
+            <ItemTemplate>
+            <asp:CheckBox runat="server" ID="RowlevelCheckBox" />
+            </ItemTemplate>
+            </asp:TemplateField>
+            </Columns>
+        </asp:GridView>--%>
+              
+                           <%--<uc3:CommentBoxuc ID="CommentBox" runat="server" />--%>                       
+</asp:TableCell>
+                   <%--<asp:TableCell ID="imagingcell" runat="server" Width =" 250px" HorizontalAlign="Left">--%>
+                      <%-- <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" Visible="false" >
+            <Columns>
+            
+                <asp:BoundField DataField="Energy" HeaderText="Select Imaging" 
+                    SortExpression="Energy" />
+                    <asp:TemplateField>  
+                             
+            <ItemTemplate>
+            <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" />
+
+            </ItemTemplate>
+                      </asp:TemplateField>
+            </Columns>
+        </asp:GridView>--%>
+                  <%-- </asp:TableCell>--%>
                         
 
                    
@@ -125,15 +183,8 @@
 
 
 </asp:TableCell>
-                   <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="250px">
-                               <%--<legend align="top" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Run-up Comments</legend>--%>
-                           <uc3:CommentBoxuc ID="CommentBox" runat="server" />
-                       <%--<asp:TextBox ID="CommentBoxold" runat="server" MaxLength="10" Rows="5"  
-                TextMode="Multiline" Width="150px" Height="300px" onkeyup="Count()" ClientIDMode="Static"></asp:TextBox>--%>
-                      <%-- <br/> <asp:Label ID="CommentWordCount" runat="server" Text="" ClientIDMode="Static"></asp:Label>--%>
-                      
-                       </asp:TableCell>
-                       <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
+
+                       <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="500px">
                        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
 <asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server">

@@ -5,18 +5,9 @@ Imports System.Drawing
 Partial Class controls_FaultTrackinguc
     Inherits System.Web.UI.UserControl
 
-    Private FaultStatus As String
-    Private ClinicalButton As Button
-    Private suspstate As String
-    Private failstate As String
     Private actionstate As String
-    Private repairstate As String
-    Private laststate As String
-    Private faultviewstate As String
     Private technicalstate As String
-    Private faultstate As String
     Private RadRow As DataTable
-    Const REPEATFAULTSELECTED As String = "REPEAT"
     Const CONCESSIONSELECTED As String = "CSelected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Const EMPTYSTRING As String = ""
@@ -31,11 +22,10 @@ Partial Class controls_FaultTrackinguc
     Private ConcessParamsTrial As DavesCode.ConcessionParameters = New DavesCode.ConcessionParameters()
 
     Public Event UpdateClosedDisplays(ByVal EquipmentName As String, ByVal incidentID As String)
-    Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
     Public Event AddConcessionToDefectDropDownList(ByVal EquipmentName As String, ByVal incidentID As String)
     Public Event CloseFaultTracking(ByVal EquipmentName As String)
-    Public Property IsLoaded As Boolean
-    Public Property TabName() As String
+    'Public Property IsLoaded As Boolean
+    'Public Property TabName() As String
     Public Property LinacName() As String
     Public Property IncidentID As String
 
@@ -60,22 +50,13 @@ Partial Class controls_FaultTrackinguc
         'AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
         AddHandler WriteDatauc3.UserApproved, AddressOf UserApprovedEvent
 
-
-
-        suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
         actionstate = "ActionState" + LinacName
-        repairstate = "rppTab" + LinacName
-        laststate = "previousstate" + LinacName
-        faultviewstate = "Faultsee" + LinacName
         technicalstate = "techstate" + LinacName
-        faultstate = "OpenFault" + LinacName
+
         ConcessionDescriptionChanged = "ConcessionDescription" + LinacName
         ConcessionActionChanged = "ConcessionAction" + LinacName
         ConcessionCommentChanged = "ConcessionComment" + LinacName
         ParamApplication = "Params" + LinacName
-        'Application(techstate) = False
-
 
     End Sub
 
@@ -84,61 +65,20 @@ Partial Class controls_FaultTrackinguc
         ConcessiondescriptionBoxC.BoxChanged = ConcessionDescriptionChanged
         ConcessionActionBox.BoxChanged = ConcessionActionChanged
         ConcessionCommentBox.BoxChanged = ConcessionCommentChanged
-        Dim success As Boolean
         Dim wrtctrl3 As WriteDatauc = CType(FindControl("WriteDatauc3"), WriteDatauc)
         wrtctrl3.LinacName = LinacName
-        '[Delegate] to end
-        'If Not IsPostBack Then
-        '    success = ConcessParamsTrial.CreateObject(IncidentID)
-        '    If success Then
-        '        'Application(ParamApplication) = ConcessParamsTrial
-        '        'BindTrackingGridTech(IncidentID)
-
-
-        '        'Select Case Me.DynamicControlSelection
-        '        '    Case CONCESSIONSELECTED
-        '        '        Me.DeviceRepeatFaultPlaceHolder.Controls.Clear()
-        '        '        'LoadFaultTable(IncidentID)
-        '        '    Case Else
-        '        Application(ParamApplication) = ConcessParamsTrial
-        '        SetupStatusTech(IncidentID)
-        '        'LoadFaultTable(IncidentID)
-        '        'End Select
-        '        'LoadFaultTable(IncidentID)
-        '    End If
-        'End If
-        'BindTrackingGridTech(IncidentID)
-        ''If FaultOptionList.SelectedIndex = 0 Then
-        ''    CDescriptionPanel.Enabled = False
-        ''    CActionPanel.Enabled = False
-        ''    CCommentPanel.Enabled = False
-        ''    LoadFaultTable(IncidentID)
-        ''End If
 
     End Sub
 
     Public Sub InitialiseFaultTracking(ByVal ConcessObject As DavesCode.ConcessionParameters)
-        'ConcessiondescriptionBoxC.BoxChanged = ConcessionDescriptionChanged
-        'ConcessionActionBox.BoxChanged = ConcessionActionChanged
-        'ConcessionCommentBox.BoxChanged = ConcessionCommentChanged
-        'Dim success As Boolean
-        'Dim wrtctrl3 As WriteDatauc = CType(FindControl("WriteDatauc3"), WriteDatauc)
-        'wrtctrl3.LinacName = LinacName
 
-        'If Not IsPostBack Then
-        'success = ConcessParamsTrial.CreateObject(IncidentID)
-        'If success Then
-        'Dim incidentID As String
         Application(ParamApplication) = ConcessObject
-        'Application(ParamApplication) = ConcessParamsTrial
         SetupStatusTech(ConcessObject.IncidentID)
         SaveAFault.Enabled = False
         CCommentPanel.Enabled = False
         CActionPanel.Enabled = False
         CDescriptionPanel.Enabled = False
 
-        'End If
-        'End If
         BindTrackingGridTech(ConcessObject.IncidentID)
 
     End Sub
@@ -180,8 +120,7 @@ Partial Class controls_FaultTrackinguc
             .SelectCommand = "select t.TrackingID, t.description,t.action, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn  " _
         & "from FaultTracking t  where t.incidentID=@incidentID order by t.TrackingID desc"
         }
-        'SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-        'SqlDataSource3.SelectParameters.Add("linac", LinacName)
+
         SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
         SqlDataSource3.SelectParameters.Add("incidentID", incidentID)
         GridView5.DataSource = SqlDataSource3
@@ -193,15 +132,10 @@ Partial Class controls_FaultTrackinguc
         Dim incidentid As String
         ConcessParamsTrial = Application(ParamApplication)
         Dim CDescriptionstring As String = ConcessParamsTrial.ConcessionDescription
-        'ConcessParamsTrial = Application(ParamApplication)
-        'FaultStatus = ConcessParamsTrial.PresentFaultState
-        'Dim Ccommentstring As String = HttpContext.Current.Application(ConcessionCommentChanged)
-        'Fault status is existing status
+
         updateFaultStatus = FaultOptionList.SelectedItem.Value
-        'updateFaultStatus = FaultOptionList.SelectedItem.Text
-        'Me.DynamicControlSelection = String.Empty
         incidentid = ConcessParamsTrial.IncidentID
-        'SetupStatusTech(incidentid)
+
         If Not updateFaultStatus = "Select" Then
             SaveAFault.Enabled = True
             SaveAFault.BackColor = Drawing.Color.Yellow
@@ -228,35 +162,28 @@ Partial Class controls_FaultTrackinguc
         End If
         'Basically puts new selected value into concessparams and Application
         Application(ParamApplication) = ConcessParamsTrial
-        ' SetupStatusTech(incidentid)
 
         LoadFaultTable(incidentid)
         BindTrackingGridTech(incidentid)
 
-
-        'Me.DynamicControlSelection = CONCESSIONSELECTED
     End Sub
 
     Protected Sub SaveAFault_Click(ByVal sender As Object, ByVal e As EventArgs) Handles SaveAFault.Click
         Dim validator As System.Web.UI.WebControls.BaseValidator
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc3"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
-        'CDescriptionPanel.Enabled = True
-        'DescriptionUpdatePanel.Update()
-        'Dim tex As String = ConcessiondescriptionBoxC.Currentcomment
-        If TabName = "Clin" Then
-            wctrl.UserReason = "12"
-        End If
-        'Dim faultstatus As String
+        'what's this here for?
+        'If TabName = "Clin" Then
+        '    wctrl.UserReason = "12"
+        'End If
+
         Dim ConcessionNumber As String
 
         Dim strScript As String = "<script>"
         Dim incidentid As String
         'Dim UniqueC As Boolean
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        'faultstatus = FaultOptionList.SelectedItem.Text
         ConcessionNumber = ConcessionNumberBox.Text
-        'ConcessParamsTrial = Application(ParamApplication)
         'UniqueC = CheckUniqueConcession(ConcessionNumber)
         'or this is concessparamstrial.futurestate
         Select Case FaultOptionList.SelectedItem.Text
@@ -270,7 +197,6 @@ Partial Class controls_FaultTrackinguc
         'this is concessparamstrial.incidentid
         incidentid = IncidentNumber.Text
 
-        'Dim te As String = ConcessionActionBox.Currentcomment
         'This must be different validate key to others on the page!
         Page.Validate("faulttracking")
         If Page.IsValid Then
@@ -302,11 +228,9 @@ Partial Class controls_FaultTrackinguc
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
         Dim TRACKINGID As Integer = 0
         Dim Action As String = Application(actionstate)
-        'Dim Energy As String
         Dim incidentID As String
         Dim Machine As String
         Application(technicalstate) = Nothing
-        'SetViewFault(True)
         CreateConcessParams(Userinfo)
 
         Machine = ConcessParamsTrial.Linac
@@ -356,19 +280,19 @@ Partial Class controls_FaultTrackinguc
 
                     Else
                         TRACKINGID = DavesCode.NewFaultHandling.UpdateTracking(ConcessParamsTrial)
-                        'TRACKINGID = DavesCode.NewFaultHandling.UpdateTracking(CommentText, assignuser, FaultOptionList.SelectedItem.Text, Userinfo, LinacName, ConcessionAction, incidentID, 0)
+
                         If TRACKINGID = -1 Then
                             RaiseError()
                         Else
                             '    RaiseEvent CloseFaultTracking(Machine)
                             'End If
                             If ConcessParamsTrial.FutureFaultState = "Closed" Then
+
                                 RaiseEvent UpdateClosedDisplays(Machine, incidentID)
 
                             End If
                             RaiseEvent CloseFaultTracking(Machine)
                         End If
-
 
                     End If
                 Else

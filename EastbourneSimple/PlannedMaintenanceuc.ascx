@@ -4,6 +4,7 @@
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc1" %>
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc10" %>
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
+
 <%--<%@ Register Src="ErunupUserControl.ascx" TagName="ErunupUserControl" TagPrefix="uc1" %>--%>
 
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc3" %>
@@ -13,26 +14,7 @@
 <%@ Register Src="ViewCommentsuc.ascx" TagName="ViewCommentsuc" TagPrefix="uc7" %>
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc8" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc9" %>
-<%--<link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />--%>
-<%--<script type="text/javascript">
 
-    function pageLoad(sender, args) {
-        smoothAnimation();
-    }
-
-    function smoothAnimation() {
-        var collpanel = $find("Panel101_CollapsiblePanelExtender");
-        collpanel._animation._fps = 5;
-        collpanel._animation._duration = 10;
-    }
-  function ExpandCollapse() {
-  var collpanel = $find("Panel101_CollapsiblePanelExtender");
-  if (collpanel.get_Collapsed())
-        collpanel.set_Collapsed(false);
-        else
-        collpanel.set_Collapsed(true);
-        }
-        </script>--%>
 <div>
     <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC"
         BorderStyle="Solid">
@@ -48,19 +30,17 @@
                     <asp:RadioButtonList ID="RadioButtonList1" CausesValidation="false" runat="server"
                         AutoPostBack="True">
                     </asp:RadioButtonList>
+                    <br />
+                    <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
+                        Maintenance Comments</legend><br />
+                  <uc2:CommentBoxuc ID="CommentBox" runat="server" />
                 </asp:TableCell>
                 <asp:TableCell ID="c2" runat="server" Width="50px">
                     <asp:Button ID="LogOffButton" runat="server" Text="Log Off" CausesValidation="false"
                         Enabled="False" Height="150px" />
                 </asp:TableCell>
-                <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="150px">
-                   
-                        <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
-                        Maintenance Comments</legend>
-                    <uc2:CommentBoxuc ID="CommentBox" runat="server" />
 
-                </asp:TableCell>
-                <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
+                <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="500px">
                        <asp:UpdatePanel ID="UpdatePanel3" runat="server">
                         <ContentTemplate>
                         <asp:PlaceHolder ID="PlaceHolder4" runat="server">

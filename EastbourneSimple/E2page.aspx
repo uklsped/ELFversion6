@@ -54,7 +54,7 @@
     function loadTabPanel(sender, e) {
         
         var tabContainer = sender;
-
+        
         if (tabContainer) {
             
             var updateControlId = "TabButton" + tabContainer.get_activeTabIndex();
@@ -212,7 +212,7 @@ E2 Status
 <asp:Button ID="TabButton1" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent1" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "E2"  Tabby="1" UserReason = "1" visible="false" />
-    <uc1:ErunupUserControlCommon ID="ErunupUserControl1" LinacName="E2" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server" />
+    <uc1:ErunupUserControlCommon ID="ErunupUserControl1" LinacName="E2" UserReason = "1" DataName="EngData" visible="false" runat="server" />
 
 </asp:Panel>
 </ContentTemplate>
@@ -326,7 +326,7 @@ E2 Status
 <ContentTemplate><asp:Button ID="TabButton7" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent7" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "E2"  Tabby="7" UserReason = "9" visible="false" />
- <uc1:ErunupUserControlCommon ID="ErunupUserControl2" LinacName="E2" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
+ <uc1:ErunupUserControlCommon ID="ErunupUserControl2" LinacName="E2" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
 
 </asp:Panel>
 </ContentTemplate>
