@@ -129,12 +129,8 @@
 
         </div>
 
-
-
-
-
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both"
-            Width="1100px" Height="509px">
+            Width="1875px" Height="509px">
             <asp:TableRow ID="r1" runat="server" Width="1100px" HorizontalAlign="Left" BorderColor="White">
                 <asp:TableCell ID="c1" runat="server" Width="130px" BorderStyle="Solid" HorizontalAlign="Left">
                     <asp:Table runat="server">
@@ -157,7 +153,7 @@
                         </asp:TableRow>
                         <asp:TableRow runat="server">
                             <asp:TableCell>
-                                <asp:Button ID="LogOffButton" runat="server" Text="Log Off Linac" CausesValidation="false" />
+                                <asp:Button ID="LogOffButton" runat="server" Text="Log Off Linac"  CausesValidation="false" />
 
 
 
@@ -173,70 +169,6 @@
                 </asp:TableCell>
 
                 <asp:TableCell ID="Clinicalcomments" runat="server" HorizontalAlign="left" VerticalAlign="Top" Width="250px">
-                    <div>
-                        <table style="width: 100%;">
-                            <tr>
-                                <td>Clinical Comment
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <asp:UpdatePanel ID="UpdatePanelcomments" runat="server" UpdateMode="Conditional">
-                                        <ContentTemplate>
-                                            <uc8:CommentBoxuc ID="CommentBox" runat="server" />
-                                            <br />
-                                            <asp:Button ID="SaveText" runat="server" Text="Save" CausesValidation="False" />
-                                        </ContentTemplate>
-                                        <Triggers>
-                                            <asp:AsyncPostBackTrigger ControlID="SaveText" EventName="click" />
-                                        </Triggers>
-                                    </asp:UpdatePanel>
-
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div style="background-color: Green; height: 30px; width: 355px; margin: 0; padding: 0">
-                                        <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table2"
-                                            style="font-family: Arial; font-size: 10pt; width: 355px; color: white; border-collapse: collapse; height: 100%;">
-                                            <tr>
-                                                <td style="width: 60px; text-align: center">Time</td>
-                                                <td style="width: 240px; text-align: center">Clinical Comment</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
-                                        <ContentTemplate>
-
-                                            <div style="height: 175px; width: 355px; overflow: auto;">
-                                                <asp:GridView ID="GridViewComments" runat="server" AutoGenerateColumns="False" ShowHeader="false"
-                                                    DataKeyNames="Clincomment" BackColor="White"
-                                                    BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
-                                                    GridLines="Horizontal">
-                                                    <RowStyle BackColor="White" ForeColor="#333333" />
-                                                    <Columns>
-                                                        <asp:BoundField DataField="DateTime"  ItemStyle-Width="60px"
-                                                            SortExpression="Time" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
-                                                        <asp:BoundField DataField="Clincomment"  ItemStyle-Width="350px"
-                                                            SortExpression="Clinical" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
-
-                                                    </Columns>
-                                                    <FooterStyle BackColor="White" ForeColor="#333333" />
-                                                    <PagerStyle BackColor="#336666" ForeColor="White" HorizontalAlign="Center" />
-                                                    <SelectedRowStyle BackColor="#339966" Font-Bold="True" ForeColor="White" />
-                                                    <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
-                                                </asp:GridView>
-                                            </div>
-
-                                        </ContentTemplate>
-                                    </asp:UpdatePanel>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </asp:TableCell>
-                <asp:TableCell VerticalAlign="Top">
                     <table>
                         <asp:Panel ID="PanelPreclincomments" runat="server">
                         <tr>
@@ -308,13 +240,76 @@
                                         <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
                                     </asp:GridView>
                                 </div>
-
+                                
                             </td>
                         </tr>
                         
                     </table>
+                    <div>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td>Clinical Comment
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <asp:UpdatePanel ID="UpdatePanelcomments" runat="server" UpdateMode="Conditional">
+                                        <ContentTemplate>
+                                            <uc8:CommentBoxuc ID="CommentBox" runat="server" />
+                                            <br />
+                                            <asp:Button ID="SaveText" runat="server" Text="Save" CausesValidation="False" />
+                                        </ContentTemplate>
+                                        <Triggers>
+                                            <asp:AsyncPostBackTrigger ControlID="SaveText" EventName="click" />
+                                        </Triggers>
+                                    </asp:UpdatePanel>
+
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="background-color: Green; height: 30px; width: 355px; margin: 0; padding: 0">
+                                        <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table2"
+                                            style="font-family: Arial; font-size: 10pt; width: 355px; color: white; border-collapse: collapse; height: 100%;">
+                                            <tr>
+                                                <td style="width: 60px; text-align: center">Time</td>
+                                                <td style="width: 240px; text-align: center">Clinical Comment</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+                                        <ContentTemplate>
+
+                                            <div style="height: 175px; width: 355px; overflow: auto;">
+                                                <asp:GridView ID="GridViewComments" runat="server" AutoGenerateColumns="False" ShowHeader="false"
+                                                    DataKeyNames="Clincomment" BackColor="White"
+                                                    BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
+                                                    GridLines="Horizontal">
+                                                    <RowStyle BackColor="White" ForeColor="#333333" />
+                                                    <Columns>
+                                                        <asp:BoundField DataField="DateTime"  ItemStyle-Width="60px"
+                                                            SortExpression="Time" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
+                                                        <asp:BoundField DataField="Clincomment"  ItemStyle-Width="350px"
+                                                            SortExpression="Clinical" ItemStyle-HorizontalAlign="Left" ItemStyle-VerticalAlign="Top" HtmlEncode="False" HtmlEncodeFormatString="True" />
+
+                                                    </Columns>
+                                                    <FooterStyle BackColor="White" ForeColor="#333333" />
+                                                    <PagerStyle BackColor="#336666" ForeColor="White" HorizontalAlign="Center" />
+                                                    <SelectedRowStyle BackColor="#339966" Font-Bold="True" ForeColor="White" />
+                                                    <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
+                                                </asp:GridView>
+                                            </div>
+
+                                        </ContentTemplate>
+                                    </asp:UpdatePanel>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </asp:TableCell>
-                <asp:TableCell HorizontalAlign="Left" Width="375px">
+
+                <asp:TableCell HorizontalAlign="Left" Width="500px">
                     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                         <ContentTemplate>
                             <asp:PlaceHolder ID="PlaceHolder3" runat="server"></asp:PlaceHolder>

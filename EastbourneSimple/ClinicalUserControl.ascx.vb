@@ -311,14 +311,14 @@ Partial Class ClinicalUserControl
         Dim SqlDateSourceComment As New SqlDataSource()
 
         Dim query As String = "select convert(Varchar(5),e.LogOutDate, 108) as DateTime, e.comment from handoverenergies e " &
-         "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
+         "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac and e.Comment != NULL)"
 
         SqlDateSourceComment = QuerySqlConnection(LinacName, query)
         GridViewEng.DataSource = SqlDateSourceComment
         GridViewEng.DataBind()
 
         query = "select convert(Varchar(5),r.LogOutDate, 108) as DateTime, r.Ccomment from handoverenergies e left outer join clinicalhandover r On e.handoverid=r.ehandid " &
-         "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
+         "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac and r.Ccomment != NULL)"
 
         SqlDateSourceComment = QuerySqlConnection(LinacName, query)
         GridViewPre.DataSource = SqlDateSourceComment
@@ -326,7 +326,7 @@ Partial Class ClinicalUserControl
 
         query = "select convert(Varchar(5),c.DateTime, 108) as DateTime, c.ClinComment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
         "Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
-        "c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac) order by c.datetime desc"
+        "c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac and not c.Clincomment = '') order by c.datetime desc"
 
         SqlDateSourceComment = QuerySqlConnection(LinacName, query)
 

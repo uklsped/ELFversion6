@@ -18,11 +18,8 @@
 <div>
        <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
         BorderStyle="Solid">
-                                 
-           
-                                 
-           <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
-               Width="1875px">
+                                
+           <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" Width="1875px">
                <asp:TableRow ID="r1" runat="server">
                    <asp:TableCell ID="c1" runat="server" Width="300px" HorizontalAlign="Left">
                        <asp:UpdatePanel ID="RadioListPanel" runat="server"><ContentTemplate>
@@ -33,20 +30,18 @@
                        
                     </asp:RadioButtonList>
                            </ContentTemplate></asp:UpdatePanel>
+                       <br />
+                        <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Repair Comments</legend>
+
+                       <uc1:CommentBoxuc ID="CommentBox" runat="server" />
                     </asp:TableCell>
                   <asp:TableCell ID="c2" runat="server" Width="50px">
                        
                    <asp:Button ID="LogOffButton" runat="server" Text="Log Off" causesvalidation="false" Enabled="false"  Height="150px" />
 
-                      
                     </asp:TableCell>
-                   <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="150px">
-                  <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Repair Comments</legend>
-<%--                       <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine" Text="">
-                       </asp:TextBox>--%>
-                       <uc1:CommentBoxuc ID="CommentBox" runat="server" />
-</asp:TableCell>
-<asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
+                   
+<asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="500px">
                        <asp:UpdatePanel ID="UpdatePanel2" runat="server">
 <ContentTemplate>
 <asp:PlaceHolder ID="PlaceHolder4" runat="server">
@@ -74,7 +69,7 @@
          <asp:TableRow ID ="t2r1" runat="server">
          <asp:TableCell ID="t2c1" runat="server">
          <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
-         <%--<asp:Button ID="Faultpanelbutton" runat="server" Text="View Open Faults" causesvalidation ="false"/>--%>
+
                </asp:TableCell>
                <asp:TableCell ID="t2c2" runat="server">
              

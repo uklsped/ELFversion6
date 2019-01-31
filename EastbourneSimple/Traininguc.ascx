@@ -22,28 +22,23 @@
         
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" Width="1875px">
             <asp:TableRow ID="r1" runat="server">
-                <asp:TableCell ID="c1" runat="server" Width="250px" HorizontalAlign="Left">
+                <asp:TableCell ID="c1" runat="server" Width="300px" HorizontalAlign="Left">
                     <asp:Label ID="StateLabel" runat="server" Text="Last State:"></asp:Label>
                     <asp:TextBox ID="StateTextBox" runat="server"></asp:TextBox>
                     <asp:RadioButtonList ID="RadioButtonList1" CausesValidation="false" runat="server"
                         AutoPostBack="True">
-                      
-
                     </asp:RadioButtonList>
+                    <br />
+                     <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
+                       Training Comments</legend>
+                    <uc2:CommentBoxuc ID="CommentBox" runat="server" />
                 </asp:TableCell>
                 <asp:TableCell ID="c2" runat="server" Width="50px">
                     <asp:Button ID="LogOffButton" runat="server" Text="Log Off" CausesValidation="false"
                         Enabled="False" Height="150px" />
                 </asp:TableCell>
-                <asp:TableCell ID="c3" runat="server" HorizontalAlign="left" Width="150px">
-                    <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
-                       Training Comments</legend>
-                    <uc2:CommentBoxuc ID="CommentBox" runat="server" />
-                   <%-- <asp:TextBox ID="CommentBox" runat="server" Width="145px" Height="150px" TextMode="MultiLine"
-                        Text="">
-                    </asp:TextBox>--%>
-                </asp:TableCell>
-                <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="375px">
+                
+                <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="500px">
                        <asp:UpdatePanel ID="UpdatePanel3" runat="server">
 <ContentTemplate>
 <asp:PlaceHolder ID="PlaceHolder4" runat="server">
