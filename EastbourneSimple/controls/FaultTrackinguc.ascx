@@ -74,18 +74,13 @@
                                                         <asp:Label ID="ConcessiondescriptionLabel" runat="server" Text="Concession Description"></asp:Label>
                                                         </td>
                                                         <td>
-                                                        
-                                                            
-                                                            <asp:Panel ID="CDescriptionPanel" enabled=false runat="server">
+                                                           <asp:Panel ID="CDescriptionPanel" enabled=false runat="server">
                                                               <asp:UpdatePanel ID="DescriptionUpdatePanel" runat="server"  UpdateMode="Conditional"><ContentTemplate>   
                                                             <uc2:CommentBoxuc ID="ConcessiondescriptionBoxC" MaxCount="50" runat="server" />
                                                                     </ContentTemplate>
-                                                               
-                                                                </asp:UpdatePanel>  
+                                                               </asp:UpdatePanel>  
                                                             </asp:Panel>
-                                                               
-                                                               
-                                                        </td>
+                                                         </td>
                                                         </tr>
                                                         <tr>
                                                         <td>
@@ -128,7 +123,7 @@
                                                         </asp:TableCell>
                                                         <asp:TableCell>
                                                     <fieldset style="width: 300px;">
-                                                        <asp:PlaceHolder ID="DeviceRepeatFaultPlaceHolder" runat="server"></asp:PlaceHolder>
+                                                        <asp:PlaceHolder ID="DeviceReportedFaultPlaceHolder" runat="server"></asp:PlaceHolder>
                                                     </fieldset>
                                                 </asp:TableCell>
                                             </asp:TableRow>

@@ -14,7 +14,7 @@ Partial Class Controls_DeviceRepeatFaultuc
     Const CancelFaultReturn As String = "Cancel"
     Const EMPTYSTRING As String = ""
 
-    Public Event UpdateRepeatFault(ByVal Tab As String, ByVal User As String)
+    Public Event UpdateRepeatFault(ByVal Device As String)
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
@@ -113,7 +113,7 @@ Partial Class Controls_DeviceRepeatFaultuc
         Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
         If Result Then
             'This triggers UserApprovedEvent in ViewOpenFaults
-            RaiseEvent UpdateRepeatFault(RepeatFault, UserInfo)
+            RaiseEvent UpdateRepeatFault(Device)
         Else
             RaiseError()
         End If
@@ -151,6 +151,7 @@ Partial Class Controls_DeviceRepeatFaultuc
         ScriptManager.RegisterStartupScript(SaveRepeatFault, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
     Protected Sub CancelFault_Click(sender As Object, e As EventArgs) Handles CancelFault.Click
-        RaiseEvent UpdateRepeatFault(CancelFaultReturn, String.Empty)
+
+        RaiseEvent UpdateRepeatFault(Device)
     End Sub
 End Class

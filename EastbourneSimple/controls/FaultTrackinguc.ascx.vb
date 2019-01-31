@@ -109,7 +109,7 @@ Partial Class controls_FaultTrackinguc
         CType(objcon, controls_DeviceReportedfaultuc).IncidentID = incidentid
         CType(objcon, controls_DeviceReportedfaultuc).Device = LinacName
         CType(objcon, controls_DeviceReportedfaultuc).ReportFaultID = incidentid
-        DeviceRepeatFaultPlaceHolder.Controls.Add(objcon)
+        DeviceReportedFaultPlaceHolder.Controls.Add(objcon)
 
     End Sub
 
