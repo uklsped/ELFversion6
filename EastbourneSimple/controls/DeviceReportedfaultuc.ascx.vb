@@ -33,40 +33,18 @@ Partial Class controls_DeviceReportedfaultuc
             conn.Open()
             Dim da As New SqlDataAdapter(comm)
             Dim dt As New DataTable()
-            'Dim nfaultid As String
-            'Dim ndescription As String
-            'Dim nrep As String
-            'Dim ndate As String
-            'Dim nen As String
-            'Dim nga As String
-            'Dim nca As String
-            'Dim nlin As String
-            'Dim narea As String
-            'Dim nconc As String
-            'Dim ncond As String
-            'Dim nincid As String
-            'Dim nbsuhid As String
-            'Dim FaultStatus As String
-            'Dim Radioincident As Boolean
-
 
             da.Fill(dt)
             If dt.Rows.Count > 0 Then
 
                 For Each dataRow As DataRow In dt.Rows
-                    'nfaultid = dataRow("FaultId")
                     OriginalDescriptionBoxL.Text = dataRow("Description")
                     OriginalReportedBoxL.Text = dataRow("ReportedBy")
                     OriginalOpenDateBoxL.Text = dataRow("DateReported")
-                    'FaultStatus = dataRow("Status")
                     OriginalAreaBox.Text = dataRow("Area")
                     OriginalEnergyBox.Text = dataRow("Energy")
                     OriginalGantryBox.Text = dataRow("GantryAngle")
                     OriginalCollBox.Text = dataRow("CollimatorAngle")
-                    'nconc = dataRow("ConcessionNumber")
-                    'ncond = dataRow("ConcessionDescription")
-                    'nlin = dataRow("Linac")
-                    'nincid = dataRow("incidentID")
                     OriginalPatientIDBoxL.Text = dataRow("BSUHID")
                     If dataRow.IsNull("RadiationIncident") Then
                         OriginalRadioIncident.Visible = False
@@ -75,19 +53,8 @@ Partial Class controls_DeviceReportedfaultuc
                         OriginalRadioIncident.SelectedValue = dataRow("RadiationIncident")
                     End If
 
-
                 Next
             End If
-
-            'OriginalDescriptionBoxL.Text = ndescription
-            'OriginalAreaBox.Text = narea
-            'OriginalEnergyBox.Text = nen
-            'OriginalGantryBox.Text = nga
-            'OriginalCollBox.Text = nca
-            'OriginalReportedBoxL.Text = nrep
-            'OriginalOpenDateBoxL.Text = ndate
-            'OriginalPatientIDBoxL.Text = nbsuhid
-            'OriginalRadioIncident.SelectedValue = Radioincident
 
         Finally
             conn.Close()
@@ -95,7 +62,7 @@ Partial Class controls_DeviceReportedfaultuc
     End Sub
 
     Protected Sub TomoLoad()
-        comm = New SqlCommand("select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status, r.Area, r.Energy, ISNULL (r.BSUHID, '') as BSUHID,ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, f.linac, f.IncidentID " _
+        comm = New SqlCommand("select distinct r.FaultID, r.Description, r.ReportedBy, r.DateReported, f.Status,r.RadiationIncident, r.Area, r.Energy, ISNULL (r.BSUHID, '') as BSUHID,ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.concessiondescription, '') as ConcessionDescription, f.linac, f.IncidentID " _
       & "from reportfault r left outer join FaultIDTable f on f.OriginalFaultID = r.FaultID left outer join ConcessionTable c on f.ConcessionNumber=c.ConcessionNumber where f.incidentID = @incidentID", conn)
 
         comm.Parameters.AddWithValue("@incidentID", IncidentID)
@@ -103,17 +70,7 @@ Partial Class controls_DeviceReportedfaultuc
             conn.Open()
             Dim da As New SqlDataAdapter(comm)
             Dim dt As New DataTable()
-            Dim nfaultid As String
-            Dim ndescription As String
-            Dim nrep As String
-            Dim ndate As String
-            Dim nen As String
-            Dim nlin As String
-            Dim narea As String
-            Dim nconc As String
-            Dim ncond As String
-            Dim nincid As String
-            Dim nbsuhid As String
+
             Dim FaultStatus As String
 
 
@@ -121,28 +78,23 @@ Partial Class controls_DeviceReportedfaultuc
             If dt.Rows.Count > 0 Then
 
                 For Each dataRow As DataRow In dt.Rows
-                    nfaultid = dataRow("FaultId")
-                    ndescription = dataRow("Description")
-                    nrep = dataRow("ReportedBy")
-                    ndate = dataRow("DateReported")
-                    FaultStatus = dataRow("Status")
-                    narea = dataRow("Area")
-                    nen = dataRow("Energy")
-                    nconc = dataRow("ConcessionNumber")
-                    ncond = dataRow("ConcessionDescription")
-                    nlin = dataRow("Linac")
-                    nincid = dataRow("incidentID")
-                    nbsuhid = dataRow("BSUHID")
 
+                    OriginalDescriptionBoxT.Text = dataRow("Description")
+                    OriginalReportedBoxT.Text = dataRow("ReportedBy")
+                    OriginalOpenDateBoxT.Text = dataRow("DateReported")
+                    FaultStatus = dataRow("Status")
+                    AccurayTextBox.Text = dataRow("Area")
+                    ErrorTextBox.Text = dataRow("Energy")
+
+                    OriginalPatientIDBoxT.Text = dataRow("BSUHID")
+                    If dataRow.IsNull("RadiationIncident") Then
+                        OriginalRadioIncidentT.Visible = False
+                        RadiationIncidentLabelT.Visible = False
+                    Else
+                        OriginalRadioIncidentT.SelectedValue = dataRow("RadiationIncident")
+                    End If
                 Next
             End If
-
-            OriginalDescriptionBoxT.Text = ndescription
-            AccurayTextBox.Text = narea
-            ErrorTextBox.Text = nen
-            OriginalReportedBoxT.Text = nrep
-            OriginalOpenDateBoxT.Text = ndate
-            OriginalPatientIDBoxT.Text = nbsuhid
 
         Finally
             conn.Close()

@@ -1,10 +1,8 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="DefectSavePark.ascx.vb" Inherits="DefectSavePark" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
 <%--No need now for WriteDatauc Analysis 23/11/16 --%><%--Added back in 26/03/18 --%>
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc1" %>
-
-
-
 
 <style type="text/css">
     .style1 {
@@ -65,29 +63,37 @@
                     <td class="style2">Physicist/Accuray job number:</td>
                     <td>
                         <asp:TextBox ID="Accuray" runat="server" EnableViewState="false"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="AccurayValidation" runat="server" ControlToValidate="Accuray" ErrorMessage="Please enter a physicist name or Accuray job number" Display="Dynamic"></asp:RequiredFieldValidator>
+                        <asp:RequiredFieldValidator ID="AccurayValidation" runat="server" ControlToValidate="Accuray" ErrorMessage="Please enter a physicist name or Accuray job number" Display="Dynamic" validationgroup="Tomodefect" Enabled="false"></asp:RequiredFieldValidator>
                     </td>
                 </tr>
                 <tr>
                     <td class="style2">Fault Description:</td>
                     <td>
-                        <asp:TextBox ID="FaultDescription" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="FaultDescriptionValidation" ControlToValidate="FaultDescription" runat="server" ErrorMessage="Please Enter a Fault Description" Display="Dynamic"></asp:RequiredFieldValidator>
+                        <asp:Panel ID="FaultPanel" runat="server" Enabled ="false">
+                            <uc2:CommentBoxuc ID="FaultDescription" runat="server" />
+                        </asp:Panel>
+
+                        <%--<asp:TextBox ID="FaultDescription" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="FaultDescriptionValidation" ControlToValidate="FaultDescription" runat="server" ErrorMessage="Please Enter a Fault Description" Display="Dynamic"></asp:RequiredFieldValidator>--%>
                     </td>
                 </tr>
                 <tr>
                     <td class="style2">Corrective Action:
                     </td>
                     <td>
-                        <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible="true" EnableViewState="false"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="CorrectiveActionValidation" runat="server" ControlToValidate="RadAct" ErrorMessage="Please Enter Corrective Action" Display="Dynamic"></asp:RequiredFieldValidator>
+                        <asp:Panel ID="ActPanel" Enabled="false" runat="server">
+                            <uc2:CommentBoxuc ID="RadActC" runat="server" />
+                        </asp:Panel>
+                       <%-- <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible="true" EnableViewState="false"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="CorrectiveActionValidation" runat="server" ControlToValidate="RadAct" ErrorMessage="Please Enter Corrective Action" Display="Dynamic"></asp:RequiredFieldValidator>--%>
+                        
                     </td>
                 </tr>
                 <tr>
                     <td class="style2">Patient ID:</td>
                     <td>
                         <asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
-                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic"  ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
                     </td>
                 </tr>
                  <tr>
@@ -107,9 +113,10 @@
             ControlToValidate="RadioIncident"
             ErrorMessage="Please complete Radiation Incident Selection"
                             Display="Dynamic"
-                            validationgroup="defect"
+                            validationgroup="Tomodefect"
             >
         </asp:RequiredFieldValidator>
+                              
                        </td>
               </tr>
             </table>
@@ -122,7 +129,7 @@
                             runat="Server">
                             <asp:MultiView ID="FaultTypeSave" ActiveViewIndex="-1" runat="server">
                                 <asp:View ID="RecoverableView" runat="server">
-                                   <asp:Button ID="SaveDefectButton" runat="server" Text="Save" ValidationGroup="defect" CausesValidation="true" />
+                                   <asp:Button ID="SaveDefectButton" runat="server" Text="Save" Enabled="false" CausesValidation="false" />
                                 </asp:View>
                                 <asp:View ID="UnRecoverableView" runat="server">
                                     <asp:Label ID="Label1" runat="server" Text="Fault Closed?"></asp:Label>

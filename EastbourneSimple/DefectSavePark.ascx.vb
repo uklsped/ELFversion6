@@ -26,7 +26,10 @@ Partial Class DefectSavePark
     Public Event UpdateFaultClosedDisplays(ByVal EquipmentName As String, ByVal IncidentID As String)
     Private Valid As Boolean = False
     Dim ConcessionNumber As String = ""
-
+    Private FaultDescriptionChanged As String
+    Private RadActDescriptionChanged As String
+    Private Comment As String
+    Private RadActComment As String
     Dim SelectedIncident As Integer = 0
     Public Property LinacName() As String
     Public Property ParentControl() As String
@@ -39,7 +42,8 @@ Partial Class DefectSavePark
         suspstate = "Suspended" + LinacName
         failstate = "FailState" + LinacName
         repairstate = "rppTab" + LinacName
-
+        FaultDescriptionChanged = "defectFault" + LinacName
+        RadActDescriptionChanged = "radact" + LinacName
     End Sub
 
     Public Sub UpDateDefectsEventHandler()
@@ -77,12 +81,25 @@ Partial Class DefectSavePark
         'If b Is Nothing Then
         '    i = CType(sender, RadioButtonList)
         'End If
+        If Defect.SelectedItem.Text = RecoverableFault Then
+            FaultDescription.SetValidation("Tomodefect", "Please Enter a fault description")
+            'RadActC.SetValidation("Tomodefect", "Please Enter the Corrective Action Taken")
+        End If
 
-        Page.Validate("defect")
+        Page.Validate("Tomodefect")
         If Page.IsValid Then
             'If (TypeOf sender Is Button) Then
             Application(actionstate) = "Confirm"
             UserApprovedEvent("Defect", "")
+        Else
+            For Each validator In Page.Validators
+                If (Not validator.IsValid) Then
+                    'validator that failed found so set the focus to the control
+                    'it validates and exit the loop
+                    ForceFocus(validator.FindControl(validator.ControlToValidate))
+                    Exit For
+                End If
+            Next validator
 
         End If
 
@@ -93,11 +110,12 @@ Partial Class DefectSavePark
         ClearButton.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(ClearButton, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         actionstate = "ActionState" + LinacName
         Dim newFault As Boolean
+        FaultDescription.BoxChanged = FaultDescriptionChanged
+        RadActC.BoxChanged = RadActDescriptionChanged
         If Not IsPostBack Then
             newFault = False
             SetFaults(newFault)
-
-
+            RadioIncident.SelectedIndex = -1
         End If
         'WriteDatauc1 no longer used 23/11/16
         'Added back in for RAD RESET 26/3/18 SEE SPR
@@ -207,19 +225,26 @@ Partial Class DefectSavePark
                 conn1.Open()
 
                 Dim sqlresult1 As Object = comm1.ExecuteScalar()
-                RadAct.Text = sqlresult1.ToString
-                RadAct.ReadOnly = True
+                'RadAct.Text = sqlresult1.ToString
+                'RadAct.ReadOnly = True
+                RadActC.ResetCommentBox(sqlresult1.ToString)
                 FaultTypeSave.SetActiveView(RecoverableView)
+                SaveDefectButton.Enabled = True
+                SaveDefectButton.BackColor = Drawing.Color.Yellow
                 conn1.Close()
 
             ElseIf Not String.IsNullOrEmpty(DefectString) Then
                 If DefectString = RecoverableFault Then
                     FaultTypeSave.SetActiveView(RecoverableView)
+                    SaveDefectButton.Enabled = True
+                    SaveDefectButton.BackColor = Drawing.Color.Yellow
                 ElseIf DefectString = UnRecoverableFault Then
                     FaultTypeSave.SetActiveView(UnRecoverableView)
+                    ActPanel.Enabled = True
                 End If
 
             End If
+            FaultPanel.Enabled = True
 
         Else
             SelectedIncidentID.Value = -1000
@@ -238,10 +263,13 @@ Partial Class DefectSavePark
         RadioIncident.SelectedIndex = -1
         ErrorCode.Text = Nothing
         Accuray.Text = Nothing
-        FaultDescription.Text = Nothing
+        FaultDescription.ResetCommentBox(EMPTYSTRING)
         PatientIDBox.Text = Nothing
-        RadAct.Text = Nothing
-
+        RadActC.ResetCommentBox(EMPTYSTRING)
+        SaveDefectButton.BackColor = Drawing.Color.LightGray
+        SaveDefectButton.Enabled = False
+        FaultPanel.Enabled = False
+        ActPanel.Enabled = False
     End Sub
 
     Sub NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
@@ -294,8 +322,11 @@ Partial Class DefectSavePark
 
                     Dim susstate As String = Application(suspstate)
                     Dim repstate As String = Application(repairstate)
-                    Dim DaTxtBox As TextBox = Me.Parent.FindControl("CommentBox")
+                    'This gets comment box from tab that defectsave is on
+                    Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
+                    Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
                     Dim Comment As String = DaTxtBox.Text
+
                     Dim iView As Boolean = False
                     Dim XVI As Boolean = False
 
@@ -348,6 +379,17 @@ Partial Class DefectSavePark
     End Sub
 
     Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultParams As DavesCode.FaultParameters)
+        If (Not HttpContext.Current.Application(FaultDescriptionChanged) Is Nothing) Then
+            Comment = HttpContext.Current.Application(FaultDescriptionChanged).ToString
+        Else
+            Comment = String.Empty
+        End If
+
+        If (Not HttpContext.Current.Application(RadActDescriptionChanged) Is Nothing) Then
+            RadActComment = HttpContext.Current.Application(RadActDescriptionChanged).ToString
+        Else
+            RadActComment = String.Empty
+        End If
 
         FaultParams.SelectedIncident = SelectedIncident
         FaultParams.Linac = LinacName
@@ -358,9 +400,9 @@ Partial Class DefectSavePark
         FaultParams.GantryAngle = EMPTYSTRING
         FaultParams.CollimatorAngle = EMPTYSTRING
         FaultParams.PatientID = PatientIDBox.Text
-        FaultParams.FaultDescription = FaultDescription.Text
+        FaultParams.FaultDescription = Comment
         FaultParams.ConcessionNumber = ConcessionNumber
-        FaultParams.RadAct = RadAct.Text
+        FaultParams.RadAct = RadActComment
         FaultParams.RadioIncident = RadioIncident.SelectedItem.Value
 
     End Sub
@@ -374,21 +416,19 @@ Partial Class DefectSavePark
         Selected = FaultOpenClosed.SelectedItem.Text
         UnRecoverableSave.Enabled = True
         UnRecoverableSave.BackColor = Drawing.Color.Yellow
-        AccurayValidation.ValidationGroup = "defect"
-        FaultDescriptionValidation.ValidationGroup = "defect"
-        CorrectiveActionValidation.ValidationGroup = "defect"
+        'AccurayValidation.ValidationGroup = "Tomodefect"
+        'FaultDescription.SetValidation = "defect"
+        'CorrectiveActionValidation.ValidationGroup = "defect"
     End Sub
     Protected Sub UnRecoverableSave_Click(sender As Object, e As EventArgs) Handles UnRecoverableSave.Click
         Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+        AccurayValidation.Enabled = True
+        FaultDescription.SetValidation("Tomodefect", "Please Enter a fault description")
+        RadActC.SetValidation("Tomodefect", "Please Enter the Corrective Action Taken")
 
-        'If (TypeOf sender Is RadioButtonList) Then
-        'AccurayValidation.ValidationGroup = "defect"
-        '    FaultDescriptionValidation.ValidationGroup = "defect"
-        '    CorrectiveActionValidation.ValidationGroup = "defect"
-        'End If
-        Page.Validate("defect")
+        Page.Validate("Tomodefect")
         If Page.IsValid Then
             Dim Selected As String = ""
             UnRecoverableSave.BackColor = Drawing.Color.LightGray
