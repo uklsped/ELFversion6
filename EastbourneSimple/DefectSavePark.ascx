@@ -72,9 +72,6 @@
                         <asp:Panel ID="FaultPanel" runat="server" Enabled ="false">
                             <uc2:CommentBoxuc ID="FaultDescription" runat="server" />
                         </asp:Panel>
-
-                        <%--<asp:TextBox ID="FaultDescription" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="FaultDescriptionValidation" ControlToValidate="FaultDescription" runat="server" ErrorMessage="Please Enter a Fault Description" Display="Dynamic"></asp:RequiredFieldValidator>--%>
                     </td>
                 </tr>
                 <tr>
@@ -84,9 +81,6 @@
                         <asp:Panel ID="ActPanel" Enabled="false" runat="server">
                             <uc2:CommentBoxuc ID="RadActC" runat="server" />
                         </asp:Panel>
-                       <%-- <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible="true" EnableViewState="false"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="CorrectiveActionValidation" runat="server" ControlToValidate="RadAct" ErrorMessage="Please Enter Corrective Action" Display="Dynamic"></asp:RequiredFieldValidator>--%>
-                        
                     </td>
                 </tr>
                 <tr>
@@ -107,17 +101,10 @@
                                     </asp:RadioButtonList>
                               </td>
                           <td>
-                        <asp:RequiredFieldValidator 
-            ID="RadioIncidentValidation"
-            runat="server"
-            ControlToValidate="RadioIncident"
-            ErrorMessage="Please complete Radiation Incident Selection"
-                            Display="Dynamic"
-                            validationgroup="Tomodefect"
-            >
+                        <asp:RequiredFieldValidator ID="RadioIncidentValidation" runat="server" ControlToValidate="RadioIncident" ErrorMessage="Please complete Radiation Incident Selection"
+                            Display="Dynamic" validationgroup="Tomodefect" >
         </asp:RequiredFieldValidator>
-                              
-                       </td>
+                     </td>
               </tr>
             </table>
             <table>

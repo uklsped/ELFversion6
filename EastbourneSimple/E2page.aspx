@@ -86,40 +86,57 @@
 
   </script>
 
-    
-
-    <asp:UpdatePanel ID="UpdatePanel8" runat="server"><ContentTemplate>
+        <asp:UpdatePanel ID="UpdatePanel8" runat="server"><ContentTemplate>
     <div>
     
          <table style="width: 100%;">
-            <tr>
-                <td>
-    <asp:Label ID="CurrentStateLabel" runat="server" Text="Current Linac State: " 
-            Height="50px" Width="1200px"  Font-Size="XX-Large" BackColor="White" 
-            ForeColor="Black"></asp:Label>
-<asp:Label ID="Statelabel" runat="server" Text="" Height="50px" Width="1200px"  Font-Size="XX-Large" BackColor="White" ForeColor="Black"></asp:Label>
-        <asp:Label ID="CurrentActivityLabel" runat="server" Text="Current Activity: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-<asp:Label ID="ActivityLabel" runat="server" Text="" Height="25px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-        <asp:Label ID="CurrentUserGroupLabel" runat="server" Text="Current User: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-<asp:Label ID="UserGroupLabel" runat="server" Text="" Height="40px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-<asp:Label ID="Label4" runat="server" Text="ELF IP Address: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-<asp:Label ID="Label5" runat="server" Text="" Height="40px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-                     </td>
-                <td>
-                    
-                </td>
-                <td>
-                    <asp:Image id="Image2" runat="server"
-            ImageUrl="~/Images/bsuh_logo.gif" Width="250" Height="74"
-            AlternateText="BSUH Linacs" />
-                    <br>
-            </br>
-             <asp:Image id="Image1" runat="server"
-            ImageUrl="~/Images/if_elf_62126.png" Width="100px" Height="100px"
-            AlternateText="ELF" />
-            <asp:Label ID="Label15" runat="server" Text="Software Version 5.0"></asp:Label>
-                </td>
-            </tr>
+             <tr>
+                 <td>
+             <table>
+                 <tr>
+                     <td> <asp:Label ID="CurrentStateLabel" runat="server" Text="Current Linac State: " 
+            Height="50px" Width="300px"  Font-Size="XX-Large" BackColor="White" 
+            ForeColor="Black"></asp:Label></td>
+                     <td><asp:Label ID="Statelabel" runat="server" BackColor="White" 
+                     Font-Size="XX-Large" ForeColor="Black" Height="50px" Text="" Width="900px"></asp:Label></td>
+                 </tr>
+                 <tr>
+                     <td> <asp:Label ID="CurrentActivityLabel" runat="server" BackColor="#3399FF" 
+                     Font-Size="Large" ForeColor="#FFFF66" Height="30px" Text="Current Activity: " 
+                     Width="300px"></asp:Label></td>
+                     <td> <asp:Label ID="ActivityLabel" runat="server" BackColor="#3399FF" 
+                     Font-Size="Large" ForeColor="#FFFF66" Height="30px" Text="" Width="900px"></asp:Label></td>
+                 </tr>
+                 <tr>
+                     <td> <asp:Label ID="CurrentUserGroupLabel" runat="server" BackColor="#3399FF" 
+                     Font-Size="Large" ForeColor="#FFFF66" Height="30px" Text="Current User: " 
+                     Width="300px"></asp:Label></td>
+                     <td> <asp:Label ID="UserGroupLabel" runat="server" BackColor="#3399FF" 
+                     Font-Size="Large" ForeColor="#FFFF66" Height="30px" Text="" Width="900px"></asp:Label></td>
+                 </tr>
+                 <tr>
+                     <td><asp:Label ID="Label4" runat="server" BackColor="#3399FF" Font-Size="medium" 
+                     ForeColor="#FFFF66" Height="20px" Text="ELF IP Address: " Width="300px"></asp:Label></td>
+                     <td> <asp:Label ID="Label5" runat="server" BackColor="#3399FF" Font-Size="medium" 
+                     ForeColor="#FFFF66" Height="20px" Text="" Width="900px"></asp:Label></td>
+                 </tr>
+             </table>
+                 </td>
+                     
+             
+            
+             <td>
+                 <asp:Image ID="Image2" runat="server" AlternateText="BSUH Linacs" Height="80px" 
+                     ImageUrl="~/Images/bsuh_logo.gif" Width="250" />
+                 <br/>
+                 <br/>
+
+                 <asp:Image ID="Image1" runat="server" AlternateText="ELF" Height="80px" 
+                     ImageUrl="~/Images/if_elf_62126.png" Width="100px" />
+                 <asp:Label ID="Label15" runat="server" Text="Software Version 6.0"></asp:Label>
+
+             </td>
+                 </tr>
                    </table>
 <%--This is an instrumentation label associated with updatehiddenLAfield--%>
 <%--<asp:Label ID="Application1Label" runat="server" Text="Current Application value: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
@@ -135,6 +152,7 @@
 
       </ContentTemplate>
     </asp:UpdatePanel>
+     
       <asp:Timer ID="Timer1" runat="server" Interval="7200000">
        
     </asp:Timer>

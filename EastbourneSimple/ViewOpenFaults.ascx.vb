@@ -2,10 +2,11 @@
 Imports System.Data.SqlClient
 Imports System.Data
 Imports System.Drawing
+Imports DavesCode
 
 Partial Class ViewOpenFaults
 
-    Inherits System.Web.UI.UserControl
+    Inherits UserControl
 
     Private FaultStatus As String
     Private ClinicalButton As Button
@@ -30,7 +31,9 @@ Partial Class ViewOpenFaults
     Private ConcessionActionChanged As String
     Private ConcessionCommentChanged As String
     Private ParamApplication As String
-    Private ConcessParamsTrial As DavesCode.ConcessionParameters = New DavesCode.ConcessionParameters()
+    Private ConcessParamsTrial As ConcessionParameters = New ConcessionParameters()
+    Private FaultApplication As String
+    Private FaultParams As FaultParameters = New FaultParameters()
 
 
 
@@ -63,6 +66,8 @@ Partial Class ViewOpenFaults
         AddHandler ManyFaultGriduc.ShowFault, AddressOf NewFaultEvent
         AddHandler FaultTrackinguc1.CloseFaultTracking, AddressOf CloseTracking
         AddHandler FaultTrackinguc1.UpdateClosedDisplays, AddressOf CloseDisplays
+        'AddHandler DeviceRepeatFaultuc1.CloseRepeatFault, AddressOf CloseTracking
+        AddHandler DeviceRepeatFaultuc1.UpdateRepeatFault, AddressOf CloseRepeatFault
 
         suspstate = "Suspended" + LinacName
         failstate = "FailState" + LinacName
@@ -76,6 +81,7 @@ Partial Class ViewOpenFaults
         ConcessionActionChanged = "ConcessionAction" + LinacName
         ConcessionCommentChanged = "ConcessionComment" + LinacName
         ParamApplication = "Params" + LinacName
+        FaultApplication = "FaultParams" + LinacName
         'Application(techstate) = False
 
 
@@ -341,7 +347,7 @@ Partial Class ViewOpenFaults
         End If
     End Sub
 
-    Protected Sub ConcessionGrid_PageIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewPageEventArgs) Handles ConcessionGrid.PageIndexChanging
+    Protected Sub ConcessionGrid_PageIndexChanging(ByVal sender As Object, ByVal e As GridViewPageEventArgs) Handles ConcessionGrid.PageIndexChanging
 
         ConcessionGrid.PageIndex = e.NewPageIndex
         bindGridView()
@@ -362,15 +368,15 @@ Partial Class ViewOpenFaults
             Dim row As GridViewRow = ConcessionGrid.Rows(index)
             IncidentID = Server.HtmlDecode(row.Cells(0).Text)
 
-
+            'This is where the concession number is found out
             Dim Concession As String = Server.HtmlDecode(row.Cells(1).Text)
-                Dim Region As String
-                Region = ""
-                SetViewFault(False)
-                ' If multiple buttons are used in a GridView control, use the
-                ' CommandName property to determine which button was clicked.
-                Select Case e.CommandName
-                    Case "View"
+            Dim Region As String
+            Region = ""
+            SetViewFault(False)
+            ' If multiple buttons are used in a GridView control, use the
+            ' CommandName property to determine which button was clicked.
+            Select Case e.CommandName
+                Case "View"
                     Select Case ParentControl
                         Case "1", "4", "5"
                             success = ConcessParamsTrial.CreateObject(IncidentID)
@@ -402,35 +408,41 @@ Partial Class ViewOpenFaults
                     End Select
 
                 Case "Log Fault"
+                    success = FaultParams.CreateObject(IncidentID)
+                    If success Then
+                        Application(FaultApplication) = FaultParams
                         UpdatePanelRepeatFault.Visible = True
                         MultiView1.SetActiveView(UpdatefaultView)
-
                         ConcessionGrid.Enabled = False
-
-
+                        Dim RepeatFault As Controls_DeviceRepeatFaultuc = CType(FindControl("DeviceRepeatFaultuc1"), Controls_DeviceRepeatFaultuc)
+                        RepeatFault.LinacName = LinacName
+                        RepeatFault.IncidentID = IncidentID
+                        RepeatFault.InitialiseRepeatFault(FaultParams)
                         Label2.Text = IncidentID
                         Label5.Text = Concession
+                        UpdatePanel4.Visible = False
+                    Else
+                        RaiseError()
+                        CloseRepeatFault(LinacName)
+                    End If
 
                     ''from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
 
+                Case "Faults"
+                    Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
+                    CType(objCon, ManyFaultGriduc).NewFault = False
+                    CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
+                    'to accomodate Tomo now need to pass equipment name?
+                    CType(objCon, ManyFaultGriduc).MachineName = LinacName
+                    PlaceHolder1.Controls.Add(objCon)
+                    UpdatePanel2.Visible = True
+                    MultiView1.SetActiveView(View2)
+                    ConcessionGrid.Enabled = False
+                    Hidefaults.Visible = True
                     UpdatePanel4.Visible = False
-                        LoadRepeatFaultTable(IncidentID, Concession)
+            End Select
 
-                    Case "Faults"
-                        Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-                        CType(objCon, ManyFaultGriduc).NewFault = False
-                        CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
-                        'to accomodate Tomo now need to pass equipment name?
-                        CType(objCon, ManyFaultGriduc).MachineName = LinacName
-                        PlaceHolder1.Controls.Add(objCon)
-                        UpdatePanel2.Visible = True
-                        MultiView1.SetActiveView(View2)
-                        ConcessionGrid.Enabled = False
-                        Hidefaults.Visible = True
-                        UpdatePanel4.Visible = False
-                End Select
-
-            End If
+        End If
 
     End Sub
 
@@ -547,23 +559,23 @@ Partial Class ViewOpenFaults
         Page_Load(Page, EventArgs.Empty)
     End Sub
 
-    Protected Sub ViewExistingFaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ViewExistingFaults.Click
-        Dim incidentID As String
-        incidentID = Label2.Text
-        Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-        CType(objCon, ManyFaultGriduc).NewFault = False
-        CType(objCon, ManyFaultGriduc).IncidentID = incidentID
-        'to accomodate Tomo now need to pass equipment name?
-        CType(objCon, ManyFaultGriduc).MachineName = LinacName
-        PlaceHolder3.Controls.Add(objCon)
+    'Protected Sub ViewExistingFaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ViewExistingFaults.Click
+    '    Dim incidentID As String
+    '    incidentID = Label2.Text
+    '    Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
+    '    CType(objCon, ManyFaultGriduc).NewFault = False
+    '    CType(objCon, ManyFaultGriduc).IncidentID = incidentID
+    '    'to accomodate Tomo now need to pass equipment name?
+    '    CType(objCon, ManyFaultGriduc).MachineName = LinacName
+    '    PlaceHolder3.Controls.Add(objCon)
 
-    End Sub
+    'End Sub
 
     Protected Sub LoadRepeatFaultTable(ByVal incidentid As String, ByVal concessionnumber As String)
         Dim objcon As Object
         objcon = Page.LoadControl("~/controls/DeviceRepeatFaultuc.ascx")
         CType(objcon, Controls_DeviceRepeatFaultuc).IncidentID = incidentid
-        CType(objcon, Controls_DeviceRepeatFaultuc).Device = LinacName
+        CType(objcon, Controls_DeviceRepeatFaultuc).LinacName = LinacName
         CType(objcon, Controls_DeviceRepeatFaultuc).ConcessionN = concessionnumber
         AddHandler CType(objcon, Controls_DeviceRepeatFaultuc).UpdateRepeatFault, AddressOf CloseRepeatFault
         PlaceholderRepeatFault.Controls.Add(objcon)
@@ -571,7 +583,7 @@ Partial Class ViewOpenFaults
 
     End Sub
 
-    Protected Sub CheckEmptyGrid(ByVal grid As WebControls.GridView)
+    Protected Sub CheckEmptyGrid(ByVal grid As GridView)
         'If grid.Rows.Count = 0 And Not grid.DataSource Is Nothing Then
         '    Dim dt As Object = Nothing
         '    If grid.DataSource.GetType Is GetType(Data.DataSet) Then
@@ -628,7 +640,7 @@ Partial Class ViewOpenFaults
 
     End Sub
 
-    Protected Sub ConcessionGrid_RowDataBound(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewRowEventArgs) Handles ConcessionGrid.RowDataBound
+    Protected Sub ConcessionGrid_RowDataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles ConcessionGrid.RowDataBound
         Select Case ParentControl
             Case "1", "4", "5"
                 Dim nincid As String = ""
@@ -664,7 +676,7 @@ Partial Class ViewOpenFaults
         Dim strScript As String = "<script>"
         strScript += "alert('Problem Updating Fault. Please call Engineer');"
         strScript += "</script>"
-
+        ScriptManager.RegisterStartupScript(Hidefaults, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
 
 End Class

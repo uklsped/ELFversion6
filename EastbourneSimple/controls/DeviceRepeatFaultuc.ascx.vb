@@ -1,9 +1,11 @@
 ﻿Imports System.Data
 Imports System.Data.SqlClient
+Imports DavesCode
+
 Partial Class Controls_DeviceRepeatFaultuc
     Inherits System.Web.UI.UserControl
     Public Property IncidentID() As String
-    Public Property Device() As String
+    Public Property LinacName() As String
     Public Property ConcessionN() As String
     Private conn As SqlConnection
     Private comm As SqlCommand
@@ -13,46 +15,82 @@ Partial Class Controls_DeviceRepeatFaultuc
     Const RepeatFault As String = "Repeatfault"
     Const CancelFaultReturn As String = "Cancel"
     Const EMPTYSTRING As String = ""
+    Private FaultDescriptionChanged As String
+    Private RadActDescriptionChanged As String
+    Private FaultDescriptionChangedT As String
+    Private RadActDescriptionChangedT As String
+    Private Comment As String
+    Private RadActComment As String
+    Private FaultApplication As String
+    Private FaultParam As FaultParameters = New FaultParameters()
+    Public Event UpdateRepeatFault(ByVal LinacName As String)
+    Public Event CloseRepeatFault(ByVal LinacName As String)
 
-    Public Event UpdateRepeatFault(ByVal Device As String)
+    Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
+
+        FaultDescriptionChanged = "defectFault" + LinacName
+        RadActDescriptionChanged = "radact" + LinacName
+        FaultApplication = "FaultParams" + LinacName
+    End Sub
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
 
-        If Device Like "T?" Then
-            TomoLoad()
-            MultiView1.SetActiveView(Tomo)
-        Else
-            LinacLoad()
-            MultiView1.SetActiveView(Linac)
-        End If
+        'If LinacName Like "T?" Then
+        '    TomoLoad()
+        '    MultiView1.SetActiveView(Tomo)
+        'Else
+        '    LinacLoad()
+        '    MultiView1.SetActiveView(Linac)
+        'End If
 
     End Sub
-    Protected Sub LinacLoad()
-        AreaBox.Text = String.Empty
+    Public Sub InitialiseRepeatFault(ByVal FaultObject As FaultParameters)
+        If LinacName Like "T?" Then
+            TomoLoad(FaultObject)
+            MultiView1.SetActiveView(Tomo)
+        Else
+            LinacLoad(FaultObject)
+            MultiView1.SetActiveView(Linac)
+        End If
+    End Sub
+    Protected Sub LinacLoad(ByVal FaultObject As FaultParameters)
+
+        FaultDescription.BoxChanged = FaultDescriptionChanged
+        RadActC.BoxChanged = RadActDescriptionChanged
+        AreaBox.Text = FaultObject.Area
         GantryAngleBox.Text = String.Empty
         CollimatorAngleBox.Text = String.Empty
-        DescriptionBox.Text = String.Empty
+        RadActC.ResetCommentBox(FaultObject.RadAct)
+        'DescriptionBox.Text = String.Empty
         PatientIDBox.Text = String.Empty
         RadioIncident.SelectedIndex = -1
-        conn = New SqlConnection(connectionString)
-        'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
-        comm = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn)
-        comm.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-        comm.Parameters("@incidentID").Value = IncidentID
-        conn.Open()
-        AreaBox.Text = comm.ExecuteScalar()
-
-        conn.Close()
+        ConcessionNumber.Text = FaultObject.ConcessionNumber
+        Application(FaultApplication) = FaultObject
+        'conn = New SqlConnection(connectionString)
+        ''from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
+        'comm = New SqlCommand("SELECT Area from ReportFault where incidentID=@incidentID", conn)
+        'comm.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+        'comm.Parameters("@incidentID").Value = IncidentID
+        'conn.Open()
+        'AreaBox.Text = comm.ExecuteScalar()
+        'comm = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn) 'Corrective action
+        'comm.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+        'comm.Parameters("@incidentID").Value = IncidentID
+        'Dim sqlresult1 As Object = comm.ExecuteScalar()
+        'RadActCT.ResetCommentBox(sqlresult1.ToString)
+        'conn.Close()
 
         AddEnergyItem()
 
     End Sub
-    Protected Sub TomoLoad()
-        DescriptionBoxT.Text = String.Empty
+    Protected Sub TomoLoad(ByVal FaultObject As FaultParameters)
+        FaultDescriptionT.BoxChanged = FaultDescriptionChangedT
+        RadActCT.BoxChanged = RadActDescriptionChangedT
+        'DescriptionBoxT.Text = String.Empty
         PatientIDBoxT.Text = String.Empty
         ErrorTextBox.Text = String.Empty
         Accuray.Text = String.Empty
-        RadAct.Text = String.Empty
+        'RadAct.Text = String.Empty
         RadioIncident.SelectedIndex = -1
         conn = New SqlConnection(connectionString)
         'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
@@ -61,7 +99,8 @@ Partial Class Controls_DeviceRepeatFaultuc
         comm.Parameters("@incidentID").Value = IncidentID
         conn.Open()
         Dim sqlresult1 As Object = comm.ExecuteScalar()
-        RadAct.Text = sqlresult1.ToString
+        RadActCT.ResetCommentBox(sqlresult1.ToString)
+
         conn.Close()
 
     End Sub
@@ -71,7 +110,7 @@ Partial Class Controls_DeviceRepeatFaultuc
         'and http://www.yaldex.com/asp_tutorial/0596004877_progaspdotnet2-chp-5-sect-7.html
         DropDownListEnergy.Items.Clear()
         'This is a mad way of doing it but I don't know how to dim the energy list without constructing it at the same time
-        Select Case Device
+        Select Case LinacName
             Case "LA1"
                 Dim Energy1() As String = {"Select", "6 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
                 ConstructEnergylist(Energy1)
@@ -99,31 +138,55 @@ Partial Class Controls_DeviceRepeatFaultuc
     End Sub
     Private Sub SaveRepeatFault_Click1(sender As Object, e As EventArgs) Handles SaveRepeatFault.Click
 
-        Page.Validate("Incident")
+        Page.Validate("Repeat")
         If Page.IsValid Then
             SaveRepeatFaultbutton()
         End If
     End Sub
     Public Sub SaveRepeatFaultbutton()
-        Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
+        FaultParam = Application(FaultApplication)
         Dim UserInfo As String = String.Empty
-        CreateFaultParams(UserInfo, FaultParams)
+        CreateFaultParams(FaultParam)
         Dim Result As Boolean = False
 
-        Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
+        Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParam)
         If Result Then
             'This triggers UserApprovedEvent in ViewOpenFaults
-            RaiseEvent UpdateRepeatFault(Device)
+            'RaiseEvent CloseRepeatFault(LinacName)
+            RaiseEvent UpdateRepeatFault(LinacName)
         Else
             RaiseError()
         End If
     End Sub
-    Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultP As DavesCode.FaultParameters)
-        If Device Like "T?" Then
+    Protected Sub CreateFaultParams(ByRef FaultP As DavesCode.FaultParameters)
+        If LinacName Like "T?" Then
+            If (Not HttpContext.Current.Application(FaultDescriptionChanged) Is Nothing) Then
+                Comment = HttpContext.Current.Application(FaultDescriptionChanged).ToString
+            Else
+                Comment = String.Empty
+            End If
+
+            If (Not HttpContext.Current.Application(RadActDescriptionChanged) Is Nothing) Then
+                RadActComment = HttpContext.Current.Application(RadActDescriptionChanged).ToString
+            Else
+                RadActComment = String.Empty
+            End If
             FaultP.Area = ErrorTextBox.Text
-            FaultP.FaultDescription = DescriptionBoxT.Text
+            FaultP.FaultDescription = Comment
+            FaultP.RadAct = RadActComment
             FaultP.PatientID = PatientIDBoxT.Text
         Else
+            If (Not HttpContext.Current.Application(FaultDescriptionChanged) Is Nothing) Then
+                Comment = HttpContext.Current.Application(FaultDescriptionChanged).ToString
+            Else
+                Comment = String.Empty
+            End If
+
+            If (Not HttpContext.Current.Application(RadActDescriptionChanged) Is Nothing) Then
+                RadActComment = HttpContext.Current.Application(RadActDescriptionChanged).ToString
+            Else
+                RadActComment = String.Empty
+            End If
             Dim Energy As String = DropDownListEnergy.SelectedItem.Text
             If Energy = "Select" Then
                 Energy = String.Empty
@@ -131,16 +194,18 @@ Partial Class Controls_DeviceRepeatFaultuc
             FaultP.Area = AreaBox.Text
             FaultP.GantryAngle = GantryAngleBox.Text
             FaultP.CollimatorAngle = CollimatorAngleBox.Text
-            FaultP.FaultDescription = DescriptionBox.Text
+            FaultP.FaultDescription = Comment
+            FaultP.RadAct = RadActComment
             FaultP.PatientID = PatientIDBox.Text
 
         End If
-        FaultP.SelectedIncident = IncidentID
-        FaultP.Linac = Device
-        FaultP.UserInfo = UserInfo
+        'FaultP.SelectedIncident = IncidentID
+        'FaultP.Linac = LinacName
+        'FaultP.UserInfo = String.Empty
         FaultP.DateInserted = Now()
-        FaultP.ConcessionNumber = ConcessionN
+        'FaultP.ConcessionNumber = ConcessionN
         FaultP.RadioIncident = RadioIncident.SelectedItem.Value
+        Application(FaultApplication) = FaultP
     End Sub
 
     Protected Sub RaiseError()
@@ -152,6 +217,17 @@ Partial Class Controls_DeviceRepeatFaultuc
     End Sub
     Protected Sub CancelFault_Click(sender As Object, e As EventArgs) Handles CancelFault.Click
 
-        RaiseEvent UpdateRepeatFault(Device)
+        RaiseEvent UpdateRepeatFault(LinacName)
+    End Sub
+    Protected Sub ViewExistingFaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ViewExistingFaults.Click
+        Dim incidentID As String
+        incidentID = Label2.Text
+        Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
+        CType(objCon, ManyFaultGriduc).NewFault = False
+        CType(objCon, ManyFaultGriduc).IncidentID = incidentID
+        'to accomodate Tomo now need to pass equipment name?
+        CType(objCon, ManyFaultGriduc).MachineName = LinacName
+        PlaceHolder3.Controls.Add(objCon)
+
     End Sub
 End Class

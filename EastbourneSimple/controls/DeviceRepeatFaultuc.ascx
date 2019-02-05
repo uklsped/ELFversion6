@@ -1,11 +1,37 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="DeviceRepeatFaultuc.ascx.vb" Inherits="Controls_DeviceRepeatFaultuc" %>
 
 
+<%@ Register src="CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc1" %>
+<%@ Register Src="~/controls/CommentBoxuc.ascx" TagPrefix="uc2" TagName="CommentBoxuc" %>
+
+                    <%@ Register src="../ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc3" %>
+
+                    <fieldset style="width: 700px;">
+                        <legend>Repeat Faults</legend>
+                        <fieldset style="width: 700px;">
+                            <legend>Record Repeat Fault</legend>
+                            <asp:Table runat="server">
+                            <asp:TableRow runat="server">
+                                <asp:TableCell>
+                                    <asp:Label ID="Label1" runat="server" Text="Concession: "></asp:Label>
+                                </asp:TableCell>
+                                <asp:TableCell>
+                                     <asp:Label ID="ConcessionNumber" runat="server" Text=""></asp:Label>
+                                    <asp:Label ID="Label3" runat="server" Text="" Visible="false"></asp:Label>
+                                   </asp:TableCell>
+                                <asp:TableCell>
+                                </asp:TableCell>
+                                <asp:TableCell>
+                                </asp:TableCell>
+                            </asp:TableRow>
+                             </asp:Table>
+                           
+
 <asp:MultiView ID="MultiView1" runat="server">
 
     <asp:View ID="Linac" runat="server">
        
-                     <table style="width:300px;">
+                     <table style="width:401px;">
         <tr>
             <td class="style1">
                 Area:</td>
@@ -32,7 +58,7 @@
                 <asp:RangeValidator ID="GantryRangeCheck" runat="server" 
                     ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="True" 
                     MaximumValue="360" MinimumValue="0" ControlToValidate="GantryAngleBox" 
-                    Display="Static" ValidationGroup="Incident"></asp:RangeValidator>
+                    Display="Dynamic" ValidationGroup="Incident"></asp:RangeValidator>
             </td>
         </tr>
         <tr>
@@ -47,16 +73,28 @@
                 <asp:RangeValidator ID="CollimatorRangeCheck" runat="server" 
                 ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="True" 
                 MaximumValue="360" MinimumValue="0" ControlToValidate="CollimatorAngleBox" 
-                Display="Static" ValidationGroup="defect"></asp:RangeValidator>
-            </td>
+                Display="Dynamic" ValidationGroup="defect"></asp:RangeValidator>
+                </td>
             </tr>
             <tr>
         <td class="style1">
                 Fault Description:</td>
             <td>
-              <asp:TextBox ID="DescriptionBox" runat="server" MaxLength="250" TextMode="MultiLine"></asp:TextBox>
-              </td> 
+                <asp:Panel ID="FaultPanel" runat="server" Enabled="True">
+                    <uc1:CommentBoxuc ID="FaultDescription" runat="server" />
+                </asp:Panel>
+            </td> 
         </tr>
+                         <tr>
+          <td class="style2">
+              Corrective Action:
+          </td>
+          <td>
+              <asp:Panel ID="ActPanel" Enabled="False" runat="server">
+                  <uc2:CommentBoxuc runat="server" ID="RadActC" />
+              </asp:Panel>
+                </td>
+      </tr>
          <tr>
             <td class="style1">
                 Patient ID:</td>
@@ -69,7 +107,7 @@
     </asp:View>
     <asp:View ID="Tomo" runat="server">
          
-                  <table style="width:300px;">                
+                  <table style="width:401px;">                
       
          <tr>
              <td class="style1">
@@ -83,18 +121,15 @@
                 Physicist/Accuray job number:</td>
             <td>
     <asp:TextBox ID="Accuray" runat="server" EnableViewState="false"></asp:TextBox>
-               
-            </td>
+               </td>
         </tr>
         <tr>
-             
         <td class="style1">
-                
                 Fault Description:</td>
             <td>
-                
-              <asp:TextBox ID="DescriptionBoxT" runat="server" MaxLength="250"  
-                    Rows="5" TextMode="MultiLine"></asp:TextBox>
+                <asp:Panel ID="FaultPanelT" Enabled="true" runat="server">
+                <uc2:CommentBoxuc runat="server" ID="FaultDescriptionT" />
+                    </asp:Panel>
               </td>
               </tr>
                        <tr>
@@ -102,7 +137,9 @@
               Corrective Action:
           </td>
           <td>
-          <asp:TextBox ID="RadAct" runat="server" MaxLength="250" TextMode="MultiLine" Visible ="true" EnableViewState="false" ReadOnly="True"></asp:TextBox>
+              <asp:Panel ID="ActPanelT" Enabled="true" runat="server">
+                  <uc2:CommentBoxuc runat="server" ID="RadActCT" />
+              </asp:Panel>
                 </td>
       </tr>
                <tr>
@@ -128,7 +165,7 @@
                    <asp:Label ID="Label2" runat="server" Text="Radiation Incident?"></asp:Label>
                        </td>
                           <td>
-                                     <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false" ValidationGroup="Incident">
+                                     <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false" ValidationGroup="Repeat">
                                         <asp:ListItem Text="No" Value="False"></asp:ListItem>
                                         <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
                                     </asp:RadioButtonList>
@@ -140,7 +177,7 @@
             ControlToValidate="RadioIncident"
             ErrorMessage="Please complete Radiation Incident Selection"
                             Display="Dynamic"
-                            validationgroup="Incident"
+                            validationgroup="Repeat"
             >
         </asp:RequiredFieldValidator>
                        </td>
@@ -156,3 +193,15 @@
         </tr>
         </table>
     </div>
+                             <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" CausesValidation="false" />
+                                    
+                                
+                        </fieldset>
+                        <fieldset style="width: auto">
+                            <legend>Associated Faults
+                            </legend>
+                            <asp:Panel ID="UpdatePanelVEF" runat="server">
+                                 <asp:PlaceHolder ID="PlaceHolder3" runat="server"></asp:PlaceHolder>
+                            </asp:Panel>
+                        </fieldset>
+                    </fieldset>

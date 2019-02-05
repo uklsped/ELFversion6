@@ -12,6 +12,8 @@
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>
 
 <%@ Register src="controls/FaultTrackinguc.ascx" tagname="FaultTrackinguc" tagprefix="uc6" %>
+<%@ Register Src="~/controls/DeviceRepeatFaultuc.ascx" TagPrefix="uc2" TagName="DeviceRepeatFaultuc" %>
+
 
 <style type="text/css">
     .style2 {
@@ -96,6 +98,7 @@
        <asp:MultiView ID="MultiView1" runat="server">
             <asp:View ID="UpdatefaultView" runat="server">
                 <asp:Panel ID="UpdatePanelRepeatFault" runat="server" Visible="false">
+                    <uc2:DeviceRepeatFaultuc runat="server" ID="DeviceRepeatFaultuc1" />
                     <fieldset style="width: 700px;">
                         <legend>Repeat Faults</legend>
                         <fieldset style="width: 700px;">
