@@ -3,44 +3,24 @@
 
 <%@ Register src="AtlasEnergyViewuc.ascx" tagname="AtlasEnergyViewuc" tagprefix="uc2" %>
 
-
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc3" %>
-
-
-<%--<%@ Register src="UpDateIncidentuc.ascx" tagname="UpDateIncidentuc" tagprefix="uc3" %>--%>
-
 
 <%@ Register src="ViewCommentsuc.ascx" tagname="ViewCommentsuc" tagprefix="uc5" %>
 
-
-
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc6" %>
-
-
 
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>
 
-
-
-<%--<%@ Register src="Traininguc.ascx" tagname="Traininguc" tagprefix="uc8" %>--%>
-
-
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>
-
 
 <%@ Register src="Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc10" %>
 
-
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc11" %>
-
 
 <%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc12" %>
 
-
-<%--<%@ Register src="CommitData.ascx" tagname="CommitData" tagprefix="uc3" %>--%>
-
-
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc4" %>
+
 <%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc1" %>
 
 
@@ -48,8 +28,6 @@
 
 <%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
 
-
-<%--<%@ Register src="Singlemachinefaultuc.ascx" tagname="Singlemachinefaultuc" tagprefix="uc2" %>--%>
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="1" Tabby="1" visible="false" runat="server" />
 
 <asp:Label ID="CheckUser" runat="server" Text=""  visible="true" display="none" causesvalidation="false"></asp:Label>
@@ -64,15 +42,77 @@
            
         <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" 
                Width="1875px">
-               <asp:TableRow ID="r1" runat="server">
+               <asp:TableRow ID="r1" style="vertical-align:top" runat="server">
                    <asp:TableCell ID="c1" runat="server" HorizontalAlign="Left">
                        <table style="width: 350px;">
-                           <tr>
-                               <td>
-<asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" visible="false" >
+            <tr style="vertical-align:top;">
+                <td  rowspan="2" class="auto-style1"><asp:GridView ID="GridView1" runat="server" 
+                        AutoGenerateColumns="False" visible="false" Width="126px" >
+            <Columns>
+            <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
+                    SortExpression="Energy" />
+                    <asp:TemplateField>  
+            <HeaderTemplate>  
+                <asp:CheckBox ID="chkSelectAll"   
+                    runat="server" 
+                    AutoPostBack="true"  
+                    OncheckedChanged="checked"
+                     />  
+            </HeaderTemplate>
+                    
+            <ItemTemplate>
+            <asp:CheckBox runat="server" ID="RowlevelCheckBox" />
+            </ItemTemplate>
+            </asp:TemplateField>
+            </Columns>
+        </asp:GridView></td>
+                <td> <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" Visible="false" >
             <Columns>
             
-                <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
+                <asp:BoundField DataField="Energy" HeaderText="Select Imaging" 
+                    SortExpression="Energy" />
+                    <asp:TemplateField>  
+                             
+            <ItemTemplate>
+            <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" />
+
+            </ItemTemplate>
+                      </asp:TemplateField>
+            </Columns>
+        </asp:GridView></td>
+                
+            </tr>
+            <tr>
+                
+                <td>
+                    <asp:Button ID="engHandoverButton" runat="server" BackColor="#FFCC00" 
+                        causesvalidation="false" Height="100px" Text="" />
+                </td>
+               
+            </tr>
+            <tr>
+                <td colspan="2"><table style="width: 350px;">
+                           <tr>
+                               <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
+                                                          </tr>
+                           <tr>
+                               <td><uc3:CommentBoxuc ID="CommentBox" runat="server" /></td>
+                               
+                           </tr>
+                       </table></td>
+                              
+            </tr><tr>
+                <td colspan="2">Faults cleared today</td>
+                
+               
+            </tr>
+        </table>
+                      <%-- <table style="width: 350px;">
+                           <tr>
+                               <td rowspan="2">
+<asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" visible="false" >
+            <Columns>
+            <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
                     SortExpression="Energy" />
                     <asp:TemplateField>  
             <HeaderTemplate>  
@@ -106,91 +146,34 @@
             </Columns>
         </asp:GridView>
                                </td>
-                               
-                           </tr>
+                               </tr>
                            <tr>
                                <td>
-                                    
-                               </td>
+                                   </td>
                            </tr>
                           
                        </table>
                        <table style="width: 350px;">
                            <tr>
                                <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
-                               
-                           </tr>
+                                                          </tr>
                            <tr>
                                <td><uc3:CommentBoxuc ID="CommentBox" runat="server" /></td>
                                
                            </tr>
-                       </table>
-   
-                           
-                                   
-                                 
-                                   
-                              
-                          
-                                  
-                           
+                       </table>--%>
+                   </asp:TableCell>
+                                   <asp:TableCell ID="c2" runat="server" Width="50px">
                        
-                   <%--<asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" visible="false">
-            <Columns>
-            
-                <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
-                    SortExpression="Energy" />
-                    <asp:TemplateField>  
-            <HeaderTemplate>  
-                <asp:CheckBox ID="chkSelectAll"   
-                    runat="server" 
-                    AutoPostBack="true"  
-                    OncheckedChanged="checked"
-                     />  
-            </HeaderTemplate>
-                    
-            <ItemTemplate>
-            <asp:CheckBox runat="server" ID="RowlevelCheckBox" />
-            </ItemTemplate>
-            </asp:TemplateField>
-            </Columns>
-        </asp:GridView>--%>
-              
-                           <%--<uc3:CommentBoxuc ID="CommentBox" runat="server" />--%>                       
-</asp:TableCell>
-                   <%--<asp:TableCell ID="imagingcell" runat="server" Width =" 250px" HorizontalAlign="Left">--%>
-                      <%-- <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" Visible="false" >
-            <Columns>
-            
-                <asp:BoundField DataField="Energy" HeaderText="Select Imaging" 
-                    SortExpression="Energy" />
-                    <asp:TemplateField>  
-                             
-            <ItemTemplate>
-            <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" />
-
-            </ItemTemplate>
-                      </asp:TemplateField>
-            </Columns>
-        </asp:GridView>--%>
-                  <%-- </asp:TableCell>--%>
-                        
-
-                   
-                   <asp:TableCell ID="c2" runat="server" Width="50px">
-                       
-                   <asp:Button ID="engHandoverButton" runat="server" Text="" causesvalidation="false"  Height="150px" BackColor="#FFCC00"/>
-
+                   <%--<asp:Button ID="engHandoverButton" runat="server" Text="" causesvalidation="false"  Height="150px" BackColor="#FFCC00"/>--%>
 
 </asp:TableCell>
-
-                       <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="500px">
+                                          <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="500px">
                        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
 <asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server">
 </asp:PlaceHolder>
 </ContentTemplate>
-
 </asp:UpdatePanel>
                        </asp:TableCell>
                         <asp:TableCell VerticalAlign="Top">
@@ -210,7 +193,7 @@
          <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
          </asp:TableCell>
          <asp:TableCell ID="t2c1" runat="server" Width="160px" HorizontalAlign="Left">
-         <%--<asp:Button ID="FaultPanelButton" runat="server" Text="View Open Faults" causesvalidation ="false" Visible="false"/>--%>
+
                </asp:TableCell>
                <asp:TableCell ID="t2c2" runat="server" Width="50px">
                <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" width = "160px" causesvalidation="false"/>
@@ -224,12 +207,8 @@
               
                         </asp:TableRow>
                </asp:Table>
-                          
-            
-                          
-            </asp:Panel>
-           
-        </div>         
+               </asp:Panel>
+           </div>         
 
   <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true">
 <ContentTemplate>
@@ -245,14 +224,12 @@
         </ContentTemplate>
         
 </asp:UpdatePanel>
-
  
 <asp:UpdatePanel ID="UpdatePanelatlas" runat="server" Visible="false">
      <ContentTemplate>
          <asp:PlaceHolder ID="PlaceHolderAtlas" runat="server"></asp:PlaceHolder>
      </ContentTemplate>
 </asp:UpdatePanel>
-
 
  <asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>
@@ -261,14 +238,9 @@
             </asp:PlaceHolder>
             </ContentTemplate>
             </asp:UpdatePanel>
-            
-            
+                        
  <div style="background-color: #FFFF66; background-repeat: no-repeat; border-style: solid; border-width: thin">  
-          
-      
-     
-          
-      
+   
  <uc5:ViewCommentsuc ID="ViewCommentsuc1"  LinacName="" CommentSort="er" runat="server" />
 </div>
 <asp:PlaceHolder ID="PlaceHolderConfirmPage" runat="server">
