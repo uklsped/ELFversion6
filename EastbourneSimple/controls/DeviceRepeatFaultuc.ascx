@@ -5,19 +5,23 @@
 <%@ Register Src="~/controls/CommentBoxuc.ascx" TagPrefix="uc2" TagName="CommentBoxuc" %>
 
                     <%@ Register src="../ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc3" %>
-
-                    <fieldset style="width: 700px;">
-                        <legend>Repeat Faults</legend>
-                        <fieldset style="width: 700px;">
+<style type="text/css">
+    .auto-style1 {
+        width: 450px;
+    }
+</style>
+<table style="width: 100%;">
+    <tr>
+        <td class="auto-style1">
+                                <fieldset style="width: 460px;">
                             <legend>Record Repeat Fault</legend>
-                            <asp:Table runat="server">
+                            <asp:Table ID="Table1"  runat="server" Width="300px">
                             <asp:TableRow runat="server">
-                                <asp:TableCell>
-                                    <asp:Label ID="Label1" runat="server" Text="Concession: "></asp:Label>
+                                <asp:TableCell Width="92px">
+                                    <asp:Label ID="Label1" runat="server" Text="Concession: " ></asp:Label>
                                 </asp:TableCell>
-                                <asp:TableCell>
+                                <asp:TableCell HorizontalAlign="Left">
                                      <asp:Label ID="ConcessionNumber" runat="server" Text=""></asp:Label>
-                                    <asp:Label ID="Label3" runat="server" Text="" Visible="false"></asp:Label>
                                    </asp:TableCell>
                                 <asp:TableCell>
                                 </asp:TableCell>
@@ -26,12 +30,9 @@
                             </asp:TableRow>
                              </asp:Table>
                            
-
 <asp:MultiView ID="MultiView1" runat="server">
-
-    <asp:View ID="Linac" runat="server">
-       
-                     <table style="width:401px;">
+        <asp:View ID="Linac" runat="server">
+             <table id="Table2" style="width:auto;">
         <tr>
             <td class="style1">
                 Area:</td>
@@ -107,9 +108,8 @@
     </asp:View>
     <asp:View ID="Tomo" runat="server">
          
-                  <table style="width:401px;">                
-      
-         <tr>
+                  <table ID="TomoTable" style="width:401px;">                
+               <tr>
              <td class="style1">
                 Error code:</td>
             <td>      
@@ -159,7 +159,7 @@
 
 </asp:MultiView>
 <div>
- <table style="width:300px;">
+ <table id="table3" style="width:300px;">
       <tr>
                    <td>
                    <asp:Label ID="Label2" runat="server" Text="Radiation Incident?"></asp:Label>
@@ -190,18 +190,25 @@
             <asp:Button ID="CancelFault" runat="server" Text="Cancel" CausesValidation="false"/>
             
         </td>
+            <td style="float:right">
+                <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" CausesValidation="false" />
+            </td>
         </tr>
         </table>
     </div>
-                             <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" CausesValidation="false" />
-                                    
-                                
+      
                         </fieldset>
-                        <fieldset style="width: auto">
+            </td>
+         <td style="vertical-align:top">
+             <asp:Panel ID="VEFUpdatePanel" visible="false" runat="server">
+                        <fieldset style="width: 785px">
                             <legend>Associated Faults
                             </legend>
-                            <asp:Panel ID="UpdatePanelVEF" runat="server">
-                                 <asp:PlaceHolder ID="PlaceHolder3" runat="server"></asp:PlaceHolder>
-                            </asp:Panel>
+                            <asp:PlaceHolder ID="PlaceHolderVEF" runat="server"></asp:PlaceHolder>
+                           
                         </fieldset>
-                    </fieldset>
+                  </asp:Panel>
+                              </td>
+            </tr>
+</table>
+            

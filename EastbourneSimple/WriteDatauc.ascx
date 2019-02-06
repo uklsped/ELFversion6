@@ -12,7 +12,7 @@
         <%--This is the log in popup panel  --%>
             <asp:Panel ID="Panel1" runat="server" Height="150px" Width="350px" cssclass="modalPopup" style="display:none" defaultbutton="AcceptOK">
                 <div >
-                      <table width="300px">
+                      <table id="table" >
                       <tr><td>
                           <asp:Label ID="WarningLabel" runat="server" Text=""></asp:Label>
                       </td></tr>

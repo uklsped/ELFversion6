@@ -20,7 +20,7 @@ Partial Class ManyFaultGriduc
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         technicalstate = "techstate" + MachineName
         BindGridViewManyFault()
-        If MachineName Like "T#" Then
+        If MachineName Like "T*" Then
             MultiView1.SetActiveView(Tomo)
         Else
             MultiView1.SetActiveView(Linacs)
@@ -28,7 +28,7 @@ Partial Class ManyFaultGriduc
 
     End Sub
     Public Sub BindGridViewManyFault()
-        If MachineName Like "T#" Then
+        If MachineName Like "T*" Then
             BindGridViewTomoVEF()
         Else
             BindGridViewVEF()
@@ -41,11 +41,12 @@ Partial Class ManyFaultGriduc
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         }
         If NewFault Then
-            SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
+            SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
             SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
             SqlDataSource4.SelectParameters.Add("linac", MachineName)
         Else
-            SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
+            SqlDataSource4.SelectCommand = "select FaultID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
+            'SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
             SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
             SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
         End If

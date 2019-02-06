@@ -92,7 +92,7 @@ Partial Class ViewOpenFaults
 
         Select Case Me.DynamicControlSelection
             Case REPEATFAULTSELECTED
-                LoadRepeatFaultTable(Label2.Text, Label5.Text)
+                LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
                 'Case CONCESSIONSELECTED
                 'LoadFaultTable(Label2.Text)
                 'ReloadTracking("1771")
@@ -418,8 +418,8 @@ Partial Class ViewOpenFaults
                         RepeatFault.LinacName = LinacName
                         RepeatFault.IncidentID = IncidentID
                         RepeatFault.InitialiseRepeatFault(FaultParams)
-                        Label2.Text = IncidentID
-                        Label5.Text = Concession
+                        HiddenIncidentID.Value = IncidentID
+                        HiddenConcessionNumber.Value = Concession
                         UpdatePanel4.Visible = False
                     Else
                         RaiseError()
@@ -434,7 +434,7 @@ Partial Class ViewOpenFaults
                     CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
                     'to accomodate Tomo now need to pass equipment name?
                     CType(objCon, ManyFaultGriduc).MachineName = LinacName
-                    PlaceHolder1.Controls.Add(objCon)
+                    PlaceHolderFaults.Controls.Add(objCon)
                     UpdatePanel2.Visible = True
                     MultiView1.SetActiveView(View2)
                     ConcessionGrid.Enabled = False

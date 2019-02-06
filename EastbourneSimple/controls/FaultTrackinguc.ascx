@@ -41,15 +41,14 @@
                                                         <asp:Label ID="ProblemStatusLabel" runat="server" Text="New Status"></asp:Label>
                                                         </td>
                                                         <td>
-                                                        <%--<asp:UpdatePanel ID="UpdatePanelFaultOptionlist" runat="server" UpdateMode="Conditional"><ContentTemplate>--%>
+                                                       
                                                         <asp:DropDownList ID="FaultOptionList" AutoPostBack="true" DataValueField="Value" runat="server">
                                                         <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
                                                         <asp:ListItem Text="Open" Value="Open"></asp:ListItem>
                                                         <asp:ListItem Text="Concession" Value="Concession"></asp:ListItem>
                                                         <asp:ListItem Text="Closed" Value="Closed"></asp:ListItem>
                                                         </asp:DropDownList>
-                                                           <%-- </ContentTemplate>
-                                                        </asp:UpdatePanel>--%>
+
                                                         <td>
                                                         <asp:Label ID="ConcessionLabel" runat="server" Text="Concession Number"></asp:Label>
                                                         </td>

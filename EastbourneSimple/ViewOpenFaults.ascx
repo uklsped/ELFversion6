@@ -98,41 +98,11 @@
        <asp:MultiView ID="MultiView1" runat="server">
             <asp:View ID="UpdatefaultView" runat="server">
                 <asp:Panel ID="UpdatePanelRepeatFault" runat="server" Visible="false">
-                    <uc2:DeviceRepeatFaultuc runat="server" ID="DeviceRepeatFaultuc1" />
-                    <fieldset style="width: 700px;">
-                        <legend>Repeat Faults</legend>
-                        <fieldset style="width: 700px;">
-                            <legend>Record Repeat Fault</legend>
-                            <asp:Table runat="server">
-                            <asp:TableRow runat="server">
-                                <asp:TableCell>
-                                    <asp:Label ID="Label1" runat="server" Text="Concession: "></asp:Label>
-                                </asp:TableCell>
-                                <asp:TableCell>
-                                     <asp:Label ID="Label5" runat="server" Text=""></asp:Label>
-                                    <asp:Label ID="Label2" runat="server" Text="" Visible="false"></asp:Label>
-                                   </asp:TableCell>
-                                <asp:TableCell>
-                                </asp:TableCell>
-                                <asp:TableCell>
-                                </asp:TableCell>
-                            </asp:TableRow>
-                             </asp:Table>  
-                            
-                            <asp:PlaceHolder ID="PlaceholderRepeatFault" runat="server"></asp:PlaceHolder>
-                                   
-                            <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" CausesValidation="false" />
-                                    
-                                
-                        </fieldset>
-                        <fieldset style="width: auto">
-                            <legend>Associated Faults
-                            </legend>
-                            <asp:Panel ID="UpdatePanelVEF" runat="server">
-                                 <asp:PlaceHolder ID="PlaceHolder3" runat="server"></asp:PlaceHolder>
-                            </asp:Panel>
-                        </fieldset>
-                    </fieldset>
+                <asp:HiddenField ID="HiddenIncidentID" runat="server" />
+                <asp:HiddenField ID="HiddenConcessionNumber" runat="server" />
+                    <asp:PlaceHolder ID="PlaceholderRepeatFault" runat="server">
+                          <uc2:DeviceRepeatFaultuc runat="server" ID="DeviceRepeatFaultuc1" />
+                    </asp:PlaceHolder>
                 </asp:Panel>
          </asp:View>
              
@@ -142,10 +112,8 @@
                      <asp:Panel ID="statustechpanel" runat="server" Visible="false">
                         <asp:UpdatePanel ID="UpdatePanel5" runat="server"><ContentTemplate>
                             <uc6:FaultTrackinguc ID="FaultTrackinguc1" runat="server" />
-                         
-                         </ContentTemplate></asp:UpdatePanel>
-                         
-                       </asp:Panel>
+                            </ContentTemplate></asp:UpdatePanel>
+                     </asp:Panel>
                         
                      </asp:View>
                  <asp:View ID="statusother" runat="server">
@@ -179,9 +147,7 @@
                                             <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
                                             <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
                                         </asp:GridView>
-
-                                    </asp:Panel>
-
+                                     </asp:Panel>
                                 </asp:Panel>
                  </asp:View>
               </asp:MultiView>
@@ -189,7 +155,7 @@
          <asp:View ID="View2" runat="server">
              <asp:Panel ID="UpdatePanel2" runat="server" Visible="false">
                  <asp:Panel ID="Panel3" runat="server">
-                     <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
+                     <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>
                  </asp:Panel>
              </asp:Panel>
          </asp:View>

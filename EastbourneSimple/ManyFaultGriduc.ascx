@@ -13,13 +13,17 @@
         <RowStyle BackColor="#E3EAEB" />
         <AlternatingRowStyle BackColor="White" />
         <Columns>
-            <asp:BoundField DataField="IncidentID" HeaderText="Incident ID" InsertVisible="False" 
+           <%-- <asp:BoundField DataField="IncidentID" HeaderText="Incident ID" InsertVisible="False" 
                 ReadOnly="True"
-                SortExpression="IncidentID" />
+                SortExpression="IncidentID" />--%>
             <asp:BoundField DataField="FaultID" HeaderText="Fault ID"
                 SortExpression="FaultID" />
+           <%-- <asp:BoundField DataField="ConcessionNumber" HeaderText="Concession Number"
+                SortExpression="ConcessionNumber" />--%>
+             <asp:BoundField DataField="RadiationIncident" HeaderText="Radiation Incident"
+                SortExpression="RadiationIncident" />
             <asp:BoundField DataField="Description" HeaderText="User Description" 
-                SortExpression="Description" />
+                SortExpression="Description" HeaderStyle-Width="350px" ItemStyle-Width="350px" />
             <asp:BoundField DataField="ReportedBy" HeaderText="Reported By" 
                 SortExpression="ReportedBy" />
             <asp:BoundField DataField="DateReported" HeaderText="Date Reported" 
@@ -55,6 +59,8 @@
                 SortExpression="IncidentID" />
              <asp:BoundField DataField="FaultID" HeaderText="Fault ID"
                 SortExpression="FaultID" />
+             <asp:BoundField DataField="RadiationIncident" HeaderText="Radiation Incident"
+                SortExpression="RadiationIncident" />
             <asp:BoundField DataField="Description" HeaderText="User Description" 
                 SortExpression="Description" />
             <asp:BoundField DataField="ReportedBy" HeaderText="Reported By" 

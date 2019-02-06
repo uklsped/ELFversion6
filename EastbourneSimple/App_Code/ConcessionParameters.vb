@@ -49,7 +49,10 @@ Namespace DavesCode
                     FutureFaultState = String.Empty
                     Success = True
                 Else
-                Success = False
+                    Dim message As String = String.Format("Data row count is zero in ConcessionParameters.vb create object. IncidentID: {0}", IncidentID)
+                    Dim myEx As New Exception(message)
+
+                    Throw myEx
                 End If
 
             Catch ex As Exception

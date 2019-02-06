@@ -26,8 +26,8 @@ Namespace DavesCode
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString)
             'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
-            comm = New SqlCommand("Selec distinct ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.action, '') as Action, ISNULL(f.Area, '') as Area, c.linac " _
-            & "From [PhysicsEnergyDev].[dbo].[ConcessionTable] c  left outer Join [PhysicsEnergyDev].[dbo].[ReportFault] f On f.ConcessionNumber=c.ConcessionNumber Where f.incidentID = @incidentid", conn)
+            comm = New SqlCommand("Select distinct ISNULL(c.ConcessionNumber, '') as ConcessionNumber , ISNULL(c.action, '') as Action, ISNULL(f.Area, '') as Area, c.linac " _
+            & "From [PhysicsEnergyDev].[dbo].[ConcessionTable] c  left outer Join [PhysicsEnergyDev].[dbo].[ReportFault] f On f.incidentID=c.incidentID Where f.incidentID = @incidentid", conn)
             comm.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
             comm.Parameters("@incidentID").Value = IncidentID
             Try
