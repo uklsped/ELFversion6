@@ -1,514 +1,61 @@
-﻿body
-{
-    margin: 0;
-    padding: 0;
-    font-family: Tahoma, Helvetica, Arial, Sans-Serif;
-    font-size: 12px;
-    background-color: #99CCFF;
+﻿/*div.columns {
+    width: 1875px;
 }
-.buttonmargin{
-margin-left:25px;
-}
-div#leftbox{
-padding: 2em;
-    
-    float: left;
-    width: 200px;
-    height:217px;
+
+    div.columns div {
+        width: 625px;
+        height: 200px;
+        float: left;
     }
-div#box1{
-padding: 2em;
-    
-    float: left;
-    width: 176px;
-    height:150px;
-    }
-    div#boxcomment{
-    padding: 2em;
-    
-    float: left;
-    width: 599px;
-    height:217px;
-    }
-div#leftc
-{
-    padding: 2em;
-    border: thin solid #FFFF00;
-    float: left;
-    width: 350px;
-    
-}
-div#rightc
-{
-    /*border: thin solid #FFFF00;*/
-    float: left;
-    width: 350px;
-    margin-left: 20px;
-    padding: 2em 10px 0 0;
-    /*color: #fff;*/
-} 
-#header_wrapper
-{
-    background-position: #FFf;
-    width: 100%;
-   /* background: #FFf;*/
-}
-#temp_header{ 
 
-float: left; padding: 0 10px; margin: 0 auto; width: 975px; 
-height: 140px; 
-clear: both;  }
-
-h1
-{
-    font-size: 25px;
-    
+div.grey {
+    background-color: #cccccc;
 }
 
-a:link, a:visited {
-text-decoration: none;
-color: Blue;
-}
-a:hover {
-color: Red;
-}
-.Header {
-top:0px;
-left: 0px;
-position: absolute;
-width: 800px;
-background-color:#99CCFF ;
-/*background-image: url(../../Images/header_bg.gif);*/
-background-repeat: repeat-x;
-}
-.Menu {
-top: 180px;
-left: 15px;
-width: 195px;
-position: absolute;
-}
-.Content
-{
-    /* border: medium dashed #FF0000;
-    top: 157px; 
-    left: 129px;
-    position: absolute;
-    width: 1060px; */
-    background-color: #99CCFF;
-    /* clear: both;
-    left: 0px; */
+div.red {
+    background-color: #e14e32;
 }
 
-
-
-.watermark {
-	background: #FFAAFF;
+div.clear {
+    clear: both;
 }
 
-.popupControl {
-	background-color:#AAD4FF;
-	position:absolute;
-	border-style:solid;
-	border-color: Black;
-	border-width: 2px;
-}
-
-.modalBackground {
-	background-color:gray;   
-    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";   /* IE 8 Compatibility */
-    filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50);       /* IE 7 Compatibility */
-    opacity:0.5;    /* Everyone else */
-    
-    
-}
-
-.modalPopup
-{
-    background-color:#ffffdd;
-    border-style:solid;
-    padding:3px;
-    width:250px;
-    border-width:3px;
-    border-color:Gray
-}
-
-
-.sampleStyleA {
-	background-color:#FFF;
-}
-
-.sampleStyleB {
-	background-color:#FFF;
-	font-family:monospace;
-	font-size:10pt;
-	font-weight:bold;
-}
-
-.sampleStyleC {
-	background-color:#ddffdd;
-	font-family:sans-serif;
-	font-size:10pt;
-	font-style:italic;
-}
-
-.sampleStyleD {
-	background-color:Blue;
-	color:White;
-	font-family:Arial;
-	font-size:10pt;
-}
-
-.style1
-        {
-            width: 474px;
-        }
-/*Header*/
-/*Code from http://www.c-sharpcorner.com/uploadfile/raghavau/css-style-sheet-for-ajax-tabcontainer-control-in-Asp-Net-2-0/ */
-/*.Tab .ajax__tab_header
-{
-    color: #4682b4;
-    font-family:Calibri;
-    font-size: 14px;
-    font-weight: bold;
-    background-color: #ffffff;
-    margin-left: 0px;
-}
-/*Body*/
-/*.Tab .ajax__tab_body
-{
-    border:1px solid #b4cbdf;
-    padding-top:0px;
-}
-/*Tab Active*/
-/*.Tab .ajax__tab_active .ajax__tab_tab
-{
-    color: #ffffff;
-    background:url("../../tab_active.gif") repeat-x;
-    height:20px;
-}
-.Tab .ajax__tab_active .ajax__tab_inner
-{
-    color: #ffffff;
-    background:url("../../tab_left_active.gif") no-repeat left;
-    padding-left:10px;
-}
-/*.Tab .ajax__tab_active .ajax__tab_outer*/
-/*{
-    color: #ffffff;
-    background:url("../../tab_right_active.gif") no-repeat right;
-    padding-right:6px;
+div.blue {
+    background-color: cornflowerblue;
 }*/
 
-/*Tab Hover*/
-/*.Tab .ajax__tab_hover .ajax__tab_tab
-{
-    color: #000000;
-    background:url("../../tab_hover.gif") repeat-x;
-    height:20px;
-}
-.Tab .ajax__tab_hover .ajax__tab_inner
-{
-    color: #000000;
-    background:url("../../tab_left_hover.gif") no-repeat left;
-    padding-left:10px;
-}
-.Tab .ajax__tab_hover .ajax__tab_outer
-{
-    color: #000000;
-    background:url("../../tab_right_hover.gif") no-repeat right;
-    padding-right:6px;
-}
-/*Tab Inactive*/
-/*.Tab .ajax__tab_tab
-{
-    color: #666666;
-    background:url("../../tab_Inactive.gif") repeat-x;
-    height:20px;
-}
-.Tab .ajax__tab_inner
-{
-    color: #666666;
-    background:url("../../tab_left_inactive.gif") no-repeat left;
-    padding-left:10px;
-}
-.Tab .ajax__tab_outer
-{
-    color: #666666;
-    background:url("../../tab_right_inactive.gif") no-repeat right;
-    padding-right:6px;
-    margin-right: 2px;
-}*/
-
-
- 
-.mytabstyle .ajax__tab_header {
-    font-family:verdana,tahoma,helvetica;
-    font-size:11px;
-    background:
-        url(../AppThemes/Blue/Images/tab-line.gif) 
-        repeat-x 
-        bottom;
-}
-.mytabstyle .ajax__tab_outer {
-    padding-right:4px;
-    background:
-        url(../AppThemes/Blue/Images/tab-right.gif) 
-        no-repeat 
-        right;
-    height:21px;
-}
-.mytabstyle .ajax__tab_inner {
-    padding-left:3px;
-    background:
-        url(../AppThemes/Blue/Images/tab-left.gif) 
-        no-repeat;
-}
-.mytabstyle .ajax__tab_tab {
-    height:13px;
-    padding:4px;
-    margin:0;
-    background:
-        url(../AppThemes/Blue/Images/tab1.gif') 
-        repeat-x;
-}
-.mytabstyle .ajax__tab_hover .ajax__tab_outer {
-    background:
-        url(../AppThemes/Blue/Images/tab-hover-right.gif) 
-        no-repeat 
-        right;
-}
-.mytabstyle .ajax__tab_hover .ajax__tab_inner {
-    background:
-        url(../AppThemes/Blue/Images/tab-hover-left.gif) 
-        no-repeat;
-}
-.mytabstyle .ajax__tab_hover .ajax__tab_tab {
-    background:
-        url(../AppThemes/Blue/Images/tab-hover.gif) 
-        repeat-x;
-}
-.mytabstyle .ajax__tab_active .ajax__tab_outer {
-    background:
-        url(../AppThemes/Blue/Images/tab-active-right.gif) 
-        no-repeat 
-        right;
-}
-.mytabstyle .ajax__tab_active .ajax__tab_inner {
-    background:
-        url(../AppThemes/Blue/Images/tab-active-left.gif)
-        no-repeat;
-}
-.mytabstyle .ajax__tab_active .ajax__tab_tab {
-
-    background:
-        url(../AppThemes/Blue/Images/tab-active.gif)
-        repeat-x;
+div.grid {
+    width: 1875px;
 }
 
+    div.grid div {
+        float: left;
+        height: 900px;
+    }
 
- 
-.Overlay { 
-  position:fixed; 
-  top:0px; 
-  bottom:0px; 
-  left:0px; 
-  right:0px; 
-  overflow:hidden; 
-  padding:0; 
-  margin:0; 
-  background-color:#000;  
-  filter:alpha(opacity=50); 
-  opacity:0.5; 
-  z-index:1000;
-}
- 
-.PopUpPanel
-{
-    position: absolute;
-    background-color: #FFFFCC;
-    top: 100px;
-    left: 15%;
-    z-index: 2001;
-    padding: 10px;
-    min-width: 400px;
-    max-width: 400px;
-    -moz-box-shadow: 3.5px 4px 5px #000000;
-    -webkit-box-shadow: 3.5px 4px 5px #000000;
-    box-shadow: 3.5px 4px 5px #000000;
-    border-radius: 5px;
-    -moz-border-radiux: 5px;
-    -webkit-border-radiux: 5px;
-    border: 3px solid #CCCCCC;
+div.col100 {
+    width: 410px;
 }
 
-.visoft__tab_xpie7 .ajax__tab_header
-
-{
-
-font-family: verdana,tahoma,helvetica;
-
-font-size: 18px;
-
-color: #FF9966;
-
-background-color: #ffffff;
-
+div.col200 {
+    width: 500px;
 }
 
-.visoft__tab_xpie7 .ajax__tab_outer
-
-{
-
-background-color: #ffffff;
-
-border: 1px;
-
-border-style:none solid none none;
-
-border-color:#999999;
-
+div.col300 {
+    width: 965px;
 }
 
-.visoft__tab_xpie7 .ajax__tab_inner
-
-{
-
-background-color: #E9EFF7;
-
-border: 1px;
-
-border-style:solid none solid solid;
-
-border-color:#999999;
-
+div.grey {
+    background-color: #cccccc;
 }
 
-.visoft__tab_xpie7 .ajax__tab_tab
-
-{
-
-padding: 4px 30px;
-
-width:80px;
-
+div.red {
+    background-color: #e14e32;
 }
+div.blue {background-color:cornflowerblue}
 
-.visoft__tab_xpie7 .ajax__tab_body
+div.green {background-color:aquamarine}
 
-{
-
-font-family: verdana,tahoma,helvetica;
-
-border: 1px solid #999999;
-
-border-top: 0;
-
-padding: 4px;
-
-background-color: #ffffff;
-
-color: #FF9966;
-
-font-size: 18px;
-
-}
-
-.visoft__tab_xpie7 .ajax__tab_active .ajax__tab_inner
-
-{
-
-border: 1px;
-
-border-style:solid none none solid;
-
-border-color:#999999;
-
-background-color: #999999;
-
-}
-
-
-.defaulttab .ajax__tab_default .ajax__tab_header {white-space:nowrap!important;}
-.defaulttab .ajax__tab_default .ajax__tab_outer {display:-moz-inline-box;display:inline-block; border-style:solid solid solid solid !important}
-.defaulttab .ajax__tab_default .ajax__tab_inner {display:-moz-inline-box;display:inline-block !important}
-.defaulttab .ajax__tab_default .ajax__tab_tab {margin-right:4px;overflow:hidden;text-align:center;cursor:pointer;display:-moz-inline-box;display:inline-block !important}
-.defaulttab .ajax__tab_body
-
-{
-
-font-family: verdana,tahoma,helvetica;
-
-
-
-border-top: 0;
-
-padding: 4px;
-
-background-color: #ffffdd;
-
-color: #FF9966;
-
-font-size: 18px !Important;
-
-}
-
-/*Calendar Control CSS*/
-.cal_Theme1 .ajax__calendar_container   {
-background-color: #DEF1F4;
-border:solid 1px #77D5F7;
-}
-
-.cal_Theme1 .ajax__calendar_header  {
-background-color: #ffffff;
-margin-bottom: 4px;
-}
-
-.cal_Theme1 .ajax__calendar_title,
-.cal_Theme1 .ajax__calendar_next,
-.cal_Theme1 .ajax__calendar_prev    {
-color: #004080;
-padding-top: 3px;
-}
-
-.cal_Theme1 .ajax__calendar_body    {
-background-color: #ffffff;
-border: solid 1px #77D5F7;
-}
-
-.cal_Theme1 .ajax__calendar_dayname {
-text-align:center;
-font-weight:bold;
-margin-bottom: 4px;
-margin-top: 2px;
-color: #004080;
-}
-
-.cal_Theme1 .ajax__calendar_day {
-color: #004080;
-text-align:center;
-}
-
-.cal_Theme1 .ajax__calendar_hover .ajax__calendar_day,
-.cal_Theme1 .ajax__calendar_hover .ajax__calendar_month,
-.cal_Theme1 .ajax__calendar_hover .ajax__calendar_year,
-.cal_Theme1 .ajax__calendar_active  {
-color: #004080;
-font-weight: bold;
-background-color: #DEF1F4;
-}
-
-.cal_Theme1 .ajax__calendar_today   {
-font-weight:bold;
-}
-
-.cal_Theme1 .ajax__calendar_other,
-.cal_Theme1 .ajax__calendar_hover .ajax__calendar_today,
-.cal_Theme1 .ajax__calendar_hover .ajax__calendar_title {
-color: #bbbbbb;
-}
-
-.divider{
-    width:5px;
-    height:auto;
-    display:inline-block;
+div.clear {
+    clear: both;
 }

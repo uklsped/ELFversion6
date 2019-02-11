@@ -33,10 +33,19 @@
 <asp:Label ID="CheckUser" runat="server" Text=""  visible="true" display="none" causesvalidation="false"></asp:Label>
  <asp:GridView ID="DummyGridView" runat="server">
         </asp:GridView>     
-
- <div>
+<div class="grid">
+    <div class="col100 red">350 pixels</div>
+    <div class="col200 grey">200 pixels</div>
+    <div class="col300 red">300 pixels</div>
+   
+</div>
+<div class="clear"></div>
  
-       <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
+<div class="grid">
+ 
+       <%--<asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
+        BorderStyle="Solid">--%>
+    <asp:Panel ID="Panel100" runat="server"  BorderColor="#0033CC" 
         BorderStyle="Solid">
            <asp:Label ID="lblError" runat="server" Text="" EnableViewState="False"></asp:Label>
            
@@ -102,9 +111,16 @@
                        </table></td>
                               
             </tr><tr>
-                <td colspan="2">Faults cleared today</td>
+                <td colspan="2">
+                    <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
+               <ContentTemplate>
+                   <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
+                   
+               <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server">
+                </asp:PlaceHolder>
+                </ContentTemplate></asp:UpdatePanel>
+                </td>
                 
-               
             </tr>
         </table>
                       <%-- <table style="width: 350px;">
@@ -163,11 +179,11 @@
                            </tr>
                        </table>--%>
                    </asp:TableCell>
-                                   <asp:TableCell ID="c2" runat="server" Width="50px">
+                                  <%-- <asp:TableCell ID="c2" runat="server" Width="50px">--%>
                        
                    <%--<asp:Button ID="engHandoverButton" runat="server" Text="" causesvalidation="false"  Height="150px" BackColor="#FFCC00"/>--%>
 
-</asp:TableCell>
+<%--</asp:TableCell>--%>
                                           <asp:TableCell ID = "c4" runat="server" HorizontalAlign="Left" Width="500px">
                        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
@@ -177,13 +193,20 @@
 </asp:UpdatePanel>
                        </asp:TableCell>
                         <asp:TableCell VerticalAlign="Top">
-<asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
+                             <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true">
+<ContentTemplate>
+    <asp:PlaceHolder ID="PlaceHolderViewopenfaults" runat="server">
+    </asp:PlaceHolder>
+
+</ContentTemplate> 
+</asp:UpdatePanel>
+<%--<asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
                <ContentTemplate>
                    <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
                    
                <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server">
                 </asp:PlaceHolder>
-                </ContentTemplate></asp:UpdatePanel>
+                </ContentTemplate></asp:UpdatePanel>--%>
                </asp:TableCell>
                </asp:TableRow>
                           </asp:Table>
@@ -210,13 +233,13 @@
                </asp:Panel>
            </div>         
 
-  <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true">
+ <%-- <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true">
 <ContentTemplate>
     <asp:PlaceHolder ID="PlaceHolderViewopenfaults" runat="server">
     </asp:PlaceHolder>
 
 </ContentTemplate> 
-</asp:UpdatePanel>
+</asp:UpdatePanel>--%>
 <asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="false">
 <ContentTemplate>
     <asp:PlaceHolder ID="PlaceHolderModalities" runat="server">
