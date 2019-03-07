@@ -1,261 +1,188 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="Preclinusercontrol.ascx.vb" Inherits="Preclinusercontrol" %>
 
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
-
-      
-    <%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>  
+<%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc2" %>
 <%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc3" %>
-
 <%@ Register src="ViewCommentsuc.ascx" tagname="ViewCommentsuc" tagprefix="uc5" %>
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc6" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>
 <%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>
-<link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
-      
-     
-   <div>
-       <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
-        BorderStyle="Solid">
-        <div id="header_wrapper">
-    <div id="temp_header">
+<%@ Register Src="~/controls/CommentBoxuc.ascx" TagPrefix="uc1" TagName="CommentBoxuc" %>
+
+    <%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc10" %>
+
+  <%@ Register src="controls/MainFaultDisplayuc.ascx" tagname="MainFaultDisplayuc" tagprefix="uc11" %>
+
+  <%--<div id="header_wrapper">
+    <%--<div id="temp_header">--%>
     <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" 
             DataKeyNames="HandoverId"
-        BackColor="White" BorderColor="#CC9966" BorderStyle="None" BorderWidth="1px" 
-        CellPadding="4"  EditRowStyle-BorderStyle="NotSet" Width="906px">
+        BackColor="White" BorderColor="#CC9966" BorderStyle="Solid" BorderWidth="1px" 
+        CellPadding="4"  EditRowStyle-BorderStyle="NotSet" Width="1867px">
             <RowStyle BackColor="White" ForeColor="#330099" />
             <Columns>
-            <asp:BoundField DataField="HandoverId" HeaderText="HandoverId" 
-                    InsertVisible="False" ReadOnly="True" SortExpression="HandoverId" />
+            <asp:BoundField DataField="HandoverId" HeaderText="HandoverId" InsertVisible="False" ReadOnly="True" SortExpression="HandoverId" />
                    <asp:TemplateField HeaderText="6 MV"  >
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MV6"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="6 MV FFF"  >
+                   <asp:TemplateField HeaderText="6 MV FFF"  >
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MV6FFF"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="10 MV">
+                   <asp:TemplateField HeaderText="10 MV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MV10"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                     <asp:TemplateField HeaderText="10 MV FFF">
+                   <asp:TemplateField HeaderText="10 MV FFF">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MV10FFF"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="4 MeV">
+                   <asp:TemplateField HeaderText="4 MeV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MeV4"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="6 MeV">
+                   <asp:TemplateField HeaderText="6 MeV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MeV6"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="8 MeV">
+                   <asp:TemplateField HeaderText="8 MeV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MeV8"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="10 MeV">
+                   <asp:TemplateField HeaderText="10 MeV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MeV10"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="12 MeV">
+                   <asp:TemplateField HeaderText="12 MeV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MeV12"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="15 MeV">
+                   <asp:TemplateField HeaderText="15 MeV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MeV15"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="18 MeV">
+                   <asp:TemplateField HeaderText="18 MeV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MeV18"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:TemplateField HeaderText="20 MeV">
+                   <asp:TemplateField HeaderText="20 MeV">
                     <ItemTemplate >
                     <img src= "<%#FormatImage(Eval("MeV20"))%>" />
                     </ItemTemplate>
                     </asp:TemplateField>
-                    <asp:BoundField DataField="Comment" HeaderText="Comment" 
-                    SortExpression="CComment" />
-                                <asp:BoundField DataField="LogOutName" HeaderText="Approved By" 
-                    SortExpression="LogOutName" />
-                <asp:BoundField DataField="LogOutDate" HeaderText="Date Approved" 
-                    SortExpression="LogOutDate" />
-                <asp:BoundField DataField="linac" HeaderText="linac" SortExpression="linac" />
-<%--                    <asp:BoundField DataField="ApprovedBy" HeaderText="ApprovedBy" 
-                    SortExpression="ApprovedBy" />--%>
-                
-                    
-            </Columns>
-            <FooterStyle BackColor="#FFFFCC" ForeColor="#330099" />
-            <PagerStyle BackColor="#FFFFCC" ForeColor="#330099" HorizontalAlign="Center" />
-            <SelectedRowStyle BackColor="#FFCC66" Font-Bold="True" ForeColor="#663399" />
-            <HeaderStyle BackColor="#330000" Font-Bold="True" ForeColor="#FFFFCC" />
+             <asp:BoundField DataField="LogOutName" HeaderText="Approved By" SortExpression="LogOutName" />
+             <asp:BoundField DataField="LogOutDate" HeaderText="Date Approved" SortExpression="LogOutDate" />
+             <asp:BoundField DataField="Comment" HeaderText=" Engineering Comment" SortExpression="CComment" />
+             <asp:BoundField DataField="linac" HeaderText="linac" SortExpression="linac" />                  
+             </Columns>
+             <FooterStyle BackColor="#FFFFCC" ForeColor="#330099" />
+             <PagerStyle BackColor="#FFFFCC" ForeColor="#330099" HorizontalAlign="Center" />
+             <SelectedRowStyle BackColor="#FFCC66" Font-Bold="True" ForeColor="#663399" />
+             <HeaderStyle BackColor="#330000" Font-Bold="True" ForeColor="#FFFFCC" />
         </asp:GridView>
-        
-        <br />
-        <br />
-        <br />
-        <br />
-        </div>
-        </div>
-
-           
-           <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both" Width="1430px">
-               <asp:TableRow ID="r1" runat="server">
-                   <asp:TableCell ID="c1" runat="server" Width="50px">
-                       
-                   <asp:Button ID="clinHandoverButton" Height="150px"  runat="server" 
-    Text="Approve For Clinical Use" CausesValidation="false" BackColor="#FFCC00" />
-
-
-</asp:TableCell>
-                   <asp:TableCell ID="c2" runat="server" HorizontalAlign="Left" Width="100px">
- <%--<asp:TableCell ID="TableCell1" runat="server" Width="250px" HorizontalAlign="Left">--%>
-                   <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" >
+            <%--</div>--%>
+   <%--</div>--%>
+    <div class="clear" style="width: 1863px"></div>
+<div class="grid">
+    <div class="col100 green">
+        <table id="HandoverTable">
+            <tr style="vertical-align:top">
+                <td style="width:300px" rowspan="2"> 
+                 <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" >
             <Columns>
-            
-                <asp:BoundField DataField="Energy" HeaderText="Select Imaging" 
-                    SortExpression="Energy" />
-                    <asp:TemplateField>  
-                             
+            <asp:BoundField DataField="Energy" HeaderText="Select Imaging" SortExpression="Energy" />
+            <asp:TemplateField>           
             <ItemTemplate>
-              <%-- No need to check now 4/12/17--%>
             <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" />
             </ItemTemplate>
-                      </asp:TemplateField>
+            </asp:TemplateField>
             </Columns>
-        </asp:GridView>
-  <%--  <asp:CheckBoxList ID="Imaging" runat="server" RepeatColumns="1">
-    <asp:ListItem Text="iView"  />
-    <asp:ListItem Text="XVI" Enabled="False" />
-    </asp:CheckBoxList>--%>
-</asp:TableCell>
-                   <asp:TableCell ID="PreclinicalComments" runat="server" HorizontalAlign="left" Width="250px">
-                               <legend align="left" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Pre-clinical Comments</legend>
-                              <uc4:CommentBoxuc ID="CommentBox" runat="server" />
-                      <%-- <asp:TextBox ID="CommentBox" runat="server" MaxLength="10" Rows="5"  
-                TextMode="Multiline" Width="150px" Height="300px" onkeyup="Count()" ClientIDMode="Static"></asp:TextBox>
-                       <br/> <asp:Label ID="CommentWordCount" runat="server" Text="" ClientIDMode="Static"></asp:Label>--%>
-
-                       </asp:TableCell>
-                   <asp:TableCell ID="c3" runat="server" BackColor="White" HorizontalAlign="Left" VerticalAlign="Top" Width="250px">
-                                                        <div style =" background-color:Green;  
-        height:30px;width:355px; margin:0;padding:0">
-        <table cellspacing="0" cellpadding = "0" rules="all" border="1" id="Table3" 
-         style="font-family:Arial;font-size:10pt;width:350px;color:white;
-         border-collapse:collapse;height:100%;">
+            </asp:GridView>
+                                      </td>
+                <td style="width:145px">
+                    <asp:Button ID="clinHandoverButton" Height="50px"  runat="server" 
+                Text="Approve For Clinical Use" CausesValidation="false" BackColor="#FFCC00" />
+                </td>
+                </tr>
+            <tr><td>
+                <asp:Button ID="LogOff" runat="server" Text="Log Off Without Approving For Clinical Use" CausesValidation="False" />
+                </td></tr>
+           <tr>
+                <td colspan="3" style="height:92px"><fieldset>
+                    <legend style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">
+                        Pre-Clinical Comments
+                   </legend>
+            
+                  <uc4:CommentBoxuc ID="CommentBox" runat="server" />
+                   </fieldset></td>
+                            </tr>
             <tr>
-               <td style ="width:175px;text-align:center">Engineering Comment</td>
-            </tr>
+                <td colspan="2"> 
+<%--                    <asp:UpdatePanel ID="UpdatePanel10" runat="server" UpdateMode="Conditional">
+                    <ContentTemplate>--%>
+                    <%--<asp:Label ID="Label4" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
+                    <br />
+                    <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server"></asp:PlaceHolder>--%>
+                   <%-- </ContentTemplate>
+                </asp:UpdatePanel>--%></td>
+                            </tr>
         </table>
-        </div>
- <asp:UpdatePanel ID="UpdatePanel2" runat="server">
-           <ContentTemplate>
-           
-        <div style ="height:175px; width:355px; overflow:auto;">
-        <asp:GridView ID="GridViewComments" runat="server" AutoGenerateColumns="False" showheader="false"
-        DataKeyNames="Comment" BackColor="White" 
-        BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4" 
-        GridLines="Horizontal" >
-        <RowStyle BackColor="White" ForeColor="#333333" />
-        <Columns>
-                <asp:BoundField DataField="comment" HeaderText="Engineering" ItemStyle-Width="350px" 
-                SortExpression="Engineering" ItemStyle-VerticalAlign="Top" ItemStyle-HorizontalAlign="Left" />
-            </Columns>
-        <FooterStyle BackColor="White" ForeColor="#333333" />
-        <PagerStyle BackColor="#336666" ForeColor="White" HorizontalAlign="Center" />
-        <SelectedRowStyle BackColor="#339966" Font-Bold="True" ForeColor="White" />
-        <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
-    </asp:GridView>              
-               </div>    
-                       
-</ContentTemplate>         
-</asp:UpdatePanel>
-                       
-                       
-                       <%--<div>--%>
-                       
-                       
-                       <%--<asp:Repeater ID="Repeater1" runat="server">
-                       <HeaderTemplate><table width="250px" >
-                       <tr><th>Engineering Runup Comments</th></tr></HeaderTemplate>
-        <ItemTemplate><tr><td>
-                        <%#Eval("Comment")%></td></tr></ItemTemplate>
-                        <FooterTemplate></table></FooterTemplate>
-                </asp:Repeater>--%>
-                       <%--</div>--%>
-                               <%--<asp:TextBox ID="TextBox2" runat="server" MaxLength="250" Rows="5" 
-                TextMode="MultiLine" Width="250px" Height="150px" ReadOnly="true"></asp:TextBox>--%>
-                </asp:TableCell>
-                   <asp:TableCell ID="c4" runat="server" HorizontalAlign="Left" Width="375px">
-                       <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-<ContentTemplate>
-<asp:PlaceHolder ID="PlaceHolder3" runat="server">
-</asp:PlaceHolder>
-</ContentTemplate>
+</div>
+    <div class="col200 blue">
+        <asp:UpdatePanel ID="UpdatePanel8" runat="server">
+            <ContentTemplate>
+                <asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server"></asp:PlaceHolder>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+    </div>
+    <div class="col300 green">
 
-</asp:UpdatePanel>
-                       </asp:TableCell>
-                   <asp:TableCell VerticalAlign="Top">
-<asp:UpdatePanel ID="UpdatePanel3" runat="server" UpdateMode="Conditional">
-               <ContentTemplate>
-                   <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
-                   <br></br>
-               <asp:PlaceHolder ID="PlaceHolder5" runat="server">
-                </asp:PlaceHolder>
-                </ContentTemplate></asp:UpdatePanel>
-               </asp:TableCell>
-               </asp:TableRow>
-           </asp:Table>
-           <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1038px">
-               <asp:TableRow ID="t2r1" runat="server">
-                   <asp:TableCell ID="t2c1" runat="server" HorizontalAlign="Left" Width="160px">
-                     
- </asp:TableCell>
-                   <asp:TableCell ID="t2c2" runat="server">
-               <asp:Button ID="LogOff" runat="server" Text="Log Off Without Approving For Clinical Use" CausesValidation="False" />
-               </asp:TableCell>
-               </asp:TableRow>
-           </asp:Table>
-           <asp:UpdatePanel ID="faultupdatePanel" runat="server" Visible="true">
-               <ContentTemplate>
-                   <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
-               </ContentTemplate>
-           </asp:UpdatePanel>
-           <asp:PlaceHolder ID="PlaceHolder2" runat="server">
-               <uc2:WriteDatauc ID="WriteDatauc1" runat="server" LinacName="" Tabby="2" UserReason="2" visible="false" WriteName="PreClinData" />
-               <uc3:ConfirmPage ID="ConfirmPage1" runat="server" Visible="false" />
-           </asp:PlaceHolder>
-                          
-            <br />
-           
-           
-           
-           <uc5:ViewCommentsuc ID="ViewCommentsuc1" linacName="" CommentSort="pcr" runat="server" />
-                          
-            </asp:Panel>
-           
-        </div>   
+<%--        <asp:UpdatePanel ID="UpdatePanel9" runat="server" Visible="true" UpdateMode="Conditional" >
+        <ContentTemplate>--%>
+       <%-- <table>
+            <tr><td>--%>
+       
+                         <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>
+            
+                         
+               <%--         </td></tr>
+<tr><td>
+        <asp:Label ID="Label4" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
+                    <br />
+                    <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server"></asp:PlaceHolder>
+                       
+                </td></tr>
+            <tr><td>
+                <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
+                    <ContentTemplate>
+                <asp:PlaceHolder ID="PlaceHolderViewOpenFaults"  runat="server"></asp:PlaceHolder>
+                </td></tr>
+     </ContentTemplate>
+    </asp:UpdatePanel>
+             </table>  --%>
+    </div>
+</div>
+<div class="clear">
     
-        
     
-        <br />
-        
+</div>
+<asp:PlaceHolder ID="PlaceHolder2" runat="server">
+  <uc2:WriteDatauc ID="WriteDatauc1" runat="server" LinacName="" Tabby="2" UserReason="2" visible="false" WriteName="PreClinData" />
+  <uc3:ConfirmPage ID="ConfirmPage1" runat="server" Visible="false" />
+</asp:PlaceHolder>         
 
-   
-    
-
+<uc5:ViewCommentsuc ID="ViewCommentsuc1" linacName="" CommentSort="pcr" runat="server" />

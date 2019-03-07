@@ -19,6 +19,7 @@ Partial Class Preclinusercontrol
     Public Property DataName() As String
     Dim comment As String
     Const PRECLIN As String = "2"
+    Const REPEATFAULT As Integer = 0
 
     Public Function FormatImage(ByVal energy As Boolean) As String
         'Dim happyIcon As String = "Images/happy.gif"
@@ -62,7 +63,7 @@ Partial Class Preclinusercontrol
     End Sub
     Public Sub Preclinloaded(ByVal connectionString As String)
         BindGridview2(connectionString)
-        BindComments(connectionString)
+        'BindComments(connectionString)
         SetImaging(connectionString)
 
     End Sub
@@ -73,14 +74,14 @@ Partial Class Preclinusercontrol
         GridView2.DataSource = SqlDateSourceGridView
         GridView2.DataBind()
     End Sub
-    Private Sub BindComments(ByVal connectionString As String)
-        Dim SqlDateSourceComment As New SqlDataSource()
-        Dim query As String = "select e.comment from handoverenergies e  where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
-        SqlDateSourceComment = QuerySqlConnection(LinacName, query, connectionString)
-        GridViewComments.DataSource = SqlDateSourceComment
-        GridViewComments.DataBind()
+    'Private Sub BindComments(ByVal connectionString As String)
+    '    Dim SqlDateSourceComment As New SqlDataSource()
+    '    Dim query As String = "select e.comment from handoverenergies e  where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac)"
+    '    SqlDateSourceComment = QuerySqlConnection(LinacName, query, connectionString)
+    '    GridViewComments.DataSource = SqlDateSourceComment
+    '    GridViewComments.DataBind()
 
-    End Sub
+    'End Sub
     Protected Sub SetImaging(ByVal connectionString As String)
         'This had to be changed to add the imaging modalities for E1 and E2 - added 44 and 45 and 56 and 57. Altered this 2/10 because energyids are not always
         'sequential. Changed to check energy instead which is what is used successfully elsewhere
@@ -132,16 +133,15 @@ Partial Class Preclinusercontrol
             count = count + 1
         End While
         reader.Close()
-        'Finally
-        'conn.Close()
 
-        'End Try
     End Sub
 
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
             Todaydefect.UpDateDefectsEventHandler()
+            'TodayRepeatFaultDisplay = PlaceHolderTodaysRepeatFaultsDisplay.FindControl("TodayRepeatFaultDisplay")
+            'TodayRepeatFaultDisplay.UpDateDefectsEventHandler()
         End If
     End Sub
 
@@ -176,10 +176,6 @@ Partial Class Preclinusercontrol
             Else
                 comment = String.Empty
             End If
-            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-            'Dim comment As String = Textboxcomment.Text
-            'Dim Imagecheck As CheckBoxList
-            'Imagecheck = FindControl("Imaging")
             Dim strScript As String = "<script>"
             Dim Action As String = Application(actionstate)
             Dim grdviewI As GridView = FindControl("GridViewImage")
@@ -195,7 +191,6 @@ Partial Class Preclinusercontrol
                 If Successful Then
                     Dim returnstring As String = LinacName + "page.aspx?tabref=3"
                     Application(tabstate) = String.Empty
-                    'HttpContext.Current.Application(BoxChanged) = Nothing
                     CommentBox.ResetCommentBox(String.Empty)
                     Application(suspstate) = 1
                     Response.Redirect(returnstring)
@@ -206,7 +201,6 @@ Partial Class Preclinusercontrol
             Else
                 Application(LinacFlag) = "Engineering Approved"
                 Valid = False
-                'HttpContext.Current.Application(BoxChanged) = Nothing
                 strScript += "alert('No Pre-clinical RunUp Logging Off');"
                 Successful = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, username, comment, iView, XVI, Valid, False, FaultP)
                 If Successful Then
@@ -214,17 +208,14 @@ Partial Class Preclinusercontrol
                         CommentBox.ResetCommentBox(String.Empty)
                     End If
                     strScript += "window.location='"
-                        strScript += machinelabel
-                        strScript += "</script>"
-                        ScriptManager.RegisterStartupScript(LogOff, Me.GetType(), "JSCR", strScript.ToString(), False)
-                    Else
-                        RaiseError()
+                    strScript += machinelabel
+                    strScript += "</script>"
+                    ScriptManager.RegisterStartupScript(LogOff, Me.GetType(), "JSCR", strScript.ToString(), False)
+                Else
+                    RaiseError()
                 End If
-                'HttpContext.Current.Application(BoxChanged) = Nothing
             End If
         End If
-
-
     End Sub
     Protected Sub RaiseError()
         Dim message As String
@@ -245,28 +236,44 @@ Partial Class Preclinusercontrol
     End Sub
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         WaitButtons("Rad")
-        objconToday = Page.LoadControl("TodayClosedFault.ascx")
-        objconToday.ID = "Todaysfaults"
-        objconToday.LinacName = LinacName
-        PlaceHolder5.Controls.Add(objconToday)
-        Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
-        CType(objCon, ViewOpenFaults).LinacName = LinacName
-        CType(objCon, ViewOpenFaults).ParentControl = PRECLIN
-        CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
-        'AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplay, AddressOf Update_Today
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        'TodayRepeatFaultDisplay = Page.LoadControl("controls\RepeatFaultDisplayuc.ascx")
+        'TodayRepeatFaultDisplay.ID = "TodayRepeatFaultDisplay"
+        'TodayRepeatFaultDisplay.LinacName = LinacName
+        'PlaceHolderTodaysRepeatFaultsDisplay.Controls.Add(TodayRepeatFaultDisplay)
+
+
+        'Dim objMFG As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
+        'CType(objMFG, ManyFaultGriduc).NewFault = False
+        'CType(objMFG, ManyFaultGriduc).IncidentID = REPEATFAULT
+        ''to accomodate Tomo now need to pass equipment name?
+        'CType(objMFG, ManyFaultGriduc).MachineName = LinacName
+        'PlaceHolderFaults.Controls.Add(objMFG)
+        Dim objMFG As controls_MainFaultDisplayuc = Page.LoadControl("controls\MainFaultDisplayuc.ascx")
+        CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
+        PlaceHolderFaults.Controls.Add(objMFG)
+
+        'objconToday = Page.LoadControl("TodayClosedFault.ascx")
+        'objconToday.ID = "Todaysfaults"
+        'objconToday.LinacName = LinacName
+        'PlaceHolderTodaysclosedfaults.Controls.Add(objconToday)
+
+        'Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
+        'CType(objCon, ViewOpenFaults).LinacName = LinacName
+        'CType(objCon, ViewOpenFaults).ParentControl = PRECLIN
+        'CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
+        'AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
         Dim button1 As Button = FindControl("clinHandoverButton")
         Dim button2 As Button = FindControl("LogOff")
-
-        PlaceHolder1.Controls.Add(objCon)
+        'PlaceHolderViewOpenFaults.Controls.Add(objCon)
 
         Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
         CType(objDefect, DefectSave).ID = "DefectDisplay"
         CType(objDefect, DefectSave).LinacName = LinacName
         CType(objDefect, DefectSave).ParentControl = PRECLIN
-        PlaceHolder3.Controls.Add(objDefect)
-        'AddHandler CType(objDefect, DefectSave).UpDateDefect, AddressOf Update_Today
+        PlaceHolderDefectSave.Controls.Add(objDefect)
+        AddHandler CType(objDefect, DefectSave).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+
         AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
@@ -278,12 +285,8 @@ Partial Class Preclinusercontrol
         'http://weblogs.asp.net/aghausman/archive/2009/04/15/how-to-pass-parameters-to-the-dynamically-added-user-control.aspx
 
         PlaceHolder2.Visible = True
-        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
         CommentBox.BoxChanged = BoxChanged
         If Not IsPostBack Then
-
-            'removes engineer comments from display in grid
-            GridView2.Columns(13).Visible = False
 
             Select Case LinacName
                 Case "LA1"
@@ -313,11 +316,6 @@ Partial Class Preclinusercontrol
             End Select
             GridView2.Columns(0).Visible = False
 
-            'If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
-            '    Textboxcomment.Text = Application(BoxChanged).ToString
-            'Else
-            '    'Textboxcomment.Text = comment
-            'End If
             Application(faultviewstate) = 1
 
         End If
@@ -325,7 +323,7 @@ Partial Class Preclinusercontrol
     End Sub
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
-        'Application(LinacFlag) = "Linac Unauthorised"
+
         Application(appstate) = Nothing
         HttpContext.Current.Application(BoxChanged) = Nothing
         Application(tabstate) = String.Empty
@@ -374,9 +372,9 @@ Partial Class Preclinusercontrol
             End While
 
             reader.Close()
-            'Finally
+
             conn.Close()
-            'End Try
+
         End If
 
     End Sub
@@ -441,10 +439,6 @@ Partial Class Preclinusercontrol
 
     End Function
 
-    'Protected Sub CommentBox_TextChanged(sender As Object, e As System.EventArgs) Handles CommentBox.TextChanged
-    '    Application(BoxChanged) = CommentBox.Text
-
-    'End Sub
     Private Sub WaitButtons(ByVal WaitType As String)
 
         Select Case WaitType
