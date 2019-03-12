@@ -59,6 +59,7 @@ Partial Class ViewOpenFaults
     Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
     Public Event AddConcessionToDefectDropDownList(ByVal EquipmentName As String, ByVal incidentID As String)
     Public Event ResetViewOpenFaults(ByVal EquipmentName As String)
+    'Public Event UpdateReturnButtons(ByVal EquipmentName As String)
     Public Property ParentControl() As String
     Public Property LinacName() As String
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
@@ -66,6 +67,7 @@ Partial Class ViewOpenFaults
         AddHandler ManyFaultGriduc.ShowFault, AddressOf NewFaultEvent
         AddHandler FaultTrackinguc1.CloseFaultTracking, AddressOf CloseTracking
         AddHandler FaultTrackinguc1.UpdateClosedDisplays, AddressOf CloseDisplays
+        'AddHandler FaultTrackinguc1.AddConcessionToDefectDropDownList AddressOf
         'AddHandler DeviceRepeatFaultuc1.CloseRepeatFault, AddressOf CloseTracking
         AddHandler DeviceRepeatFaultuc1.UpdateRepeatFault, AddressOf CloseRepeatFault
 
@@ -343,7 +345,7 @@ Partial Class ViewOpenFaults
             ConcessionGrid.Columns(5).Visible = True
             ConcessionGrid.Columns(6).Visible = True
             ConcessionGrid.Columns(7).Visible = True
-
+            TabTech()
         End If
     End Sub
 
@@ -399,7 +401,7 @@ Partial Class ViewOpenFaults
 
                         Case Else
                             BindTrackingGrid(IncidentID)
-                            Hidefaults.Visible = True
+                            HideFaultsclinicalview.Visible = True
                             UpdatePanel1.Visible = True
                             MultiView2.SetActiveView(statusother)
                             MultiView1.SetActiveView(View1)
@@ -439,6 +441,7 @@ Partial Class ViewOpenFaults
                     MultiView1.SetActiveView(View2)
                     ConcessionGrid.Enabled = False
                     Hidefaults.Visible = True
+                    HideFaultsclinicalview.Visible = True
                     UpdatePanel4.Visible = False
             End Select
 
@@ -535,12 +538,13 @@ Partial Class ViewOpenFaults
 
     End Sub
 
-    Protected Sub Hidefaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles Hidefaults.Click
+    Protected Sub Hidefaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles Hidefaults.Click, HideFaultsclinicalview.Click
         ConcessionGrid.Visible = True
         ConcessionGrid.Enabled = True
         ConcessionGrid.SelectedIndex = -1
         UpdatePanel2.Visible = False
         Hidefaults.Visible = False
+        HideFaultsclinicalview.Visible = False
         UpdatePanel4.Visible = True
         SetViewFault(True)
     End Sub

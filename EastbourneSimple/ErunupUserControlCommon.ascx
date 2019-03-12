@@ -24,6 +24,12 @@
 <%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc1" %>
 
 
+<%@ Register src="controls/MainFaultDisplayuc.ascx" tagname="MainFaultDisplayuc" tagprefix="uc8" %>
+
+
+<%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc13" %>
+
+
 <%--<link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />--%>
 
 <%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
@@ -36,124 +42,125 @@
  <asp:GridView ID="DummyGridView" runat="server">
         </asp:GridView>    
 
-<div class="clear">clear3</div>
+<%--<div class="clear">clear3</div>--%>
 <div class="grid" >
  
-           <div class="col100 grey" >
-
-            <table id="EnergyTable">
-            <tr style="vertical-align:top;">
-     
-                <td  rowspan="2"><asp:GridView ID="GridView1" runat="server" 
-                        AutoGenerateColumns="False" visible="false" Width="126px" >
+   <div class="col100 grey" >
+      <table id="EnergyTable">
+        <tr style="vertical-align:top;">     
+           <td  rowspan="6">
+           <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" visible="false" Width="126px" >
             <Columns>
-            <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
-                    SortExpression="Energy" />
-                    <asp:TemplateField>  
-            <HeaderTemplate>  
-                <asp:CheckBox ID="chkSelectAll"   
-                    runat="server" 
-                    AutoPostBack="true"  
-                    OncheckedChanged="checked"
-                     />  
-            </HeaderTemplate>
-                    
-            <ItemTemplate>
-            <asp:CheckBox runat="server" ID="RowlevelCheckBox" />
-            </ItemTemplate>
-            </asp:TemplateField>
+            <asp:BoundField DataField="Energy" HeaderText="Select All Energies" SortExpression="Energy" />
+              <asp:TemplateField>  
+               <HeaderTemplate>  
+                <asp:CheckBox ID="chkSelectAll" runat="server" AutoPostBack="true" OncheckedChanged="checked" />  
+               </HeaderTemplate>    
+               <ItemTemplate>
+                <asp:CheckBox runat="server" ID="RowlevelCheckBox" />
+               </ItemTemplate>
+             </asp:TemplateField>
             </Columns>
-        </asp:GridView></td>
-                <td style="width: 182px" > <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" Visible="false" >
-            <Columns>
-            
-                <asp:BoundField DataField="Energy" HeaderText="Select Imaging" 
-                    SortExpression="Energy" />
-                    <asp:TemplateField>  
-                             
-            <ItemTemplate>
-            <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" />
-
-            </ItemTemplate>
-                      </asp:TemplateField>
-            </Columns>
-        </asp:GridView></td>
-                
-            </tr>
-            <tr>
-                
-                <td style="width: 182px" >
-                    <asp:Button ID="engHandoverButton" runat="server" BackColor="#FFCC00" 
-                        causesvalidation="false" Height="100px" Text="" />
-                </td>
+           </asp:GridView>
                
-            </tr>
-            <tr>
-             
-                 <td colspan="2" style="height: 92px"><table>
-                           <tr>
-                               <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
-                                                          </tr>
-                           <tr>
-                               <td><uc3:CommentBoxuc ID="CommentBox" runat="server" /></td>
-                               
-                           </tr>
-                       </table></td>
-                              
-            </tr><tr>
-                <td colspan="2">
-                    <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
-               <ContentTemplate>
-                   <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
-                   
-               <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server">
-                </asp:PlaceHolder>
-                </ContentTemplate></asp:UpdatePanel>
-               </td>
+           </td>
+           <td style="width: 182px" >
+           <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" Visible="false" >
+               <Columns>
+                <asp:BoundField DataField="Energy" HeaderText="Select Imaging" SortExpression="Energy" />
+                <asp:TemplateField>                      
+                 <ItemTemplate>
+                  <asp:CheckBox runat="server" ID="RowlevelCheckBoxImage" />
+                </ItemTemplate>
+                </asp:TemplateField>
+               </Columns>
+           </asp:GridView>
+              
+           </td>
+            
+        </tr>
+        <tr>              
+           <td style="width: 182px" >
+              <asp:Button ID="engHandoverButton" runat="server" BackColor="#FFCC00" causesvalidation="false" Height="50px" Text="" />
                 
-            </tr>
-        </table>
-               </div>
-                     
-                 
-        <div class="col200 blue" >
+           </td>               
+        </tr>
+          <tr>
+              <td style="width: 182px" >
+              <asp:Button ID="LogOffButton" runat="server" Text="Log Off Without Approving Energies" CausesValidation="False" />
+          </td>
+                  </tr>
+          <tr><td style="width: 182px" >
+              <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
+              </td></tr>
+          <tr><td style="width: 182px" >
+              <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" CausesValidation="false" />
+              </td></tr>
+          <tr>
+              <td style="width: 182px" >
+              <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" width = "160px" causesvalidation="false"/>
+          </tr>
+        <tr>          
+           <td colspan="2" style="height: 92px">
+               <table>
+                 <tr>
+                     <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
+                 </tr>
+                 <tr>
+                     <td><uc3:CommentBoxuc ID="CommentBox" runat="server" /></td>
+                 </tr>
+               </table>
+           </td>                         
+        </tr>
+       <tr>
+           <td colspan="2">
+             <%-- <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
+                <ContentTemplate>
+                  <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
+                  <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server">
+                  </asp:PlaceHolder>
+                </ContentTemplate>
+              </asp:UpdatePanel>--%>
+           </td>              
+        </tr>
+      </table>
+   </div>                
+   <div class="col200 blue" >
                  <asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
-<asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server">
-</asp:PlaceHolder>
+    <asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server"></asp:PlaceHolder>
+
 </ContentTemplate>
 </asp:UpdatePanel> 
        </div>
-   
-       <div class="col300 green" >
-        
-             <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true">
-<ContentTemplate>
-  <asp:PlaceHolder ID="PlaceHolderViewopenfaults" runat="server">
- </asp:PlaceHolder>
-    this is underneath
-        </ContentTemplate> 
-                 
-</asp:UpdatePanel>
-           </div>
-    </div>
-        <div class="clear">bottom clear</div>
-         <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1507px">
+   <div class="col300 green" >
+            <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true" UpdateMode="Conditional">
+                <ContentTemplate>
+                    <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>
+                   <%-- <asp:PlaceHolder ID="PlaceHolderViewOpenFaults" runat="server"></asp:PlaceHolder>--%>
+                </ContentTemplate> 
+            </asp:UpdatePanel>
+       </div>
+
+</div>
+
+<div class="clear"></div>
+   <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1507px">
          <asp:TableRow ID ="t2r1" runat="server">
          <asp:TableCell ID="lock" runat="server" Width="160px" HorizontalAlign="Left">
-         <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
+         <%--<asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>--%>
          </asp:TableCell>
          <asp:TableCell ID="t2c1" runat="server" Width="160px" HorizontalAlign="Left">
 
                </asp:TableCell>
                <asp:TableCell ID="t2c2" runat="server" Width="50px">
-               <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" width = "160px" causesvalidation="false"/>
+               <%--<asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" width = "160px" causesvalidation="false"/>--%>
                </asp:TableCell>
                <asp:TableCell ID="TableCell1" runat="server">
-                    <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" CausesValidation="false" />
+                    <%--<asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" CausesValidation="false" />--%>
                 </asp:TableCell>
                <asp:TableCell ID="t2c3" runat="server">
-               <asp:Button ID="LogOffButton" runat="server" Text="Log Off Without Approving Energies" CausesValidation="False" />
+               <%--<asp:Button ID="LogOffButton" runat="server" Text="Log Off Without Approving Energies" CausesValidation="False" />--%>
                </asp:TableCell>
               
                         </asp:TableRow>
@@ -191,5 +198,5 @@
             <uc1:ConfirmPage ID="ConfirmPage1" Visible="false" runat="server" />
          </asp:PlaceHolder>
 
- 
+
    

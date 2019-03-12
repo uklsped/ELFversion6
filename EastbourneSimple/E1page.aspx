@@ -21,7 +21,7 @@
 
 <%@ Register src="RegisterUseruc.ascx" tagname="RegisterUseruc" tagprefix="uc13" %>
 
-<asp:Content ID="ContenE1" ContentPlaceHolderID="head" Runat="Server">
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 
@@ -113,7 +113,7 @@
             ImageUrl="~/Images/bsuh_logo.gif" Width="250" Height="74"
             AlternateText="BSUH Linacs" />
                     <br>
-            </br>
+            <br />
              <asp:Image id="Image1" runat="server"
             ImageUrl="~/Images/if_elf_62126.png" Width="100px" Height="100px"
             AlternateText="ELF" />
@@ -160,7 +160,7 @@
 
     
   <asp:Button ID="EndOfDay" runat="server" Text="End of Day"  causesvalidation="false"/>              
-&nbsp;
+
 
             <asp:Button ID="RestoreButton" runat="server" visible="true" CausesValidation="False" 
         style="height: 26px" Text="RESTORE ELF" />
@@ -210,7 +210,7 @@ E1 Status
 <asp:UpdatePanel ID="UpdatePanel1" runat="server" >
 <ContentTemplate>
 <asp:Button ID="TabButton1" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
-<asp:Panel ID="TabContenE1" runat="server" Visible="False">
+<asp:Panel ID="TabContent1" runat="server" Visible="False">
 <uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "E1"  Tabby="1" UserReason = "1" visible="false" />
     <uc1:ErunupUserControlCommon ID="ErunupUserControl1" LinacName="E1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server" />
 

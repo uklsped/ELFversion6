@@ -113,7 +113,7 @@
             ImageUrl="~/Images/bsuh_logo.gif" Width="250" Height="74"
             AlternateText="BSUH Linacs" />
                     <br>
-            </br>
+            <br />
              <asp:Image id="Image1" runat="server"
             ImageUrl="~/Images/if_elf_62126.png" Width="100px" Height="100px"
             AlternateText="ELF" />

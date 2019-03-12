@@ -9,6 +9,19 @@
     .auto-style1 {
         width: 450px;
     }
+    .auto-style2 {
+        width: 124px;
+    }
+    .auto-style3 {
+        width: 265px;
+    }
+    .auto-style4 {
+        float: right;
+        width: 265px;
+    }
+    .auto-style5 {
+        width: 455px;
+    }
 </style>
 <table style="width: 100%;">
     <tr>
@@ -29,7 +42,7 @@
                                 </asp:TableCell>
                             </asp:TableRow>
                              </asp:Table>
-                           
+                           </fieldset>
 <asp:MultiView ID="MultiView1" runat="server">
         <asp:View ID="Linac" runat="server">
              <table id="Table2" style="width:auto;">
@@ -159,9 +172,9 @@
 
 </asp:MultiView>
 <div>
- <table id="table3" style="width:300px;">
+ <table id="table3" class="auto-style5">
       <tr>
-                   <td>
+                   <td class="auto-style2">
                    <asp:Label ID="Label2" runat="server" Text="Radiation Incident?"></asp:Label>
                        </td>
                           <td>
@@ -170,7 +183,7 @@
                                         <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
                                     </asp:RadioButtonList>
                               </td>
-                          <td>
+                          <td class="auto-style3">
                         <asp:RequiredFieldValidator 
             ID="ReqiredFieldValidator1"
             runat="server"
@@ -183,23 +196,38 @@
                        </td>
               </tr>
         <tr>
-            <td class="style1">
+            <td class="auto-style2">
                 <asp:Button ID="SaveRepeatFault" runat="server" Text="Save Repeat Fault" CausesValidation="false"  />
         </td>
         <td>
             <asp:Button ID="CancelFault" runat="server" Text="Cancel" CausesValidation="false"/>
             
         </td>
-            <td style="float:right">
-                <asp:Button ID="ViewExistingFaults" runat="server" Text="View Associated Faults" CausesValidation="false" />
+            <td class="auto-style4">
+                <asp:Button ID="ViewExistingFaults" runat="server" Text="View Previous Faults" CausesValidation="false" />
             </td>
         </tr>
-        </table>
+      </table>
+    <%-- <tr>
+         
+              <td style="vertical-align:top" class="auto-style2">--%>
+             <asp:Panel ID="VEFUpdatePanel" visible="false" runat="server">
+                        <fieldset style="width: 785px">
+                            <legend>Previous Faults
+                            </legend>
+                            <asp:PlaceHolder ID="PlaceHolderVEF" runat="server"></asp:PlaceHolder>
+                           
+                        </fieldset>
+                  </asp:Panel>
+                              </td>
+        
+     </tr>
+       <%-- </table>--%>
     </div>
       
                         </fieldset>
             </td>
-         <td style="vertical-align:top">
+        <%-- <td style="vertical-align:top">
              <asp:Panel ID="VEFUpdatePanel" visible="false" runat="server">
                         <fieldset style="width: 785px">
                             <legend>Associated Faults
@@ -208,7 +236,7 @@
                            
                         </fieldset>
                   </asp:Panel>
-                              </td>
+                              </td>--%>
             </tr>
 </table>
             

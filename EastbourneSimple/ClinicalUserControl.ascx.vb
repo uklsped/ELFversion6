@@ -124,7 +124,7 @@ Partial Class ClinicalUserControl
 
     Public Sub ClinicalApprovedEvent(ByVal connectionString As String)
         'This is the point that the gridviews are displayed and Clinical Table Data is written
-        BindEnergyData()
+        'BindEnergyData()
 
         'This looks to see if BoxChanged has a value. if it has the comment has not been saved.
         If Not HttpContext.Current.Application(BoxChanged) Is Nothing Then

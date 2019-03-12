@@ -322,7 +322,7 @@
                     <asp:UpdatePanel ID="UpdatePanel3" runat="server" UpdateMode="Conditional">
                         <ContentTemplate>
                             <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
-                            <br></br>
+                            <br><br />
                             <asp:PlaceHolder ID="PlaceHolder5" runat="server"></asp:PlaceHolder>
                         </ContentTemplate>
                     </asp:UpdatePanel>

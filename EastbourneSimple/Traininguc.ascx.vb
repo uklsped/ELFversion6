@@ -93,13 +93,13 @@ Partial Class Traininguc
 
     Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
         If LinacName = EquipmentID Then
-            Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
+            Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
             todayfault.SetGrid()
             If LinacName Like "T?" Then
-                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefectpark.ResetDefectDropDown(incidentID)
             Else
-                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefect.ResetDefectDropDown(incidentID)
             End If
 
@@ -110,10 +110,10 @@ Partial Class Traininguc
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
             If LinacName Like "T?" Then
-                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefectpark.UpDateDefectsEventHandler()
             Else
-                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefect.UpDateDefectsEventHandler()
             End If
 
@@ -275,22 +275,22 @@ Partial Class Traininguc
         objconToday = Page.LoadControl("TodayClosedFault.ascx")
         objconToday.ID = "Todaysfaults"
         objconToday.LinacName = MachineName
-        PlaceHolder5.Controls.Add(objconToday)
+        PlaceHolderTodaysclosedfaults.Controls.Add(objconToday)
 
         Dim objCon As UserControl = Page.LoadControl("ViewOpenFaults.ascx")
         CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
         CType(objCon, ViewOpenFaults).LinacName = MachineName
         CType(objCon, ViewOpenFaults).ParentControl = TRAINING
-        PlaceHolder1.Controls.Add(objCon)
+        PlaceHolderViewOpenFaults.Controls.Add(objCon)
 
-        Dim objAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
-        CType(objAtlas, AtlasEnergyViewuc).LinacName = MachineName
-        PlaceHolder2.Controls.Add(objAtlas)
+        'Dim objAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
+        'CType(objAtlas, AtlasEnergyViewuc).LinacName = MachineName
+        'PlaceHolder2.Controls.Add(objAtlas)
 
-        Dim objQA As UserControl = Page.LoadControl("Modalitiesuc.ascx")
-        CType(objQA, Modalitiesuc).LinacName = MachineName
-        CType(objQA, Modalitiesuc).TabName = TRAINING
-        PlaceHolder3.Controls.Add(objQA)
+        'Dim objQA As UserControl = Page.LoadControl("Modalitiesuc.ascx")
+        'CType(objQA, Modalitiesuc).LinacName = MachineName
+        'CType(objQA, Modalitiesuc).TabName = TRAINING
+        'PlaceHolder3.Controls.Add(objQA)
 
         AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
@@ -312,7 +312,7 @@ Partial Class Traininguc
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
-        PlaceHolder4.Controls.Add(objDefect)
+        PlaceHolderDefectSave.Controls.Add(objDefect)
         CommentBox.BoxChanged = BoxChanged
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = MachineName
@@ -325,19 +325,19 @@ Partial Class Traininguc
 
     End Sub
 
-    Protected Sub Faultpanelbutton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Faultpanelbutton.Click
-        Dim updatepanel2 As UpdatePanel = FindControl("updatepanel2")
-        If Application(faultviewstate) = 1 Then
-            updatepanel2.Visible = True
-            Application(faultviewstate) = Nothing
-            Faultpanelbutton.Text = "Hide Open Faults"
-        Else
-            updatepanel2.Visible = False
-            Application(faultviewstate) = 1
-            Faultpanelbutton.Text = "View Open Faults"
-        End If
+    'Protected Sub Faultpanelbutton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Faultpanelbutton.Click
+    '    Dim updatepanel2 As UpdatePanel = FindControl("updatepanel2")
+    '    If Application(faultviewstate) = 1 Then
+    '        updatepanel2.Visible = True
+    '        Application(faultviewstate) = Nothing
+    '        Faultpanelbutton.Text = "Hide Open Faults"
+    '    Else
+    '        updatepanel2.Visible = False
+    '        Application(faultviewstate) = 1
+    '        Faultpanelbutton.Text = "View Open Faults"
+    '    End If
 
-    End Sub
+    'End Sub
 
     Protected Sub LogOffButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LogOffButton.Click
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
@@ -413,31 +413,31 @@ Partial Class Traininguc
 
     End Sub
 
-    Protected Sub ViewAtlasButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewAtlasButton.Click
-        Dim updatepanelatlas As UpdatePanel = FindControl("updatepanelatlas")
-        If Application(atlasviewstate) = 1 Then
-            updatepanelatlas.Visible = True
-            Application(atlasviewstate) = Nothing
-            ViewAtlasButton.Text = "Hide Atlas Energies"
-        Else
-            updatepanelatlas.Visible = False
-            Application(atlasviewstate) = 1
-            ViewAtlasButton.Text = "View Atlas Energies"
-        End If
-    End Sub
+    'Protected Sub ViewAtlasButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ViewAtlasButton.Click
+    '    Dim updatepanelatlas As UpdatePanel = FindControl("updatepanelatlas")
+    '    If Application(atlasviewstate) = 1 Then
+    '        updatepanelatlas.Visible = True
+    '        Application(atlasviewstate) = Nothing
+    '        ViewAtlasButton.Text = "Hide Atlas Energies"
+    '    Else
+    '        updatepanelatlas.Visible = False
+    '        Application(atlasviewstate) = 1
+    '        ViewAtlasButton.Text = "View Atlas Energies"
+    '    End If
+    'End Sub
 
-    Protected Sub PhysicsQA_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles PhysicsQA.Click
-        Dim updatepanelQA As UpdatePanel = FindControl("updatepanelQA")
-        If Application(qaviewstate) = 1 Then
-            updatepanelQA.Visible = True
-            Application(qaviewstate) = Nothing
-            PhysicsQA.Text = "Hide Physics Energies/Imaging"
-        Else
-            updatepanelQA.Visible = False
-            Application(qaviewstate) = 1
-            PhysicsQA.Text = "View Physics Energies/Imaging"
-        End If
-    End Sub
+    'Protected Sub PhysicsQA_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles PhysicsQA.Click
+    '    Dim updatepanelQA As UpdatePanel = FindControl("updatepanelQA")
+    '    If Application(qaviewstate) = 1 Then
+    '        updatepanelQA.Visible = True
+    '        Application(qaviewstate) = Nothing
+    '        PhysicsQA.Text = "Hide Physics Energies/Imaging"
+    '    Else
+    '        updatepanelQA.Visible = False
+    '        Application(qaviewstate) = 1
+    '        PhysicsQA.Text = "View Physics Energies/Imaging"
+    '    End If
+    'End Sub
 
     Private Sub ForceFocus(ByVal ctrl As Control)
         ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _

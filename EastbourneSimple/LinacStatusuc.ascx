@@ -8,7 +8,7 @@
 
 <%@ Register src="Administrationuc.ascx" tagname="administrationuc" tagprefix="uc4" %>
 
- <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
+<%-- <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />--%>
 <%--<link rel="stylesheet" type="text/css" href="css\twocol.css" />--%>
  <%--<asp:TextBox ID="TextBox1" runat="server" Width="168px"></asp:TextBox>--%>
 <%--    <br />

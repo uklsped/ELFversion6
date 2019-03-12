@@ -1,17 +1,17 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="EngApproveuc.ascx.vb" Inherits="controls_EngApproveuc" %>
 
-         <div>
-        <asp:Panel ID="Panel1" runat="server" BackColor="#99CCFF" BorderColor="#0033CC" 
-        BorderStyle="Solid">
-           
-        <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" 
-               Width="1500px">
-               <asp:TableRow ID="TableRow1" runat="server">
-                   <asp:TableCell ID="TableCell1" runat="server" Width="250px" HorizontalAlign="Left">
-                   <asp:GridView ID="EnergyGridView" visible="false" runat="server" AutoGenerateColumns="False" >
+         <%@ Register src="CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc1" %>
+
+         <%@ Register src="../WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc2" %>
+<%@ Register src="../ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc3" %>
+
+         <table id="EnergyTable">
+            <tr style="vertical-align:top;">
+     
+                <td  rowspan="2"><asp:GridView ID="GridView1" runat="server" 
+                        AutoGenerateColumns="False" visible="false" Width="126px" >
             <Columns>
-            
-                <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
+            <asp:BoundField DataField="Energy" HeaderText="Select All Energies" 
                     SortExpression="Energy" />
                     <asp:TemplateField>  
             <HeaderTemplate>  
@@ -27,11 +27,8 @@
             </ItemTemplate>
             </asp:TemplateField>
             </Columns>
-        </asp:GridView>
-               
-</asp:TableCell>
-                   <asp:TableCell ID="imagingcell" runat="server" Width =" 250px" HorizontalAlign="Left">
-                       <asp:GridView ID="GridViewImage" visible="false" runat="server" AutoGenerateColumns="False" >
+        </asp:GridView></td>
+                <td style="width: 182px" > <asp:GridView ID="GridViewImage" runat="server" AutoGenerateColumns="False" Visible="false" >
             <Columns>
             
                 <asp:BoundField DataField="Energy" HeaderText="Select Imaging" 
@@ -44,30 +41,36 @@
             </ItemTemplate>
                       </asp:TemplateField>
             </Columns>
-        </asp:GridView>
-                   </asp:TableCell>
-                 
-                   <asp:TableCell ID="TableCell2" runat="server" Width="50px">
-                       
-                   <asp:Button ID="engHandoverButton" runat="server" Text="Approve Energies" causesvalidation="false"  Height="150px" BackColor="#FFCC00"/>
+        </asp:GridView></td>
+                
+            </tr>
+            <tr>
+                
+                <td style="width: 182px" >
+                    <asp:Button ID="engHandoverButton" runat="server" BackColor="#FFCC00" 
+                        causesvalidation="false" Height="100px" Text="" />
+                </td>
+               
+            </tr>
+            <tr>
+             
+                 <td colspan="2" style="height: 92px"><table>
+                           <tr>
+                               <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
+                                                          </tr>
+                           <tr>
+                               <td><uc1:commentboxuc ID="CommentBox" runat="server" /></td>
+                               
+                           </tr>
+                       </table></td>
+                              
+            </tr>
+        </table>
 
+<uc3:ConfirmPage ID="ConfirmPage1" runat="server" />
 
-</asp:TableCell>
-                   <asp:TableCell ID="TableCell3" runat="server" HorizontalAlign="left" Width="250px">
-                               <legend align="top" style="font-family: Arial, Helvetica, sans-serif; font-weight: bold">Run-up Comments</legend>
-                             <asp:TextBox ID="CommentBox" runat="server" MaxLength="250" Rows="5" 
-                TextMode="multiline"  Width="100px" Height="100px" AutoPostBack="true"></asp:TextBox>
+              
+                     
 
-                       </asp:TableCell>
-                   </asp:TableRow>
-            </asp:Table>
-           </asp:Panel>
-             <asp:UpdatePanel ID="UpdatePanel4" runat="server">
-            <ContentTemplate>
-            <asp:PlaceHolder ID="PlaceHolder4" runat="server">
-           <%-- <uc4:WriteDatauc ID="WriteDatauc1" LinacName="Linac" UserReason="0"  Tabby="TabNumber"  WriteName="EngData"   Visible="false" runat="server" />--%>
-            </asp:PlaceHolder>
-            </ContentTemplate>
-            </asp:UpdatePanel>
-             </div>
-  
+              
+                     

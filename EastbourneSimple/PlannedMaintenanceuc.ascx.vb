@@ -35,10 +35,10 @@ Partial Class Planned_Maintenanceuc
             Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
             todayfault.SetGrid()
             If LinacName Like "T?" Then
-                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefectpark.ResetDefectDropDown(incidentID)
             Else
-                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefect.ResetDefectDropDown(incidentID)
             End If
 
@@ -49,10 +49,10 @@ Partial Class Planned_Maintenanceuc
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
             If LinacName Like "T?" Then
-                Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefectpark.UpDateDefectsEventHandler()
             Else
-                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefect.UpDateDefectsEventHandler()
             End If
 
@@ -209,10 +209,10 @@ Partial Class Planned_Maintenanceuc
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         WaitButtons("Tech")
         CommentBox.BoxChanged = BoxChanged
-        objconToday = Page.LoadControl("TodayClosedFault.ascx")
-        objconToday.ID = "Todaysfaults"
-        objconToday.LinacName = LinacName
-        PlaceHolder5.Controls.Add(objconToday)
+        'objconToday = Page.LoadControl("TodayClosedFault.ascx")
+        'objconToday.ID = "Todaysfaults"
+        'objconToday.LinacName = LinacName
+        'PlaceHolder5.Controls.Add(objconToday)
 
         Objcon = Page.LoadControl("ViewOpenFaults.ascx")
         CType(Objcon, ViewOpenFaults).LinacName = LinacName
@@ -244,7 +244,7 @@ Partial Class Planned_Maintenanceuc
             CType(objDefect, DefectSavePark).ID = "DefectDisplay"
             CType(objDefect, DefectSavePark).LinacName = LinacName
             CType(objDefect, DefectSavePark).ParentControl = PM
-            AddHandler CType(objDefect, DefectSavePark).UpDateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+            AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
             AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
         Else
@@ -255,7 +255,7 @@ Partial Class Planned_Maintenanceuc
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
         End If
 
-        PlaceHolder4.Controls.Add(objDefect)
+        PlaceHolderDefectSave.Controls.Add(objDefect)
         'Dim Textboxcomment As TextBox = FindControl("CommentBox")
 
         If Not IsPostBack Then
@@ -303,19 +303,19 @@ Partial Class Planned_Maintenanceuc
 
     End Sub
 
-    Protected Sub Faultpanelbutton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Faultpanelbutton.Click
-        Dim updatepanel2 As UpdatePanel = FindControl("updatepanel2")
-        If Application(faultviewstate) = 1 Then
-            updatepanel2.Visible = True
-            Application(faultviewstate) = Nothing
-            Faultpanelbutton.Text = "Hide Open Faults"
-        Else
-            updatepanel2.Visible = False
-            Application(faultviewstate) = 1
-            Faultpanelbutton.Text = "View Open Faults"
-        End If
+    'Protected Sub Faultpanelbutton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Faultpanelbutton.Click
+    '    Dim updatepanel2 As UpdatePanel = FindControl("updatepanel2")
+    '    If Application(faultviewstate) = 1 Then
+    '        updatepanel2.Visible = True
+    '        Application(faultviewstate) = Nothing
+    '        Faultpanelbutton.Text = "Hide Open Faults"
+    '    Else
+    '        updatepanel2.Visible = False
+    '        Application(faultviewstate) = 1
+    '        Faultpanelbutton.Text = "View Open Faults"
+    '    End If
 
-    End Sub
+    'End Sub
 
     Protected Sub LogOffButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LogOffButton.Click
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)

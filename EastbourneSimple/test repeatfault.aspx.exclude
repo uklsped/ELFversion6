@@ -2,7 +2,7 @@
 
 <%@ Register src="controls/DeviceRepeatFaultuc.ascx" tagname="DeviceRepeatFaultuc" tagprefix="uc1" %>
 
-<%@ Register src="controls/ErrorTextuc.ascx" tagname="ErrorTextuc" tagprefix="uc2" %>
+<%--<%@ Register src="controls/ErrorTextuc.ascx" tagname="ErrorTextuc" tagprefix="uc2" %>--%>
 
 <!DOCTYPE html>
 

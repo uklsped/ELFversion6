@@ -1,9 +1,11 @@
 ﻿
+Imports System.Data
+
 Partial Class ManyFaultGriduc
     Inherits System.Web.UI.UserControl
 
     Private technicalstate As String
-
+    Const DISPLAYREPEATFAULT As Integer = 0
     Public Event ShowFault(ByVal Incident As String)
     Public Property Settech() As Boolean
     Public Property MachineName() As String
@@ -15,17 +17,28 @@ Partial Class ManyFaultGriduc
 
     End Sub
 
-
-
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         technicalstate = "techstate" + MachineName
-        BindGridViewManyFault()
+        If IncidentID = DISPLAYREPEATFAULT And Not NewFault = True Then
+            BindGridManyRepeat()
+        Else
+            BindGridViewManyFault()
+        End If
         If MachineName Like "T*" Then
             MultiView1.SetActiveView(Tomo)
         Else
             MultiView1.SetActiveView(Linacs)
         End If
 
+
+
+    End Sub
+    Private Sub BindGridManyRepeat()
+        If MachineName Like "T*" Then
+
+        Else
+            BindDefectData()
+        End If
     End Sub
     Public Sub BindGridViewManyFault()
         If MachineName Like "T*" Then
@@ -35,29 +48,34 @@ Partial Class ManyFaultGriduc
         End If
     End Sub
     Protected Sub BindGridViewVEF()
-
+        'Added IncidentID = 0 to represent repeat faults recorded today
         Dim SqlDataSource4 As New SqlDataSource With {
             .ID = "SqlDataSource3",
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         }
-        If NewFault Then
-            SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
-            SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-            SqlDataSource4.SelectParameters.Add("linac", MachineName)
+        If IncidentID = DISPLAYREPEATFAULT And Not NewFault = True Then
+            BindDefectData()
         Else
-            SqlDataSource4.SelectCommand = "select FaultID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
-            'SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
-            SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
-            SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
+            If NewFault Then
+                SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
+                SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+                SqlDataSource4.SelectParameters.Add("linac", MachineName)
+            Else
+                SqlDataSource4.SelectCommand = "select IncidentID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID = @IncidentID order by DateReported desc"
+                'SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
+                SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
+                SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
+            End If
         End If
-        GridView4.DataSource = SqlDataSource4
-        GridView4.DataBind()
 
+        GridViewLinac.DataSource = SqlDataSource4
+        GridViewLinac.DataBind()
+        'Because new machine column removed then columns(10) becomes columns(9)
         If NewFault Then
             If Application(technicalstate) = True Then
-                GridView4.Columns(10).Visible = False
+                GridViewLinac.Columns(9).Visible = False
             Else
-                GridView4.Columns(10).Visible = True
+                GridViewLinac.Columns(9).Visible = True
             End If
 
         End If
@@ -72,11 +90,11 @@ Partial Class ManyFaultGriduc
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         }
         If NewFault Then
-            SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy, Linac from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
+            SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
             SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
             SqlDataSource4.SelectParameters.Add("linac", MachineName)
         Else
-            SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy, Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
+            SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID = @IncidentID order by DateReported desc"
             SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
             SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
         End If
@@ -85,14 +103,65 @@ Partial Class ManyFaultGriduc
 
         If NewFault Then
             If Application(technicalstate) = True Then
-                GridViewTomo.Columns(8).Visible = False
+                GridViewTomo.Columns(7).Visible = False
             Else
-                GridViewTomo.Columns(8).Visible = True
+                GridViewTomo.Columns(7).Visible = True
             End If
 
         End If
 
 
+    End Sub
+
+    Private Sub BindDefectData()
+        Dim SqlDataSource1 As New SqlDataSource()
+        Dim query As String = "SELECT ConcessionNumber as 'IncidentID', CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as 'DateReported',Area,Energy,GantryAngle,CollimatorAngle from ReportFault where Cast(DateReported As Date) = Cast(GetDate() As Date) And linac=@linac and IncidentID < 0 order by DateReported desc"
+        SqlDataSource1 = QuerySqlConnection(query)
+        GridViewLinac.DataSource = SqlDataSource1
+        GridViewLinac.DataBind()
+        CheckEmptyGrid(GridViewLinac)
+    End Sub
+
+    Public Sub CheckEmptyGrid(ByVal grid As WebControls.GridView)
+        If grid.Rows.Count = 0 And Not grid.DataSource Is Nothing And Not IncidentID Is Nothing Then
+            'Doesn't work like todayclosedfault checkemptygrid because of sqldatasource
+            'From https://www.devexpress.com/Support/Center/Question/Details/A2624/how-to-access-the-gridviewinfo-object-of-the-gridview-class-in-xtragrid
+            Dim dt As DataTable = CType(grid.DataSource.Select(DataSourceSelectArguments.Empty), DataView).Table
+
+            dt.Rows.Add(dt.NewRow())
+            grid.DataSource = dt
+            grid.DataBind()
+            Dim columnsCount As Integer
+            Dim tCell As New TableCell()
+            columnsCount = grid.Columns.Count
+            grid.Rows(0).Cells.Clear()
+            grid.Rows(0).Cells.Add(tCell)
+            grid.Rows(0).Cells(0).ColumnSpan = columnsCount
+
+
+            grid.Rows(0).Cells(0).Text = "No Records To Display"
+            grid.Rows(0).Cells(0).HorizontalAlign = HorizontalAlign.Center
+            grid.Rows(0).Cells(0).ForeColor = Drawing.Color.Black
+            grid.Rows(0).Cells(0).Font.Bold = True
+
+        End If
+    End Sub
+    Protected Function QuerySqlConnection(ByVal query As String) As SqlDataSource
+        'This uses the sqldatasource instead of the individual conn definitions so reader can't be used
+        'this solution is from http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.sqldatasource.select%28v=vs.90%29.aspx
+
+        Dim SqlDataSource1 As New SqlDataSource With {
+            .ID = "SqlDataSource1",
+            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
+            .SelectCommand = (query)
+        }
+        SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+        SqlDataSource1.SelectParameters.Add("linac", MachineName)
+        Return SqlDataSource1
+
+    End Function
+    Public Sub UpDateDefectsEventHandler()
+        BindDefectData()
     End Sub
 
 
@@ -104,7 +173,7 @@ Partial Class ManyFaultGriduc
         If MachineName Like "T#" Then
             row = GridViewTomo.Rows(index)
         Else
-            row = GridView4.Rows(index)
+            row = GridViewLinac.Rows(index)
         End If
 
         IncidentID = Server.HtmlDecode(row.Cells(0).Text)

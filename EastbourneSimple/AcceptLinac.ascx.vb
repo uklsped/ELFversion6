@@ -20,6 +20,8 @@ Partial Public Class AcceptLinac
     Public Event ShowName(ByVal LastUserGroup As Integer)
     Public Event EngRunuploaded(ByVal connectionString As String)
     Public Event PreRunuploaded(ByVal connectionString As String)
+    Public Event SetModalities(ByVal connectionString As String)
+
 
     'Private LinacObj As LinacState
 
@@ -105,6 +107,7 @@ Partial Public Class AcceptLinac
                             Select Case Tabby
                                 Case 1, 7
                                     RaiseEvent EngRunuploaded(connectionString)
+                                    'RaiseEvent SetModalities(connectionString)
                                 Case 2
                                     RaiseEvent PreRunuploaded(connectionString)
                                 Case 3
@@ -112,6 +115,7 @@ Partial Public Class AcceptLinac
                                     output = "Clinical"
                                     Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
                                     RaiseEvent ClinicalApproved(connectionString)
+                                    'RaiseEvent SetModalities(connectionString)
                                 Case 4, 5, 8
                                     RaiseEvent UpdateReturnButtons()
                                     'RaiseEvent ShowName(usergroupselected)

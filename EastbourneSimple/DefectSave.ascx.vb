@@ -4,6 +4,7 @@ Imports System.Transactions
 
 Partial Class DefectSave
     Inherits System.Web.UI.UserControl
+
     Const EMPTYSTRING As String = ""
     Private actionstate As String
     Const RADRESET = -21
@@ -23,6 +24,7 @@ Partial Class DefectSave
     Private RadActDescriptionChanged As String
     Private Comment As String
     Private RadActComment As String
+    Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
@@ -38,7 +40,8 @@ Partial Class DefectSave
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
     End Sub
-    'This updates the defect display for the day when a repeat fault is registered by viewopenfaults and then planned maintenance etc.
+
+    'This updates the defect display For the day When a repeat fault Is registered by viewopenfaults And Then planned maintenance etc.
     Public Sub UpDateDefectsEventHandler()
         BindDefectData()
 
@@ -152,7 +155,7 @@ Partial Class DefectSave
         index = Defect.Items.IndexOf(result)
         If index > 0 Then
             Defect.Items.RemoveAt(index)
-            UpdatePanelDefectlist.Update()
+            UpdatePanelDefectList.Update()
         Else
             newFault = True
             SetFaults(newFault)
@@ -198,11 +201,36 @@ Partial Class DefectSave
 
     Private Sub BindDefectData()
 
-        Dim SqlDataSource1 As New SqlDataSource()
-        Dim query As String = "SELECT RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as DefectTime, ConcessionNumber, Description FROM [ReportFault] where Cast(DateReported as Date) = Cast(GetDate() as Date) and linac=@linac and ConcessionNumber != '' order by DateReported desc"
-        SqlDataSource1 = QuerySqlConnection(LinacName, query)
-        GridView1.DataSource = SqlDataSource1
-        GridView1.DataBind()
+        'Dim SqlDataSource1 As New SqlDataSource()
+        'Dim query As String = "SELECT RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as DefectTime, ConcessionNumber, Description FROM [ReportFault] where Cast(DateReported as Date) = Cast(GetDate() as Date) and linac=@linac and ConcessionNumber != '' order by DateReported desc"
+        'SqlDataSource1 = QuerySqlConnection(LinacName, query)
+        'GridView1.DataSource = SqlDataSource1
+        'GridView1.DataBind()
+        'CheckEmptyGrid(GridView1)
+    End Sub
+    Public Sub CheckEmptyGrid(ByVal grid As WebControls.GridView)
+        If grid.Rows.Count = 0 And Not grid.DataSource Is Nothing Then
+            'Doesn't work like todayclosedfault checkemptygrid because of sqldatasource
+            'From https://www.devexpress.com/Support/Center/Question/Details/A2624/how-to-access-the-gridviewinfo-object-of-the-gridview-class-in-xtragrid
+            Dim dt As DataTable = CType(grid.DataSource.Select(DataSourceSelectArguments.Empty), DataView).Table
+
+            dt.Rows.Add(dt.NewRow())
+            grid.DataSource = dt
+            grid.DataBind()
+            Dim columnsCount As Integer
+            Dim tCell As New TableCell()
+            columnsCount = grid.Columns.Count
+            grid.Rows(0).Cells.Clear()
+            grid.Rows(0).Cells.Add(tCell)
+            grid.Rows(0).Cells(0).ColumnSpan = columnsCount
+
+
+            grid.Rows(0).Cells(0).Text = "No Records To Display"
+            grid.Rows(0).Cells(0).HorizontalAlign = HorizontalAlign.Center
+            grid.Rows(0).Cells(0).ForeColor = Drawing.Color.Black
+            grid.Rows(0).Cells(0).Font.Bold = True
+
+        End If
     End Sub
 
     Protected Function QuerySqlConnection(ByVal MachineName As String, ByVal query As String) As SqlDataSource
@@ -434,6 +462,7 @@ Partial Class DefectSave
                 Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
                 If Result Then
                     BindDefectData()
+                    RaiseEvent UpDateDefectDailyDisplay(LinacName)
                 Else
                     RaiseError()
                 End If
@@ -499,5 +528,4 @@ Partial Class DefectSave
     Private Sub ForceFocus(ByVal ctrl As Control)
         ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
-
 End Class

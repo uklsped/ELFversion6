@@ -261,11 +261,11 @@ Partial Public Class LA1page
             End If
 
             Dim userIP As String = DavesCode.Reuse.GetIPAddress()
-                Label5.Text = userIP
-                'Label5.Text = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
-                ' 20 April handle direct open to repair page
+            'Label5.Text = userIP
+            'Label5.Text = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
+            ' 20 April handle direct open to repair page
 
-                If Not Request.QueryString("recovered") Is Nothing Then
+            If Not Request.QueryString("recovered") Is Nothing Then
                     recover = Request.QueryString("recovered").ToString
                 End If
                 TabPanel0.Enabled = True
@@ -487,6 +487,7 @@ Partial Public Class LA1page
         Dim lastState As String = ""
         Dim lastuser As String = ""
         Dim lastusergroup As Integer = 0
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
         Page = Me.Page
         mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
@@ -670,7 +671,7 @@ Partial Public Class LA1page
                             '        End If
                             '    End If
                             'Else
-                            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                            'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                             Select Case tabref
 
                                 Case 1
@@ -714,6 +715,7 @@ Partial Public Class LA1page
                             Activity = "Engineering Run Up"
                             DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
                             SetUser(lastusergroup)
+                            rucontrol.EngLogOnEvent(connectionString)
                             'User = "Engineer/Physicist"
                             rucontrol.Visible = True
                             'textbox = rucontrol.FindControl("commentbox")
@@ -743,6 +745,7 @@ Partial Public Class LA1page
                         Case 2
                             Activity = "Pre-clinical Run Up"
                             UserGroupLabel.Text = "Radiographer"
+                            preccontrol.Preclinloaded(connectionString)
                             preccontrol.Visible = True
                             'textbox = preccontrol.FindControl("commentbox")
                             'textbox.Text = comment
@@ -757,7 +760,7 @@ Partial Public Class LA1page
                             Dim outputn As String = Application(appstate)
                             If outputn = 1 Then
                                 'should have a transaction
-                                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                                 clinicalcontrol.ClinicalApprovedEvent(connectionString)
                             End If
 
@@ -1188,7 +1191,7 @@ Partial Public Class LA1page
                 End If
             End If
 
-        Label2.Text = "Last state " + lastState
+        'Label2.Text = "Last state " + lastState
 
         If Application(appstate) = 1 Then
             'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
@@ -1201,7 +1204,7 @@ Partial Public Class LA1page
             '    suspstate = Nothing
             '    repairstate = Nothing
             'End If
-            Label3.Text = "Tab is " + activetab
+            'Label3.Text = "Tab is " + activetab
             Application(actionstate) = False
             Select Case activetab
 

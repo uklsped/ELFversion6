@@ -14,31 +14,8 @@
 <%@ Register src="controls/FaultTrackinguc.ascx" tagname="FaultTrackinguc" tagprefix="uc6" %>
 <%@ Register Src="~/controls/DeviceRepeatFaultuc.ascx" TagPrefix="uc2" TagName="DeviceRepeatFaultuc" %>
 
-
-<style type="text/css">
-    .style2 {
-        width: 474px;
-        height: 26px;
-    }
-
-    .style3 {
-        height: 26px;
-    }
-
-    .cssPager span {
-        background-color: #4f6b72;
-        font-size: 18px;
-    }
-</style>
-
-<br />
-<br />
-
 <asp:Panel ID="UpdatePanel4" runat="server">
-
-
-    <asp:Label ID="FakeLabel" runat="server" Style="display: none;" />
-    <asp:Table ID="Table3" runat="server">
+    <asp:Table ID="Table3"  runat="server">
         <asp:TableRow>
             <asp:TableCell>
                 <uc2:ManyFaultGriduc ID="ManyFaultGriduc" NewFault="false" runat="server" />
@@ -48,7 +25,7 @@
                     <legend>Open Concessions</legend>
                     <asp:GridView ID="ConcessionGrid" runat="server" AutoGenerateColumns="False" CellPadding="4"
                         DataKeyNames="incidentID" PageSize="5"
-                        Style="top: 670px; left: 10px; height: 162px; width: 617px"
+                        
                         AllowPaging="True" OnPageIndexChanging="ConcessionGrid_PageIndexChanging"
                         OnRowCommand="FaultGridView_RowCommand"
                         ForeColor="#333333" GridLines="None" EmptyDataText="No Data To Display" EmptyDataRowStyle-ForeColor="White" EmptyDataRowStyle-BackColor="Black" Font-Bold="True">
@@ -68,9 +45,9 @@
                             <asp:BoundField DataField="DateInserted" HeaderText="Date Reported"
                                 SortExpression="DateReported" />
 
-                            <asp:ButtonField ButtonType="Button" CommandName="View" Text="View Concession History" />
+                            <asp:ButtonField ButtonType="Button" CommandName="View" Text="View Concession" />
                             <asp:ButtonField ButtonType="Button" CommandName="Faults" Text="View Faults" />
-                            <asp:ButtonField ButtonType="Button" CommandName="Log Fault" Text="Log Repeat Fault" />
+                            <%--<asp:ButtonField ButtonType="Button" CommandName="Log Fault" Text="Log Repeat Fault" />--%>
                             <asp:TemplateField>
                                 <ItemTemplate></ItemTemplate>
                             </asp:TemplateField>
@@ -109,8 +86,9 @@
          <asp:View ID="View1" runat="server">
              <asp:MultiView ID="MultiView2" runat="server">
                  <asp:View ID="statustech" runat="server">
-                     <asp:Panel ID="statustechpanel" runat="server" Visible="false">
-                        <asp:UpdatePanel ID="UpdatePanel5" runat="server"><ContentTemplate>
+                    <asp:Panel ID="statustechpanel" runat="server" Visible="false">
+                        <asp:UpdatePanel ID="UpdatePanel5" runat="server">
+                            <ContentTemplate>
                             <uc6:FaultTrackinguc ID="FaultTrackinguc1" runat="server" />
                             </ContentTemplate></asp:UpdatePanel>
                      </asp:Panel>
@@ -119,6 +97,12 @@
                  <asp:View ID="statusother" runat="server">
                      <asp:Panel ID="UpdatePanel1" runat="server" Visible="false">
                                     <asp:Panel ID="Panel1" runat="server">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td>
+                                            
+                                            
+                                        
                                         <asp:GridView ID="GridView2" runat="server" AllowPaging="True"
                                             AutoGenerateColumns="False" CellPadding="4" DataKeyNames="TrackingID"
                                             EnableViewState="False" ForeColor="#333333" GridLines="None">
@@ -147,8 +131,18 @@
                                             <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
                                             <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
                                         </asp:GridView>
+                                        </td>
+                                        </tr>
+                                        <tr>
+                                        <td>
+                                        <asp:Button ID="HideFaultsclinicalview" runat="server" Text="Hide Concession History" CausesValidation="false"/>
+                                            </td>
+                                            </tr>
+                                            </table>
                                      </asp:Panel>
+                         
                                 </asp:Panel>
+                     
                  </asp:View>
               </asp:MultiView>
          </asp:View>
@@ -156,15 +150,17 @@
              <asp:Panel ID="UpdatePanel2" runat="server" Visible="false">
                  <asp:Panel ID="Panel3" runat="server">
                      <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>
+                     <asp:Button ID="Hidefaults" runat="server" CausesValidation="False" Visible="false" Text="Close" />
                  </asp:Panel>
              </asp:Panel>
          </asp:View>
    
          </asp:MultiView>
 </asp:Panel>
-    
 </asp:Panel>
-<asp:Button ID="Hidefaults" runat="server" CausesValidation="False" Visible="false" Text="Close" />
+
+
+
 
 
 

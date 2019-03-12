@@ -263,3 +263,33 @@ ModelManifest.xml
 /EastbourneSimple/testviewfaults.aspx.vb
 /EastbourneSimple/Testtable.aspx.exclude
 /EastbourneSimple/Testtable.aspx.vb.exclude
+/EastbourneSimple/WriteDatauctrial.ascx.exclude
+/EastbourneSimple/WriteDatauctrial.ascx.vb.exclude
+/EastbourneSimple/WriteDatauclive.ascx.vb
+/EastbourneSimple/Trialfaulttracking.aspx.exclude
+/EastbourneSimple/Trialfaulttracking.aspx.vb.exclude
+/EastbourneSimple/trycss.aspx.exclude
+/EastbourneSimple/trycss.aspx.vb.exclude
+/EastbourneSimple/Testtable.aspx
+/EastbourneSimple/Testtable.aspx.vb
+/EastbourneSimple/Testupdatefault.aspx
+/EastbourneSimple/Tempmainpage.aspx.exclude
+/EastbourneSimple/Tempmainpage.aspx.vb.exclude
+/EastbourneSimple/Test3columns.aspx.exclude
+/EastbourneSimple/Test3columns.aspx.vb.exclude
+/EastbourneSimple/Testmodules.aspx.exclude
+/EastbourneSimple/Testmodules.aspx.vb.exclude
+/EastbourneSimple/Tempmainpage.aspx.vb.exclude
+/EastbourneSimple/Testupdatefault.aspx.vb
+/EastbourneSimple/nomaster.aspx.exclude
+/EastbourneSimple/nomaster.aspx.vb.exclude
+/EastbourneSimple/justwritenomaster.aspx
+/EastbourneSimple/justwritenomaster.aspx.vb
+/EastbourneSimple/justwritewithmaster.aspx
+/EastbourneSimple/justwritewithmaster.aspx.vb
+/EastbourneSimple/ErunupUserControlCommon - Copy.ascx
+/EastbourneSimple/ErunupUserControlCommon - Copy.ascx.vb
+/EastbourneSimple/E2page - Copy.aspx
+/EastbourneSimple/E2page - Copy.aspx.vb
+/EastbourneSimple/DefectSavelive.ascx.exclude
+/EastbourneSimple/DefectSavelive.ascx.vb.exclude

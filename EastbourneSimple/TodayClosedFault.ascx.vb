@@ -22,8 +22,11 @@ Partial Class TodayClosedFault
 
 
         conn = New SqlConnection(connectionstring)
-        querystring = "select distinct f.incidentID,  f.Dateinserted, f.DateClosed, r.description ,c.ConcessionNumber, c.ConcessionDescription,  f.linac " &
-        "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and f.dateclosed between @StartDate and @EndDate order by Dateclosed desc"
+        querystring = "select distinct f.incidentID, r.description ,c.ConcessionNumber, c.ConcessionDescription " &
+        "from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and f.dateclosed between @StartDate and @EndDate order by f.incidentid desc"
+        'querystring = "select  distinct f.incidentID,  r.description ,c.ConcessionNumber, c.ConcessionDescription " &
+        '"from FaultIDTable f left outer join ConcessionTable c on c.ConcessionNumber = f.ConcessionNumber left outer join reportfault r on r.faultid = f.OriginalFaultID where f.linac=@linac and f.dateclosed between @StartDate and @EndDate order by Dateclosed desc"
+
         adapter = New SqlDataAdapter()
         Dim command As SqlCommand = New SqlCommand(querystring, conn)
         adapter.SelectCommand = command
@@ -38,22 +41,22 @@ Partial Class TodayClosedFault
             adapter.Fill(dt)
 
 
-            Dim incidentID As String = ""
-            Dim description As String = ""
+            'Dim incidentID As String = ""
+            'Dim description As String = ""
 
-            If dt.Rows.Count > 0 Then
+            'If dt.Rows.Count > 0 Then
 
-                For Each dataRow As DataRow In dt.Rows
+            '    For Each dataRow As DataRow In dt.Rows
 
-                    incidentID = dataRow("incidentID")
+            '        incidentID = dataRow("incidentID")
 
-                    description = dataRow("Description")
+            '        description = dataRow("Description")
 
-                Next
-            End If
+            '    Next
+            'End If
 
         Catch ex As Exception
-
+            DavesCode.NewFaultHandling.LogError(ex)
             ' The connection failed. Display an error message.
 
         End Try
@@ -61,6 +64,7 @@ Partial Class TodayClosedFault
         ViewState("FaultsDataTable") = dt
         GridView1.DataSource = dt
         GridView1.DataBind()
+
         CheckEmptyGrid(GridView1)
     End Sub
     Public Sub CheckEmptyGrid(ByVal grid As WebControls.GridView)

@@ -29,7 +29,7 @@
 
   <div style="background-color: #FFFFCC; border: thin solid #FFFF00">    
        Start Date:
-        <asp:TextBox ID="txtStartDate" runat="server" ></asp:TextBox>&nbsp&nbsp;
+        <asp:TextBox ID="txtStartDate" runat="server" ></asp:TextBox>&nbsp;&nbsp;
 <asp:RequiredFieldValidator ID="RequiredFieldValidatorstart" runat="server" ErrorMessage="Please Enter Start Date" Display="Dynamic" ControlToValidate="txtStartDate"></asp:RequiredFieldValidator>
         <asp:CalendarExtender ID="ceStartDate" TargetControlID="txtStartDate" 
 

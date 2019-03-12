@@ -23,26 +23,47 @@ div.clear {
 div.blue {
     background-color: cornflowerblue;
 }*/
-
+div gridheader {
+    overflow: hidden; /* Add this */
+    background-color: #EAEDF0;
+    height: 100px;
+}
 div.grid {
-    width: 1875px;
+    overflow: hidden; /* Add this */
+    background-color: #EAEDF0;
+    height: 800px;
 }
 
     div.grid div {
         float: left;
-        height: 900px;
+        height:inherit;
     }
 
 div.col100 {
-    width: 410px;
+    width: 450px;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    min-height: 1px;
 }
 
 div.col200 {
-    width: 500px;
+    width: 450px;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    min-height: 1px;
 }
 
 div.col300 {
-    width: 965px;
+    width: 967px;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    min-height: 1px;
 }
 
 div.grey {
@@ -52,10 +73,60 @@ div.grey {
 div.red {
     background-color: #e14e32;
 }
-div.blue {background-color:cornflowerblue}
+div.blue {background-color:cadetblue}
 
 div.green {background-color:aquamarine}
 
 div.clear {
     clear: both;
 }
+
+.popupControl {
+    background-color: #AAD4FF;
+    position: absolute;
+    border-style: solid;
+    border-color: Black;
+    border-width: 2px;
+}
+
+.modalBackground {
+    background-color: gray;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE 8 Compatibility */
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50); /* IE 7 Compatibility */
+    opacity: 0.5; /* Everyone else */
+}
+
+.modalPopup {
+    background-color: #ffffdd;
+    border-style: solid;
+    padding: 3px;
+    width: 250px;
+    border-width: 3px;
+    border-color: Gray
+}
+
+.column {
+    float: left;
+    padding: 10px;
+    height: 20px; /* Should be removed. Only for demonstration */
+}
+
+.left {
+    width: 25%;
+}
+
+.middle {
+    width: 25%;
+}
+
+.right {
+    width: 45%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.redcolor {color:red}

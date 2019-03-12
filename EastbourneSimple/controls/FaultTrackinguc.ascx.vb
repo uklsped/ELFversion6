@@ -9,7 +9,7 @@ Partial Class controls_FaultTrackinguc
     Private technicalstate As String
     Private RadRow As DataTable
     Const CONCESSIONSELECTED As String = "CSelected"
-    Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    'Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Const EMPTYSTRING As String = ""
     Const CONCESSION As String = "Concession"
     Const CLOSED As String = "Closed"
@@ -29,21 +29,21 @@ Partial Class controls_FaultTrackinguc
     Public Property LinacName() As String
     Public Property IncidentID As String
 
-    Private Property DynamicControlSelection() As String
-        Get
-            Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
-            If result Is Nothing Then
-                'doing things like this lets us access this property without
-                'worrying about this property returning null/Nothing
-                Return String.Empty
-            Else
-                Return result
-            End If
-        End Get
-        Set(ByVal value As String)
-            ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
-        End Set
-    End Property
+    'Private Property DynamicControlSelection() As String
+    '    Get
+    '        Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
+    '        If result Is Nothing Then
+    '            'doing things like this lets us access this property without
+    '            'worrying about this property returning null/Nothing
+    '            Return String.Empty
+    '        Else
+    '            Return result
+    '        End If
+    '    End Get
+    '    Set(ByVal value As String)
+    '        ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
+    '    End Set
+    'End Property
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
 
@@ -98,26 +98,26 @@ Partial Class controls_FaultTrackinguc
         If ConcessParamsTrial.PresentFaultState = "Concession" Then
             FaultOptionList.Items.FindByValue("Open").Enabled = False
         End If
-        LoadFaultTable(incidentID)
+        'LoadFaultTable(incidentID)
 
     End Sub
 
 
-    Protected Sub LoadFaultTable(ByVal incidentid As String)
-        Dim objcon As Object
-        objcon = Page.LoadControl("~/controls/DeviceReportedfaultuc.ascx")
-        CType(objcon, controls_DeviceReportedfaultuc).IncidentID = incidentid
-        CType(objcon, controls_DeviceReportedfaultuc).Device = LinacName
-        CType(objcon, controls_DeviceReportedfaultuc).ReportFaultID = incidentid
-        DeviceReportedFaultPlaceHolder.Controls.Add(objcon)
+    'Protected Sub LoadFaultTable(ByVal incidentid As String)
+    '    Dim objcon As Object
+    '    objcon = Page.LoadControl("~/controls/DeviceReportedfaultuc.ascx")
+    '    CType(objcon, controls_DeviceReportedfaultuc).IncidentID = incidentid
+    '    CType(objcon, controls_DeviceReportedfaultuc).Device = LinacName
+    '    CType(objcon, controls_DeviceReportedfaultuc).ReportFaultID = incidentid
+    '    DeviceReportedFaultPlaceHolder.Controls.Add(objcon)
 
-    End Sub
+    'End Sub
 
     Protected Sub BindTrackingGridTech(ByVal incidentID As String)
         Dim SqlDataSource3 As New SqlDataSource With {
             .ID = "SqlDataSource3",
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
-            .SelectCommand = "select t.TrackingID, t.description,t.action, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn  " _
+            .SelectCommand = "select t.TrackingID, t.action, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn  " _
         & "from FaultTracking t  where t.incidentID=@incidentID order by t.TrackingID desc"
         }
 
@@ -163,7 +163,7 @@ Partial Class controls_FaultTrackinguc
         'Basically puts new selected value into concessparams and Application
         Application(ParamApplication) = ConcessParamsTrial
 
-        LoadFaultTable(incidentid)
+        'LoadFaultTable(incidentid)
         BindTrackingGridTech(incidentid)
 
     End Sub
@@ -217,8 +217,8 @@ Partial Class controls_FaultTrackinguc
                 End If
             Next validator
 
-            Me.DynamicControlSelection = CONCESSIONSELECTED
-            LoadFaultTable(incidentid)
+            'Me.DynamicControlSelection = CONCESSIONSELECTED
+            'LoadFaultTable(incidentid)
             BindTrackingGridTech(incidentid)
             FormError()
         End If
@@ -363,14 +363,14 @@ Partial Class controls_FaultTrackinguc
         ConcessParamsTrial.ConcessionAction = EMPTYSTRING
         Application(ParamApplication) = ConcessParamsTrial
         BindTrackingGridTech(IncidentNumber.Text)
-        LoadFaultTable(IncidentNumber.Text)
+        'LoadFaultTable(IncidentNumber.Text)
     End Sub
     Protected Sub ClearCommentButton_Click(sender As Object, e As EventArgs) Handles ClearCommentButton.Click
         ConcessParamsTrial = Application(ParamApplication)
         ConcessionCommentBox.ResetCommentBox(EMPTYSTRING)
         ConcessParamsTrial.ConcessionComment = EMPTYSTRING
         Application(ParamApplication) = ConcessParamsTrial
-        LoadFaultTable(IncidentNumber.Text)
+        'LoadFaultTable(IncidentNumber.Text)
         BindTrackingGridTech(IncidentNumber.Text)
     End Sub
 

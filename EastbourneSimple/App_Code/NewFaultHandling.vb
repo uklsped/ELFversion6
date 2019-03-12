@@ -180,6 +180,8 @@ Namespace DavesCode
                         incidentfault.Parameters("@ReportedBy").Value = ConcessP.UserInfo
                         incidentfault.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
                         incidentfault.Parameters("@Lastupdatedon").Value = time
+                        incidentfault.Parameters.Add("@TrackingComment", System.Data.SqlDbType.NVarChar, 250)
+                        incidentfault.Parameters("@TrackingComment").Value = ConcessP.ConcessionComment
                         Dim outPutParameter = New SqlParameter With {
                         .ParameterName = "@TrackingNum",
                         .SqlDbType = System.Data.SqlDbType.Int,

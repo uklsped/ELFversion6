@@ -15,8 +15,6 @@
 
   <%@ Register src="controls/MainFaultDisplayuc.ascx" tagname="MainFaultDisplayuc" tagprefix="uc11" %>
 
-  <%--<div id="header_wrapper">
-    <%--<div id="temp_header">--%>
     <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" 
             DataKeyNames="HandoverId"
         BackColor="White" BorderColor="#CC9966" BorderStyle="Solid" BorderWidth="1px" 
@@ -94,8 +92,7 @@
              <SelectedRowStyle BackColor="#FFCC66" Font-Bold="True" ForeColor="#663399" />
              <HeaderStyle BackColor="#330000" Font-Bold="True" ForeColor="#FFFFCC" />
         </asp:GridView>
-            <%--</div>--%>
-   <%--</div>--%>
+
     <div class="clear" style="width: 1863px"></div>
 <div class="grid">
     <div class="col100 green">
@@ -130,16 +127,7 @@
                   <uc4:CommentBoxuc ID="CommentBox" runat="server" />
                    </fieldset></td>
                             </tr>
-            <tr>
-                <td colspan="2"> 
-<%--                    <asp:UpdatePanel ID="UpdatePanel10" runat="server" UpdateMode="Conditional">
-                    <ContentTemplate>--%>
-                    <%--<asp:Label ID="Label4" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
-                    <br />
-                    <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server"></asp:PlaceHolder>--%>
-                   <%-- </ContentTemplate>
-                </asp:UpdatePanel>--%></td>
-                            </tr>
+
         </table>
 </div>
     <div class="col200 blue">
@@ -150,30 +138,8 @@
         </asp:UpdatePanel>
     </div>
     <div class="col300 green">
-
-<%--        <asp:UpdatePanel ID="UpdatePanel9" runat="server" Visible="true" UpdateMode="Conditional" >
-        <ContentTemplate>--%>
-       <%-- <table>
-            <tr><td>--%>
-       
                          <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>
-            
-                         
-               <%--         </td></tr>
-<tr><td>
-        <asp:Label ID="Label4" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
-                    <br />
-                    <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server"></asp:PlaceHolder>
-                       
-                </td></tr>
-            <tr><td>
-                <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
-                    <ContentTemplate>
-                <asp:PlaceHolder ID="PlaceHolderViewOpenFaults"  runat="server"></asp:PlaceHolder>
-                </td></tr>
-     </ContentTemplate>
-    </asp:UpdatePanel>
-             </table>  --%>
+     
     </div>
 </div>
 <div class="clear">

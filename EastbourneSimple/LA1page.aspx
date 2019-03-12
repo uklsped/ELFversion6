@@ -20,6 +20,7 @@
 <%@ Register src="Traininguc.ascx" tagname="Traininguc" tagprefix="uc12" %>
 
 <%@ Register src="RegisterUseruc.ascx" tagname="RegisterUseruc" tagprefix="uc13" %>
+<%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc8" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
@@ -86,9 +87,97 @@
 
   </script>
 
-    
+        <div class="gridheader">
+	
 
-    <asp:UpdatePanel ID="UpdatePanel8" runat="server"><ContentTemplate>
+    <asp:UpdatePanel ID="UpdatePanel8" runat="server">
+        <ContentTemplate>
+    <div>
+	
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 260px"> <asp:Label ID="CurrentStateLabel" runat="server" Text="Current Linac State: " 
+																				  
+                                Height="50px"  Font-Size="XX-Large" BackColor="White" ForeColor="Black">
+                                 </asp:Label></td>
+                <td style="width: 350px">
+                    <asp:Label ID="Statelabel" runat="server" BackColor="White" 
+                     Font-Size="XX-Large" ForeColor="Black" Height="50px" Width="339px"></asp:Label></td>
+                <td style="width: 150px">
+                    <asp:Label ID="CurrentActivityLabel" runat="server" BackColor="White" 
+                     Font-Size="Large" ForeColor="Black" Height="30px" Text="Current Activity: " 
+                     Width="130px"></asp:Label></td>
+                <td style="width: 200px"><asp:Label ID="ActivityLabel" runat="server" BackColor="White" 
+                     Font-Size="Large" ForeColor="Black" Height="30px" Text=""></asp:Label></td>
+                <td style="width: 117px"><asp:Label ID="CurrentUserGroupLabel" runat="server" BackColor="White" 
+                     Font-Size="Large" ForeColor="Black" Height="30px" Text="Current User: "></asp:Label></td>
+                <td style="width: 149px"><asp:Label ID="UserGroupLabel" runat="server" BackColor="White" 
+                     Font-Size="Large" ForeColor="Black" Height="30px" Text=""></asp:Label></td>
+                <td><asp:Button ID="EndOfDay" runat="server" Text="End of Day"  causesvalidation="false"/><br /><br />
+                    <asp:Button ID="RestoreButton" runat="server" visible="true" CausesValidation="False" style="height: 26px" Text="RESTORE ELF" />
+                </td>
+                <td rowspan="2"><asp:Image ID="ELFImage" runat="server" AlternateText="ELF" Height="80px" 
+														 
+																	 
+										  
+						 
+				 
+												  
+                     ImageUrl="~/Images/if_elf_62126.png" Width="100px" />
+								  
+                 <asp:Label ID="SoftwareVersion" runat="server" Text="Software Version 6.0"></asp:Label></td>
+            </tr>
+            <tr>
+               <td colspan="6">
+                   <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
+                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
+                       </asp:PlaceHolder>
+                   </asp:Panel>
+                </td>
+            </tr>
+        </table>
+        
+																																															
+	
+																																							
+	
+
+								
+ <asp:HiddenField ID="LAHiddenFieldcontrol" runat="server" />
+																																						 
+</div>
+																
+
+      </ContentTemplate>
+    </asp:UpdatePanel>
+  </div>   
+      <asp:Timer ID="Timer1" runat="server" Interval="7200000"></asp:Timer>
+
+				
+    <asp:UpdatePanel ID="UpdatePanel9" runat="server">
+    <Triggers>
+    <asp:AsyncPostBackTrigger ControlID="Timer1" EventName="Tick" />
+    </Triggers>
+    <ContentTemplate>
+
+															 
+													   
+					  
+															  
+		   
+    </ContentTemplate>
+        
+       </asp:UpdatePanel>
+ 
+<%--  <asp:Button ID="RestoreButton" runat="server" visible="true" CausesValidation="False" style="height: 26px" Text="RESTORE ELF" />--%>
+																						
+																				 
+                 <%--  <br />--%>
+
+	
+  <input id="inpHide" type="hidden" runat="server" value="9" />
+
+   <%-- <asp:UpdatePanel ID="UpdatePanel8" runat="server"><ContentTemplate>
     <div>
     
          <table style="width: 100%;">
@@ -112,8 +201,8 @@
                     <asp:Image id="Image2" runat="server"
             ImageUrl="~/Images/bsuh_logo.gif" Width="250" Height="74"
             AlternateText="BSUH Linacs" />
-                    <br>
-            </br>
+                    <br/>
+            <br/>
              <asp:Image id="Image1" runat="server"
             ImageUrl="~/Images/if_elf_62126.png" Width="100px" Height="100px"
             AlternateText="ELF" />
@@ -130,7 +219,7 @@
 <%--This is instrumentation code
 <asp:Label ID="UserLabelText" runat="server" Text="Current User: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
 <asp:Label ID="UserLabel" runat="server" Text="" Height="40px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>--%>
-</div>
+<%--</div>
     <asp:HiddenField ID="LAHiddenFieldcontrol" runat="server" />
 
       </ContentTemplate>
@@ -151,7 +240,7 @@
      </div>
     </ContentTemplate>
         
-       </asp:UpdatePanel>
+       </asp:UpdatePanel>--%>
        
    
 <%--<asp:Button ID="ReportFault" runat="server" BackColor="#FF3300" ForeColor="#FFFF66" 
@@ -159,14 +248,14 @@
                 Font-Bold="True" Font-Size="Medium" />--%>
 
     
-  <asp:Button ID="EndOfDay" runat="server" Text="End of Day"  causesvalidation="false"/>              
+<%--  <asp:Button ID="EndOfDay" runat="server" Text="End of Day"  causesvalidation="false"/>              
 &nbsp;
 
             <asp:Button ID="RestoreButton" runat="server" visible="true" CausesValidation="False" 
         style="height: 26px" Text="RESTORE ELF" />
                    <br />
     <input id="inpHide" type="hidden" runat="server" value="9" />
-        <br />
+        <br />--%>
 
     
     <asp:UpdatePanel ID="UpdatePanel2" runat="server">

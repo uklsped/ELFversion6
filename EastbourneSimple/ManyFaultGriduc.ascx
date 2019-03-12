@@ -5,35 +5,35 @@
                                                     <ContentTemplate>         
     <asp:MultiView ID="MultiView1" runat="server">
         <asp:View id="Linacs" runat="server">
-            <asp:GridView ID="GridView4" AutoGenerateColumns="false" runat="server"
-                        CellPadding="4" DataKeyNames="FaultID" 
+            <asp:GridView ID="GridViewLinac" AutoGenerateColumns="false" runat="server"
+                        CellPadding="4" DataKeyNames="IncidentID" 
         EnableViewState="False" ForeColor="#333333" GridLines="None" 
         onrowcommand="NewFaultGridView_RowCommand"
         AllowSorting="True">
         <RowStyle BackColor="#E3EAEB" />
         <AlternatingRowStyle BackColor="White" />
         <Columns>
-           <%-- <asp:BoundField DataField="IncidentID" HeaderText="Incident ID" InsertVisible="False" 
+           <asp:BoundField DataField="IncidentID" HeaderText="Incident ID" InsertVisible="False" 
                 ReadOnly="True"
-                SortExpression="IncidentID" />--%>
-            <asp:BoundField DataField="FaultID" HeaderText="Fault ID"
-                SortExpression="FaultID" />
+                 />
+           <%-- <asp:BoundField DataField="FaultID" HeaderText="Fault ID"
+                SortExpression="FaultID" />--%>
            <%-- <asp:BoundField DataField="ConcessionNumber" HeaderText="Concession Number"
                 SortExpression="ConcessionNumber" />--%>
              <asp:BoundField DataField="RadiationIncident" HeaderText="Radiation Incident"
-                SortExpression="RadiationIncident" />
+                 />
             <asp:BoundField DataField="Description" HeaderText="User Description" 
-                SortExpression="Description" HeaderStyle-Width="350px" ItemStyle-Width="350px" />
+                 HeaderStyle-Width="350px" ItemStyle-Width="350px" />
             <asp:BoundField DataField="ReportedBy" HeaderText="Reported By" 
-                SortExpression="ReportedBy" />
+                />
             <asp:BoundField DataField="DateReported" HeaderText="Date Reported" 
-                SortExpression="DateReported" />
-                <asp:BoundField DataField="Area" HeaderText="Area" SortExpression="Area" />
-                <asp:BoundField DataField="Energy" HeaderText="Energy" SortExpression="Energy" />
-                <asp:BoundField DataField="GantryAngle" HeaderText="GantryAngle" SortExpression="GantryAngle" />
-                     <asp:BoundField DataField="CollimatorAngle" HeaderText="CollimatorAngle" SortExpression="CollimatorAngle" />      
-                           <asp:BoundField DataField="Linac" HeaderText="Linac" 
-                SortExpression="Linac" />
+                />
+                <asp:BoundField DataField="Area" HeaderText="Area"  />
+                <asp:BoundField DataField="Energy" HeaderText="Energy" />
+                <asp:BoundField DataField="GantryAngle" HeaderText="Gantry Angle"  />
+                     <asp:BoundField DataField="CollimatorAngle" HeaderText="Collimator Angle"  />      
+                           <%--<asp:BoundField DataField="Linac" HeaderText="Linac" 
+                SortExpression="Linac" />--%>
          <asp:ButtonField ButtonType="Button" CommandName="View" Text="View Fault" Visible="False" />
 
         </Columns>
@@ -54,23 +54,16 @@
         <RowStyle BackColor="#E3EAEB" />
         <AlternatingRowStyle BackColor="White" />
         <Columns>
-            <asp:BoundField DataField="IncidentID" HeaderText="Incident ID" InsertVisible="False" 
-                ReadOnly="True"
-                SortExpression="IncidentID" />
-             <asp:BoundField DataField="FaultID" HeaderText="Fault ID"
-                SortExpression="FaultID" />
-             <asp:BoundField DataField="RadiationIncident" HeaderText="Radiation Incident"
-                SortExpression="RadiationIncident" />
-            <asp:BoundField DataField="Description" HeaderText="User Description" 
-                SortExpression="Description" />
-            <asp:BoundField DataField="ReportedBy" HeaderText="Reported By" 
-                SortExpression="ReportedBy" />
-            <asp:BoundField DataField="DateReported" HeaderText="Date Reported" 
-                SortExpression="DateReported" />
-                <asp:BoundField DataField="Area" HeaderText="Physics/Accuray" SortExpression="Area" />
-                <asp:BoundField DataField="Energy" HeaderText="Error Code" SortExpression="Energy" />   
-                           <asp:BoundField DataField="Linac" HeaderText="Tomo" 
-                SortExpression="Linac" />
+            <asp:BoundField DataField="IncidentID" HeaderText="Incident ID" InsertVisible="False" ReadOnly="True" />
+             <asp:BoundField DataField="FaultID" HeaderText="Fault ID" />
+             <asp:BoundField DataField="RadiationIncident" HeaderText="Radiation Incident" />
+            <asp:BoundField DataField="Description" HeaderText="User Description" />
+            <asp:BoundField DataField="ReportedBy" HeaderText="Reported By" />
+            <asp:BoundField DataField="DateReported" HeaderText="Date Reported" />
+                <asp:BoundField DataField="Area" HeaderText="Physics/Accuray" />
+                <asp:BoundField DataField="Energy" HeaderText="Error Code"  />   
+                          <%-- <asp:BoundField DataField="Linac" HeaderText="Tomo" 
+                SortExpression="Linac" />--%>
          <asp:ButtonField ButtonType="Button" CommandName="View" Text="View Fault" Visible="False" />
 
         </Columns>

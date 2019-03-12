@@ -7,61 +7,41 @@
 
     </script>
 
-  
-
-
     <asp:HiddenField ID="HiddenField1" runat="server"/>
-    
+    <fieldset style="width:100%">
+        <legend>
+        <asp:Label ID="FaultClearedTodayLabel" runat="server" Text="Concessions Closed Today"></asp:Label></legend>
    <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Always" ><ContentTemplate>
        
-    <asp:Table ID="Table1" runat="server" HorizontalAlign="Left" Height="16px">
+    <asp:Table ID="Table1" runat="server" HorizontalAlign="Left" Width="100%" >
        <asp:TableRow HorizontalAlign="Left" VerticalAlign="Top">
        <asp:TableCell HorizontalAlign="Left" VerticalAlign="Top">   
        <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" CellPadding="4" 
-                        DataKeyNames="incidentID"  
-                        style="top: 555px; left: 10px; height: 162px; width:555px;" 
-                        ForeColor="#333333" GridLines="None" AllowPaging="True"  PageSize="10">
-                        
+                        DataKeyNames="incidentID" ForeColor="#333333" GridLines="None" AllowPaging="True"  PageSize="4">                
 
-<RowStyle BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Center" />
-
-                                                
+<RowStyle BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Left" />
+                                           
 <Columns>
                             
-<asp:BoundField DataField="incidentID" HeaderText="incidentID" InsertVisible="False" 
-                                ReadOnly="True" SortExpression="incidentID" />
-                                
-<asp:BoundField DataField="DateInserted" HeaderText="Date Reported" 
-                                SortExpression="DateReported" />
-                                
-<asp:BoundField DataField="DateClosed" HeaderText="Date Closed" 
-                                SortExpression="DateClosed" />
-                                
-                               
-<asp:BoundField DataField="Description" HeaderText="Original Fault Description" 
-                                SortExpression="Description" />
+<asp:BoundField DataField="incidentID" HeaderText="ID" InsertVisible="False" ReadOnly="True" SortExpression="incidentID" />
+                                                               
+<asp:BoundField DataField="Description" HeaderText="Original Fault Description" SortExpression="Description" />
                             
-<asp:BoundField DataField="ConcessionNumber" HeaderText="Concession Number" 
-                                SortExpression="ConcessionNumber" ItemStyle-HorizontalAlign="Center" >
+<asp:BoundField DataField="ConcessionNumber" HeaderText="Concession Number" SortExpression="ConcessionNumber" ItemStyle-HorizontalAlign="Left" >
                             
-<ItemStyle HorizontalAlign="Center" />
+<%--<ItemStyle HorizontalAlign="Left" />--%>
                             
 </asp:BoundField>
                             
-<asp:BoundField DataField="ConcessionDescription" HeaderText="Concession Description" 
-                                SortExpression="Description" />
+<asp:BoundField DataField="ConcessionDescription" HeaderText="Concession Description" SortExpression="Description" />
                             
-<asp:BoundField DataField="Linac" HeaderText="Linac" 
-                                SortExpression="Linac" />
-
                         
 </Columns>
                         
 
-<FooterStyle BackColor="#5D7B9D" ForeColor="White" Font-Bold="True" />
-                        
+<FooterStyle BackColor="#5D7B9D" ForeColor="White" Font-Bold="True" />                       
 
-           <PagerSettings Mode="NumericFirstLast" />
+<PagerSettings Mode="NumericFirstLast" />
                         
 
 <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
@@ -70,7 +50,7 @@
 <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
                         
 
-<HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
+<HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" Font-Size="Small" />
                         
 
 <EditRowStyle BackColor="#999999" />
@@ -87,3 +67,4 @@
 
 </ContentTemplate>
     </asp:UpdatePanel>
+        </fieldset>

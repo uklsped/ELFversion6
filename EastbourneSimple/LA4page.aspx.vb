@@ -1238,7 +1238,7 @@ Partial Public Class LA4page
                     'Commentbox = mplancontrol.FindControl("CommentBox")
                     'Comment = Commentbox.Text
                     Application(actionstate) = "EndOfDay"
-                    mplancontrol.UserApprovedEvent(activetab, Logoffuser)
+                    'mplancontrol.UserApprovedEvent(activetab, Logoffuser)
                     'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 4, Breakdown, suspendnull, repairstatenull, False)
 
                 Case 5

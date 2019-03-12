@@ -6,7 +6,7 @@ Partial Class controls_CommentBoxuc
     Public Property MaxCount() As Integer = 250
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        TextBox.Width = Unit.Pixel(355)
+        TextBox.Width = Unit.Pixel(345)
         TextBox.Height = Unit.Pixel(120)
         'https://docs.microsoft.com/en-us/dotnet/api/system.web.ui.clientscriptmanager?view=netframework-4.7.2
         'https://www.codeproject.com/Questions/125501/asp-net-object-Attributes-add-Method

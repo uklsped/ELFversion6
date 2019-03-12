@@ -1,67 +1,44 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="DefectSave.ascx.vb" Inherits="DefectSave" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
-<%@ Register Src="controls/CommentBoxuc.ascx" TagName="CommentBoxuc" TagPrefix="uc2" %>
-<%--No need now for WriteDatauc Analysis 23/11/16 --%>
-<%--Added back in 26/03/18 --%>
-<%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc1" %>
 
-<style type="text/css">
-    .style1 {
-        width: 271px;
-    }
+<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
 
-    .style2 {
-        width: 124px;
-    }
+<%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
 
-    .style3 {
-        width: 124px;
-        height: 26px;
-    }
+<link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
 
-    .style4 {
-        height: 26px;
-    }
+<asp:PlaceHolder ID="PlaceHolderwrite" runat="server">
+<uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11" Tabby="Defect" WriteName="Defect" Visible="false" runat ="server" />
+<uc1:WriteDatauc ID="WriteDatauc2" LinacName="" UserReason="103" Tabby="Major" WriteName="Major"  Visible="false" runat="server" />
+</asp:PlaceHolder>
 
-    .redcolour {
-        color: red;
-        font-weight: bold;
-        font-size: medium;
-    }
-</style>
 <asp:HiddenField ID="SelectedIncidentID" Value="" runat="server" />
+
 <asp:HiddenField ID="TimeFaultSelected" Value="" runat="server" />
 <asp:HiddenField ID="AreaOrAccuray" Value="" runat="server" />
-<%-- NO requirement 23/11/16 --%>
-<%-- Added back in 26/03/18 --%>
-<uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="11" Tabby="Defect" WriteName="Defect"
-    Visible="false" runat="server" />
-<uc1:WriteDatauc ID="WriteDatauc2" LinacName="" UserReason="103" Tabby="Major" WriteName="Major"
-    Visible="false" runat="server" />
-<div style="width: 497px">
-    Record Repeat Fault<br />
-    <span class="redcolor">* Mandatory Field </span>
-    <br />
+
+<div style="width:450px" >
+   <fieldset style="width:auto">
+       <legend>Report Fault</legend>
+<%--Record Repeat Fault <br />
+<span class="redcolor">* Mandatory Field</span> <br />--%>
+     
     <table style="width: 401px;">
-        <tr>
-            <td class="style1">
-                <asp:UpdatePanel ID="UpdatePanelDefectlist" runat="server" UpdateMode="Conditional">
-                    <ContentTemplate>
-                        <asp:DropDownList ID="Defect" runat="server" AutoPostBack="true"
-                            AppendDataBoundItems="True" DataValueField="IncidentID" DateTextField="Fault">
-                            <asp:ListItem>Select</asp:ListItem>
-                        </asp:DropDownList>
-                    </ContentTemplate>
-                </asp:UpdatePanel>
+        <tr style="vertical-align:top;">
+            <td>
+                <asp:Label ID="FaultSelection" runat="server" Text="Select Fault"></asp:Label></td>
+            <td colspan="3"><asp:UpdatePanel ID="UpdatePanelDefectList" runat="server" UpdateMode="Conditional">
+                <ContentTemplate>
+                    <asp:DropDownList ID="Defect" runat="server" AutoPostBack="true" AppendDataBoundItems="true" DataValueField="IncidentID">
+                        <asp:ListItem>Select</asp:ListItem>
+                    </asp:DropDownList>
+                </ContentTemplate></asp:UpdatePanel>
             </td>
-            <td></td>
+            
         </tr>
-    </table>
-    <table style="width: 401px;">
         <tr>
-            <td class="style3">
-            Area:
-            <td class="style4">
+            <td>Area: </td>
+            <td>
                 <asp:DropDownList ID="DropDownListArea" runat="server" Enabled="false" EnableViewState="false">
                     <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
                     <asp:ListItem Text="Machine" Value="Machine"></asp:ListItem>
@@ -70,122 +47,84 @@
                     <asp:ListItem Text="IT" Value="IT"></asp:ListItem>
                     <asp:ListItem Text="Other" Value="Other"></asp:ListItem>
                 </asp:DropDownList>
-                <asp:RequiredFieldValidator ID="AreaValidation" ControlToValidate="DropDownListArea"
-                    runat="server" InitialValue="Select" ErrorMessage="Please Select Area" Font-Bold="True"
-                    Display="Dynamic"></asp:RequiredFieldValidator>
+                <asp:RequiredFieldValidator ID="AreaValidation" ControlToValidate="DropDownListArea" runat="server" InitialValue="Select" ErrorMessage="Please Select Area" Font-Bold="true" Display="Dynamic"></asp:RequiredFieldValidator>
+            </td>
+        <%--</tr>--%>
+        <%--<tr>--%>
+            <td>Gantry Angle: </td>
+            <td>
+                <asp:TextBox ID="GantryAngleBox" runat="server" Width="30px"></asp:TextBox>
+                <asp:CompareValidator ID="GantryAngleCheck" runat="server" ErrorMessage="Please enter Angle as Integer" ControlToValidate="GantryAngleBox" Operator="DataTypeCheck" SetFocusOnError="true" Type="Integer" Display="Dynamic"></asp:CompareValidator>
+                <asp:RangeValidator ID="GantryRangeCheck" runat="server" ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="true" MaximumValue="360" MinimumValue="0" ControlToValidate="GantryAngleBox" Display="Dynamic"></asp:RangeValidator>
+            </td>
+            
+        </tr>
+        <tr>
+            <td>Energy: </td>
+            <td><asp:DropDownList ID="DropDownListEnergy" runat="server"></asp:DropDownList></td>
+        <%--</tr>--%>
+        <%--<tr>--%>
+            <td>Collimator Angle: </td>
+            <td colspan="3">
+                <asp:TextBox ID="CollimatorAngleBox" runat="server" Width="30px"></asp:TextBox>
+                <asp:CompareValidator ID="CollimatorAngleCheck" runat="server" ErrorMessage="Please enter Angle as Integer" ControlToValidate="CollimatorAngleBox" Operator="DataTypeCheck" SetFocusOnError="true" Type="Integer" Display="Dynamic"></asp:CompareValidator>
+                <asp:RangeValidator ID="CollimatorRangeCheck" runat="server" ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="true" MaximumValue="360" MinimumValue="0" ControlToValidate="CollimatorAngleBox" Display="Dynamic"></asp:RangeValidator>
             </td>
         </tr>
         <tr>
-            <td class="style2">Energy:</td>
-            <td class="style3">
-                <asp:DropDownList ID="DropDownListEnergy" runat="server">
-                </asp:DropDownList></td>
-        </tr>
-        <tr>
-            <td class="style2">Gantry Angle:</td>
-            <td>
-                <asp:TextBox ID="GantryAngleBox" runat="server"></asp:TextBox>
-                <asp:CompareValidator ID="GantryAngleCheck"
-                    runat="server" ErrorMessage="Please enter angle as integer"
-                    ControlToValidate="GantryAngleBox" Operator="DataTypeCheck" SetFocusOnError="True"
-                    Type="Integer" Display="Dynamic"></asp:CompareValidator>
-                <asp:RangeValidator ID="GantryRangeCheck" runat="server"
-                    ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="True"
-                    MaximumValue="360" MinimumValue="0" ControlToValidate="GantryAngleBox"
-                    Display="Dynamic"></asp:RangeValidator>
-            </td>
-        </tr>
-        <tr>
-            <td class="style2">Collimator Angle:</td>
-            <td>
-                <asp:TextBox ID="CollimatorAngleBox" runat="server"></asp:TextBox>
-                <asp:CompareValidator ID="CollimatorAngleCheck"
-                    runat="server" ErrorMessage="Please enter angle as integer"
-                    ControlToValidate="CollimatorAngleBox" Operator="DataTypeCheck" SetFocusOnError="True"
-                    Type="Integer" Display="Dynamic"></asp:CompareValidator>
-                <asp:RangeValidator ID="CollimatorRangeCheck" runat="server"
-                    ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="True"
-                    MaximumValue="360" MinimumValue="0" ControlToValidate="CollimatorAngleBox"
-                    Display="Dynamic"></asp:RangeValidator>
-            </td>
-        </tr>
-        <tr>
-            <td class="style2">Fault Description:</td>
-            <td>
-                <asp:Panel ID="FaultPanel" runat="server" Enabled="False">
-                    <uc2:CommentBoxuc ID="FaultDescription" runat="server" />
+            <td>Fault Description: </td>
+            <td colspan="3">
+                <asp:Panel ID="FaultPanel" runat="server" Enabled="false">
+                <uc2:CommentBoxuc runat="server" ID="FaultDescription" />
                 </asp:Panel>
+            </td>
         </tr>
         <tr>
-            <td class="style2">Corrective Action:
-            </td>
-            <td>
-                <asp:Panel ID="ActPanel" Enabled="false" runat="server">
-                    <uc2:CommentBoxuc ID="RadActC" runat="server" />
+            <td>Corrective Action: </td>
+            <td colspan="3">
+                <asp:Panel ID="ActPanel" runat="server">
+                <uc2:CommentBoxuc runat="server" ID="RadActC" />
                 </asp:Panel>
-                <tr>
-                    <td class="style2">Patient ID:</td>
-                    <td>
-                        <asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
-                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox"
-                            ValidationExpression="^\d{7}$" Display="Static" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator>
-                    </td>
-                </tr>
-        <tr>
-            <td class="style2">
-                <asp:Label ID="Label1" runat="server" Text="Radiation Incident?"></asp:Label>
             </td>
+        </tr>
+        <tr>
+            <td>Patient ID: </td>
             <td>
-                <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false" Enabled="true">
-                    <asp:ListItem Text="No" Value="False"></asp:ListItem>
-                    <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
+                <asp:TextBox ID="PatientIDBox" runat="server"></asp:TextBox>
+                <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID" SetFocusOnError="true"></asp:RegularExpressionValidator>
+            </td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td><asp:Label ID="RadIncidentlabel" runat="server" Text="Radiation Incident?: "></asp:Label></td>
+            <td>
+                <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false">
+                <asp:ListItem Text="No" Value="False"></asp:ListItem>
+                <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
                 </asp:RadioButtonList>
+                <asp:RequiredFieldValidator ID="RadioIncidentValidation" runat="server" ControlToValidate="RadioIncident" ErrorMessage="Please complete Radiation Incident Selection" Display="Dynamic" ValidationGroup="defect"></asp:RequiredFieldValidator>
             </td>
-            <td>
-                <asp:RequiredFieldValidator
-                    ID="RadioIncidentValidation"
-                    runat="server"
-                    ControlToValidate="RadioIncident"
-                    ErrorMessage="Please complete Radiation Incident Selection"
-                    Display="Dynamic"
-                    ValidationGroup="defect">
-                </asp:RequiredFieldValidator>
-            </td>
-        </tr>
-        <tr>
-            <td class="style2">
-                <asp:Button ID="SaveDefectButton" runat="server" Text="Save" CausesValidation="false"
-                    Enabled="false" />
-            </td>
-            <td>
-                <asp:Button ID="ClearButton" runat="server" Text="Clear" CausesValidation="False"
-                    CssClass="buttonmargin" />
-            </td>
+        <%--</tr>--%>
+        <%--<tr>--%>
+            <td><asp:Button ID="SaveDefectButton" runat="server" Text="Save" CausesValidation="false" Enabled="false" /> </td>
+            <td><asp:Button ID="ClearButton" runat="server" Text="Clear" CausesValidation="false"/></td>
         </tr>
     </table>
-        Today's Repeat Faults
-    <div style="background-color: Green; height: 30px; width: 500px; margin: 0; padding: 0">
-        <table cellspacing="0" cellpadding="0" rules="all" border="1" id="Table3"
-            style="font-family: Arial; font-size: 10pt; width: 500px; color: white; border-collapse: collapse;
-            height: 100%;">
-            <tr>
-                <td style="width: 180px; text-align: center">Repeat Fault</td>
-                <td style="width: 80px; text-align: center">Time</td>
-                <td style="width: 260px; text-align: center">Description</td>
-            </tr>
-        </table>
-    </div>
-    <div style="width: 500px">
-        <asp:UpdatePanel ID="UpdatePanel3" runat="server">
+   </fieldset>
+ <%--  <div style="width: 450px">
+       <fieldset>
+           <legend>Repeat faults raised Today</legend>
+       
+         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
             <ContentTemplate>
-                <div style="height: 150px; width: 500px; overflow: auto;">
-                    <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeader="false"
-                        DataKeyNames="ConcessionNumber" BackColor="White" Width="500px"
+               <div style="height: 150px; width: 445px; overflow: auto;">
+                     <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeader="true"
+                        DataKeyNames="ConcessionNumber" BackColor="White" Width="445px"
                         BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
                         GridLines="Horizontal" Font-Size="smaller">
                         <RowStyle BackColor="White" ForeColor="#333333" />
                         <Columns>
-                            <asp:BoundField DataField="ConcessionNumber" HeaderText="Fault Identifier" ItemStyle-Width="180px"
+                            <asp:BoundField DataField="ConcessionNumber" HeaderText="Fault Identifier" ItemStyle-Width="150px"
                                 SortExpression="ConcessionNumber" />
                             <asp:BoundField DataField="DefectTime" HeaderText="DefectTime" ItemStyle-Width="80px"
                                 SortExpression="DefectTime" />
@@ -197,9 +136,15 @@
                         <SelectedRowStyle BackColor="#339966" Font-Bold="True" ForeColor="White" />
                         <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
                     </asp:GridView>
+                
+                       
                 </div>
-                </div>
+                   
             </ContentTemplate>
         </asp:UpdatePanel>
-    </div>
+      </fieldset>
+   </div>--%>
+       
 </div>
+
+

@@ -5,9 +5,10 @@
 
  <%@ Register src="DeviceReportedfaultuc.ascx" tagname="DeviceReportedfaultuc" tagprefix="uc3" %>
 
-<uc1:writedatauc ID="WriteDatauc3" LinacName="" UserReason="4" Tabby="incident" WriteName="incident" Visible="false" runat="server" />
-                             <asp:Panel ID="Panel2" runat="server" BorderColor="#33CC33" BorderStyle="Solid">
-                                 <asp:Table ID="Table2" runat="server">
+
+  <asp:Panel ID="Panel2" runat="server" BorderColor="#33CC33" BorderStyle="Solid">
+                                 <uc1:writedatauc ID="WriteDatauc3" LinacName="" UserReason="4" Tabby="incident" WriteName="incident" Visible="false" runat="server" />
+   <asp:Table ID="Table2" runat="server">
                                     <asp:TableRow>
                                        <asp:TableCell>
                                            <asp:Label ID="Label3" runat="server" Text="Incident ID"></asp:Label>
@@ -21,20 +22,20 @@
                                        </asp:TableCell>
                                     </asp:TableRow>
                                 </asp:Table>
-                                <asp:Table ID="Table1" runat="server" Width="1500px">
+   <asp:Table ID="Table1" runat="server" Width="1500px">
                                    <asp:TableRow>
                                        <asp:TableCell>
                                            <fieldset style="width: 1000px;">
                                                <legend>Details</legend>
                                                     <table style="width: 250px;">
                                                         <tr>
-                                                            <asp:UpdatePanel ID="UpdatePanel1" runat="server"><ContentTemplate></ContentTemplate></asp:UpdatePanel>
+                                                            <%--<asp:UpdatePanel ID="UpdatePanel1" runat="server"><ContentTemplate></ContentTemplate></asp:UpdatePanel>--%>
                                                             <td>
                                                                 <asp:Label ID="StatusLabel" runat="server" Text="Current Status:"></asp:Label>
                                                             </td>
                                                             <td>
                                                                 <asp:Label ID="StatusLabel1" runat="server" Text=""></asp:Label>
-                                                            </td>
+                                                           </td>
                                                         </tr>
                                                         <tr>
                                                         <td>
@@ -118,21 +119,19 @@
                                                         </td>
                                                         </tr>                     
                                                         </table>
-                                                        </fieldset>
+                                                       <%-- </fieldset>
                                                         </asp:TableCell>
                                                         <asp:TableCell>
                                                     <fieldset style="width: 300px;">
-                                                        <asp:PlaceHolder ID="DeviceReportedFaultPlaceHolder" runat="server"></asp:PlaceHolder>
+                                                        <asp:PlaceHolder ID="DeviceReportedFaultPlaceHolder" runat="server"></asp:PlaceHolder>--%>
                                                     </fieldset>
                                                 </asp:TableCell>
                                             </asp:TableRow>
-                                        </asp:Table>
+                                        <asp:TableRow><asp:TableCell>
+  
 
-                                    
-                                    </asp:Panel>
-
-                                    <asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow">
-                                        <asp:GridView ID="GridView5" runat="server" AllowPaging="True"
+  <asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow">
+    <asp:GridView ID="GridView5" runat="server" AllowPaging="True"
                                             AutoGenerateColumns="False" CellPadding="4" DataKeyNames="TrackingID"
                                             EnableViewState="False" ForeColor="#333333" GridLines="None">
                                             <RowStyle BackColor="#F7F6F3" ForeColor="#333333" />
@@ -140,8 +139,6 @@
                                             <Columns>
                                                 <asp:BoundField DataField="TrackingID" HeaderText="TrackingID"
                                                     InsertVisible="False" ReadOnly="True" SortExpression="TrackingID" Visible="false" />
-                                                <asp:BoundField DataField="Description" HeaderText="Concession Description"
-                                                    SortExpression="Action" />
                                                 <asp:BoundField DataField="Action" HeaderText="Concession Action"
                                                     SortExpression="Action" />
                                                 <asp:BoundField DataField="TrackingComment" HeaderText="Comment"
@@ -162,7 +159,10 @@
                                             <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
                                             <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
                                         </asp:GridView>
-                                    </asp:Panel>
+  </asp:Panel>
+                                            </asp:TableCell></asp:TableRow>
+       </asp:Table>
+      </asp:Panel>
 
 
 
