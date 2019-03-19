@@ -6,14 +6,19 @@ Partial Class controls_MainFaultDisplayuc
     Public Property LinacName() As String
     Public Property ParentControl As String
     Public Property RepeatFault As Integer
+    Private Property MainFaultID As String = "MainFaults"
+
     'Const PRECLIN As String = "2"
     'Const REPEATFAULT As Integer = 0
+
+
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim objMFG As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
         CType(objMFG, ManyFaultGriduc).NewFault = False
         CType(objMFG, ManyFaultGriduc).IncidentID = RepeatFault
         'to accomodate Tomo now need to pass equipment name?
         CType(objMFG, ManyFaultGriduc).MachineName = LinacName
+        CType(objMFG, ManyFaultGriduc).ID = "MFG"
         PlaceHolderFaults.Controls.Add(objMFG)
 
         Dim objconToday As TodayClosedFault = Page.LoadControl("TodayClosedFault.ascx")
@@ -46,6 +51,18 @@ Partial Class controls_MainFaultDisplayuc
 
         End If
     End Sub
+    Public Sub Update_defectsToday(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            Dim TodayDefectClosed As ManyFaultGriduc = PlaceHolderFaults.FindControl("MFG")
+            TodayDefectClosed.BindDefectData()
+        End If
+    End Sub
 
+    Public Sub Update_OpenConcessions(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            Dim OpenConcessions As ViewOpenFaults = PlaceHolderViewOpenFaults.FindControl("ViewOpenFaults")
+            OpenConcessions.RebindViewFault()
+        End If
+    End Sub
 
 End Class

@@ -10,29 +10,30 @@
 <%@ Register src="../TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc3" %>
 
 
-<div>
-  <table style="width=100%">
-    <tr>
-        <td>
-            <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>
-        </td>
-    </tr>
-    <tr>
-        <td>
+<%@ Register src="NewFaultPopUpuc.ascx" tagname="NewFaultPopUpuc" tagprefix="uc4" %>
 
+
+<div style="height:800px">
+    
+
+        <div style="height:250px;">
+            <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>
+
+      </div>
+
+    <div style="height:150px; ">
             <asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server"></asp:PlaceHolder>    
-        </td>
-    </tr>
-    <tr>
-        <td>
+
+        </div>
+<div style="height:400px; ">
             <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
-                <asp:PlaceHolder ID="PlaceHolderViewOpenFaults"  runat="server"></asp:PlaceHolder>
+                <asp:PlaceHolder ID="PlaceHolderViewOpenFaults"  runat="server"></asp:PlaceHolder><br />
+
                 </ContentTemplate>
             </asp:UpdatePanel>
-        </td>
-    </tr>
-  </table>  
+    
+    </div>
 </div>
 
 

@@ -65,8 +65,10 @@ Partial Class ViewOpenFaults
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
 
         AddHandler ManyFaultGriduc.ShowFault, AddressOf NewFaultEvent
-        AddHandler FaultTrackinguc1.CloseFaultTracking, AddressOf CloseTracking
-        AddHandler FaultTrackinguc1.UpdateClosedDisplays, AddressOf CloseDisplays
+        'AddHandler FaultTrackinguc1.CloseFaultTracking, AddressOf CloseTracking
+        'AddHandler FaultTrackinguc1.UpdateClosedDisplays, AddressOf CloseDisplays
+        AddHandler NewFaultPopUpuc1.CloseFaultTracking, AddressOf CloseTracking
+        AddHandler NewFaultPopUpuc1.UpdateClosedDisplays, AddressOf CloseDisplays
         'AddHandler FaultTrackinguc1.AddConcessionToDefectDropDownList AddressOf
         'AddHandler DeviceRepeatFaultuc1.CloseRepeatFault, AddressOf CloseTracking
         AddHandler DeviceRepeatFaultuc1.UpdateRepeatFault, AddressOf CloseRepeatFault
@@ -90,8 +92,8 @@ Partial Class ViewOpenFaults
     End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
-
-
+        Dim faultpopup As controls_NewFaultPopUpuc = CType(FindControl("NewFaultPopUpuc1"), controls_NewFaultPopUpuc)
+        faultpopup.ParentName = ParentControl
         Select Case Me.DynamicControlSelection
             Case REPEATFAULTSELECTED
                 LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
@@ -315,6 +317,7 @@ Partial Class ViewOpenFaults
     'End Sub
 
     Protected Sub CloseDisplays(ByVal Linac As String, ByVal IncidentID As String)
+        NewFaultPopUpuc1.Visible = False
         RaiseEvent UpdateFaultClosedDisplays(Linac, IncidentID)
         If ParentControl = "5" Then
             TabTech()
@@ -333,6 +336,7 @@ Partial Class ViewOpenFaults
     Protected Sub CloseTracking(ByVal Linac As String)
 
         If Linac = LinacName Then
+            NewFaultPopUpuc1.Visible = False
             ConcessionGrid.Enabled = True
             bindGridView()
             statustechpanel.Visible = False
@@ -385,9 +389,9 @@ Partial Class ViewOpenFaults
                             'success = DavesCode.ConcessionParameters.CreateObject(IncidentID, LinacName)
                             If success Then
                                 Application(ParamApplication) = ConcessParamsTrial
-                                statustechpanel.Visible = True
-                                MultiView2.SetActiveView(statustech)
-                                MultiView1.SetActiveView(View1)
+                                'statustechpanel.Visible = True
+                                'MultiView2.SetActiveView(statustech)
+                                'MultiView1.SetActiveView(View1)
                                 ConcessionGrid.Enabled = False
                                 UpdatePanel4.Visible = False
                                 DynamicControlSelection = CONCESSIONSELECTED
@@ -395,6 +399,15 @@ Partial Class ViewOpenFaults
                                 FaultTracking.LinacName = LinacName
                                 FaultTracking.IncidentID = IncidentID
                                 FaultTracking.InitialiseFaultTracking(ConcessParamsTrial)
+                                'Dim fctrl As controls_NewFaultPopUpuc = CType(FindControl("NewFaultPopUpuc1"), controls_NewFaultPopUpuc)
+
+                                'Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+
+                                'Application(actionstate) = "Cancel"
+                                NewFaultPopUpuc1.ParentName = ParentControl
+                                NewFaultPopUpuc1.LinacName = LinacName
+                                NewFaultPopUpuc1.visible = True
+                                'fctrl.Visible = True
                             Else
                                 RaiseError()
                             End If

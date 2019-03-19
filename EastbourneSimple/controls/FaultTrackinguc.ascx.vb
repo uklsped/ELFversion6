@@ -89,9 +89,9 @@ Partial Class controls_FaultTrackinguc
         FaultOptionList.SelectedIndex = -1
         AssignedToList.SelectedIndex = -1
 
-        IncidentNumber.Text = incidentID
+        'IncidentNumber.Text = incidentID
         StatusLabel1.Text = ConcessParamsTrial.PresentFaultState
-        ConcessionNumberBox.Text = ConcessParamsTrial.ConcessionNumber
+        'ConcessionNumberBox.Text = ConcessParamsTrial.ConcessionNumber
         ConcessiondescriptionBoxC.ResetCommentBox(ConcessParamsTrial.ConcessionDescription)
         ConcessionActionBox.ResetCommentBox(ConcessParamsTrial.ConcessionAction)
         AssignedToList.SelectedIndex = AssignedToList.Items.IndexOf(AssignedToList.Items.FindByText(ConcessParamsTrial.AssignedTo))
@@ -156,7 +156,7 @@ Partial Class controls_FaultTrackinguc
             CDescriptionPanel.Enabled = False
             CActionPanel.Enabled = False
             CCommentPanel.Enabled = False
-            ConcessionNumberBox.ReadOnly = True
+            'ConcessionNumberBox.ReadOnly = True
             SaveAFault.Enabled = False
             SaveAFault.BackColor = Drawing.Color.LightGray
         End If
@@ -177,13 +177,13 @@ Partial Class controls_FaultTrackinguc
         '    wctrl.UserReason = "12"
         'End If
 
-        Dim ConcessionNumber As String
+        'Dim ConcessionNumber As String
 
         Dim strScript As String = "<script>"
         Dim incidentid As String
         'Dim UniqueC As Boolean
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        ConcessionNumber = ConcessionNumberBox.Text
+        'ConcessionNumber = ConcessionNumberBox.Text
         'UniqueC = CheckUniqueConcession(ConcessionNumber)
         'or this is concessparamstrial.futurestate
         Select Case FaultOptionList.SelectedItem.Text
@@ -195,7 +195,8 @@ Partial Class controls_FaultTrackinguc
                 ConcessionActionBox.SetValidation("faulttracking", "Please Enter the Corrective Action")
         End Select
         'this is concessparamstrial.incidentid
-        incidentid = IncidentNumber.Text
+        incidentid = ConcessParamsTrial.IncidentID
+        'incidentid = HiddenFieldIncidentID.Value
 
         'This must be different validate key to others on the page!
         Page.Validate("faulttracking")
@@ -317,7 +318,7 @@ Partial Class controls_FaultTrackinguc
         Dim ConcessionAction As String
         Dim ConcessionComment As String
         Dim FaultState As String
-        Dim ConcessionNumber As String
+        'Dim ConcessionNumber As String
         Dim AssignedTo As String
         If (Not HttpContext.Current.Application(ConcessionDescriptionChanged) Is Nothing) Then
             ConcessionDescription = HttpContext.Current.Application(ConcessionDescriptionChanged).ToString
@@ -344,7 +345,7 @@ Partial Class controls_FaultTrackinguc
         End If
 
         FaultState = FaultOptionList.SelectedItem.Text
-        ConcessionNumber = ConcessionNumberBox.Text
+        'ConcessionNumber = ConcessionNumberBox.Text
         ConcessParamsTrial.UserInfo = UserInfo
         ConcessParamsTrial.AssignedTo = AssignedTo
         ConcessParamsTrial.ConcessionAction = ConcessionAction
@@ -362,7 +363,7 @@ Partial Class controls_FaultTrackinguc
         ConcessionActionBox.ResetCommentBox(EMPTYSTRING)
         ConcessParamsTrial.ConcessionAction = EMPTYSTRING
         Application(ParamApplication) = ConcessParamsTrial
-        BindTrackingGridTech(IncidentNumber.Text)
+        BindTrackingGridTech(ConcessParamsTrial.IncidentID)
         'LoadFaultTable(IncidentNumber.Text)
     End Sub
     Protected Sub ClearCommentButton_Click(sender As Object, e As EventArgs) Handles ClearCommentButton.Click
@@ -371,7 +372,7 @@ Partial Class controls_FaultTrackinguc
         ConcessParamsTrial.ConcessionComment = EMPTYSTRING
         Application(ParamApplication) = ConcessParamsTrial
         'LoadFaultTable(IncidentNumber.Text)
-        BindTrackingGridTech(IncidentNumber.Text)
+        BindTrackingGridTech(ConcessParamsTrial.IncidentID)
     End Sub
 
     Protected Sub CancelButton_Click(sender As Object, e As EventArgs) Handles CancelButton.Click

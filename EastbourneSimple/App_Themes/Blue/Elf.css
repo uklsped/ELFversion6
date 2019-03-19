@@ -130,3 +130,18 @@ div.clear {
     clear: both;
 }
 .redcolor {color:red}
+
+
+.grows
+{
+    background-color: #fff;
+     font-family: Arial;
+     font-size: 12px;
+     color: #000;
+     min-height: 10px;
+     text-align: left;
+     vertical-align:top;
+     border: none 0px transparent;
+    
+} 
+

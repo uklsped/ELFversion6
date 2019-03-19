@@ -42,8 +42,8 @@ Partial Class PhysicsQAuc
 
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If MachineName = EquipmentID Then
-            Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            Todaydefect.UpDateDefectsEventHandler()
+            'Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+            'Todaydefect.UpDateDefectsEventHandler()
         End If
     End Sub
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init

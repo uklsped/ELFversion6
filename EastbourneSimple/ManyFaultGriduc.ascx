@@ -6,11 +6,11 @@
     <asp:MultiView ID="MultiView1" runat="server">
         <asp:View id="Linacs" runat="server">
             <asp:GridView ID="GridViewLinac" AutoGenerateColumns="false" runat="server"
-                        CellPadding="4" DataKeyNames="IncidentID" 
+                        CellPadding="4" DataKeyNames="IncidentID" AllowPaging="True" PageSize="3"
         EnableViewState="False" ForeColor="#333333" GridLines="None" 
         onrowcommand="NewFaultGridView_RowCommand"
         AllowSorting="True">
-        <RowStyle BackColor="#E3EAEB" />
+        <RowStyle CSSClass="grows" BackColor="#E3EAEB" />
         <AlternatingRowStyle BackColor="White" />
         <Columns>
            <asp:BoundField DataField="IncidentID" HeaderText="Incident ID" InsertVisible="False" 

@@ -138,8 +138,8 @@ Partial Class Preclinusercontrol
 
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            Todaydefect.UpDateDefectsEventHandler()
+            'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+            'Todaydefect.UpDateDefectsEventHandler()
             'TodayRepeatFaultDisplay = PlaceHolderTodaysRepeatFaultsDisplay.FindControl("TodayRepeatFaultDisplay")
             'TodayRepeatFaultDisplay.UpDateDefectsEventHandler()
         End If

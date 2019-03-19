@@ -3,11 +3,13 @@ Partial Class controls_CommentBoxuc
     Inherits UserControl
     Public Property Currentcomment() As String
     Public Property BoxChanged() As String
-    Public Property MaxCount() As Integer = 250
+    Public Property MaxCount() As Integer = 150
+    Public Property TextWidth As Integer = 345
+    Public Property TextHeight As Integer = 120
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
-        TextBox.Width = Unit.Pixel(345)
-        TextBox.Height = Unit.Pixel(120)
+        TextBox.Width = Unit.Pixel(TextWidth)
+        TextBox.Height = Unit.Pixel(TextHeight)
         'https://docs.microsoft.com/en-us/dotnet/api/system.web.ui.clientscriptmanager?view=netframework-4.7.2
         'https://www.codeproject.com/Questions/125501/asp-net-object-Attributes-add-Method
 

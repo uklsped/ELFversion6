@@ -113,8 +113,8 @@ Partial Class Traininguc
                 Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefectpark.UpDateDefectsEventHandler()
             Else
-                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-                Todaydefect.UpDateDefectsEventHandler()
+                'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+                'Todaydefect.UpDateDefectsEventHandler()
             End If
 
         End If

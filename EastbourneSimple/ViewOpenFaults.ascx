@@ -14,7 +14,10 @@
 <%@ Register src="controls/FaultTrackinguc.ascx" tagname="FaultTrackinguc" tagprefix="uc6" %>
 <%@ Register Src="~/controls/DeviceRepeatFaultuc.ascx" TagPrefix="uc2" TagName="DeviceRepeatFaultuc" %>
 
+<%@ Register src="controls/NewFaultPopUpuc.ascx" tagname="NewFaultPopUpuc" tagprefix="uc1" %>
+
 <asp:Panel ID="UpdatePanel4" runat="server">
+    
     <asp:Table ID="Table3"  runat="server">
         <asp:TableRow>
             <asp:TableCell>
@@ -29,7 +32,8 @@
                         AllowPaging="True" OnPageIndexChanging="ConcessionGrid_PageIndexChanging"
                         OnRowCommand="FaultGridView_RowCommand"
                         ForeColor="#333333" GridLines="None" EmptyDataText="No Data To Display" EmptyDataRowStyle-ForeColor="White" EmptyDataRowStyle-BackColor="Black" Font-Bold="True">
-                        <RowStyle BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Center" />
+                        <RowStyle CSSClass="grows" />
+                            <%--BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Center" />--%>
                         <PagerStyle CssClass="cssPager" />
                         <Columns>
                             <asp:BoundField DataField="incidentID" HeaderText="incidentID" InsertVisible="False"
@@ -69,7 +73,7 @@
 </asp:Panel>
 
 <asp:Panel ID="UpdatePanel3" runat="server">
-
+    <uc1:NewFaultPopUpuc ID="NewFaultPopUpuc1" ParentName="" visible="false" runat="server" />
     <asp:Panel ID="Panel4" runat="server">
 
        <asp:MultiView ID="MultiView1" runat="server">
@@ -131,6 +135,7 @@
                                             <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
                                             <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
                                         </asp:GridView>
+                                                    
                                         </td>
                                         </tr>
                                         <tr>

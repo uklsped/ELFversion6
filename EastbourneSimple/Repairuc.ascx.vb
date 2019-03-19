@@ -91,8 +91,10 @@ Partial Class Repairuc
                 Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
                 Todaydefectpark.UpDateDefectsEventHandler()
             Else
-                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-                Todaydefect.UpDateDefectsEventHandler()
+                'Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                'Todaydefect.UpDateDefectsEventHandler()
+                'MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+                'MainFaultPanel.Update_defectsToday(LinacName)
             End If
 
 

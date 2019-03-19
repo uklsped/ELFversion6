@@ -15,6 +15,9 @@
 <%@ Register src="controls/MainFaultDisplayuc.ascx" tagname="MainFaultDisplayuc" tagprefix="uc11" %>
 
 
+<%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc12" %>
+
+
 <div class="clear" style="width:1863px"></div>
 <div class="grid" >
     <div class="col100 grey" >
@@ -67,13 +70,13 @@
                 
             </tr>
             <tr>
-               <td colspan="2"> <asp:UpdatePanel ID="UpdatePanel4" runat="server" UpdateMode="Conditional">
+              <%-- <td colspan="2"> <asp:UpdatePanel ID="UpdatePanel4" runat="server" UpdateMode="Conditional">
                     <ContentTemplate>
                     <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
                     <br /><br />
                    <asp:PlaceHolder ID="PlaceHolder5" runat="server"></asp:PlaceHolder>
                     </ContentTemplate>
-                </asp:UpdatePanel></td>
+                </asp:UpdatePanel></td>--%>
                 
             </tr>
         </table>
@@ -85,7 +88,7 @@
                    </asp:UpdatePanel></div>
     <div class="col300 green" ><asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="true" UpdateMode="Conditional">
         <ContentTemplate>
-            <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
+            <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>&nbsp;
         </ContentTemplate>
     </asp:UpdatePanel></div>
     

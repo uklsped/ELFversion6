@@ -69,8 +69,8 @@ Partial Class ClinicalUserControl
                 TodaydefectPark = PlaceHolder1.FindControl("DefectDisplay")
                 TodaydefectPark.UpDateDefectsEventHandler()
             Else
-                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-                Todaydefect.UpDateDefectsEventHandler()
+                'Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+                'Todaydefect.UpDateDefectsEventHandler()
             End If
 
         End If

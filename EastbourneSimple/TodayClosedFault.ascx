@@ -19,7 +19,8 @@
        <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" CellPadding="4" 
                         DataKeyNames="incidentID" ForeColor="#333333" GridLines="None" AllowPaging="True"  PageSize="4">                
 
-<RowStyle BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Left" />
+<RowStyle cssclass="grows" />
+<%--    BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Left" />--%>
                                            
 <Columns>
                             

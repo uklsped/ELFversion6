@@ -42,10 +42,11 @@ Partial Class DefectSave
     End Sub
 
     'This updates the defect display For the day When a repeat fault Is registered by viewopenfaults And Then planned maintenance etc.
-    Public Sub UpDateDefectsEventHandler()
-        BindDefectData()
+    'This doesn't happen here now but in manyfaultdisplay
+    'Public Sub UpDateDefectsEventHandler()
+    '    BindDefectData()
 
-    End Sub
+    'End Sub
 
     'No need to pass any references now or to have if statements. Analysis 23/11/16 Back in 29/03/18
 
@@ -143,7 +144,8 @@ Partial Class DefectSave
         wctrl1.LinacName = LinacName
         Dim wctrl2 As WriteDatauc = CType(FindControl("Writedatauc2"), WriteDatauc)
         wctrl2.LinacName = LinacName
-        BindDefectData()
+        'This now in mainfaultdisplay
+        'BindDefectData()
     End Sub
     Public Sub ResetDefectDropDown(ByVal incidentid As String)
 
@@ -199,54 +201,54 @@ Partial Class DefectSave
 
     End Sub
 
-    Private Sub BindDefectData()
+    'Private Sub BindDefectData()
 
-        'Dim SqlDataSource1 As New SqlDataSource()
-        'Dim query As String = "SELECT RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as DefectTime, ConcessionNumber, Description FROM [ReportFault] where Cast(DateReported as Date) = Cast(GetDate() as Date) and linac=@linac and ConcessionNumber != '' order by DateReported desc"
-        'SqlDataSource1 = QuerySqlConnection(LinacName, query)
-        'GridView1.DataSource = SqlDataSource1
-        'GridView1.DataBind()
-        'CheckEmptyGrid(GridView1)
-    End Sub
-    Public Sub CheckEmptyGrid(ByVal grid As WebControls.GridView)
-        If grid.Rows.Count = 0 And Not grid.DataSource Is Nothing Then
-            'Doesn't work like todayclosedfault checkemptygrid because of sqldatasource
-            'From https://www.devexpress.com/Support/Center/Question/Details/A2624/how-to-access-the-gridviewinfo-object-of-the-gridview-class-in-xtragrid
-            Dim dt As DataTable = CType(grid.DataSource.Select(DataSourceSelectArguments.Empty), DataView).Table
+    'Dim SqlDataSource1 As New SqlDataSource()
+    'Dim query As String = "SELECT RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as DefectTime, ConcessionNumber, Description FROM [ReportFault] where Cast(DateReported as Date) = Cast(GetDate() as Date) and linac=@linac and ConcessionNumber != '' order by DateReported desc"
+    'SqlDataSource1 = QuerySqlConnection(LinacName, query)
+    'GridView1.DataSource = SqlDataSource1
+    'GridView1.DataBind()
+    'CheckEmptyGrid(GridView1)
+    'End Sub
+    'Public Sub CheckEmptyGrid(ByVal grid As WebControls.GridView)
+    '    If grid.Rows.Count = 0 And Not grid.DataSource Is Nothing Then
+    '        'Doesn't work like todayclosedfault checkemptygrid because of sqldatasource
+    '        'From https://www.devexpress.com/Support/Center/Question/Details/A2624/how-to-access-the-gridviewinfo-object-of-the-gridview-class-in-xtragrid
+    '        Dim dt As DataTable = CType(grid.DataSource.Select(DataSourceSelectArguments.Empty), DataView).Table
 
-            dt.Rows.Add(dt.NewRow())
-            grid.DataSource = dt
-            grid.DataBind()
-            Dim columnsCount As Integer
-            Dim tCell As New TableCell()
-            columnsCount = grid.Columns.Count
-            grid.Rows(0).Cells.Clear()
-            grid.Rows(0).Cells.Add(tCell)
-            grid.Rows(0).Cells(0).ColumnSpan = columnsCount
+    '        dt.Rows.Add(dt.NewRow())
+    '        grid.DataSource = dt
+    '        grid.DataBind()
+    '        Dim columnsCount As Integer
+    '        Dim tCell As New TableCell()
+    '        columnsCount = grid.Columns.Count
+    '        grid.Rows(0).Cells.Clear()
+    '        grid.Rows(0).Cells.Add(tCell)
+    '        grid.Rows(0).Cells(0).ColumnSpan = columnsCount
 
 
-            grid.Rows(0).Cells(0).Text = "No Records To Display"
-            grid.Rows(0).Cells(0).HorizontalAlign = HorizontalAlign.Center
-            grid.Rows(0).Cells(0).ForeColor = Drawing.Color.Black
-            grid.Rows(0).Cells(0).Font.Bold = True
+    '        grid.Rows(0).Cells(0).Text = "No Records To Display"
+    '        grid.Rows(0).Cells(0).HorizontalAlign = HorizontalAlign.Center
+    '        grid.Rows(0).Cells(0).ForeColor = Drawing.Color.Black
+    '        grid.Rows(0).Cells(0).Font.Bold = True
 
-        End If
-    End Sub
+    '    End If
+    'End Sub
 
-    Protected Function QuerySqlConnection(ByVal MachineName As String, ByVal query As String) As SqlDataSource
-        'This uses the sqldatasource instead of the individual conn definitions so reader can't be used
-        'this solution is from http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.sqldatasource.select%28v=vs.90%29.aspx
+    'Protected Function QuerySqlConnection(ByVal MachineName As String, ByVal query As String) As SqlDataSource
+    '    'This uses the sqldatasource instead of the individual conn definitions so reader can't be used
+    '    'this solution is from http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.sqldatasource.select%28v=vs.90%29.aspx
 
-        Dim SqlDataSource1 As New SqlDataSource With {
-            .ID = "SqlDataSource1",
-            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
-            .SelectCommand = (query)
-        }
-        SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-        SqlDataSource1.SelectParameters.Add("linac", MachineName)
-        Return SqlDataSource1
+    '    Dim SqlDataSource1 As New SqlDataSource With {
+    '        .ID = "SqlDataSource1",
+    '        .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
+    '        .SelectCommand = (query)
+    '    }
+    '    SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+    '    SqlDataSource1.SelectParameters.Add("linac", MachineName)
+    '    Return SqlDataSource1
 
-    End Function
+    'End Function
 
     Protected Sub Defect_SelectedIndexChanged(sender As Object, e As System.EventArgs) Handles Defect.SelectedIndexChanged
 
@@ -401,7 +403,7 @@ Partial Class DefectSave
                 If Result Then
                     Status = Concession
                     SetFaults(True)
-                    BindDefectData()
+                    'BindDefectData()
                     'This updates the concession list
                     RaiseEvent UpdateViewOpenFaults(LinacName)
                 Else
@@ -461,7 +463,7 @@ Partial Class DefectSave
             Case Else
                 Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
                 If Result Then
-                    BindDefectData()
+                    'BindDefectData()
                     RaiseEvent UpDateDefectDailyDisplay(LinacName)
                 Else
                     RaiseError()

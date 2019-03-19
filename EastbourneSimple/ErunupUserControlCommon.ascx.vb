@@ -18,6 +18,7 @@ Partial Class ErunupUserControl
     Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
     Private TodaydefectPark As DefectSavePark
+    Private MainFaultPanel As controls_MainFaultDisplayuc
     Private BoxChanged As String
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private tabstate As String
@@ -123,7 +124,7 @@ Partial Class ErunupUserControl
         Application(atlasviewstate) = 1
 
     End Sub
-
+    'this updates defect dropdown list because a concession has been closed perhaps rename
     Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
 
         If LinacName = EquipmentID Then
@@ -139,15 +140,17 @@ Partial Class ErunupUserControl
                 End If
             End If
     End Sub
-    ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
+    ' This updates the defect display on defectsave etc when repeat fault from defectsave
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
             If LinacName Like "T?" Then
                 TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 TodaydefectPark.UpDateDefectsEventHandler()
             Else
-                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-                Todaydefect.UpDateDefectsEventHandler()
+                'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+                'Todaydefect.UpDateDefectsEventHandler()
+                MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+                MainFaultPanel.Update_defectsToday(LinacName)
             End If
 
         End If
@@ -155,8 +158,10 @@ Partial Class ErunupUserControl
 
     Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Objcon = FindControl("ViewOpenFaults")
-            Objcon.RebindViewFault()
+            MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+            MainFaultPanel.Update_OpenConcessions(LinacName)
+            'Objcon = FindControl("ViewOpenFaults")
+            'Objcon.RebindViewFault()
         End If
     End Sub
 
@@ -303,7 +308,7 @@ Partial Class ErunupUserControl
         'PlaceHolderTodaysclosedfaults.Controls.Add(objconToday)
         Dim objMFG As controls_MainFaultDisplayuc = Page.LoadControl("controls\MainFaultDisplayuc.ascx")
         CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
-
+        CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
 
 
         'Sets up Atlas Energies
@@ -365,6 +370,7 @@ Partial Class ErunupUserControl
             CType(objDefect, DefectSave).LinacName = LinacName
             CType(objDefect, DefectSave).ParentControl = ENG
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+            AddHandler CType(objDefect, DefectSave).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
             If LinacName Like "LA?" Then
                 engHandoverButton.Text = "Approve Energies"
             Else

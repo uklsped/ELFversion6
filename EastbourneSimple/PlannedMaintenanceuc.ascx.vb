@@ -16,6 +16,7 @@ Partial Class Planned_Maintenanceuc
     Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
     Private Todaydefectpark As DefectSavePark
+    Private MainFaultPanel As controls_MainFaultDisplayuc
     Dim Master As Object
     Private laststate As String
     Private lastuser As String
@@ -32,8 +33,8 @@ Partial Class Planned_Maintenanceuc
 
     Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
         If LinacName = EquipmentID Then
-            Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
-            todayfault.SetGrid()
+            'Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
+            'todayfault.SetGrid()
             If LinacName Like "T?" Then
                 Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefectpark.ResetDefectDropDown(incidentID)
@@ -52,8 +53,10 @@ Partial Class Planned_Maintenanceuc
                 Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
                 Todaydefectpark.UpDateDefectsEventHandler()
             Else
-                Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-                Todaydefect.UpDateDefectsEventHandler()
+                'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+                'Todaydefect.UpDateDefectsEventHandler()
+                MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+                MainFaultPanel.Update_defectsToday(LinacName)
             End If
 
         End If
@@ -214,14 +217,19 @@ Partial Class Planned_Maintenanceuc
         'objconToday.LinacName = LinacName
         'PlaceHolder5.Controls.Add(objconToday)
 
-        Objcon = Page.LoadControl("ViewOpenFaults.ascx")
-        CType(Objcon, ViewOpenFaults).LinacName = LinacName
-        CType(Objcon, ViewOpenFaults).ParentControl = PM
-        CType(Objcon, ViewOpenFaults).ID = "ViewOpenFaults"
-        PlaceHolder1.Controls.Add(Objcon)
-        AddHandler CType(Objcon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
-        AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        'Objcon = Page.LoadControl("ViewOpenFaults.ascx")
+        'CType(Objcon, ViewOpenFaults).LinacName = LinacName
+        'CType(Objcon, ViewOpenFaults).ParentControl = PM
+        'CType(Objcon, ViewOpenFaults).ID = "ViewOpenFaults"
+        'PlaceHolder1.Controls.Add(Objcon)
+        'AddHandler CType(Objcon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+        'AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
         'AddHandler CType(Objcon, ViewOpenFaults).ResetViewOpenFaults, AddressOf Reload_ViewOpenFaults
+        Dim objMFG As controls_MainFaultDisplayuc = Page.LoadControl("controls\MainFaultDisplayuc.ascx")
+        CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
+        CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
+        CType(objMFG, controls_MainFaultDisplayuc).ParentControl = PM
+        PlaceHolderFaults.Controls.Add(objMFG)
 
         Dim objAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
         CType(objAtlas, AtlasEnergyViewuc).LinacName = LinacName
@@ -253,6 +261,7 @@ Partial Class Planned_Maintenanceuc
             CType(objDefect, DefectSave).LinacName = LinacName
             CType(objDefect, DefectSave).ParentControl = PM
             AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+            AddHandler CType(objDefect, DefectSave).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
         End If
 
         PlaceHolderDefectSave.Controls.Add(objDefect)

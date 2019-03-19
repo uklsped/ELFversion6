@@ -1,4 +1,4 @@
-﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="WriteDatauclive.ascx.vb" Inherits="WriteDatauc" %>
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="WriteDatauc.ascx.vb" Inherits="WriteDatauc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />

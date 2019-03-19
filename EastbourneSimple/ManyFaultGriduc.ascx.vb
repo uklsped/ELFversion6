@@ -55,6 +55,7 @@ Partial Class ManyFaultGriduc
         }
         If IncidentID = DISPLAYREPEATFAULT And Not NewFault = True Then
             BindDefectData()
+
         Else
             If NewFault Then
                 SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
@@ -113,13 +114,14 @@ Partial Class ManyFaultGriduc
 
     End Sub
 
-    Private Sub BindDefectData()
+    Public Sub BindDefectData()
         Dim SqlDataSource1 As New SqlDataSource()
-        Dim query As String = "SELECT ConcessionNumber as 'IncidentID', CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as 'DateReported',Area,Energy,GantryAngle,CollimatorAngle from ReportFault where Cast(DateReported As Date) = Cast(GetDate() As Date) And linac=@linac and IncidentID < 0 order by DateReported desc"
+        Dim query As String = "SELECT ConcessionNumber as 'IncidentID', CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as 'DateReported',Area,Energy,GantryAngle,CollimatorAngle from ReportFault where Cast(DateReported As Date) = Cast(GetDate() As Date) And linac=@linac order by DateReported desc"
         SqlDataSource1 = QuerySqlConnection(query)
         GridViewLinac.DataSource = SqlDataSource1
         GridViewLinac.DataBind()
         CheckEmptyGrid(GridViewLinac)
+
     End Sub
 
     Public Sub CheckEmptyGrid(ByVal grid As WebControls.GridView)
