@@ -18,6 +18,9 @@
 <%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc12" %>
 
 
+<%@ Register src="controls/ReportFaultPopUpuc.ascx" tagname="ReportFaultPopUpuc" tagprefix="uc13" %>
+
+
 <div class="clear" style="width:1863px"></div>
 <div class="grid" >
     <div class="col100 grey" >
@@ -83,6 +86,9 @@
     </div>
     <div class="col200 blue" ><asp:UpdatePanel ID="UpdatePanel3" runat="server">
                         <ContentTemplate>
+                            <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" CausesValidation="false"/>
+                            <uc13:ReportFaultPopUpuc ID="ReportFaultPopUpuc1" LinacName="" Visible="false" ParentControl="4" runat ="server" />
+                            <%--<asp:PlaceHolder ID="PlaceHolderReportFault" runat="server"></asp:PlaceHolder>--%>
                         <asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server"></asp:PlaceHolder>
                         </ContentTemplate>
                    </asp:UpdatePanel></div>
@@ -92,10 +98,17 @@
         </ContentTemplate>
     </asp:UpdatePanel></div>
     
+    
+    
+    
+    
+    
+    
 </div>
 <%--<div>
     <asp:Panel ID="Panel100" runat="server" BackColor="#99CCFF" BorderColor="#0033CC"
         BorderStyle="Solid">--%>
+
         <uc3:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="4" Tabby="4" Visible="false" runat="server" />
         <uc1:LockElfuc ID="LockElfuc1" LinacName="" UserReason="4" Tabby="4"  visible="false" runat="server" />
 <%--         </asp:Panel>

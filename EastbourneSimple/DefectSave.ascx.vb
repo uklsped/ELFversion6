@@ -9,9 +9,11 @@ Partial Class DefectSave
     Private actionstate As String
     Const RADRESET = -21
     Const MAJORFAULT = -24
+
     Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
     Public Property ParentControl() As String
     Public Property LinacName() As String
+
     Private appstate As String
     Private suspstate As String
     Private repairstate As String
@@ -23,8 +25,10 @@ Partial Class DefectSave
     Private FaultDescriptionChanged As String
     Private RadActDescriptionChanged As String
     Private Comment As String
+    Public Property ParentControlComment() As String
     Private RadActComment As String
     Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
+    Public Event CloseReportFaultPopUp(ByVal EquipmentName As String)
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
@@ -69,6 +73,7 @@ Partial Class DefectSave
 
             End If
             ClearsForm()
+            RaiseEvent CloseReportFaultPopUp(LinacName)
         End If
     End Sub
 
@@ -363,6 +368,7 @@ Partial Class DefectSave
 
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
         ClearsForm()
+        RaiseEvent CloseReportFaultPopUp(LinacName)
     End Sub
 
     Protected Sub ClearsForm()
@@ -415,30 +421,32 @@ Partial Class DefectSave
                 Dim susstate As String = Application(suspstate)
                 Dim repstate As String = Application(repairstate)
                 'This gets comment box from tab that defectsave is on
-                Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
-                Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
-                Dim Comment As String = DaTxtBox.Text
-
+                'amended because now this control is on reportfaultpopup
+                'Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
+                'Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
+                Dim CommentControl As HiddenField = Me.Parent.FindControl("ParentTabComment")
+                Dim ParentControlComment As String = Application("TabComment")
+                '= CommentControl.Value
                 Dim GridViewE As GridView = Me.Parent.FindControl("Gridview1")
                 Dim grdviewI As GridView = Me.Parent.FindControl("GridViewImage")
                 Dim iView As Boolean = False
                 Dim XVI As Boolean = False
-
+                'Change comment to ParentControlComment
                 Select Case ParentControl
 
                     Case 1, 7
-                        Result = DavesCode.NewEngRunup.CommitRunup(GridViewE, grdviewI, LinacName, ParentControl, UserInfo, Comment, Valid, True, False, FaultParams)
+                        Result = DavesCode.NewEngRunup.CommitRunup(GridViewE, grdviewI, LinacName, ParentControl, UserInfo, ParentControlComment, Valid, True, False, FaultParams)
 
                     Case 2
                         DavesCode.Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
-                        Result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, Comment, iView, XVI, Valid, True, FaultParams)
+                        Result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, ParentControlComment, iView, XVI, Valid, True, FaultParams)
 
                     Case 3
                         Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, UserInfo, True, FaultParams)
                         Application(suspstate) = 1
 
                     Case 4, 5, 6, 8
-                        Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
+                        Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, ParentControlComment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
 
                     Case Else
                         'Put up error message
@@ -452,10 +460,10 @@ Partial Class DefectSave
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir
                     'PopupAck()
                     Comment = String.Empty
-                    Dim Boxchanged As String = ParentCommentControl.BoxChanged
-                    Application(Boxchanged) = String.Empty
+                    'Dim Boxchanged As String = ParentCommentControl.BoxChanged
+                    'Application(Boxchanged) = String.Empty
                     Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
-                    Response.Redirect(returnstring & ParentControl & "&comment=" & Comment, False)
+                    Response.Redirect(returnstring & ParentControl & "&comment=" & ParentControlComment, False)
 
                 Else
                     RaiseError()
@@ -465,6 +473,7 @@ Partial Class DefectSave
                 If Result Then
                     'BindDefectData()
                     RaiseEvent UpDateDefectDailyDisplay(LinacName)
+                    RaiseEvent CloseReportFaultPopUp(LinacName)
                 Else
                     RaiseError()
                 End If
