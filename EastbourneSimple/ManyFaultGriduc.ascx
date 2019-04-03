@@ -1,12 +1,12 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="ManyFaultGriduc.ascx.vb" Inherits="ManyFaultGriduc" %>
 
-<fieldset style="width:auto">
+<fieldset style="width:auto; height=250px;" >
                <asp:UpdatePanel ID="UpdatePanelVEF"  runat="server">
                                                     <ContentTemplate>         
     <asp:MultiView ID="MultiView1" runat="server">
         <asp:View id="Linacs" runat="server">
-            <asp:GridView ID="GridViewLinac" AutoGenerateColumns="false" runat="server"
-                        CellPadding="4" DataKeyNames="IncidentID" AllowPaging="True" PageSize="3"
+            <asp:GridView ID="GridViewLinac" AutoGenerateColumns="false" runat="server" MaxHeight="250px;"
+                        CellPadding="4" DataKeyNames="IncidentID" AllowPaging="True" PageSize="3" OnPageIndexChanging="OnPaging"
         EnableViewState="False" ForeColor="#333333" GridLines="None" 
         onrowcommand="NewFaultGridView_RowCommand"
         AllowSorting="True">

@@ -14,12 +14,11 @@ Partial Class ManyFaultGriduc
 
     Protected Sub Page_init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         technicalstate = "techstate" + MachineName
-
     End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         technicalstate = "techstate" + MachineName
-        If IncidentID = DISPLAYREPEATFAULT And Not NewFault = True Then
+        If CInt(IncidentID) = DISPLAYREPEATFAULT And Not NewFault = True Then
             BindGridManyRepeat()
         Else
             BindGridViewManyFault()
@@ -29,8 +28,6 @@ Partial Class ManyFaultGriduc
         Else
             MultiView1.SetActiveView(Linacs)
         End If
-
-
 
     End Sub
     Private Sub BindGridManyRepeat()
@@ -53,18 +50,18 @@ Partial Class ManyFaultGriduc
             .ID = "SqlDataSource3",
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         }
-        If IncidentID = DISPLAYREPEATFAULT And Not NewFault = True Then
+        If CInt(IncidentID) = DISPLAYREPEATFAULT And Not NewFault = True Then
             BindDefectData()
 
         Else
             If NewFault Then
                 SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
-                SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+                SqlDataSource4.SelectParameters.Add("@linac", SqlDbType.NVarChar)
                 SqlDataSource4.SelectParameters.Add("linac", MachineName)
             Else
                 SqlDataSource4.SelectCommand = "select IncidentID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID = @IncidentID order by DateReported desc"
                 'SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
-                SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
+                SqlDataSource4.SelectParameters.Add("@incidentID", SqlDbType.NVarChar)
                 SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
             End If
         End If
@@ -192,5 +189,8 @@ Partial Class ManyFaultGriduc
 
     End Sub
 
-
+    Protected Sub OnPaging(ByVal sender As Object, ByVal e As GridViewPageEventArgs) Handles GridViewLinac.PageIndexChanging
+        GridViewLinac.PageIndex = e.NewPageIndex
+        GridViewLinac.DataBind()
+    End Sub
 End Class
