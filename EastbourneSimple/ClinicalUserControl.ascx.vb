@@ -28,11 +28,28 @@ Partial Class ClinicalUserControl
     Private Todaydefect As DefectSave
     Private TodaydefectPark As DefectSavePark
     Dim BoxChanged As String
+    Dim RunupBoxChanged As String
     Dim accontrol As AcceptLinac
     Private tabstate As String
     Private TodayComment As controls_CommentBoxuc
     Const CLINICAL As String = "3"
-
+    Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
+    Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    Private Property DynamicControlSelection() As String
+        Get
+            Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
+            If result Is Nothing Then
+                'doing things like this lets us access this property without
+                'worrying about this property returning null/Nothing
+                Return String.Empty
+            Else
+                Return result
+            End If
+        End Get
+        Set(ByVal value As String)
+            ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
+        End Set
+    End Property
     Public Property LinacName() As String
 
     Public Function FormatImage(ByVal energy As Boolean) As String
@@ -48,38 +65,43 @@ Partial Class ClinicalUserControl
     End Function
 
     Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
-        If LinacName = EquipmentID Then
-            Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
-            todayfault.SetGrid()
-            If LinacName Like "T?" Then
-                TodaydefectPark = PlaceHolder1.FindControl("DefectDisplay")
-                TodaydefectPark.ResetDefectDropDown(incidentID)
-            Else
-                Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-                Todaydefect.ResetDefectDropDown(incidentID)
-            End If
+        'If LinacName = EquipmentID Then
+        '    Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
+        '    todayfault.SetGrid()
+        '    If LinacName Like "T?" Then
+        '        TodaydefectPark = PlaceHolder1.FindControl("DefectDisplay")
+        '        TodaydefectPark.ResetDefectDropDown(incidentID)
+        '    Else
+        '        Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+        '        Todaydefect.ResetDefectDropDown(incidentID)
+        '    End If
 
-        End If
+        'End If
     End Sub
 
     ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            If LinacName Like "T?" Then
-                TodaydefectPark = PlaceHolder1.FindControl("DefectDisplay")
-                TodaydefectPark.UpDateDefectsEventHandler()
-            Else
-                'Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-                'Todaydefect.UpDateDefectsEventHandler()
-            End If
+            'Don't need if because report fault pop up is the same for both defects now
+            'If LinacName Like "T?" Then
+            'If LinacName Like "T?" Then
+            'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+            'Todaydefectpark.UpDateDefectsEventHandler()
+            'Else
+            'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+            'Todaydefect.UpDateDefectsEventHandler()
+            'MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+            'MainFaultPanel.Update_defectsToday(LinacName)
+            'ReportFaultPopUpuc1.Visible = False
+            'End If
 
         End If
     End Sub
 
     Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Dim updatefault As ViewOpenFaults = PlaceHolder4.FindControl("ViewOpenFaults")
-            updatefault.RebindViewFault()
+            'Dim updatefault As ViewOpenFaults = PlaceHolder4.FindControl("ViewOpenFaults")
+            'updatefault.RebindViewFault()
         End If
     End Sub
 
@@ -119,6 +141,7 @@ Partial Class ClinicalUserControl
         returnclinical = "ReturnClinical" + LinacName
         LinacFlag = "State" + LinacName
         BoxChanged = "ClinBoxChanged" + LinacName
+        RunupBoxChanged = "RUBoxChanged" + LinacName
         tabstate = "ActTab" + LinacName
     End Sub
 
@@ -132,6 +155,7 @@ Partial Class ClinicalUserControl
             CommentBox.ResetCommentBox(String.Empty)
         End If
         BindComments()
+        BindRunUpComments(connectionString)
         Application(suspstate) = Nothing
     End Sub
 
@@ -179,53 +203,79 @@ Partial Class ClinicalUserControl
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         SaveText.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(SaveText, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         WaitButtons("Rad")
-        objconToday = Page.LoadControl("TodayClosedFault.ascx")
-        objconToday.ID = "Todaysfaults"
-        objconToday.LinacName = LinacName
-        PlaceHolder5.Controls.Add(objconToday)
+        'objconToday = Page.LoadControl("TodayClosedFault.ascx")
+        'objconToday.ID = "Todaysfaults"
+        'objconToday.LinacName = LinacName
+        'PlaceHolder5.Controls.Add(objconToday)
 
-        Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
-        CType(objCon, ViewOpenFaults).LinacName = LinacName
-        CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
-        CType(objCon, ViewOpenFaults).ParentControl = CLINICAL
-        PlaceHolder1.Controls.Add(objCon)
-        PlaceHolder2.Visible = True
+        'Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
+        'CType(objCon, ViewOpenFaults).LinacName = LinacName
+        'CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
+        'CType(objCon, ViewOpenFaults).ParentControl = CLINICAL
+        'PlaceHolder1.Controls.Add(objCon)
+        'PlaceHolder2.Visible = True
 
-        AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        'AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
-        Dim objDefect As UserControl
-        If LinacName Like "T?" Then
-            objDefect = Page.LoadControl("DefectSavePark.ascx")
-            CType(objDefect, DefectSavePark).ID = "DefectDisplay"
-            CType(objDefect, DefectSavePark).LinacName = LinacName
-            CType(objDefect, DefectSavePark).ParentControl = CLINICAL
-            AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
-            AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+        'Dim objDefect As UserControl
+        'If LinacName Like "T?" Then
+        '    objDefect = Page.LoadControl("DefectSavePark.ascx")
+        '    CType(objDefect, DefectSavePark).ID = "DefectDisplay"
+        '    CType(objDefect, DefectSavePark).LinacName = LinacName
+        '    CType(objDefect, DefectSavePark).ParentControl = CLINICAL
+        '    AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+        '    AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
-        Else
-            objDefect = Page.LoadControl("DefectSave.ascx")
-            CType(objDefect, DefectSave).ID = "DefectDisplay"
-            CType(objDefect, DefectSave).LinacName = LinacName
-            CType(objDefect, DefectSave).ParentControl = CLINICAL
-            AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        End If
+        'Else
+        '    objDefect = Page.LoadControl("DefectSave.ascx")
+        '    CType(objDefect, DefectSave).ID = "DefectDisplay"
+        '    CType(objDefect, DefectSave).LinacName = LinacName
+        '    CType(objDefect, DefectSave).ParentControl = CLINICAL
+        '    AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+        'End If
 
-        PlaceHolder3.Controls.Add(objDefect)
+        'PlaceHolder3.Controls.Add(objDefect)
+        Select Case Me.DynamicControlSelection
+        '    Case REPEATFAULTSELECTED
+            '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
+            Case FAULTPOPUPSELECTED
+                '        'LoadFaultTable(Label2.Text)
+                'ReloadConcessionPopUp()
 
+                Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+                objReportFault.LinacName = LinacName
+                objReportFault.ID = "ReportFaultPopupuc"
+                objReportFault.ParentControl = CLINICAL
+                'objReportFault.Visible = False
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+                ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+
+            Case Else
+                '        'no dynamic controls need to be loaded...yet
+        End Select
+
+        Dim objMFG As controls_MainFaultDisplayuc = Page.LoadControl("controls\MainFaultDisplayuc.ascx")
+        CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
+        CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
+        CType(objMFG, controls_MainFaultDisplayuc).ParentControl = CLINICAL
+        PlaceHolderFaults.Controls.Add(objMFG)
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName
         Dim laststate As String
         Dim wctrl2 As WriteDatauc = CType(FindControl("Writedatauc2"), WriteDatauc)
         wctrl2.LinacName = LinacName
         CommentBox.BoxChanged = BoxChanged
+        RunUpCommentBox.BoxChanged = RunupBoxChanged
         Dim conn As SqlConnection
         Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
         "connectionstring").ConnectionString
         conn = New SqlConnection(connectionString1)
         If Not IsPostBack Then
-            If Not LinacName Like "LA?" Then
-                PanelPreclincomments.Visible = False
-            End If
+            'If Not LinacName Like "LA?" Then
+            '    PanelPreclincomments.Visible = False
+            'End If
             Dim treatval As String = Application(treatmentstate)
 
             Application(faultviewstate) = 1
@@ -236,6 +286,7 @@ Partial Class ClinicalUserControl
 
 
                         ClinicalApprovedEvent(connectionString1)
+                        BindRunUpComments(connectionString1)
 
                         Select Case Application(treatmentstate)
                             Case "Yes"
@@ -262,6 +313,19 @@ Partial Class ClinicalUserControl
         End If
 
     End Sub
+    Protected Sub BindRunUpComments(ByVal connectionString As String)
+        Dim RunupComment As String
+        Dim con As SqlConnection = New SqlConnection(connectionString)
+        con.Open()
+        Dim comm As SqlCommand = New SqlCommand("select e.comment from handoverenergies e where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac and Comment is not NULL)", con)
+        comm.Parameters.AddWithValue("@linac", LinacName)
+        RunupComment = CStr(comm.ExecuteScalar())
+        RunUpCommentBox.ResetCommentBox(RunupComment)
+
+        con.Close()
+
+    End Sub
+
 
 
     Protected Sub EnergyGridView_DataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView2.RowDataBound
@@ -308,23 +372,24 @@ Partial Class ClinicalUserControl
     End Sub
 
     Private Sub BindComments()
+
         Dim SqlDateSourceComment As New SqlDataSource()
 
-        Dim query As String = "select convert(Varchar(5),e.LogOutDate, 108) as DateTime, e.comment from handoverenergies e " &
-         "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac and e.Comment != NULL)"
+        'Dim query As String = "select convert(Varchar(5),e.LogOutDate, 108) as DateTime, e.comment from handoverenergies e " &
+        ' "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac and e.Comment != NULL)"
 
-        SqlDateSourceComment = QuerySqlConnection(LinacName, query)
-        GridViewEng.DataSource = SqlDateSourceComment
-        GridViewEng.DataBind()
+        'SqlDateSourceComment = QuerySqlConnection(LinacName, query)
+        'GridViewEng.DataSource = SqlDateSourceComment
+        'GridViewEng.DataBind()
 
-        query = "select convert(Varchar(5),r.LogOutDate, 108) as DateTime, r.Ccomment from handoverenergies e left outer join clinicalhandover r On e.handoverid=r.ehandid " &
-         "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac and r.Ccomment != NULL)"
+        'query = "select convert(Varchar(5),r.LogOutDate, 108) as DateTime, r.Ccomment from handoverenergies e left outer join clinicalhandover r On e.handoverid=r.ehandid " &
+        ' "where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac and r.Ccomment != NULL)"
 
-        SqlDateSourceComment = QuerySqlConnection(LinacName, query)
-        GridViewPre.DataSource = SqlDateSourceComment
-        GridViewPre.DataBind()
+        'SqlDateSourceComment = QuerySqlConnection(LinacName, query)
+        'GridViewPre.DataSource = SqlDateSourceComment
+        'GridViewPre.DataBind()
 
-        query = "select convert(Varchar(5),c.DateTime, 108) as DateTime, c.ClinComment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
+        Dim query As String = "select convert(Varchar(5),c.DateTime, 108) as DateTime, c.ClinComment from handoverenergies e left outer join clinicalhandover r on e.handoverid=r.ehandid " &
         "Left outer join ClinicalTable c on c.PreClinID = r.CHandID where e.handoverid = (Select Max(handoverid) as mancount from [handoverenergies] where linac=@linac) and " &
         "c.PreClinID = (Select Max(CHandID) as mancount from [ClinicalHandover] where linac=@linac and not c.Clincomment = '') order by c.datetime desc"
 
@@ -368,7 +433,7 @@ Partial Class ClinicalUserControl
                     Next
                     GridView2.Columns(2).Visible = True
                     GridView2.Columns(13).Visible = True
-                Case "E1", "E2", "B1"
+                Case "E1", "E2", "B1", "B2"
                     GridView2.Columns(13).Visible = True
                     For index As Integer = 10 To 11
                         GridView2.Columns(index).Visible = False
@@ -426,13 +491,18 @@ Partial Class ClinicalUserControl
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         wcbutton.Text = "Log off Linac"
         Application(actionstate) = "Confirm"
-        wctrl.Visible = True
+        WriteDatauc2.Visible = True
         ForceFocus(wctext)
+
 
     End Sub
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(Function(){$Get('" + ctrl.ClientID + "').focus();}, 100);", True)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
+        ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
+    'Private Sub ForceFocus(ByVal ctrl As Control)
+    '    ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(Function(){$Get('" + ctrl.ClientID + "').focus();}, 100);", True)
+    'End Sub
     Protected Sub SaveText_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles SaveText.Click
         Dim statusid As Integer
         Try
@@ -657,6 +727,43 @@ Partial Class ClinicalUserControl
                 End If
 
         End Select
+
+    End Sub
+
+    Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
+        If LinacName = EquipmentId Then
+            'Don't need if because report fault pop up is the same for both defects now
+            'If LinacName Like "T?" Then
+            'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+            'Todaydefectpark.UpDateDefectsEventHandler()
+            'Else
+            'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+            'Todaydefect.UpDateDefectsEventHandler()
+            DynamicControlSelection = String.Empty
+            Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
+            ReportFaultPopupPlaceHolder.Controls.Remove(ReportFault)
+            'End If
+
+        End If
+    End Sub
+
+    Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
+        'Need to load reportfaultpopupuc here to pass comment box
+        Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
+        Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
+        Dim Comment As String = DaTxtBox.Text
+        Application("TabComment") = Comment
+
+        Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+        objReportFault.LinacName = LinacName
+        objReportFault.ID = "ReportFaultPopupuc"
+        objReportFault.ParentControl = CLINICAL
+        DynamicControlSelection = FAULTPOPUPSELECTED
+
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+        ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
 
     End Sub
 

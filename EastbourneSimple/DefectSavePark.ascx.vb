@@ -22,8 +22,8 @@ Partial Class DefectSavePark
     Const Closed As String = "Closed"
     Const Radiographer As Integer = 3
     Const EMPTYSTRING As String = ""
-    Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
-    Public Event UpdateFaultClosedDisplays(ByVal EquipmentName As String, ByVal IncidentID As String)
+    'Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
+    'Public Event UpdateFaultClosedDisplays(ByVal EquipmentName As String, ByVal IncidentID As String)
     Private Valid As Boolean = False
     Dim ConcessionNumber As String = ""
     Private FaultDescriptionChanged As String
@@ -33,6 +33,9 @@ Partial Class DefectSavePark
     Dim SelectedIncident As Integer = 0
     Public Property LinacName() As String
     Public Property ParentControl() As String
+    Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
+    Public Event CloseReportFaultPopUp(ByVal EquipmentName As String)
+    Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
         'Added back in 26/3/18 see SPR
@@ -46,10 +49,20 @@ Partial Class DefectSavePark
         RadActDescriptionChanged = "radact" + LinacName
     End Sub
 
-    Public Sub UpDateDefectsEventHandler()
-        BindDefectData()
-        'SetFaults()
+    Public Sub InitialiseDefectPage()
+        Dim newFault As Boolean
+        FaultDescription.BoxChanged = FaultDescriptionChanged
+        RadActC.BoxChanged = RadActDescriptionChanged
+        newFault = False
+        SetFaults(newFault)
+        RadioIncident.SelectedIndex = -1
+
     End Sub
+
+    'Public Sub UpDateDefectsEventHandler()
+    '    BindDefectData()
+    '    'SetFaults()
+    'End Sub
 
     'No need to pass any references now or to have if statements. Analysis 23/11/16 Back in 29/03/18
 
@@ -70,8 +83,10 @@ Partial Class DefectSavePark
                 NewWriteRadReset(Userinfo, ConcessionNumber)
             Else
                 Defect.SelectedIndex = -1
-                ClearsForm()
+
             End If
+            ClearsForm()
+            RaiseEvent CloseReportFaultPopUp(LinacName)
         End If
     End Sub
 
@@ -109,19 +124,19 @@ Partial Class DefectSavePark
         SaveDefectButton.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(SaveDefectButton, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         ClearButton.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(ClearButton, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         actionstate = "ActionState" + LinacName
-        Dim newFault As Boolean
-        FaultDescription.BoxChanged = FaultDescriptionChanged
-        RadActC.BoxChanged = RadActDescriptionChanged
-        If Not IsPostBack Then
-            newFault = False
-            SetFaults(newFault)
-            RadioIncident.SelectedIndex = -1
-        End If
+        'Dim newFault As Boolean
+        'FaultDescription.BoxChanged = FaultDescriptionChanged
+        'RadActC.BoxChanged = RadActDescriptionChanged
+        'If Not IsPostBack Then
+        '    newFault = False
+        '    SetFaults(newFault)
+        '    RadioIncident.SelectedIndex = -1
+        'End If
         'WriteDatauc1 no longer used 23/11/16
         'Added back in for RAD RESET 26/3/18 SEE SPR
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
-        BindDefectData()
+        'BindDefectData()
     End Sub
     Public Sub ResetDefectDropDown(ByVal incidentid As String)
 
@@ -170,14 +185,14 @@ Partial Class DefectSavePark
     End Sub
 
 
-    Private Sub BindDefectData()
+    'Private Sub BindDefectData()
 
-        Dim SqlDataSource1 As New SqlDataSource()
-        Dim query As String = "SELECT RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as DefectTime, ConcessionNumber, Description FROM [ReportFault] where Cast(DateReported as Date) = Cast(GetDate() as Date) and linac=@linac and ConcessionNumber != '' order by DateReported desc"
-        SqlDataSource1 = QuerySqlConnection(LinacName, query)
-        GridView1.DataSource = SqlDataSource1
-        GridView1.DataBind()
-    End Sub
+    '    Dim SqlDataSource1 As New SqlDataSource()
+    '    Dim query As String = "SELECT RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as DefectTime, ConcessionNumber, Description FROM [ReportFault] where Cast(DateReported as Date) = Cast(GetDate() as Date) and linac=@linac and ConcessionNumber != '' order by DateReported desc"
+    '    SqlDataSource1 = QuerySqlConnection(LinacName, query)
+    '    GridView1.DataSource = SqlDataSource1
+    '    GridView1.DataBind()
+    'End Sub
 
     Protected Function QuerySqlConnection(ByVal MachineName As String, ByVal query As String) As SqlDataSource
         'This uses the sqldatasource instead of the individual conn definitions so reader can't be used
@@ -228,18 +243,30 @@ Partial Class DefectSavePark
                 'RadAct.Text = sqlresult1.ToString
                 'RadAct.ReadOnly = True
                 RadActC.ResetCommentBox(sqlresult1.ToString)
-                FaultTypeSave.SetActiveView(RecoverableView)
+                'FaultTypeSave.SetActiveView(RecoverableView)
+                FaultClosedLabel.Visible = False
+                FaultOpenClosed.Visible = False
+                UnRecoverableSave.Visible = False
+                SaveDefectButton.Visible = True
                 SaveDefectButton.Enabled = True
                 SaveDefectButton.BackColor = Drawing.Color.Yellow
                 conn1.Close()
 
             ElseIf Not String.IsNullOrEmpty(DefectString) Then
                 If DefectString = RecoverableFault Then
-                    FaultTypeSave.SetActiveView(RecoverableView)
+                    'FaultTypeSave.SetActiveView(RecoverableView)
+                    FaultClosedLabel.Visible = False
+                    FaultOpenClosed.Visible = False
+                    UnRecoverableSave.Visible = False
+                    SaveDefectButton.Visible = True
                     SaveDefectButton.Enabled = True
                     SaveDefectButton.BackColor = Drawing.Color.Yellow
                 ElseIf DefectString = UnRecoverableFault Then
-                    FaultTypeSave.SetActiveView(UnRecoverableView)
+                    FaultClosedLabel.Visible = True
+                    FaultOpenClosed.Visible = True
+                    SaveDefectButton.Visible = False
+
+                    'FaultTypeSave.SetActiveView(UnRecoverableView)
                     ActPanel.Enabled = True
                 End If
 
@@ -255,10 +282,11 @@ Partial Class DefectSavePark
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
         Defect.SelectedIndex = -1
         ClearsForm()
+        RaiseEvent CloseReportFaultPopUp(LinacName)
     End Sub
 
     Protected Sub ClearsForm()
-        FaultTypeSave.ActiveViewIndex = -1
+        'FaultTypeSave.ActiveViewIndex = -1
         FaultOpenClosed.SelectedIndex = -1
         RadioIncident.SelectedIndex = -1
         ErrorCode.Text = Nothing
@@ -275,7 +303,7 @@ Partial Class DefectSavePark
     Sub NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
         Dim Result As Boolean = False
         Dim usergroupselected As Integer = 0
-        Dim IncidentID As Integer
+        'Dim IncidentID As Integer
         Dim FaultSelected As String = EMPTYSTRING
         Dim GridViewEnergy As GridView
         Dim GridViewImage As GridView
@@ -301,7 +329,7 @@ Partial Class DefectSavePark
                         If Result Then
                             Status = Concession
                             SetFaults(True)
-                            BindDefectData()
+                            'BindDefectData()
                             RaiseEvent UpdateViewOpenFaults(LinacName)
                         Else
                             RaiseError()
@@ -309,7 +337,8 @@ Partial Class DefectSavePark
                     Else
                         Result = DavesCode.NewFaultHandling.InsertNewFault("Closed", FaultParams)
                         If Result Then
-                            RaiseEvent UpdateFaultClosedDisplays(LinacName, IncidentID)
+                            RaiseEvent UpDateDefectDailyDisplay(LinacName)
+                            'RaiseEvent UpdateFaultClosedDisplays(LinacName, IncidentID)
                         Else
                             RaiseError()
                         End If
@@ -366,7 +395,8 @@ Partial Class DefectSavePark
 
             Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
             If Result Then
-                BindDefectData()
+                'BindDefectData()
+                RaiseEvent UpDateDefectDailyDisplay(LinacName)
             Else
                 RaiseError()
             End If
@@ -414,6 +444,7 @@ Partial Class DefectSavePark
     Protected Sub FaultOpenClosed_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FaultOpenClosed.SelectedIndexChanged
         Dim Selected As String = ""
         Selected = FaultOpenClosed.SelectedItem.Text
+        UnRecoverableSave.Visible = True
         UnRecoverableSave.Enabled = True
         UnRecoverableSave.BackColor = Drawing.Color.Yellow
         'AccurayValidation.ValidationGroup = "Tomodefect"

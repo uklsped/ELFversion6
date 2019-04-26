@@ -6,6 +6,7 @@ Partial Class controls_CommentBoxuc
     Public Property MaxCount() As Integer = 150
     Public Property TextWidth As Integer = 345
     Public Property TextHeight As Integer = 120
+    Public Property NoWrite As Boolean = False
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         TextBox.Width = Unit.Pixel(TextWidth)
@@ -22,9 +23,17 @@ Partial Class controls_CommentBoxuc
                 TextBox.Text = Currentcomment
 
             End If
+
+        End If
+        If NoWrite Then
+            TextBox.ReadOnly = True
+            TextBox.BackColor = System.Drawing.SystemColors.Window
+            CommentWordCount.Text = String.Empty
+        Else
+            CommentWordCount.Text = MaxCount - Currentcomment.Length
         End If
         Currentcomment = TextBox.Text
-        CommentWordCount.Text = MaxCount - Currentcomment.Length
+
     End Sub
     Public Sub SetCount()
         TextBox.Attributes.Add("onKeyUp", String.Format("Count(""{0}"", ""{1}"", ""{2}"")", TextBox.ClientID, CommentWordCount.ClientID, MaxCount))
@@ -50,12 +59,14 @@ Partial Class controls_CommentBoxuc
         Application(BoxChanged) = Currentcomment
     End Sub
     Public Sub TextBox_TextChanged(sender As Object, e As EventArgs) Handles TextBox.TextChanged
+
         Currentcomment = TextBox.Text
-        Application(BoxChanged) = Currentcomment
+            Application(BoxChanged) = Currentcomment
         'DavesCode.Reuse.ReturnApplicationState(BoxChanged)
     End Sub
 
     Public Sub ResetCommentBox(ByVal Comments As String)
+
         Currentcomment = Comments
         Application(BoxChanged) = Comments
         TextBox.Text = Currentcomment

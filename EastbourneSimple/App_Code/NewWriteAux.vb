@@ -2,14 +2,19 @@
 Imports System.Transactions
 Namespace DavesCode
     Public Class NewWriteAux
-        Public Shared Function WriteAuxTables(ByVal LinacName As String, ByVal LogOffName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal Fault As Boolean, ByVal suspstate As String, ByVal repstate As String, ByVal lock As Boolean, ByVal FaultParams As DavesCode.FaultParameters) As Boolean
+        Public Shared Function WriteAuxTables(ByVal LinacName As String, ByVal LogOffName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal NewFault As Boolean, ByVal suspstate As String, ByVal repstate As String, ByVal lock As Boolean, ByVal FaultParams As DavesCode.FaultParameters) As Boolean
             Dim Successful As Boolean = False
+            Dim NewIncidentID As Integer = 0
+            Dim FaultParamsApplication As String
+            FaultParamsApplication = "FaultParams" + LinacName
             Try
                 Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 Using myscope As TransactionScope = New TransactionScope()
-                    WriteAuxTablesNew(LinacName, LogOffName, comment, Radioselect, Tabused, Fault, suspstate, repstate, lock, connectionString)
-                    If Fault Then
-                        NewFaultHandling.InsertMajorFault(FaultParams, connectionString)
+                    WriteAuxTablesNew(LinacName, LogOffName, comment, Radioselect, Tabused, NewFault, suspstate, repstate, lock, connectionString)
+                    If NewFault Then
+                        NewIncidentID = NewFaultHandling.InsertMajorFault(FaultParams, connectionString)
+                        FaultParams.SelectedIncident = NewIncidentID
+                        HttpContext.Current.Application(FaultParamsApplication) = FaultParams
                     End If
                     myscope.Complete()
                     Successful = True
@@ -35,33 +40,44 @@ Namespace DavesCode
             Dim reader As SqlDataReader
             Dim Activity As String = ""
             Dim userreason As Integer
+            conn = New SqlConnection(connectionString)
+
+
             'Try
             '    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             '    Using myscope As TransactionScope = New TransactionScope()
-            conn = New SqlConnection(connectionString)
 
-            contime = New SqlCommand("SELECT stateID,DateTime, UserName FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            'had to change this because Fault was getting confused with new fault with new popup.
+            contime = New SqlCommand("SELECT stateID,State,DateTime, UserName FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
             contime.Parameters.AddWithValue("@linac", LinacName)
             conn.Open()
             reader = contime.ExecuteReader()
 
+
+
             If reader.Read() Then
-                StartTime = reader.Item("DateTime")
-                LoginName = reader.Item("UserName")
-                LoginStatusID = reader.Item("stateID")
+                    StartTime = reader.Item("DateTime")
+                    LoginName = reader.Item("UserName")
+                    LoginStatusID = reader.Item("stateID")
+                'state = reader.Item("State")
             End If
-            reader.Close()
-            conn.Close()
+                reader.Close()
+                conn.Close()
+            'If Fault Then
+            '    state = "Fault"
+            'End If
+
+
 
             Select Case Radioselect
-                Case 101, 102, 103
-                    userreason = Radioselect
-                Case Else
-                    userreason = 7
-            End Select
-
+                    Case 101, 102, 103
+                        userreason = Radioselect
+                    Case Else
+                        userreason = 7
+                End Select
             If Fault Then
                 state = "Fault"
+                userreason = 103
             Else
                 'Radioselect determines how to SetStatus as a result of which radiobutton selected
                 Select Case Radioselect
@@ -85,6 +101,7 @@ Namespace DavesCode
 
                 End Select
             End If
+
             LogOutStatusID = DavesCode.Reuse.SetStatusNew(LogOffName, state, 5, userreason, LinacName, Tabused, connectionString)
             commpm = New SqlCommand("INSERT INTO AuxTable (Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
                                                "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)", conn)

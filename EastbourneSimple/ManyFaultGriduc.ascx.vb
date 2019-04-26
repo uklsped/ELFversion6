@@ -4,41 +4,52 @@ Imports System.Data
 Partial Class ManyFaultGriduc
     Inherits System.Web.UI.UserControl
 
-    Private technicalstate As String
+    'Private technicalstate As String
     Const DISPLAYREPEATFAULT As Integer = 0
-    Public Event ShowFault(ByVal Incident As String)
-    Public Property Settech() As Boolean
-    Public Property MachineName() As String
-    Public Property NewFault() As Boolean
+    'Public Event ShowFault(ByVal Incident As String)
+    'Public Property Settech() As Boolean
+    Public Property LinacName() As String
+    'Public Property NewFault() As Boolean
     Public Property IncidentID() As String
 
-    Protected Sub Page_init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
-        technicalstate = "techstate" + MachineName
-    End Sub
+    'Protected Sub Page_init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
+    '    technicalstate = "techstate" + MachineName
+    'End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        technicalstate = "techstate" + MachineName
-        If CInt(IncidentID) = DISPLAYREPEATFAULT And Not NewFault = True Then
-            BindGridManyRepeat()
+        'technicalstate = "techstate" + MachineName
+        If CInt(IncidentID) = DISPLAYREPEATFAULT Then
+            'This is display of faults closed today
+            BindGridClosedTodayFault()
         Else
-            BindGridViewManyFault()
+            'This is Display of all faults associated with a concession
+            BindGridViewConcessionFaults()
         End If
-        If MachineName Like "T*" Then
+        If LinacName Like "T?" Then
             MultiView1.SetActiveView(Tomo)
         Else
             MultiView1.SetActiveView(Linacs)
         End If
 
     End Sub
-    Private Sub BindGridManyRepeat()
-        If MachineName Like "T*" Then
-
+    Public Sub BindGridClosedTodayFault()
+        If LinacName Like "T?" Then
+            BindDefectDataTomo()
         Else
-            BindDefectData()
+            BindDefectDataLinac()
         End If
     End Sub
-    Public Sub BindGridViewManyFault()
-        If MachineName Like "T*" Then
+
+    Protected Sub BindDefectDataTomo()
+        Dim SqlDataSource1 As New SqlDataSource()
+        Dim query As String = "SELECT ConcessionNumber as 'IncidentID', CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as 'DateReported',Area,Energy from ReportFault where Cast(DateReported As Date) = Cast(GetDate() As Date) And linac=@linac order by FaultID desc"
+        SqlDataSource1 = QuerySqlConnection(query)
+        GridViewTomo.DataSource = SqlDataSource1
+        GridViewTomo.DataBind()
+        CheckEmptyGrid(GridViewTomo)
+    End Sub
+    Public Sub BindGridViewConcessionFaults()
+        If LinacName Like "T?" Then
             BindGridViewTomoVEF()
         Else
             BindGridViewVEF()
@@ -50,70 +61,65 @@ Partial Class ManyFaultGriduc
             .ID = "SqlDataSource3",
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         }
-        If CInt(IncidentID) = DISPLAYREPEATFAULT And Not NewFault = True Then
-            BindDefectData()
+        'If CInt(IncidentID) = DISPLAYREPEATFAULT Then
+        '    BindDefectData()
 
-        Else
-            If NewFault Then
-                SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
-                SqlDataSource4.SelectParameters.Add("@linac", SqlDbType.NVarChar)
-                SqlDataSource4.SelectParameters.Add("linac", MachineName)
-            Else
-                SqlDataSource4.SelectCommand = "select IncidentID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID = @IncidentID order by DateReported desc"
+        'Else
+
+        SqlDataSource4.SelectCommand = "select IncidentID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID = @IncidentID order by DateReported desc"
                 'SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
                 SqlDataSource4.SelectParameters.Add("@incidentID", SqlDbType.NVarChar)
                 SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
-            End If
-        End If
+        'End If
 
         GridViewLinac.DataSource = SqlDataSource4
         GridViewLinac.DataBind()
         'Because new machine column removed then columns(10) becomes columns(9)
-        If NewFault Then
-            If Application(technicalstate) = True Then
-                GridViewLinac.Columns(9).Visible = False
-            Else
-                GridViewLinac.Columns(9).Visible = True
-            End If
+        'If NewFault Then
+        '    If Application(technicalstate) = True Then
+        '        GridViewLinac.Columns(9).Visible = False
+        '    Else
+        '        GridViewLinac.Columns(9).Visible = True
+        '    End If
 
-        End If
+        'End If
 
 
     End Sub
 
     Protected Sub BindGridViewTomoVEF()
 
-        Dim SqlDataSource4 As New SqlDataSource With {
-            .ID = "SqlDataSource3",
-            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        }
-        If NewFault Then
-            SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
-            SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-            SqlDataSource4.SelectParameters.Add("linac", MachineName)
-        Else
-            SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID = @IncidentID order by DateReported desc"
-            SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
-            SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
-        End If
-        GridViewTomo.DataSource = SqlDataSource4
-        GridViewTomo.DataBind()
+        'Dim SqlDataSource4 As New SqlDataSource With {
+        '    .ID = "SqlDataSource3",
+        '    .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        '}
+        'If NewFault Then
+        '    SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
+        '    SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+        '    SqlDataSource4.SelectParameters.Add("linac", MachineName)
+        'Else
+        '    SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID = @IncidentID order by DateReported desc"
+        '    SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
+        '    SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
+        'End If
+        'GridViewTomo.DataSource = SqlDataSource4
+        'GridViewTomo.DataBind()
 
-        If NewFault Then
-            If Application(technicalstate) = True Then
-                GridViewTomo.Columns(7).Visible = False
-            Else
-                GridViewTomo.Columns(7).Visible = True
-            End If
+        'If NewFault Then
+        '    If Application(technicalstate) = True Then
+        '        GridViewTomo.Columns(7).Visible = False
+        '    Else
+        '        GridViewTomo.Columns(7).Visible = True
+        '    End If
 
-        End If
+        'End If
 
 
     End Sub
 
-    Public Sub BindDefectData()
+    Public Sub BindDefectDataLinac()
         Dim SqlDataSource1 As New SqlDataSource()
-        Dim query As String = "SELECT ConcessionNumber as 'IncidentID', CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as 'DateReported',Area,Energy,GantryAngle,CollimatorAngle from ReportFault where Cast(DateReported As Date) = Cast(GetDate() As Date) And linac=@linac order by DateReported desc"
+        Dim query As String = "SELECT ConcessionNumber as 'IncidentID', CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as 'DateReported',Area,Energy,GantryAngle,CollimatorAngle from ReportFault where Cast(DateReported As Date) = Cast(GetDate() As Date) And linac=@linac order by FaultID desc"
         SqlDataSource1 = QuerySqlConnection(query)
         GridViewLinac.DataSource = SqlDataSource1
         GridViewLinac.DataBind()
@@ -155,42 +161,49 @@ Partial Class ManyFaultGriduc
             .SelectCommand = (query)
         }
         SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-        SqlDataSource1.SelectParameters.Add("linac", MachineName)
+        SqlDataSource1.SelectParameters.Add("linac", LinacName)
         Return SqlDataSource1
 
     End Function
     Public Sub UpDateDefectsEventHandler()
-        BindDefectData()
+        'BindDefectData()
     End Sub
 
 
-    Sub NewFaultGridView_RowCommand(ByVal sender As Object, ByVal e As GridViewCommandEventArgs)
+    'Sub NewFaultGridView_RowCommand(ByVal sender As Object, ByVal e As GridViewCommandEventArgs)
 
-        Dim IncidentID As String
-        Dim index As Integer = Convert.ToInt32(e.CommandArgument)
-        Dim row As GridViewRow
-        If MachineName Like "T#" Then
-            row = GridViewTomo.Rows(index)
+    '    Dim IncidentID As String
+    '    Dim index As Integer = Convert.ToInt32(e.CommandArgument)
+    '    Dim row As GridViewRow
+    '    If LinacName Like "T#" Then
+    '        row = GridViewTomo.Rows(index)
+    '    Else
+    '        row = GridViewLinac.Rows(index)
+    '    End If
+
+    '    IncidentID = Server.HtmlDecode(row.Cells(0).Text)
+
+    '    ' If multiple buttons are used in a GridView control, use the
+    '    ' CommandName property to determine which button was clicked.
+    '    Select Case e.CommandName
+    '        Case "View"
+    '            'RaiseEvent ShowFault(incidentNumber)
+    '            'added 05April2016
+    '            Application(technicalstate) = Nothing
+    '            RaiseEvent ShowFault(IncidentID)
+    '    End Select
+
+    'End Sub
+
+    Protected Sub OnPaging(ByVal sender As Object, ByVal e As GridViewPageEventArgs) Handles GridViewLinac.PageIndexChanging, GridViewTomo.PageIndexChanging
+        If sender.ID = GridViewLinac.ID Then
+            GridViewLinac.PageIndex = e.NewPageIndex
+            GridViewLinac.DataBind()
         Else
-            row = GridViewLinac.Rows(index)
+            GridViewTomo.PageIndex = e.NewPageIndex
+            GridViewTomo.DataBind()
         End If
 
-        IncidentID = Server.HtmlDecode(row.Cells(0).Text)
 
-        ' If multiple buttons are used in a GridView control, use the
-        ' CommandName property to determine which button was clicked.
-        Select Case e.CommandName
-            Case "View"
-                'RaiseEvent ShowFault(incidentNumber)
-                'added 05April2016
-                Application(technicalstate) = Nothing
-                RaiseEvent ShowFault(IncidentID)
-        End Select
-
-    End Sub
-
-    Protected Sub OnPaging(ByVal sender As Object, ByVal e As GridViewPageEventArgs) Handles GridViewLinac.PageIndexChanging
-        GridViewLinac.PageIndex = e.NewPageIndex
-        GridViewLinac.DataBind()
     End Sub
 End Class

@@ -103,13 +103,13 @@ Namespace DavesCode
                     ElseIf logOutName = "Restored" Then
                         'Defaults ok
                     Else
-                        'added for E1 and E2
-                        If LinacName = "E1" Or LinacName = "E2" Or LinacName = "B1" Or LinacName = "T1" Or LinacName = "T2" Then
-                            Tab = 1
-                        Else
-                            State = "Engineering Approved"
-                        End If
-
+                        'added for E1 and E2. Modified 9/4/19 because linac behaviour the same now and B2 included
+                        'If LinacName = "E1" Or LinacName = "E2" Or LinacName = "B1" Or LinacName = "T1" Or LinacName = "T2" Then
+                        '    Tab = 1
+                        'Else
+                        '    State = "Engineering Approved"
+                        'End If
+                        Tab = 1
                     End If
 
                 End If

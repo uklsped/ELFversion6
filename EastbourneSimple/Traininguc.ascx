@@ -1,15 +1,19 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="Traininguc.ascx.vb" Inherits="Traininguc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
-<%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc1" %>
+<%--<%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc1" %>--%>
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc3" %>
-<%@ Register Src="AtlasEnergyViewuc.ascx" TagName="AtlasEnergyViewuc" TagPrefix="uc4" %>
+<%--<%@ Register Src="AtlasEnergyViewuc.ascx" TagName="AtlasEnergyViewuc" TagPrefix="uc4" %>
 <%@ Register Src="Modalitiesuc.ascx" TagName="Modalitiesuc" TagPrefix="uc5" %>
-<%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc6" %>
+<%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc6" %>--%>
 <%@ Register Src="ViewCommentsuc.ascx" TagName="ViewCommentsuc" TagPrefix="uc7" %>
 <%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>
-<%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc9" %>
-<%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc10" %>
+<%--<%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc9" %>
+<%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc10" %>--%>
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
+
+<%@ Register src="controls/MainFaultDisplayuc.ascx" tagname="MainFaultDisplayuc" tagprefix="uc11" %>
+
+<%@ Register src="controls/ReportFaultPopUpuc.ascx" tagname="ReportFaultPopUpuc" tagprefix="uc12" %>
 
 <uc3:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="8" Tabby="8" Visible="false" runat="server" />
 <div class="grid">
@@ -37,12 +41,14 @@
                      <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
                  </tr>
                  <tr>
-                     <td><uc2:CommentBoxuc ID="CommentBox" runat="server" /></td>
+                     <td><uc2:CommentBoxuc ID="CommentBox" runat="server" />
+                         
+                     </td>
                  </tr>
                </table>
            </td>                         
         </tr>
-        <tr>
+        <%--<tr>
            <td colspan="2">
               <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
@@ -52,11 +58,26 @@
                 </ContentTemplate>
               </asp:UpdatePanel>
            </td>              
-        </tr>
+        </tr>--%>
       </table>
 
 </div>
-    <div class="col200 blue">
+ <div class="col200 blue" ><asp:UpdatePanel ID="UpdatePanel3" runat="server">
+                        <ContentTemplate>
+                            <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" CausesValidation="false"/>
+                            <asp:PlaceHolder ID="ReportFaultPopupPlaceHolder" runat="server"></asp:PlaceHolder>
+                        </ContentTemplate>
+                   </asp:UpdatePanel></div>
+    <div class="col300 green" ><asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="true" UpdateMode="Conditional">
+        <ContentTemplate>
+            <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>&nbsp;
+        </ContentTemplate>
+    </asp:UpdatePanel>
+    </div>
+    
+</div>
+        
+  <%--  <div class="col200 blue">
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
             <ContentTemplate>
                 <asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server"></asp:PlaceHolder>
@@ -69,5 +90,5 @@
             <asp:PlaceHolder ID="PlaceHolderViewOpenFaults" runat="server"></asp:PlaceHolder>
         </ContentTemplate>
     </asp:UpdatePanel>
-    </div>
-</div>
+    </div>--%>
+<%--</div>--%>

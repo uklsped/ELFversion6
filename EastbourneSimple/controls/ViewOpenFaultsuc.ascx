@@ -1,31 +1,27 @@
-﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="ViewOpenFaults.ascx.vb" Inherits="ViewOpenFaults" %>
-
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="ViewOpenFaultsuc.ascx.vb" Inherits="controls_ViewOpenFaultsuc" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
-<%@ Register Src="ManyFaultGriduc.ascx" TagName="ManyFaultGriduc" TagPrefix="uc2" %>
+<%--<%@ Register src="CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>--%>
 
-<%@ Register Src="controls/DeviceReportedfaultuc.ascx" TagName="DeviceReportedfaultuc" TagPrefix="uc5" %>
+<%--<%@ Register src="FaultTrackinguc.ascx" tagname="FaultTrackinguc" tagprefix="uc6" %>--%>
 
-<%@ Register Src="controls/DeviceRepeatFaultuc.ascx" TagName="DeviceRepeatFaultuc" TagPrefix="uc3" %>
+<%@ Register src="ConcessionPopUpuc.ascx" tagname="ConcessionPopUpuc" tagprefix="uc1" %>
 
-<%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>
+<%--<%@ Register src="NewFaultPopUpuc.ascx" tagname="NewFaultPopUpuc" tagprefix="uc7" %>--%>
 
-<%@ Register src="controls/FaultTrackinguc.ascx" tagname="FaultTrackinguc" tagprefix="uc6" %>
-<%@ Register Src="~/controls/DeviceRepeatFaultuc.ascx" TagPrefix="uc2" TagName="DeviceRepeatFaultuc" %>
+<%@ Register src="../ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc2" %>
 
-<%@ Register src="controls/ConcessionPopUpuc.ascx" tagname="ConcessionPopUpuc" tagprefix="uc1" %>
-
-<%@ Register src="controls/NewFaultPopUpuc.ascx" tagname="NewFaultPopUpuc" tagprefix="uc7" %>
+<%--<%@ Register src="DeviceReportedfaultuc.ascx" tagname="DeviceReportedfaultuc" tagprefix="uc5" %>--%>
 
 <asp:Panel ID="UpdatePanel4" runat="server">
-    
-    <asp:Table ID="Table3"  runat="server">
+    <div>
+   <%-- <asp:Table ID="Table3"  runat="server">
         <asp:TableRow>
             <asp:TableCell>
                 <uc2:ManyFaultGriduc ID="ManyFaultGriduc" NewFault="false" runat="server" />
             </asp:TableCell>
-            <asp:TableCell>
+            <asp:TableCell>--%>
                 <fieldset style="width: auto;">
                     <legend>Open Concessions</legend>
                     <asp:GridView ID="ConcessionGrid" runat="server" AutoGenerateColumns="False" CellPadding="4"
@@ -53,10 +49,9 @@
 
                             <asp:ButtonField ButtonType="Button" CommandName="View" Text="View Concession" />
                             <asp:ButtonField ButtonType="Button" CommandName="Faults" Text="View Faults" />
-                            <%--<asp:ButtonField ButtonType="Button" CommandName="Log Fault" Text="Log Repeat Fault" />--%>
-                            <asp:TemplateField>
+<%--                            <asp:TemplateField>
                                 <ItemTemplate></ItemTemplate>
-                            </asp:TemplateField>
+                            </asp:TemplateField>--%>
                         </Columns>
                         <FooterStyle BackColor="#5D7B9D" ForeColor="White" Font-Bold="True" />
                         <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
@@ -68,39 +63,31 @@
 
                 </fieldset>
                 <br />
-            </asp:TableCell>
+          <%--  </asp:TableCell>
         </asp:TableRow>
-    </asp:Table>
-
+    </asp:Table>--%>
+</div>
 </asp:Panel>
 
 <asp:Panel ID="UpdatePanel3" runat="server">
-    <uc1:ConcessionPopUpuc ID="ConcessionPopUpuc1" ParentName="" visible="false" runat="server" />
+    <asp:PlaceHolder ID="ConcessionPopupPlaceHolder" runat="server"></asp:PlaceHolder>
+       
    <%-- <uc7:NewFaultPopUpuc ID="NewFaultPopUpuc1" ParentName="" visible="false" runat="server" />--%>
     <asp:Panel ID="Panel4" runat="server">
 
        <asp:MultiView ID="MultiView1" runat="server">
-            <asp:View ID="UpdatefaultView" runat="server">
-                <asp:Panel ID="UpdatePanelRepeatFault" runat="server" Visible="false">
-                <asp:HiddenField ID="HiddenIncidentID" runat="server" />
-                <asp:HiddenField ID="HiddenConcessionNumber" runat="server" />
-                    <asp:PlaceHolder ID="PlaceholderRepeatFault" runat="server">
-                          <uc2:DeviceRepeatFaultuc runat="server" ID="DeviceRepeatFaultuc1" />
-                    </asp:PlaceHolder>
-                </asp:Panel>
-         </asp:View>
-             
+                          
          <asp:View ID="View1" runat="server">
              <asp:MultiView ID="MultiView2" runat="server">
-                 <asp:View ID="statustech" runat="server">
+                <asp:View ID="statustech" runat="server">
                     <asp:Panel ID="statustechpanel" runat="server" Visible="false">
-                        <asp:UpdatePanel ID="UpdatePanel5" runat="server">
+                       <asp:UpdatePanel ID="UpdatePanel5" runat="server">
                             <ContentTemplate>
-                            <%--<uc6:FaultTrackinguc ID="FaultTrackinguc1" runat="server" />--%>
-                            </ContentTemplate></asp:UpdatePanel>
+                          <%-- <uc6:FaultTrackinguc ID="FaultTrackinguc1" runat="server" visible="false"/>--%>
+                           </ContentTemplate></asp:UpdatePanel>
                      </asp:Panel>
                         
-                     </asp:View>
+                    </asp:View>
                  <asp:View ID="statusother" runat="server">
                      <asp:Panel ID="UpdatePanel1" runat="server" Visible="false">
                                     <asp:Panel ID="Panel1" runat="server">
@@ -168,6 +155,16 @@
          </asp:MultiView>
 </asp:Panel>
 </asp:Panel>
+
+
+
+
+
+
+
+         
+
+
 
 
 

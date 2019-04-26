@@ -27,8 +27,27 @@ Partial Class DefectSave
     Private Comment As String
     Public Property ParentControlComment() As String
     Private RadActComment As String
+    Private FaultApplication As String
     Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
     Public Event CloseReportFaultPopUp(ByVal EquipmentName As String)
+    Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    Private FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters
+
+    Private Property DynamicControlSelection() As String
+        Get
+            Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
+            If result Is Nothing Then
+                'doing things like this lets us access this property without
+                'worrying about this property returning null/Nothing
+                Return String.Empty
+            Else
+                Return result
+            End If
+        End Get
+        Set(ByVal value As String)
+            ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
+        End Set
+    End Property
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
@@ -43,6 +62,7 @@ Partial Class DefectSave
         repairstate = "rppTab" + LinacName
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
+        FaultApplication = "FaultParams" + LinacName
     End Sub
 
     'This updates the defect display For the day When a repeat fault Is registered by viewopenfaults And Then planned maintenance etc.
@@ -57,7 +77,7 @@ Partial Class DefectSave
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
         Dim Action As String = Application(actionstate)
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-
+        Dim Success As Boolean
         ConcessionNumber = Defect.SelectedItem.ToString
         If ConcessionNumber.Contains("ELF") Then
             ConcessionNumber = Left(ConcessionNumber, 7)
@@ -69,11 +89,28 @@ Partial Class DefectSave
             wctrl2.Visible = False
             If Action = "Confirm" Then
                 'What happens if this fails
-                NewWriteradreset(Userinfo, connectionString)
+                Success = NewWriteradreset(Userinfo, connectionString)
 
             End If
-            ClearsForm()
-            RaiseEvent CloseReportFaultPopUp(LinacName)
+            If Success Then
+                RaiseEvent CloseReportFaultPopUp(LinacName)
+                SelectedIncident = SelectedIncidentID.Value
+                If SelectedIncident = RADRESET Then
+                    RaiseEvent UpdateViewOpenFaults(LinacName)
+                Else
+                    RaiseEvent UpDateDefectDailyDisplay(LinacName)
+                End If
+            Else
+                RaiseError()
+                Dim sender As Object
+                Dim e As EventArgs
+                Dim clear As Button = FindControl("ClearButton")
+                ClearButton_Click(sender, e)
+
+
+            End If
+            'ClearsForm()
+            'RaiseEvent CloseReportFaultPopUp(LinacName)
         End If
     End Sub
 
@@ -134,15 +171,15 @@ Partial Class DefectSave
         SaveDefectButton.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(SaveDefectButton, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         ClearButton.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(ClearButton, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         actionstate = "ActionState" + LinacName
-        Dim newFault As Boolean
-        FaultDescription.BoxChanged = FaultDescriptionChanged
-        RadActC.BoxChanged = RadActDescriptionChanged
-        If Not IsPostBack Then
-            newFault = False
-            SetFaults(newFault)
-            AddEnergyItem()
-            RadioIncident.SelectedIndex = -1
-        End If
+        'Dim newFault As Boolean
+        'FaultDescription.BoxChanged = FaultDescriptionChanged
+        'RadActC.BoxChanged = RadActDescriptionChanged
+        'If Not IsPostBack Then
+        '    newFault = False
+        '    SetFaults(newFault)
+        '    AddEnergyItem()
+        '    RadioIncident.SelectedIndex = -1
+        'End If
         'WriteDatauc1 no longer used 23/11/16
         'Added back in for RAD RESET 26/3/18 SEE SPR
         Dim wctrl1 As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
@@ -151,6 +188,30 @@ Partial Class DefectSave
         wctrl2.LinacName = LinacName
         'This now in mainfaultdisplay
         'BindDefectData()
+        appstate = "LogOn" + LinacName
+        actionstate = "ActionState" + LinacName
+        suspstate = "Suspended" + LinacName
+        failstate = "FailState" + LinacName
+        repairstate = "rppTab" + LinacName
+        FaultDescriptionChanged = "defectFault" + LinacName
+        RadActDescriptionChanged = "radact" + LinacName
+        FaultApplication = "FaultParams" + LinacName
+    End Sub
+
+    Public Sub InitialiseDefectPage()
+        Dim newFault As Boolean
+        FaultDescriptionChanged = "defectFault" + LinacName
+        RadActDescriptionChanged = "radact" + LinacName
+        FaultApplication = "FaultParams" + LinacName
+        FaultDescription.BoxChanged = FaultDescriptionChanged
+        RadActC.BoxChanged = RadActDescriptionChanged
+
+        newFault = False
+        SetFaults(newFault)
+        RadioIncident.SelectedIndex = -1
+
+        AddEnergyItem()
+        Dim clear As Button = FindControl("ClearButton")
     End Sub
     Public Sub ResetDefectDropDown(ByVal incidentid As String)
 
@@ -340,34 +401,39 @@ Partial Class DefectSave
         'This is a mad way of doing it but I don't know how to dim the energy list without constructing it at the same time
 
         Select Case LinacName
-            Case "LA1"
-                Dim Energy1() As String = {"Select", "6 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
-                ConstructEnergylist(Energy1)
-            Case "LA2", "LA3"
-                Dim Energy1() As String = {"Select", "6 MV", "10 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
-                ConstructEnergylist(Energy1)
-            Case "LA4"
-                Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
-                ConstructEnergylist(Energy1)
-            Case "E1", "E2", "B1"
-                Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
-                ConstructEnergylist(Energy1)
-            Case Else
-                'Don't show any energies
-        End Select
+                Case "LA1"
+                    Dim Energy1() As String = {"Select", "6 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
+                    ConstructEnergylist(Energy1)
+                Case "LA2", "LA3"
+                    Dim Energy1() As String = {"Select", "6 MV", "10 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
+                    ConstructEnergylist(Energy1)
+                Case "LA4"
+                    Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
+                    ConstructEnergylist(Energy1)
+                Case "E1", "E2", "B1", "B2"
+                    Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
+                    ConstructEnergylist(Energy1)
+                Case Else
+                    'Don't show any energies
+            End Select
+
 
     End Sub
     Protected Sub ConstructEnergylist(ByVal Energylist() As String)
-        Dim energy() As String = Energylist
-        Dim i As Integer
-        For i = 0 To energy.GetLength(0) - 1
-            DropDownListEnergy.Items.Add(New ListItem(energy(i)))
-        Next
+        Dim number As Integer = DropDownListEnergy.Items.Count
+        If number = 0 Then
+
+            Dim energy() As String = Energylist
+            Dim i As Integer
+            For i = 0 To energy.GetLength(0) - 1
+                DropDownListEnergy.Items.Add(New ListItem(energy(i)))
+            Next
+        End If
         DropDownListEnergy.SelectedIndex = -1
     End Sub
 
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
-        ClearsForm()
+        'ClearsForm()
         RaiseEvent CloseReportFaultPopUp(LinacName)
     End Sub
 
@@ -395,12 +461,19 @@ Partial Class DefectSave
 
 
 
-    Protected Sub NewWriteradreset(ByVal UserInfo As String, ByVal connectionString As String)
-
+    Protected Function NewWriteradreset(ByVal UserInfo As String, ByVal connectionString As String) As Boolean
+        appstate = "LogOn" + LinacName
+        actionstate = "ActionState" + LinacName
+        suspstate = "Suspended" + LinacName
+        failstate = "FailState" + LinacName
+        repairstate = "rppTab" + LinacName
+        FaultDescriptionChanged = "defectFault" + LinacName
+        RadActDescriptionChanged = "radact" + LinacName
+        FaultApplication = "FaultParams" + LinacName
         Dim Concession As String = "Concession"
         Dim Status As String = EMPTYSTRING
         Dim Result As Boolean = False
-        Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
+
         SelectedIncident = SelectedIncidentID.Value
         CreateFaultParams(UserInfo, FaultParams)
         Select Case SelectedIncident
@@ -409,12 +482,9 @@ Partial Class DefectSave
                 If Result Then
                     Status = Concession
                     SetFaults(True)
-                    'BindDefectData()
-                    'This updates the concession list
-                    RaiseEvent UpdateViewOpenFaults(LinacName)
-                Else
-                    RaiseError()
+
                 End If
+
 
             Case MAJORFAULT
 
@@ -455,32 +525,34 @@ Partial Class DefectSave
                 End Select
 
                 If Result Then
+
                     Application(appstate) = Nothing
                     Application(failstate) = ParentControl
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir
                     'PopupAck()
                     Comment = String.Empty
+
+                    'RaiseEvent CloseReportFaultPopUp(LinacName)
                     'Dim Boxchanged As String = ParentCommentControl.BoxChanged
                     'Application(Boxchanged) = String.Empty
                     Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
-                    Response.Redirect(returnstring & ParentControl & "&comment=" & ParentControlComment, False)
+                    Response.Redirect(returnstring & ParentControl & "&comment=" & ParentControlComment)
 
-                Else
-                    RaiseError()
                 End If
             Case Else
                 Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
                 If Result Then
                     'BindDefectData()
-                    RaiseEvent UpDateDefectDailyDisplay(LinacName)
-                    RaiseEvent CloseReportFaultPopUp(LinacName)
-                Else
-                    RaiseError()
+
+                    'RaiseEvent UpDateDefectDailyDisplay(LinacName)
+                    Return Result
+                    'RaiseEvent CloseReportFaultPopUp(LinacName)
+
                 End If
 
         End Select
-
-    End Sub
+        Return Result
+    End Function
     Protected Sub PopupAck()
         Dim strScript As String = "<script>"
         strScript += "alert('Fault Logged');"
@@ -527,7 +599,6 @@ Partial Class DefectSave
         FaultParams.GantryAngle = GantryAngleBox.Text
         FaultParams.CollimatorAngle = CollimatorAngleBox.Text
         FaultParams.PatientID = PatientIDBox.Text
-        'FaultParams.FaultDescription = FaultDescription.Text
         FaultParams.FaultDescription = Comment
         FaultParams.ConcessionNumber = ConcessionNumber
         FaultParams.RadAct = RadActComment

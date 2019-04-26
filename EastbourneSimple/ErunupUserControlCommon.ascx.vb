@@ -42,7 +42,42 @@ Partial Class ErunupUserControl
     Public Property LinacName() As String
     'Dim Property Tabby() As String
     Public Property UserReason() As Integer
+    Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
+    Const QASELECTED As String = "ModalityQApopupselected"
+    Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
 
+    Private Property DynamicControlSelection() As String
+        Get
+            Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
+            If result Is Nothing Then
+                'doing things like this lets us access this property without
+                'worrying about this property returning null/Nothing
+                Return String.Empty
+            Else
+                Return result
+            End If
+        End Get
+        Set(ByVal value As String)
+            ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
+        End Set
+    End Property
+
+    'Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
+    '    If LinacName = EquipmentId Then
+    '        DynamicControlSelection = String.Empty
+    '        Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
+    '        'ReportFaultPopupPlaceHolder.Controls.Remove(ReportFault)
+    '    End If
+
+    'End Sub
+
+    Protected Sub Close_ModalityQAPopUp(ByVal EquipmentId As String)
+        If LinacName = EquipmentId Then
+            DynamicControlSelection = String.Empty
+            Dim ModalityQA As controls_ModalityQAPopUpuc = CType(FindControl("ModalityQAPopUpuc1"), controls_ModalityQAPopUpuc)
+            PlaceHolderModalities.Controls.Remove(ModalityQA)
+        End If
+    End Sub
 
     Public Function FormatImage(ByVal energy As Boolean) As String
         Dim happyIcon As String = "Images/happy.gif"
@@ -112,12 +147,11 @@ Partial Class ErunupUserControl
     End Sub
 
     Public Sub EngLogOnEvent(connectionString As String)
-
-        SetEnergies(connectionString)
-        Select Case LinacName
-            Case "E1", "E2", "B1"
-                SetImaging(connectionString)
-        End Select
+        'because B2 is to be added and because LA1 and LA4 are to be treated like B1 etc changed case statement 9/4/19
+        If Not LinacName Like "T?" Then
+            SetEnergies(connectionString)
+            SetImaging(connectionString)
+        End If
 
         GridView1.Visible = True
         GridViewImage.Visible = True
@@ -127,31 +161,24 @@ Partial Class ErunupUserControl
     'this updates defect dropdown list because a concession has been closed perhaps rename
     Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
 
-        If LinacName = EquipmentID Then
+        'If LinacName = EquipmentID Then
 
-            'Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
-            'todayfault.SetGrid()
-            If LinacName Like "T?" Then
-                    TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-                    TodaydefectPark.ResetDefectDropDown(incidentID)
-                Else
-                    Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-                    Todaydefect.ResetDefectDropDown(incidentID)
-                End If
-            End If
+        '    'Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
+        '    'todayfault.SetGrid()
+        '    If LinacName Like "T?" Then
+        '            TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+        '            TodaydefectPark.ResetDefectDropDown(incidentID)
+        '        Else
+        '            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+        '            Todaydefect.ResetDefectDropDown(incidentID)
+        '        End If
+        '    End If
     End Sub
     ' This updates the defect display on defectsave etc when repeat fault from defectsave
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            If LinacName Like "T?" Then
-                TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-                TodaydefectPark.UpDateDefectsEventHandler()
-            Else
-                'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-                'Todaydefect.UpDateDefectsEventHandler()
-                MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
-                MainFaultPanel.Update_defectsToday(LinacName)
-            End If
+            MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+            MainFaultPanel.Update_defectsToday(LinacName)
 
         End If
     End Sub
@@ -160,8 +187,14 @@ Partial Class ErunupUserControl
         If LinacName = EquipmentID Then
             MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
             MainFaultPanel.Update_OpenConcessions(LinacName)
-            'Objcon = FindControl("ViewOpenFaults")
-            'Objcon.RebindViewFault()
+
+        End If
+    End Sub
+
+    Protected Sub Update_ClosedFaultDisplay(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+            MainFaultPanel.Update_FaultClosedDisplay(LinacName)
         End If
     End Sub
 
@@ -180,12 +213,7 @@ Partial Class ErunupUserControl
             Else
                 comment = String.Empty
             End If
-            'comment = CommentBox.Currentcomment
 
-            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-            'Dim Comment As String = Textboxcomment.Text
-            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-            'Dim Comment As String = Textboxcomment.Text
             Dim Successful As Boolean = False
 
             If Action = "Confirm" Then
@@ -202,18 +230,19 @@ Partial Class ErunupUserControl
                     'Moved dal to newengrunup 19/9/18 to aid error handling
                     'Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, username, Comment, Valid, False, False)
                     'If Successful Then
-                    If LinacName Like "LA?" Then
-                        Application(LinacFlag) = "Engineering Approved"
-                        strScript += "window.location='"
-                        strScript += machinelabel
-                        strScript += "</script>"
-                        ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                    Else
-                        Application(LinacFlag) = "Clinical"
+                    'Behaviour the same for all linacs and Tomo now 9/4/19
+                    'If LinacName Like "LA?" Then
+                    '    Application(LinacFlag) = "Engineering Approved"
+                    '    strScript += "window.location='"
+                    '    strScript += machinelabel
+                    '    strScript += "</script>"
+                    '    ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                    'Else
+                    Application(LinacFlag) = "Clinical"
                         Dim returnstring As String = LinacName + "page.aspx?tabref=3"
                         Application(suspstate) = 1
                         Response.Redirect(returnstring)
-                    End If
+                    'End If
                 Else
                     RaiseError("WriteEnergies")
                 End If
@@ -232,11 +261,12 @@ Partial Class ErunupUserControl
                     If Not Userinfo = "Restored" Then
                         CommentBox.ResetCommentBox(String.Empty)
                     End If
-                    If LinacName Like "LA?" Then
-                        strScript += "alert('No Energies Approved Logging Off');"
-                    Else
-                        strScript += "alert('Not Approved For Clinical Use. Logging Off');"
-                    End If
+                    'same behaviour for all machines now 9/4/19
+                    'If LinacName Like "LA?" Then
+                    '    strScript += "alert('No Energies Approved Logging Off');"
+                    'Else
+                    strScript += "alert('Not Approved For Clinical Use. Logging Off');"
+                    'End If
                     strScript += "window.location='"
                     strScript += machinelabel
                     strScript += "</script>"
@@ -301,21 +331,10 @@ Partial Class ErunupUserControl
         Dim SuccessEnergy As Boolean = False
         Dim SuccessImage As Boolean = False
 
-        'Sets up Today's closed faults
-        'objconToday = Page.LoadControl("TodayClosedFault.ascx")
-        'objconToday.ID = "Todaysfaults"
-        'objconToday.LinacName = LinacName
-        'PlaceHolderTodaysclosedfaults.Controls.Add(objconToday)
         Dim objMFG As controls_MainFaultDisplayuc = Page.LoadControl("controls\MainFaultDisplayuc.ascx")
         CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
         CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
-
-
-        'Sets up Atlas Energies
-        Dim objConAtlas As UserControl = Page.LoadControl("AtlasEnergyViewuc.ascx")
-        CType(objConAtlas, AtlasEnergyViewuc).LinacName = LinacName
-        PlaceHolderAtlas.Controls.Add(objConAtlas)
-
+        AddHandler CType(objMFG, controls_MainFaultDisplayuc).Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_ClosedFaultDisplay
 
         Dim strScript As String = "<script>"
         'Sets up user comments
@@ -328,57 +347,45 @@ Partial Class ErunupUserControl
         Objcon = Page.LoadControl("ViewOpenFaults.ascx")
         If UserReason = 1 Then
             CType(objMFG, controls_MainFaultDisplayuc).ParentControl = ENG
-            'CType(Objcon, ViewOpenFaults).ParentControl = ENG
-            'CType(Objcon, ViewOpenFaults).LinacName = LinacName
 
-            'PlaceHolderViewOpenFaults.Controls.Add(Objcon)
         Else
             'Hide lock elf button if rad run up
             LockElf.Visible = False
             CType(objMFG, controls_MainFaultDisplayuc).ParentControl = RAD
-            'CType(Objcon, ViewOpenFaults).ParentControl = RAD
-            'CType(Objcon, ViewOpenFaults).LinacName = LinacName
 
-            'PlaceHolderViewOpenFaults.Controls.Add(Objcon)
         End If
         PlaceHolderFaults.Controls.Add(objMFG)
-        'AddHandler CType(Objcon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
-        'AddHandler CType(Objcon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
+        ReportFault.LinacName = LinacName
+        ReportFault.ParentControl = ENG
+        AddHandler ReportFault.ReportAFault_UpdateDailyDefectDisplay, AddressOf Update_DefectDailyDisplay
+        AddHandler ReportFault.ReportAFault_UpDateViewOpenFaults, AddressOf Update_ViewOpenFaults
+        'AddHandler 
+        Select Case Me.DynamicControlSelection
+        '    Case REPEATFAULTSELECTED
+            '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
+            Case FAULTPOPUPSELECTED
 
-        'Sets up View Modalities
-
-        Dim objQA As Modalitiesuc = Page.LoadControl("Modalitiesuc.ascx")
-        CType(objQA, Modalitiesuc).LinacName = LinacName
-        CType(objQA, Modalitiesuc).TabName = 1
-        PlaceHolderModalities.Controls.Add(objQA)
-
-        'Sets up Defect Control
-
-        Dim objDefect As UserControl
-        If LinacName Like "T?" Then
-            objDefect = Page.LoadControl("DefectSavePark.ascx")
-            CType(objDefect, DefectSavePark).ID = "DefectDisplay"
-            CType(objDefect, DefectSavePark).LinacName = LinacName
-            CType(objDefect, DefectSavePark).ParentControl = ENG
-            AddHandler CType(objDefect, DefectSavePark).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
-            AddHandler CType(objDefect, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-            engHandoverButton.Text = "Approve for Clinical Use"
-
-        Else
-            objDefect = Page.LoadControl("DefectSave.ascx")
-            CType(objDefect, DefectSave).ID = "DefectDisplay"
-            CType(objDefect, DefectSave).LinacName = LinacName
-            CType(objDefect, DefectSave).ParentControl = ENG
-            AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-            AddHandler CType(objDefect, DefectSave).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-            If LinacName Like "LA?" Then
-                engHandoverButton.Text = "Approve Energies"
-            Else
-                engHandoverButton.Text = "Approve for Clinical Use"
-            End If
-        End If
-
-        PlaceHolderDefectSave.Controls.Add(objDefect)
+                'Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+                'objReportFault.LinacName = LinacName
+                'objReportFault.ID = "ReportFaultPopupuc"
+                'objReportFault.ParentControl = ENG
+                ''objReportFault.Visible = False
+                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+                'ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+            Case QASELECTED
+                Dim ObjQA As controls_ModalityQAPopUpuc = Page.LoadControl("controls\ModalityQAPopUpuc.ascx")
+                ObjQA.LinacName = LinacName
+                ObjQA.ParentControl = ENG
+                ObjQA.ID = "ModalityQAPopUpuc1"
+                DynamicControlSelection = QASELECTED
+                AddHandler ObjQA.CloseModalityQAPopUpTab, AddressOf Close_ModalityQAPopUp
+                PlaceHolderModalities.Controls.Add(ObjQA)
+            Case Else
+                'no dynamic controls need to be loaded...yet
+        End Select
 
         'Wire up the event (UserApproved) to the event handler (UserApprovedEvent)
         'The solution of how to pass parameter to dynamically loaded user control is from here:
@@ -536,12 +543,12 @@ Partial Class ErunupUserControl
                 Next
                 Select Case counter
                     Case Is <> 0
-
-                        If LinacName Like "LA?" Then
-                            ConfirmExitEvent()
-                        Else
-                            'Inserted imaging check from preclinicaluser control
-                            Dim icounter As Integer = 0
+                        'if unnecessary now as linacs have the same behaviour
+                        'If LinacName Like "LA?" Then
+                        '    ConfirmExitEvent()
+                        'Else
+                        'Inserted imaging check from preclinicaluser control
+                        Dim icounter As Integer = 0
                             'Dim tclcontainer As TabContainer
                             For Each grv As GridViewRow In GridViewImage.Rows
 
@@ -560,7 +567,7 @@ Partial Class ErunupUserControl
 
                             End If
 
-                        End If
+                        'End If
 
                     Case Else
                         strScript += "alert('Select at least one energy');"
@@ -624,19 +631,6 @@ Partial Class ErunupUserControl
 
     End Sub
 
-    Protected Sub AtlasPanelButton_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ViewAtlasButton.Click
-        Dim updateAtlas As UpdatePanel = FindControl("updatepanelatlas")
-        If Application(atlasviewstate) = 1 Then
-            updateAtlas.Visible = True
-            Application(atlasviewstate) = Nothing
-            ViewAtlasButton.Text = "Hide Atlas Energies"
-        Else
-            updateAtlas.Visible = False
-            Application(atlasviewstate) = 1
-            ViewAtlasButton.Text = "View Atlas Energies"
-        End If
-    End Sub
-
 
     '15 April Added this control as a result of Bug 11
     Protected Sub LockElf_Click(sender As Object, e As EventArgs) Handles LockElf.Click
@@ -664,16 +658,14 @@ Partial Class ErunupUserControl
 
     '15 April comment. Added this control as a result of Bug 11
     Protected Sub PhysicsQA_Click(ByVal sender As Object, ByVal e As EventArgs) Handles PhysicsQA.Click
-        Dim updatepanelQA As UpdatePanel = FindControl("updatepanelQA")
-        If Application(qaviewstate) = 1 Then
-            updatepanelQA.Visible = True
-            Application(qaviewstate) = Nothing
-            PhysicsQA.Text = "Hide Physics Energies/Imaging"
-        Else
-            updatepanelQA.Visible = False
-            Application(qaviewstate) = 1
-            PhysicsQA.Text = "View Physics Energies/Imaging"
-        End If
+        Dim ObjQA As controls_ModalityQAPopUpuc = Page.LoadControl("controls\ModalityQAPopUpuc.ascx")
+        ObjQA.LinacName = LinacName
+        ObjQA.ParentControl = ENG
+        ObjQA.ID = "ModalityQAPopUpuc1"
+        DynamicControlSelection = QASELECTED
+        AddHandler ObjQA.CloseModalityQAPopUpTab, AddressOf Close_ModalityQAPopUp
+        PlaceHolderModalities.Controls.Add(ObjQA)
+
     End Sub
 
     '15 April Comment added as a result of Bug 6
@@ -741,16 +733,37 @@ Partial Class ErunupUserControl
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        If LinacName Like "LA?" Then
-            wcbutton.Text = "Confirm Energies"
-        Else
-            wcbutton.Text = "Confirm for Clinical Use"
-        End If
+        'no need for if behaviours the same now 9/4/19
+        'If LinacName Like "LA?" Then
+        '    wcbutton.Text = "Confirm Energies"
+        'Else
+        wcbutton.Text = "Confirm for Clinical Use"
+        'End If
 
         Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
         WriteDatauc1.Visible = True
         ForceFocus(wctext)
     End Sub
+
+    'Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
+    '    'Need to load reportfaultpopupuc here to pass comment box
+    '    Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
+    '    Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
+    '    Dim Comment As String = DaTxtBox.Text
+    '    Application("TabComment") = Comment
+
+    '    Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+    '    objReportFault.LinacName = LinacName
+    '    objReportFault.ID = "ReportFaultPopupuc"
+    '    objReportFault.ParentControl = ENG
+    '    DynamicControlSelection = FAULTPOPUPSELECTED
+
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+    '    ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+
+    'End Sub
 
 
 End Class

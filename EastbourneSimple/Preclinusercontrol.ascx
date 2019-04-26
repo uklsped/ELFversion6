@@ -1,19 +1,21 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="Preclinusercontrol.ascx.vb" Inherits="Preclinusercontrol" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>  
-<%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
+<%--<%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>--%>
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc2" %>
 <%@ Register src="ConfirmPage.ascx" tagname="ConfirmPage" tagprefix="uc3" %>
 <%@ Register src="ViewCommentsuc.ascx" tagname="ViewCommentsuc" tagprefix="uc5" %>
-<%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc6" %>
-<%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>
+<%--<%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc6" %>
+<%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>--%>
 <%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>
 <%@ Register Src="~/controls/CommentBoxuc.ascx" TagPrefix="uc1" TagName="CommentBoxuc" %>
 
-    <%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc10" %>
+   <%-- <%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc10" %>--%>
 
   <%@ Register src="controls/MainFaultDisplayuc.ascx" tagname="MainFaultDisplayuc" tagprefix="uc11" %>
+
+    <%@ Register src="controls/ReportFaultPopUpuc.ascx" tagname="ReportFaultPopUpuc" tagprefix="uc9" %>
 
     <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" 
             DataKeyNames="HandoverId"
@@ -133,7 +135,8 @@
     <div class="col200 blue">
         <asp:UpdatePanel ID="UpdatePanel8" runat="server">
             <ContentTemplate>
-                <asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server"></asp:PlaceHolder>
+                <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" CausesValidation="false"/>
+                            <asp:PlaceHolder ID="ReportFaultPopupPlaceHolder" runat="server"></asp:PlaceHolder>
             </ContentTemplate>
         </asp:UpdatePanel>
     </div>
@@ -149,6 +152,6 @@
 <asp:PlaceHolder ID="PlaceHolder2" runat="server">
   <uc2:WriteDatauc ID="WriteDatauc1" runat="server" LinacName="" Tabby="2" UserReason="2" visible="false" WriteName="PreClinData" />
   <uc3:ConfirmPage ID="ConfirmPage1" runat="server" Visible="false" />
-</asp:PlaceHolder>         
+</asp:PlaceHolder>
 
 <uc5:ViewCommentsuc ID="ViewCommentsuc1" linacName="" CommentSort="pcr" runat="server" />

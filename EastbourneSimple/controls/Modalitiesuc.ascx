@@ -1,14 +1,17 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="Modalitiesuc.ascx.vb" Inherits="Modalitiesuc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
-<%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
+<%@ Register src="../WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
+
+<%--<%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>--%>
 
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
       
-
-<%--<asp:UpdatePanel ID="QApanel" runat="server"><ContentTemplate>--%>
-        <uc1:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="6"  Tabby="QA"  WriteName="PhysicsQA" visible="false" runat="server" />
+        <uc1:writedatauc ID="WriteDatauc1" LinacName="" UserReason="6"  
+    Tabby="QA"  WriteName="PhysicsQA" visible="false" runat="server" />
         <h3>Table of Approved Energy and Imaging Modalities</h3>
+<table >
+    <tr><td colspan="4">
         <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" OnRowEditing="GridView1_RowEditing"
             OnRowCancelingEdit="GridView1_RowCancelingEdit" OnRowUpdating="Gridview1_RowUpdating" onrowdatabound= "GridView1_RowDataBound"
             CellPadding="4" DataKeyNames="EnergyID" enableeventvalidation="false"
@@ -28,8 +31,6 @@
                             Text="Edit"></asp:LinkButton>
                     </ItemTemplate>
                 </asp:TemplateField>
-            <%--<asp:CommandField ButtonType="Button" ShowEditButton="false" ShowCancelButton="true" CausesValidation="false" headertext="Edit"/>--%>
-            <%--<asp:commandfield showeditbutton="true" causesvalidation="false" headertext="Edit" Visible="true" />--%>
                 <asp:BoundField DataField="EnergyID" HeaderText="Modality ID" 
                     SortExpression="EnergyID" InsertVisible="False" ReadOnly="True" Visible="false"/>
                 <asp:BoundField DataField="Energy" HeaderText="Modality" InsertVisible="False" ReadOnly="True"
@@ -51,29 +52,15 @@
             <EditRowStyle BackColor="#999999" />
             <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
         </asp:GridView>
- 
-         <br />
-<table style="width: 100%;">
-    <tr>
-        <td>
-        <%--made button invisible but left it for popup showing energy changed 2/12/16--%>
-           <asp:Button ID="EditEnergies" runat="server" Text="Edit Energies" CausesValidation="false" visible="false"/>
+</td></tr>
+    <tr><td>
+
+           <asp:Button ID="Close" runat="server" Text="Close" CausesValidation="false"/>
         </td>
-        <td>
-            <%--<asp:Button ID="Button1" runat="server" Text="Write to excel" CausesValidation="false" />--%>
-        </td>
-        <td>
-            
-        </td>
-        <td>
-            <%--<asp:Button ID="ReturnToClinical" runat="server" Text="Return To Clinical" CausesValidation="false" Visible="false" />--%>
-        </td>
-    </tr>
-    
-</table>
-         
         
+    </tr>
+
+    </table>
     
-     
+
     
-<%--</ContentTemplate></asp:UpdatePanel>--%>

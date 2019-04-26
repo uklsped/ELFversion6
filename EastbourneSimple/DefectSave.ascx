@@ -17,7 +17,7 @@
 <asp:HiddenField ID="TimeFaultSelected" Value="" runat="server" />
 <asp:HiddenField ID="AreaOrAccuray" Value="" runat="server" />
 
-<div style="width:450px" >
+<div style="width:500px" >
    <fieldset style="width:auto">
        <legend>Report Fault</legend>
 <%--Record Repeat Fault <br />
@@ -107,43 +107,11 @@
         <%--</tr>--%>
         <%--<tr>--%>
             <td><asp:Button ID="SaveDefectButton" runat="server" Text="Save" CausesValidation="false" Enabled="false" /> </td>
-            <td><asp:Button ID="ClearButton" runat="server" Text="Clear" CausesValidation="false"/></td>
+            <td><asp:Button ID="ClearButton" runat="server" Text="Close" CausesValidation="false"/></td>
         </tr>
     </table>
    </fieldset>
- <%--  <div style="width: 450px">
-       <fieldset>
-           <legend>Repeat faults raised Today</legend>
-       
-         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
-            <ContentTemplate>
-               <div style="height: 150px; width: 445px; overflow: auto;">
-                     <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" ShowHeader="true"
-                        DataKeyNames="ConcessionNumber" BackColor="White" Width="445px"
-                        BorderColor="#336666" BorderStyle="Double" BorderWidth="3px" CellPadding="4"
-                        GridLines="Horizontal" Font-Size="smaller">
-                        <RowStyle BackColor="White" ForeColor="#333333" />
-                        <Columns>
-                            <asp:BoundField DataField="ConcessionNumber" HeaderText="Fault Identifier" ItemStyle-Width="150px"
-                                SortExpression="ConcessionNumber" />
-                            <asp:BoundField DataField="DefectTime" HeaderText="DefectTime" ItemStyle-Width="80px"
-                                SortExpression="DefectTime" />
-                            <asp:BoundField DataField="Description" HeaderText="Description" ItemStyle-Width="260px"
-                                SortExpression="Description" />
-                        </Columns>
-                        <FooterStyle BackColor="White" ForeColor="#333333" />
-                        <PagerStyle BackColor="#336666" ForeColor="White" HorizontalAlign="Center" />
-                        <SelectedRowStyle BackColor="#339966" Font-Bold="True" ForeColor="White" />
-                        <HeaderStyle BackColor="#336666" Font-Bold="True" ForeColor="White" />
-                    </asp:GridView>
-                
-                       
-                </div>
-                   
-            </ContentTemplate>
-        </asp:UpdatePanel>
-      </fieldset>
-   </div>--%>
+
        
 </div>
 

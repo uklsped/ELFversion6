@@ -13,7 +13,7 @@
 
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>
 
-<%@ Register src="Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc10" %>
+<%@ Register src="controls/Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc10" %>
 
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc11" %>
 
@@ -28,6 +28,15 @@
 
 
 <%@ Register src="ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc13" %>
+
+
+<%@ Register src="controls/ReportFaultPopUpuc.ascx" tagname="ReportFaultPopUpuc" tagprefix="uc14" %>
+
+
+<%@ Register src="controls/ModalityQAPopUpuc.ascx" tagname="ModalityQAPopUpuc" tagprefix="uc15" %>
+
+
+<%@ Register src="controls/ReportAFaultuc.ascx" tagname="ReportAFaultuc" tagprefix="uc16" %>
 
 
 <%--<link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />--%>
@@ -81,7 +90,7 @@
         </tr>
         <tr>              
            <td style="width: 182px" >
-              <asp:Button ID="engHandoverButton" runat="server" BackColor="#FFCC00" causesvalidation="false" Height="50px" Text="" />
+              <asp:Button ID="engHandoverButton" runat="server" BackColor="#FFCC00" causesvalidation="false" Height="50px" Text="Approve for Clinical Use" />
                 
            </td>               
         </tr>
@@ -98,7 +107,7 @@
               </td></tr>
           <tr>
               <td style="width: 182px" >
-              <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" width = "160px" causesvalidation="false"/>
+             <%-- <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" width = "160px" causesvalidation="false"/>--%>
           </tr>
         <tr>          
            <td colspan="2" style="height: 92px">
@@ -107,13 +116,35 @@
                      <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
                  </tr>
                  <tr>
-                     <td><uc3:CommentBoxuc ID="CommentBox" runat="server" /></td>
+                     <td><uc3:CommentBoxuc ID="CommentBox" runat="server" />
+                         
+                     </td>
                  </tr>
                </table>
            </td>                         
         </tr>
+          <tr><td colspan="2">
+              <br />
+              <br />
+              <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+<ContentTemplate>
+    <uc16:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
+
+                              <%-- <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" 
+                                   CausesValidation="false" Height="100px" Width="300px" />
+                        <asp:PlaceHolder ID="ReportFaultPopupPlaceHolder" runat="server"></asp:PlaceHolder>--%>
+</ContentTemplate>
+</asp:UpdatePanel> 
+              </td></tr>
        <tr>
            <td colspan="2">
+               <asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="true">
+<ContentTemplate>
+    <asp:PlaceHolder ID="PlaceHolderModalities" runat="server">
+    </asp:PlaceHolder>
+        </ContentTemplate>
+        
+</asp:UpdatePanel>
              <%-- <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
                   <asp:Label ID="Label1" runat="server" Text="Major Faults Cleared Today:"></asp:Label>
@@ -121,17 +152,18 @@
                   </asp:PlaceHolder>
                 </ContentTemplate>
               </asp:UpdatePanel>--%>
+               
            </td>              
         </tr>
       </table>
    </div>                
    <div class="col200 blue" >
-                 <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                 <%--<asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
-    <asp:PlaceHolder ID="PlaceHolderDefectSave" runat="server"></asp:PlaceHolder>
-
+                               <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" CausesValidation="false"/>
+                        <asp:PlaceHolder ID="ReportFaultPopupPlaceHolder" runat="server"></asp:PlaceHolder>
 </ContentTemplate>
-</asp:UpdatePanel> 
+</asp:UpdatePanel> --%>
        </div>
    <div class="col300 green" >
             <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true" UpdateMode="Conditional">
@@ -141,6 +173,12 @@
                 </ContentTemplate> 
             </asp:UpdatePanel>
        </div>
+
+    
+
+    
+
+    
 
 </div>
 
@@ -166,19 +204,19 @@
                         </asp:TableRow>
                </asp:Table>
 
-<asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="false">
+<%--<asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="false">
 <ContentTemplate>
     <asp:PlaceHolder ID="PlaceHolderModalities" runat="server">
     </asp:PlaceHolder>
         </ContentTemplate>
         
-</asp:UpdatePanel>
+</asp:UpdatePanel>--%>
  
-<asp:UpdatePanel ID="UpdatePanelatlas" runat="server" Visible="false">
+<%--<asp:UpdatePanel ID="UpdatePanelatlas" runat="server" Visible="false">
      <ContentTemplate>
          <asp:PlaceHolder ID="PlaceHolderAtlas" runat="server"></asp:PlaceHolder>
      </ContentTemplate>
-</asp:UpdatePanel>
+</asp:UpdatePanel>--%>
 
  <asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>

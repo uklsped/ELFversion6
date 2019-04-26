@@ -1,5 +1,7 @@
 ﻿Imports System.Data.SqlClient
+Imports System.Data
 Imports AjaxControlToolkit
+Imports System.Web.Services
 
 Partial Public Class LA1page
     Inherits System.Web.UI.Page
@@ -264,125 +266,125 @@ Partial Public Class LA1page
             ' 20 April handle direct open to repair page
 
             If Not Request.QueryString("recovered") Is Nothing Then
-                recover = Request.QueryString("recovered").ToString
-            End If
-            TabPanel0.Enabled = True
-            EndOfDay.Visible = True
-            'This is to check if request is coming from tab that doesn't need new sign in and automatically launches tab. Probably incorporate in stuff above
-            tabref = Nothing
-            Dim tabpicked As String = Nothing
-            If Not Request.QueryString("tabref") Is Nothing Then
-                tabref = Request.QueryString("tabref").ToString
-                If tabref = 0 Then
-                    tabpicked = Nothing
+                    recover = Request.QueryString("recovered").ToString
+                End If
+                TabPanel0.Enabled = True
+                EndOfDay.Visible = True
+                'This is to check if request is coming from tab that doesn't need new sign in and automatically launches tab. Probably incorporate in stuff above
+                tabref = Nothing
+                Dim tabpicked As String = Nothing
+                If Not Request.QueryString("tabref") Is Nothing Then
+                    tabref = Request.QueryString("tabref").ToString
+                    If tabref = 0 Then
+                        tabpicked = Nothing
+                    Else
+                        tcl.ActiveTabIndex = tabref
+                        tabpicked = tabref
+                    End If
+                ElseIf Not Request.QueryString("tabclicked") Is Nothing Then
+                    tabpicked = Request.QueryString("tabclicked").ToString
+                    tcl.ActiveTabIndex = tabpicked
+                    If tabpicked = 0 Then
+                        tabpicked = Application(activetabstate)
+                        Application(activetabstate) = tcl.ActiveTabIndex
+                        'tabpicked = CType(Session.Item("ActiveTabIdx"), Integer)
+                        'Session.Item("ActiveTabIdx") = tcl.ActiveTabIndex
+                    End If
+                End If
+                If Not tabpicked Is Nothing Then
+                    Select Case tabpicked
+                        Case 1
+                            TabPanel2.Enabled = False
+                            TabPanel3.Enabled = False
+                            TabPanel4.Enabled = "false"
+                            TabPanel5.Enabled = "false"
+                            'TabPanel6.Enabled = "false"
+                            TabPanel7.Enabled = False
+                            TabPanel8.Enabled = "false"
+                        Case 2
+                            TabPanel1.Enabled = "false"
+                            TabPanel3.Enabled = False
+                            TabPanel4.Enabled = False
+                            TabPanel5.Enabled = "false"
+                            'TabPanel6.Enabled = "false"
+                            TabPanel7.Enabled = False
+                            TabPanel8.Enabled = "false"
+                        Case 3
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = False
+                            TabPanel4.Enabled = False
+                            TabPanel5.Enabled = "false"
+                            'TabPanel6.Enabled = "false"
+                            TabPanel7.Enabled = False
+                            TabPanel8.Enabled = "false"
+                        Case 4
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = False
+                            TabPanel3.Enabled = False
+                            TabPanel5.Enabled = "false"
+                            'TabPanel6.Enabled = "false"
+                            TabPanel7.Enabled = False
+                            TabPanel8.Enabled = "false"
+                        Case 5
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = False
+                            TabPanel3.Enabled = False
+                            TabPanel4.Enabled = "false"
+                            'TabPanel6.Enabled = "false"
+                            TabPanel7.Enabled = False
+                            TabPanel8.Enabled = "false"
+                        Case 6
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = False
+                            TabPanel3.Enabled = False
+                            TabPanel4.Enabled = "false"
+                            TabPanel5.Enabled = "false"
+                            TabPanel7.Enabled = False
+                            TabPanel8.Enabled = "false"
+                        Case 7
+                            TabPanel1.Enabled = False
+                            TabPanel2.Enabled = False
+                            TabPanel3.Enabled = False
+                            TabPanel4.Enabled = "false"
+                            TabPanel5.Enabled = "false"
+                            'TabPanel6.Enabled = "false"
+                            TabPanel8.Enabled = False
+                        Case 8
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = False
+                            TabPanel3.Enabled = False
+                            TabPanel4.Enabled = "false"
+                            TabPanel5.Enabled = "false"
+                            'TabPanel6.Enabled = False
+                            TabPanel7.Enabled = "false"
+                    End Select
+                    LaunchTab()
                 Else
-                    tcl.ActiveTabIndex = tabref
-                    tabpicked = tabref
-                End If
-            ElseIf Not Request.QueryString("tabclicked") Is Nothing Then
-                tabpicked = Request.QueryString("tabclicked").ToString
-                tcl.ActiveTabIndex = tabpicked
-                If tabpicked = 0 Then
-                    tabpicked = Application(activetabstate)
-                    Application(activetabstate) = tcl.ActiveTabIndex
-                    'tabpicked = CType(Session.Item("ActiveTabIdx"), Integer)
-                    'Session.Item("ActiveTabIdx") = tcl.ActiveTabIndex
-                End If
-            End If
-            If Not tabpicked Is Nothing Then
-                Select Case tabpicked
-                    Case 1
-                        TabPanel2.Enabled = False
-                        TabPanel3.Enabled = False
-                        TabPanel4.Enabled = "false"
-                        TabPanel5.Enabled = "false"
-                        'TabPanel6.Enabled = "false"
-                        TabPanel7.Enabled = False
-                        TabPanel8.Enabled = "false"
-                    Case 2
-                        TabPanel1.Enabled = "false"
-                        TabPanel3.Enabled = False
-                        TabPanel4.Enabled = False
-                        TabPanel5.Enabled = "false"
-                        'TabPanel6.Enabled = "false"
-                        TabPanel7.Enabled = False
-                        TabPanel8.Enabled = "false"
-                    Case 3
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = False
-                        TabPanel4.Enabled = False
-                        TabPanel5.Enabled = "false"
-                        'TabPanel6.Enabled = "false"
-                        TabPanel7.Enabled = False
-                        TabPanel8.Enabled = "false"
-                    Case 4
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = False
-                        TabPanel3.Enabled = False
-                        TabPanel5.Enabled = "false"
-                        'TabPanel6.Enabled = "false"
-                        TabPanel7.Enabled = False
-                        TabPanel8.Enabled = "false"
-                    Case 5
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = False
-                        TabPanel3.Enabled = False
-                        TabPanel4.Enabled = "false"
-                        'TabPanel6.Enabled = "false"
-                        TabPanel7.Enabled = False
-                        TabPanel8.Enabled = "false"
-                    Case 6
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = False
-                        TabPanel3.Enabled = False
-                        TabPanel4.Enabled = "false"
-                        TabPanel5.Enabled = "false"
-                        TabPanel7.Enabled = False
-                        TabPanel8.Enabled = "false"
-                    Case 7
-                        TabPanel1.Enabled = False
-                        TabPanel2.Enabled = False
-                        TabPanel3.Enabled = False
-                        TabPanel4.Enabled = "false"
-                        TabPanel5.Enabled = "false"
-                        'TabPanel6.Enabled = "false"
-                        TabPanel8.Enabled = False
-                    Case 8
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = False
-                        TabPanel3.Enabled = False
-                        TabPanel4.Enabled = "false"
-                        TabPanel5.Enabled = "false"
-                        'TabPanel6.Enabled = False
-                        TabPanel7.Enabled = "false"
-                End Select
-                LaunchTab()
-            Else
-                Select Case lastState
-                    Case "Linac Unauthorised"
-                        TabPanel1.Enabled = "true"
-                        TabPanel2.Enabled = "false"
-                        TabPanel3.Enabled = "false"
-                        TabPanel4.Enabled = "true"
-                        TabPanel5.Enabled = "true"
-                        'TabPanel6.Enabled = "true"
-                        'added 9/10/17
-                        If EquipmentID Like "LA_" Then
-                            TabPanel7.Enabled = "true"
-                            TabPanel7.HeaderText = EquipmentID + " Emergency Runup"
-                        End If
-                        TabPanel8.Enabled = "True"
+                    Select Case lastState
+                        Case "Linac Unauthorised"
+                            TabPanel1.Enabled = "true"
+                            TabPanel2.Enabled = "false"
+                            TabPanel3.Enabled = "false"
+                            TabPanel4.Enabled = "true"
+                            TabPanel5.Enabled = "true"
+                            'TabPanel6.Enabled = "true"
+                            'added 9/10/17
+                            If EquipmentID Like "LA_" Then
+                                TabPanel7.Enabled = "true"
+                                TabPanel7.HeaderText = EquipmentID + " Emergency Runup"
+                            End If
+                            TabPanel8.Enabled = "True"
 
 
-                    Case "Engineering Approved", "Radiographer Approved"
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = "true"
-                        TabPanel3.Enabled = "false"
-                        TabPanel4.Enabled = "true"
-                        TabPanel5.Enabled = "true"
-                        'TabPanel6.Enabled = "true"
-                        TabPanel7.Enabled = "false"
-                        TabPanel8.Enabled = "True"
+                        Case "Engineering Approved", "Radiographer Approved"
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = "true"
+                            TabPanel3.Enabled = "false"
+                            TabPanel4.Enabled = "true"
+                            TabPanel5.Enabled = "true"
+                            'TabPanel6.Enabled = "true"
+                            TabPanel7.Enabled = "false"
+                            TabPanel8.Enabled = "True"
 
                         'TabPanel2.OnClientPopulated
                         'This is the set if must move on to pre-clinical
@@ -392,63 +394,63 @@ Partial Public Class LA1page
                         'TabPanel6.Enabled = "false"
 
                         '31 Octobe change
-                    Case "Clinical"
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = "false"
-                        TabPanel3.Enabled = "true"
-                        TabPanel7.Enabled = "false"
-                        If Application(suspstate) = 1 Then
-                            TabPanel4.Enabled = "true"
-                            TabPanel5.Enabled = "true"
-                            'TabPanel6.Enabled = "true"
-                            TabPanel8.Enabled = "true"
-                        Else
+                        Case "Clinical"
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = "false"
+                            TabPanel3.Enabled = "true"
+                            TabPanel7.Enabled = "false"
+                            If Application(suspstate) = 1 Then
+                                TabPanel4.Enabled = "true"
+                                TabPanel5.Enabled = "true"
+                                'TabPanel6.Enabled = "true"
+                                TabPanel8.Enabled = "true"
+                            Else
+                                TabPanel4.Enabled = "false"
+                                TabPanel5.Enabled = "false"
+                                'TabPanel6.Enabled = "false"
+                                TabPanel7.Enabled = "false"
+                                TabPanel8.Enabled = "false"
+                            End If
+
+                        Case "Fault"
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = "false"
+                            TabPanel3.Enabled = "false"
                             TabPanel4.Enabled = "false"
-                            TabPanel5.Enabled = "false"
+                            TabPanel5.Enabled = "true"
                             'TabPanel6.Enabled = "false"
                             TabPanel7.Enabled = "false"
                             TabPanel8.Enabled = "false"
-                        End If
-
-                    Case "Fault"
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = "false"
-                        TabPanel3.Enabled = "false"
-                        TabPanel4.Enabled = "false"
-                        TabPanel5.Enabled = "true"
-                        'TabPanel6.Enabled = "false"
-                        TabPanel7.Enabled = "false"
-                        TabPanel8.Enabled = "false"
-                        'EndOfDay.Visible = False
-                        If Not Request.QueryString("Tabindex") Is Nothing Then
-                            tabIndex = Request.QueryString("Tabindex").ToString
-                        End If
-                        Select Case tabIndex
-                            Case 1, 4, 5, 6, 7
-                                LaunchTab()
-                            Case 0
-                                If Application(appstate) = 1 Then
+                            'EndOfDay.Visible = False
+                            If Not Request.QueryString("Tabindex") Is Nothing Then
+                                tabIndex = Request.QueryString("Tabindex").ToString
+                            End If
+                            Select Case tabIndex
+                                Case 1, 4, 5, 6, 7
                                     LaunchTab()
-                                End If
-                        End Select
+                                Case 0
+                                    If Application(appstate) = 1 Then
+                                        LaunchTab()
+                                    End If
+                            End Select
 
-                    Case "Suspended"
-                        TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = "false"
-                        TabPanel3.Enabled = "true"
-                        TabPanel4.Enabled = "true"
-                        TabPanel5.Enabled = "true"
-                        'TabPanel6.Enabled = "true"
-                        TabPanel7.Enabled = "false"
-                        TabPanel8.Enabled = "true"
+                        Case "Suspended"
+                            TabPanel1.Enabled = "false"
+                            TabPanel2.Enabled = "false"
+                            TabPanel3.Enabled = "true"
+                            TabPanel4.Enabled = "true"
+                            TabPanel5.Enabled = "true"
+                            'TabPanel6.Enabled = "true"
+                            TabPanel7.Enabled = "false"
+                            TabPanel8.Enabled = "true"
 
 
-                    Case Else
+                        Case Else
 
-                End Select
+                    End Select
+                End If
+
             End If
-
-        End If
 
     End Sub
 
@@ -486,6 +488,7 @@ Partial Public Class LA1page
         Dim lastuser As String = ""
         Dim lastusergroup As Integer = 0
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+
         Page = Me.Page
         mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
@@ -581,7 +584,7 @@ Partial Public Class LA1page
                         'This should autorecover
                         WriteRecovery()
                     End If
-
+                   
                 End If
             End If
 
@@ -712,8 +715,8 @@ Partial Public Class LA1page
                             Activity = "Engineering Run Up"
                             DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
                             SetUser(lastusergroup)
-                            'User = "Engineer/Physicist"
                             rucontrol.EngLogOnEvent(connectionString)
+                            'User = "Engineer/Physicist"
                             rucontrol.Visible = True
                             'textbox = rucontrol.FindControl("commentbox")
                             ''020316
@@ -884,9 +887,9 @@ Partial Public Class LA1page
                 Application(activetabstate) = tabActive
 
             End If
-
+        
         End If
-
+        
     End Sub
     Public Sub AcceptOKnosigpass(ByVal Task As Integer, ByVal user As String, ByVal usergroup As Integer)
         Dim output As String
@@ -1145,7 +1148,13 @@ Partial Public Class LA1page
         End If
     End Sub
 
-        Protected Sub EndofDayElf(ByVal Caller As String)
+    Public Sub LockRepair()
+        Dim mrepcontrol As Repairuc
+        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
+        mrepcontrol.RemoteLockElf(True)
+
+    End Sub
+    Protected Sub EndofDayElf(ByVal Caller As String)
         Dim returnstring As String = EquipmentID + "page.aspx"
         Dim mrucontrol As ErunupUserControl
         Dim mpreccontrol As Preclinusercontrol
@@ -1173,20 +1182,20 @@ Partial Public Class LA1page
         Dim Successful As Boolean = False
 
         lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
-            conn = New SqlConnection(connectionString1)
-            comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
-            comm.Parameters.AddWithValue("@linac", EquipmentID)
+        conn = New SqlConnection(connectionString1)
+        comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
+        comm.Parameters.AddWithValue("@linac", EquipmentID)
 
-            conn.Open()
-            reader = comm.ExecuteReader()
-            If reader.Read() Then
-                NumOpen = reader.Item("NumOpen")
-                If NumOpen <> 0 Then
-                    Breakdown = True
-                Else
-                    Breakdown = False
-                End If
+        conn.Open()
+        reader = comm.ExecuteReader()
+        If reader.Read() Then
+            NumOpen = reader.Item("NumOpen")
+            If NumOpen <> 0 Then
+                Breakdown = True
+            Else
+                Breakdown = False
             End If
+        End If
 
         'Label2.Text = "Last state " + lastState
 
@@ -1228,15 +1237,8 @@ Partial Public Class LA1page
                     'DavesCode.Reuse.CommitPreClin(EquipmentID, Logoffuser, Comment, False, False, False, Breakdown)
                     mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
                 Case 3
-                    If tcl.ActiveTab.FindControl(ClinicalUserControlID) Is Nothing Then
-                        mclincontrol = Page.LoadControl("ClinicalUserControl.ascx")
-                        mclincontrol.ID = ClinicalUserControlID
-                        mclincontrol.LinacName = EquipmentID
-                    Else
-                        mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                    End If
-
-                    mclincontrol.userapprovedevent(activetab, Logoffuser)
+                    mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                    mclincontrol.UserApprovedEvent(activetab, Logoffuser)
                     'DavesCode.NewCommitClinical.CommitClinical(EquipmentID, Logoffuser, Breakdown)
                         'Next line not used because commitclinical modified to remove two step process of suspended then log off
                         'DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 0)
@@ -1249,16 +1251,7 @@ Partial Public Class LA1page
                     'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 4, Breakdown, suspendnull, repairstatenull, False)
 
                 Case 5
-                    If tcl.ActiveTab.FindControl(repcontrolId) Is Nothing Then
-                        mrepcontrol = Page.LoadControl("Repairuc.ascx")
-                        mrepcontrol.ID = repcontrolId
-                        mrepcontrol.LinacName = EquipmentID
-
-                    Else
-                        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
-                    End If
-
-
+                    mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
                     'Commentbox = mrepcontrol.FindControl("CommentBox")
                     'Comment = Commentbox.Text
                     'mrepcontrol.RemoteLockElf()
@@ -1276,7 +1269,12 @@ Partial Public Class LA1page
                         End If
                         'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 5, Breakdown, suspendnull, repairstatenull, False)
                         Application(actionstate) = "EndOfDay"
-                        mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
+                        If Not mrepcontrol Is Nothing Then
+                            mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
+                        Else
+                            WriteRecovery()
+                        End If
+
                     End If
 
                 Case 6
@@ -1289,7 +1287,7 @@ Partial Public Class LA1page
                     'Commentbox = mtrainingcontrol.FindControl("CommentBox")
                     'Comment = Commentbox.Text
                     Application(actionstate) = "EndOfDay"
-                    mtrainingcontrol.userapprovedevent(activetab, Logoffuser)
+                    mtrainingcontrol.UserApprovedEvent(activetab, Logoffuser)
                     'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 8, Breakdown, suspendnull, repairstatenull, False)
 
             End Select
@@ -1303,17 +1301,17 @@ Partial Public Class LA1page
             End If
         End If
         If Not Breakdown Then
-                Application(suspstate) = Nothing
-                Application(appstate) = Nothing
-                Application(failstate) = Nothing
-                Application(clinicalstate) = Nothing
-                Application(repairstate) = Nothing
-                Application(treatmentstate) = "Yes"
-                Application(activetabstate) = Nothing
-                Response.Redirect(returnstring)
-            End If
-            'This is in the wrong place because it redirects even if there is a fault and this confuses the system
-            'Response.Redirect(returnstring)
+            Application(suspstate) = Nothing
+            Application(appstate) = Nothing
+            Application(failstate) = Nothing
+            Application(clinicalstate) = Nothing
+            Application(repairstate) = Nothing
+            Application(treatmentstate) = "Yes"
+            Application(activetabstate) = Nothing
+            Response.Redirect(returnstring)
+        End If
+        'This is in the wrong place because it redirects even if there is a fault and this confuses the system
+        'Response.Redirect(returnstring)
 
     End Sub
 
@@ -1443,17 +1441,17 @@ Partial Public Class LA1page
                 Else
                 End If
 
-                Select Case activetab
-                    Case 4
-                        mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
-                        mplancontrol.UserApprovedEvent(activetab, Logoffuser)
-                    Case 5
-                        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
-                        mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
-                    Case 8
-                        mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
-                        mtrainingcontrol.UserApprovedEvent(activetab, Logoffuser)
-                End Select
+                'Select Case activetab
+                '    Case 4
+                '        mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+                '        mplancontrol.UserApprovedEvent(activetab, Logoffuser)
+                '    Case 5
+                '        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
+                '        mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
+                '    Case 8
+                '        mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
+                '        mtrainingcontrol.UserApprovedEvent(activetab, Logoffuser)
+                'End Select
                 ' DavesCode.Reuse.WriteAuxTables(EquipmentID, Userinfo, Comment, Radio, Activity, breakdown, susstate, repstate, False)
             Case Else
                 'This caters for when the system is already idling as it were.

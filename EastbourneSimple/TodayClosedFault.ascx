@@ -1,6 +1,8 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="TodayClosedFault.ascx.vb" Inherits="TodayClosedFault" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
+<%--<%@ Register src="controls/FaultTrackinguc.ascx" tagname="FaultTrackinguc" tagprefix="uc1" %>--%>
+
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
 
 <script type="text/javascript">

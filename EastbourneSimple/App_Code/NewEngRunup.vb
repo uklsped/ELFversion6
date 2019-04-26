@@ -32,11 +32,11 @@ Namespace DavesCode
                 Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 Using myscope As TransactionScope = New TransactionScope()
                     If Not Fault Then
-
-                        If LinacName Like "LA?" Then
-                            CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, lock, connectionString)
-                        Else
-                            If LinacName Like "T?" Then
+                        'LA is same as B1 now so remove first if 9/4/19
+                        'If LinacName Like "LA?" Then
+                        '    CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, lock, connectionString)
+                        'Else
+                        If LinacName Like "T?" Then
                                 CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, lock, connectionString)
                                 Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, lock, connectionString)
                             Else
@@ -47,7 +47,7 @@ Namespace DavesCode
 
                             NewPreClinRunup.CommitPreClinNew(LinacName, LogOffName, "", iView, XVI, Valid, Fault, connectionString)
 
-                        End If
+                        'End If
                     Else
                         CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, lock, connectionString)
                         NewFaultHandling.InsertMajorFault(FaultParams, connectionString)
@@ -77,6 +77,7 @@ Namespace DavesCode
         ''' <param name="ConnectionString">The connection string.</param>
         ''' <returns></returns>
         Public Shared Function CommitRunupNew(ByVal GridviewE As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBox As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean, ByVal ConnectionString As String) As String
+            Dim faulttab As Integer = -1
             Dim time As DateTime
             time = Now()
             Dim commitusername As String = LogOffName
@@ -120,6 +121,7 @@ Namespace DavesCode
                 'LogOffStateID = DavesCode.Reuse.SetStatus(commitusername, "Fault", 5, 103, machinename, tablabel)
                 State = "Fault"
                 UserReason = 103
+                tablabel = faulttab
             Else
                 If Approved Then
                     If tablabel = 1 Then
@@ -260,7 +262,7 @@ Namespace DavesCode
                             cb = CType(GridView1.Rows(8).FindControl("RowLevelCheckBox"), CheckBox)
                             comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MeV20").Value = cb.Checked
-                        Case "E1", "E2", "B1"
+                        Case "E1", "E2", "B1", "B2"
                             cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)
                             comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MV6").Value = cb.Checked

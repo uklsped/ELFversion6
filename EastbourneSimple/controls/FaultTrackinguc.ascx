@@ -3,44 +3,32 @@
 <%@ Register src="../WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
 <%@ Register src="CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
 
- <%@ Register src="DeviceReportedfaultuc.ascx" tagname="DeviceReportedfaultuc" tagprefix="uc3" %>
+ <%--<%@ Register src="OriginalReportedfaultuc.ascx" tagname="OriginalReportedfaultuc" tagprefix="uc3" %>--%>
+
+ <%--<%@ Register src="DeviceReportedfaultuc.ascx" tagname="DeviceReportedfaultuc" tagprefix="uc3" %>--%>
+
+
+  <%@ Register src="ConcessionHistoryuc.ascx" tagname="ConcessionHistoryuc" tagprefix="uc4" %>
+
+
+  <%@ Register src="../LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc5" %>
+
+
+  <%@ Register src="../ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc6" %>
 
 
   <asp:Panel ID="Panel2" runat="server" BorderColor="#33CC33" 
     BorderStyle="Solid" style="margin-bottom: 5px" Width="960px">
                                  <uc1:writedatauc ID="WriteDatauc3" LinacName="" UserReason="4" Tabby="incident" WriteName="incident" Visible="false" runat="server" />
-   <%--<asp:Table ID="Table2" runat="server">
-                                    <asp:TableRow>
-                                       <asp:TableCell>
-                                           <asp:Label ID="Label3" runat="server" Text="Incident ID"></asp:Label>
-                                       </asp:TableCell>
-                                       <asp:TableCell>
-                                           <asp:Label ID="IncidentNumber" runat="server" Text=""></asp:Label>
-                                       </asp:TableCell>
-                                       <asp:TableCell>
-                                       </asp:TableCell>
-                                       <asp:TableCell>
-                                       </asp:TableCell>
-                                    </asp:TableRow>
-                                </asp:Table>--%>
+      <uc5:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="99" visible="false" runat="server" />
+
    <asp:Table ID="Table1" runat="server" Width="682px">
      <asp:TableRow>
        <asp:TableCell>
                                            
         <table style="width: 100%;">
           <tr>
-                                                            <%--<asp:UpdatePanel ID="UpdatePanel1" runat="server"><ContentTemplate></ContentTemplate></asp:UpdatePanel>--%>
-                                                            <%--<td>
-                                                        <asp:Label ID="ConcessionLabel" runat="server" Text="Concession Number"></asp:Label>
-                                                        </td>
-                                                        <td>
-                                                        <asp:TextBox ID="ConcessionNumberBox" runat="server" ReadOnly="True" Visible="True" Width="50px"></asp:TextBox>
-                                                        </td>--%>
-<%-- <td>
-
-                                                        <asp:Label ID="ConcessiondescriptionLabel" runat="server" Text="Concession Description"></asp:Label>
-                                                        </td>--%>
-                                                      
+                         
          <td colspan="3">
              <asp:Label ID="ConcessiondescriptionLabel" runat="server" Text="Concession Description"></asp:Label><br />
              <asp:Panel ID="CDescriptionPanel" enabled=false runat="server">
@@ -52,29 +40,22 @@
              </asp:Panel>
          </td>
                                                        
-<%--                                                            <td>
-                                                                <asp:Label ID="StatusLabel" runat="server" Text="Current Status:"></asp:Label>
-                                                            </td>--%>
          <td>
                                                                 <asp:Label ID="StatusLabel" runat="server" Text="Current Status:"></asp:Label><br />
                                                                 <asp:Label ID="StatusLabel1" runat="server" Text=""></asp:Label>
                                                            </td>
 
-<%--                                                        <td>
-                                                        <asp:Label ID="ProblemStatusLabel" runat="server" Text="New Status"></asp:Label>
-                                                        </td>--%>
+
                                                         <td>
                                                        <asp:Label ID="ProblemStatusLabel" runat="server" Text="New Status"></asp:Label><br />
-                                                        <asp:DropDownList ID="FaultOptionList" AutoPostBack="true" DataValueField="Value" runat="server">
+                                                        <asp:DropDownList ID="FaultOptionList" AutoPostBack="True" DataValueField="Value" runat="server">
                                                         <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
                                                         <asp:ListItem Text="Open" Value="Open"></asp:ListItem>
                                                         <asp:ListItem Text="Concession" Value="Concession"></asp:ListItem>
                                                         <asp:ListItem Text="Closed" Value="Closed"></asp:ListItem>
                                                         </asp:DropDownList>
                                                             </td>
-<%--                                                        <td>
-                                                        <asp:Label ID="AssignedLabel" runat="server" Text="Assigned To"></asp:Label>
-                                                        </td>--%>
+
                                                         <td>
                                                             <asp:Label ID="AssignedLabel" runat="server" Text="Assigned To"></asp:Label><br />
                                                         <asp:DropDownList ID="AssignedToList" runat="server">
@@ -87,11 +68,7 @@
                                                        
                                                         </tr>
           <tr>
-                                                            
-                                                        
-<%--                                                        <td>
-                                                        <asp:Label ID="ActionLabel" runat="server" Text="Concession Action"></asp:Label>
-                                                        </td>--%>
+
         <td colspan="3">
                                                             <asp:Label ID="ActionLabel" runat="server" Text="Concession Action"></asp:Label><br />
                                                             <asp:Panel ID="CActionPanel" Enabled="false" runat="server">
@@ -101,9 +78,7 @@
                                                                          </ContentTemplate></asp:UpdatePanel>                                                         
                                                                 </asp:Panel>
                                                         </td>
-<%--                                                            <td>
-                                                        <asp:Label ID="commentLabel" runat="server" Text="Comment"></asp:Label>
-                                                        </td>--%>
+
                                                         <td colspan="3">
                                                             <asp:Label ID="commentLabel" runat="server" Text="Comment"></asp:Label><br />
                                                             <asp:Panel ID="CCommentPanel" Enabled="false" runat="server" >
@@ -124,46 +99,40 @@
                                                         <td>
                                                         <asp:Button ID="CancelButton" runat="server" Text="Cancel/Close" CausesValidation="false" />
                                                         </td>
+              <td>
+                  <asp:Button ID="LogElf" runat="server" Text="Lock Elf/Switch User" CausesValidation="false" />
+              </td>
                                                         </tr>                     
         </table>
        </asp:TableCell>
+
      </asp:TableRow>
+       
      <asp:TableRow>
                                             <asp:TableCell>
   
 
   <asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow" Width="945px">
-    <asp:GridView ID="GridView5" runat="server" AllowPaging="True"
-                                            AutoGenerateColumns="False" CellPadding="4" DataKeyNames="TrackingID"
-                                            EnableViewState="False" ForeColor="#333333" GridLines="None">
-                                            <RowStyle CssClass="grows" />
-                                               <%-- BackColor="#F7F6F3" ForeColor="#333333" />--%>
-                                            <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
-                                            <Columns>
-                                                <asp:BoundField DataField="TrackingID" HeaderText="TrackingID"
-                                                    InsertVisible="False" ReadOnly="True" SortExpression="TrackingID" Visible="false" />
-                                                <asp:BoundField DataField="Action" HeaderText="Concession Action"
-                                                    SortExpression="Action" />
-                                                <asp:BoundField DataField="TrackingComment" HeaderText="Comment"
-                                                    SortExpression="Comment" />
-                                                <asp:BoundField DataField="AssignedTo" HeaderText="AssignedTo"
-                                                    SortExpression="AssignedTo" />
-                                                <asp:BoundField DataField="Status" HeaderText="Status"
-                                                    SortExpression="Status" />
-                                                <asp:BoundField DataField="LastupdatedBy" HeaderText="LastupdatedBy"
-                                                    SortExpression="LastupdatedBy" />
-                                                <asp:BoundField DataField="LastupdatedOn" HeaderText="LastupdatedOn"
-                                                    SortExpression="LastupdatedOn" />
+      <uc4:ConcessionHistoryuc ID="ConcessionHistoryuc1" runat="server" />
 
-                                            </Columns>
-                                            <EditRowStyle BackColor="#99FF33" />
-                                            <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
-                                            <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
-                                            <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
-                                            <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
-                                        </asp:GridView>
   </asp:Panel>
                                             </asp:TableCell></asp:TableRow>
    </asp:Table>
+                                 
   </asp:Panel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

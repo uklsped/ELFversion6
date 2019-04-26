@@ -5,64 +5,62 @@ Partial Class controls_MainFaultDisplayuc
     Inherits System.Web.UI.UserControl
     Public Property LinacName() As String
     Public Property ParentControl As String
-    Public Property RepeatFault As Integer
-    Private Property MainFaultID As String = "MainFaults"
+    Private Property MainFaultID As String = "MainFaultDisplay"
+    Public Event Mainfaultdisplay_UpdateClosedFaultDisplay(ByVal LinacName As String)
 
-    'Const PRECLIN As String = "2"
-    'Const REPEATFAULT As Integer = 0
+    Const REPEATFAULT As Integer = 0
 
 
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim objMFG As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-        CType(objMFG, ManyFaultGriduc).NewFault = False
-        CType(objMFG, ManyFaultGriduc).IncidentID = RepeatFault
+        CType(objMFG, ManyFaultGriduc).IncidentID = REPEATFAULT
         'to accomodate Tomo now need to pass equipment name?
-        CType(objMFG, ManyFaultGriduc).MachineName = LinacName
-        CType(objMFG, ManyFaultGriduc).ID = "MFG"
+        CType(objMFG, ManyFaultGriduc).LinacName = LinacName
+        CType(objMFG, ManyFaultGriduc).ID = "ManyFaultGriduc"
         PlaceHolderFaults.Controls.Add(objMFG)
 
         Dim objconToday As TodayClosedFault = Page.LoadControl("TodayClosedFault.ascx")
         objconToday = Page.LoadControl("TodayClosedFault.ascx")
-        objconToday.ID = "Todaysfaults"
+        objconToday.ID = "TodayClosedfault"
         objconToday.LinacName = LinacName
         PlaceHolderTodaysclosedfaults.Controls.Add(objconToday)
 
-        Dim objCon As ViewOpenFaults = Page.LoadControl("ViewOpenFaults.ascx")
-        CType(objCon, ViewOpenFaults).LinacName = LinacName
-        CType(objCon, ViewOpenFaults).ParentControl = ParentControl
-        CType(objCon, ViewOpenFaults).ID = "ViewOpenFaults"
-        AddHandler CType(objCon, ViewOpenFaults).UpdateFaultClosedDisplays, AddressOf Update_FaultClosedDisplays
+        Dim objCon As controls_ViewOpenFaultsuc = Page.LoadControl("controls\ViewOpenFaultsuc.ascx")
+        CType(objCon, controls_ViewOpenFaultsuc).LinacName = LinacName
+        CType(objCon, controls_ViewOpenFaultsuc).ParentControl = ParentControl
+        CType(objCon, controls_ViewOpenFaultsuc).ID = "ViewOpenFaultsuc"
+        'AddHandler CType(objCon, controls_ViewOpenFaultsuc).ResetViewOpenFaults, AddressOf Update_FaultClosedDisplays
         'AddHandler CType(objCon, ViewOpenFaults).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-
+        AddHandler CType(objCon, controls_ViewOpenFaultsuc).ViewOpenFaults_UpdateClosedFaultDisplays, AddressOf UpdateMasterClosedFaultDisplay
         PlaceHolderViewOpenFaults.Controls.Add(objCon)
     End Sub
 
-    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
+    Protected Sub UpdateMasterClosedFaultDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
-            todayfault.SetGrid()
-            'If MachineName Like "T?" Then
-            '    Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
-            '    Todaydefectpark.ResetDefectDropDown(incidentID)
-            'Else
-            '    Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-            '    Todaydefect.ResetDefectDropDown(incidentID)
-            'End If
-
+            RaiseEvent Mainfaultdisplay_UpdateClosedFaultDisplay(LinacName)
         End If
     End Sub
     Public Sub Update_defectsToday(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Dim TodayDefectClosed As ManyFaultGriduc = PlaceHolderFaults.FindControl("MFG")
-            TodayDefectClosed.BindDefectData()
+            Dim TodayDefectClosed As ManyFaultGriduc = PlaceHolderFaults.FindControl("ManyFaultGriduc")
+            TodayDefectClosed.BindGridClosedTodayFault()
         End If
     End Sub
 
     Public Sub Update_OpenConcessions(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            Dim OpenConcessions As ViewOpenFaults = PlaceHolderViewOpenFaults.FindControl("ViewOpenFaults")
+            Dim OpenConcessions As controls_ViewOpenFaultsuc = PlaceHolderViewOpenFaults.FindControl("ViewOpenFaultsuc")
             OpenConcessions.RebindViewFault()
         End If
     End Sub
+
+    Public Sub Update_FaultClosedDisplay(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            Dim ClosedFaults As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("TodayClosedfault")
+            ClosedFaults.Update_ClosedDisplays(EquipmentID)
+        End If
+    End Sub
+
+
 
 End Class

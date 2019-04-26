@@ -10,8 +10,8 @@ Partial Class Preclinusercontrol
     Private actionstate As String
     Private faultviewstate As String
     Private LinacFlag As String
-    Private objconToday As TodayClosedFault
-    Private Todaydefect As DefectSave
+    'Private objconToday As TodayClosedFault
+    'Private Todaydefect As DefectSave
     Private BoxChanged As String
     Private tabstate As String
     Dim accontrol As AcceptLinac
@@ -20,6 +20,23 @@ Partial Class Preclinusercontrol
     Dim comment As String
     Const PRECLIN As String = "2"
     Const REPEATFAULT As Integer = 0
+    Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
+    Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    Private Property DynamicControlSelection() As String
+        Get
+            Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
+            If result Is Nothing Then
+                'doing things like this lets us access this property without
+                'worrying about this property returning null/Nothing
+                Return String.Empty
+            Else
+                Return result
+            End If
+        End Get
+        Set(ByVal value As String)
+            ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
+        End Set
+    End Property
 
     Public Function FormatImage(ByVal energy As Boolean) As String
         'Dim happyIcon As String = "Images/happy.gif"
@@ -138,18 +155,27 @@ Partial Class Preclinusercontrol
 
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
+            'Don't need if because report fault pop up is the same for both defects now
+            'If LinacName Like "T?" Then
+            'If LinacName Like "T?" Then
+            'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+            'Todaydefectpark.UpDateDefectsEventHandler()
+            'Else
             'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
             'Todaydefect.UpDateDefectsEventHandler()
-            'TodayRepeatFaultDisplay = PlaceHolderTodaysRepeatFaultsDisplay.FindControl("TodayRepeatFaultDisplay")
-            'TodayRepeatFaultDisplay.UpDateDefectsEventHandler()
+            'MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+            'MainFaultPanel.Update_defectsToday(LinacName)
+            'ReportFaultPopUpuc1.Visible = False
+            'End If
+
         End If
     End Sub
 
     Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
-        If LinacName = EquipmentID Then
-            Dim updatefault As ViewOpenFaults = FindControl("ViewOpenFaults")
-            updatefault.RebindViewFault()
-        End If
+        'If LinacName = EquipmentID Then
+        '    Dim updatefault As ViewOpenFaults = FindControl("ViewOpenFaults")
+        '    updatefault.RebindViewFault()
+        'End If
     End Sub
 
     Protected Sub ConfirmExitEvent()
@@ -248,6 +274,28 @@ Partial Class Preclinusercontrol
         ''to accomodate Tomo now need to pass equipment name?
         'CType(objMFG, ManyFaultGriduc).MachineName = LinacName
         'PlaceHolderFaults.Controls.Add(objMFG)
+        Select Case Me.DynamicControlSelection
+        '    Case REPEATFAULTSELECTED
+            '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
+            Case FAULTPOPUPSELECTED
+                '        'LoadFaultTable(Label2.Text)
+                'ReloadConcessionPopUp()
+
+                Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+                objReportFault.LinacName = LinacName
+                objReportFault.ID = "ReportFaultPopupuc"
+                objReportFault.ParentControl = PRECLIN
+                'objReportFault.Visible = False
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+                ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+
+            Case Else
+                '        'no dynamic controls need to be loaded...yet
+        End Select
+
+
         Dim objMFG As controls_MainFaultDisplayuc = Page.LoadControl("controls\MainFaultDisplayuc.ascx")
         CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
         PlaceHolderFaults.Controls.Add(objMFG)
@@ -267,14 +315,14 @@ Partial Class Preclinusercontrol
         Dim button2 As Button = FindControl("LogOff")
         'PlaceHolderViewOpenFaults.Controls.Add(objCon)
 
-        Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
-        CType(objDefect, DefectSave).ID = "DefectDisplay"
-        CType(objDefect, DefectSave).LinacName = LinacName
-        CType(objDefect, DefectSave).ParentControl = PRECLIN
-        PlaceHolderDefectSave.Controls.Add(objDefect)
-        AddHandler CType(objDefect, DefectSave).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        'Dim objDefect As UserControl = Page.LoadControl("DefectSave.ascx")
+        'CType(objDefect, DefectSave).ID = "DefectDisplay"
+        'CType(objDefect, DefectSave).LinacName = LinacName
+        'CType(objDefect, DefectSave).ParentControl = PRECLIN
+        'PlaceHolderDefectSave.Controls.Add(objDefect)
+        'AddHandler CType(objDefect, DefectSave).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
 
-        AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+        'AddHandler CType(objDefect, DefectSave).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
@@ -493,6 +541,43 @@ Partial Class Preclinusercontrol
                 End If
 
         End Select
+
+    End Sub
+
+    Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
+        If LinacName = EquipmentId Then
+            'Don't need if because report fault pop up is the same for both defects now
+            'If LinacName Like "T?" Then
+            'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+            'Todaydefectpark.UpDateDefectsEventHandler()
+            'Else
+            'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+            'Todaydefect.UpDateDefectsEventHandler()
+            DynamicControlSelection = String.Empty
+            Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
+            ReportFaultPopupPlaceHolder.Controls.Remove(ReportFault)
+            'End If
+
+        End If
+    End Sub
+
+    Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
+        'Need to load reportfaultpopupuc here to pass comment box
+        Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
+        Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
+        Dim Comment As String = DaTxtBox.Text
+        Application("TabComment") = Comment
+
+        Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+        objReportFault.LinacName = LinacName
+        objReportFault.ID = "ReportFaultPopupuc"
+        objReportFault.ParentControl = PRECLIN
+        DynamicControlSelection = FAULTPOPUPSELECTED
+
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+        ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
 
     End Sub
 

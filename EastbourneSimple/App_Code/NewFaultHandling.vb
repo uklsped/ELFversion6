@@ -513,6 +513,7 @@ Namespace DavesCode
         Public Shared Function InsertMajorFault(FaultP As DavesCode.FaultParameters, ByVal connectionString As String) As Integer
             Const STATE = "New"
             Const ORIGINALFAULTID = 0
+
             Dim time As DateTime = Now()
             Dim IncidentID As Integer = 0
             Dim LastFault As Integer = 0
@@ -641,6 +642,24 @@ Namespace DavesCode
                 'End Try
 
             End Using
+            Return IncidentID
+        End Function
+
+        Public Shared Function ReturnNewIncidentID(ByVal Linacname As String, ByVal connectionString As String) As Integer
+            Dim IncidentID As Short = 0
+            Dim sql As String = "select IncidentID from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
+            Using conn As New SqlConnection(connectionString)
+                Dim cmd As New SqlCommand(sql, conn)
+                cmd.Parameters.Add("@Linac", SqlDbType.VarChar)
+                cmd.Parameters("@Linac").Value = Linacname
+                Try
+                    conn.Open()
+                    IncidentID = Convert.ToInt32(cmd.ExecuteScalar())
+                Catch ex As Exception
+                    LogError(ex)
+                End Try
+            End Using
+
             Return IncidentID
         End Function
 

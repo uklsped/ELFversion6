@@ -16,7 +16,7 @@
 
  <%--<%@ Register src="Singlemachinefaultuc.ascx" tagname="Singlemachinefaultuc" tagprefix="uc1" %>--%>
 <%@ Register src="AtlasEnergyViewuc.ascx" tagname="AtlasEnergyViewuc" tagprefix="uc2" %>
-<%@ Register src="Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc3" %>
+<%@ Register src="controls/Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc3" %>
 
 
 

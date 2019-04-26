@@ -40,7 +40,7 @@ div.grid {
     }
 
 div.col100 {
-    width: 450px;
+    width: 575px;
     border-top: 1px solid white;
     border-bottom: 1px solid white;
     padding-top: 1rem;
@@ -49,7 +49,7 @@ div.col100 {
 }
 
 div.col200 {
-    width: 450px;
+    width: 325px;
     border-top: 1px solid white;
     border-bottom: 1px solid white;
     padding-top: 1rem;
@@ -143,5 +143,28 @@ div.clear {
      vertical-align:top;
      border: none 0px transparent;
     
-} 
+}
+
+main {
+    height: 800px;
+    background:green;
+}
+
+.half {
+    height: 50%;
+}
+.third {
+    
+}
+.third:first-child {background:blue; height:33%;}
+.third:nth-child(2) {background:green; height:25%;}
+.third:last-child {background:yellow; height:42%;}
+    .half:first-child {
+        background: blue;
+    }
+
+    .half:last-child {
+        background: yellow;
+    }
+
 

@@ -153,7 +153,7 @@ Partial Class PhysicsQAuc
         CType(objAtlas, AtlasEnergyViewuc).LinacName = MachineName
         PlaceHolder2.Controls.Add(objAtlas)
 
-        Dim objQA As UserControl = Page.LoadControl("Modalitiesuc.ascx")
+        Dim objQA As UserControl = Page.LoadControl("controls\Modalitiesuc.ascx")
         CType(objQA, Modalitiesuc).LinacName = MachineName
         PlaceHolder3.Controls.Add(objQA)
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)

@@ -230,10 +230,10 @@ Partial Class Controls_DeviceRepeatFaultuc
     Protected Sub ViewExistingFaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles ViewExistingFaults.Click
         FaultParam = Application(FaultApplication)
         Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-        CType(objCon, ManyFaultGriduc).NewFault = False
+        'CType(objCon, ManyFaultGriduc).NewFault = False
         CType(objCon, ManyFaultGriduc).IncidentID = FaultParam.SelectedIncident
         'to accomodate Tomo now need to pass equipment name?
-        CType(objCon, ManyFaultGriduc).MachineName = FaultParam.Linac
+        CType(objCon, ManyFaultGriduc).LinacName = FaultParam.Linac
         PlaceHolderVEF.Controls.Add(objCon)
         VEFUpdatePanel.Visible = True
     End Sub
