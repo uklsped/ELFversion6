@@ -12,7 +12,7 @@ Partial Class controls_ReportFaultPopUpuc
     'Public Event UpdateClosedDisplays(ByVal Linac As String, ByVal IncidentID As String)
     Public Event UpDateDefectDailyDisplay(ByVal Linac As String)
     Public Event UpdateViewOpenFaults(ByVal Linac As String)
-    Public Event CloseReportFaultPopUpTab(ByVal Linac As String)
+    Public Event CloseReportFaultPopUp(ByVal Linac As String)
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
         ParamApplication = "Params" + LinacName
         'AddHandler FaultTrackinguc1.CloseFaultTracking, AddressOf CloseTracking
@@ -20,12 +20,13 @@ Partial Class controls_ReportFaultPopUpuc
 
 
     End Sub
+
     'Private Sub CloseTracking(ByVal LinacName As String)
     '    RaiseEvent CloseFaultTracking(LinacName)
     'End Sub
-    Private Sub Close_ReportPopUp(ByVal LinacName As String)
-        RaiseEvent CloseReportFaultPopUpTab(LinacName)
-    End Sub
+    'Private Sub Close_ReportPopUp(ByVal LinacName As String)
+    '    RaiseEvent CloseReportFaultPopUpTab(LinacName)
+    'End Sub
     'Private Sub CloseDisplays(ByVal LinacName As String, ByVal IncidentID As String)
     '    RaiseEvent UpdateClosedDisplays(LinacName, IncidentID)
     'End Sub
@@ -148,7 +149,7 @@ Partial Class controls_ReportFaultPopUpuc
     End Sub
     Protected Sub Close_ReportFaultPopUp(ByVal Linac As String)
         If LinacName = Linac Then
-            RaiseEvent CloseReportFaultPopUpTab(Linac)
+            RaiseEvent CloseReportFaultPopUp(Linac)
         End If
     End Sub
 

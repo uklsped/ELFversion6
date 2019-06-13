@@ -219,11 +219,11 @@ Namespace DavesCode
             conn = New SqlConnection(connectionString)
             Dim trackingID As Integer = 0
             Dim ConcessionActive As Integer
-            If ConcessP.FutureFaultState = "Concession" Then
-                ConcessionActive = 1
-            Else
-                ConcessionActive = 0
-            End If
+            'If ConcessP.FutureFaultState = "Concession" Then
+            ConcessionActive = 1
+            'Else
+            'ConcessionActive = 0
+            'End If
             'If Status = "Concession" Then
             '        ConcessionActive = 1
             '    Else

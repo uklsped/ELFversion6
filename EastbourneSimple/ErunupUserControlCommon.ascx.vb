@@ -15,14 +15,14 @@ Partial Class ErunupUserControl
     Private atlasviewstate As String
     Private qaviewstate As String
     Private LinacFlag As String
-    Private objconToday As TodayClosedFault
+    'Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
     Private TodaydefectPark As DefectSavePark
     Private MainFaultPanel As controls_MainFaultDisplayuc
     Private BoxChanged As String
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private tabstate As String
-    Private Objcon As ViewOpenFaults
+    'Private Objcon As ViewOpenFaults
     'Private EngLoad As String
     Dim accontrol1 As AcceptLinac
     Dim accontrol7 As AcceptLinac
@@ -338,13 +338,13 @@ Partial Class ErunupUserControl
 
         Dim strScript As String = "<script>"
         'Sets up user comments
-        Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
-        Vctrl.LinacName = LinacName
+        'Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
+        'Vctrl.LinacName = LinacName
 
         'Sets up view open faults and Lock Elf
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = LinacName
-        Objcon = Page.LoadControl("ViewOpenFaults.ascx")
+        'Objcon = Page.LoadControl("ViewOpenFaults.ascx")
         If UserReason = 1 Then
             CType(objMFG, controls_MainFaultDisplayuc).ParentControl = ENG
 

@@ -9,6 +9,7 @@ Partial Class controls_ReportAFaultuc
     Const ENG As String = "1"
     Public Event ReportAFault_UpdateDailyDefectDisplay(ByVal Linac As String)
     Public Event ReportAFault_UpDateViewOpenFaults(ByVal Linac As String)
+
     Private Property DynamicControlSelection() As String
         Get
             Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
@@ -37,7 +38,7 @@ Partial Class controls_ReportAFaultuc
 
                 AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
                 AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
                 ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
                 objReportFault.SetUpReportFault()
             Case Else
@@ -59,7 +60,7 @@ Partial Class controls_ReportAFaultuc
 
         AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
         AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopup, AddressOf Close_ReportFaultPopUp
         ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
         objReportFault.SetUpReportFault()
     End Sub

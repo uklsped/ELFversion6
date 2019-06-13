@@ -316,7 +316,7 @@ Partial Class Traininguc
                 'objReportFault.Visible = False
                 AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
                 AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
                 ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
 
             Case Else
@@ -578,7 +578,7 @@ Partial Class Traininguc
 
         AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
         AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
         ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
 
     End Sub

@@ -157,14 +157,14 @@
         </tr>
       </table>
    </div>                
-   <div class="col200 blue" >
+   <%--<div class="col200 blue" >--%>
                  <%--<asp:UpdatePanel ID="UpdatePanel1" runat="server">
 <ContentTemplate>
                                <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" CausesValidation="false"/>
                         <asp:PlaceHolder ID="ReportFaultPopupPlaceHolder" runat="server"></asp:PlaceHolder>
 </ContentTemplate>
 </asp:UpdatePanel> --%>
-       </div>
+       <%--</div>--%>
    <div class="col300 green" >
             <asp:UpdatePanel ID="UpdatePanel3" runat="server" Visible="true" UpdateMode="Conditional">
                 <ContentTemplate>

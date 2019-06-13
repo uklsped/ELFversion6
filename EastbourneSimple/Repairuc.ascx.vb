@@ -376,8 +376,8 @@ Partial Class Repairuc
                 'objReportFault.Visible = False
                 AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
                 AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
-                ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
+                ReportFaultPopUpPlaceHolder.Controls.Add(objReportFault)
             Case NEWFAULTSELECTED
 
                 Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
@@ -751,8 +751,8 @@ Partial Class Repairuc
 
         AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
         AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
-        ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
+        ReportFaultPopUpPlaceHolder.Controls.Add(objReportFault)
     End Sub
     Protected Sub RaiseError()
         Dim strScript As String = "<script>"

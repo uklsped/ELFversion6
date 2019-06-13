@@ -14,7 +14,7 @@ Partial Class controls_ModalityQAPopUpuc
         Dim logerrorbox As Label = FindControl("LoginErrordetails")
         logerrorbox.Text = Nothing
 
-        Dim objQA As Modalitiesuc = Page.LoadControl("Modalitiesuc.ascx")
+        Dim objQA As Modalitiesuc = Page.LoadControl("controls\Modalitiesuc.ascx")
         objQA.ID = "QAModality"
         CType(objQA, Modalitiesuc).LinacName = LinacName
         CType(objQA, Modalitiesuc).TabName = ParentControl
