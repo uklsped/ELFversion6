@@ -363,21 +363,21 @@ Partial Class Repairuc
         CommentBox.BoxChanged = BoxChanged
 
         Select Case Me.DynamicControlSelection
-            Case FAULTPOPUPSELECTED
-                Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
-                Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
-                Dim Comment As String = DaTxtBox.Text
-                Application("TabComment") = Comment
-                Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-                objReportFault.LinacName = LinacName
-                objReportFault.ID = "ReportFaultPopup"
-                objReportFault.ParentControl = REPAIR
-                DynamicControlSelection = FAULTPOPUPSELECTED
-                'objReportFault.Visible = False
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
-                ReportFaultPopUpPlaceHolder.Controls.Add(objReportFault)
+            'Case FAULTPOPUPSELECTED
+            '    Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
+            '    Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
+            '    Dim Comment As String = DaTxtBox.Text
+            '    Application("TabComment") = Comment
+            '    Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+            '    objReportFault.LinacName = LinacName
+            '    objReportFault.ID = "ReportFaultPopup"
+            '    objReportFault.ParentControl = REPAIR
+            '    DynamicControlSelection = FAULTPOPUPSELECTED
+            '    'objReportFault.Visible = False
+            '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+            '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+            '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
+            '    ReportFaultPopUpPlaceHolder.Controls.Add(objReportFault)
             Case NEWFAULTSELECTED
 
                 Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
@@ -408,6 +408,11 @@ Partial Class Repairuc
         CType(objMFG, controls_MainFaultDisplayuc).ParentControl = REPAIR
         PlaceHolderFaults.Controls.Add(objMFG)
 
+        Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
+        ReportFault.LinacName = LinacName
+        ReportFault.ParentControl = REPAIR
+        AddHandler ReportFault.ReportAFault_UpdateDailyDefectDisplay, AddressOf Update_DefectDailyDisplay
+        AddHandler ReportFault.ReportAFault_UpDateViewOpenFaults, AddressOf Update_ViewOpenFaults
 
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName
@@ -489,78 +494,82 @@ Partial Class Repairuc
     Protected Sub SetLeavingButtons()
         DavesCode.Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
         LogOffButton.Enabled = False
-        Application(faultstate) = False
-        isFault = False
-        Repairlist.Items.FindByValue(1).Enabled = True
-        Repairlist.Items.FindByValue(4).Enabled = True
+        If Not isFault Then
 
-        Repairlist.Items.FindByValue(8).Enabled = True
-        Repairlist.Items.FindByValue(102).Enabled = True
-        'commented out next if because no Physics QA now 31 march 2016
-        'If lastusergroup = 4 Then
-        '    Repairlist.Items.FindByValue(6).Enabled = True
-        'End If
-        'Repairlist.Items(4).Selected = False
-        'This next if check if got here via clinical suspend
-        StateTextBox.Text = "Linac Unauthorised"
-        If Application(failstate) IsNot Nothing Then
-            Select Case Application(failstate)
-                Case 0
-                    If Application(repairstate) = 1 Then
-                        'If LinacName Like "LA?" Then
-                        '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                        '    StateTextBox.Text = "Engineering Approved"
-                        'Else
-                        RadioButtonList1.Items.FindByValue(3).Enabled = True
+
+            Application(faultstate) = False
+            isFault = False
+            Repairlist.Items.FindByValue(1).Enabled = True
+            Repairlist.Items.FindByValue(4).Enabled = True
+
+            Repairlist.Items.FindByValue(8).Enabled = True
+            Repairlist.Items.FindByValue(102).Enabled = True
+            'commented out next if because no Physics QA now 31 march 2016
+            'If lastusergroup = 4 Then
+            '    Repairlist.Items.FindByValue(6).Enabled = True
+            'End If
+            'Repairlist.Items(4).Selected = False
+            'This next if check if got here via clinical suspend
+            StateTextBox.Text = "Linac Unauthorised"
+            If Application(failstate) IsNot Nothing Then
+                Select Case Application(failstate)
+                    Case 0
+                        If Application(repairstate) = 1 Then
+                            'If LinacName Like "LA?" Then
+                            '    RadioButtonList1.Items.FindByValue(2).Enabled = True
+                            '    StateTextBox.Text = "Engineering Approved"
+                            'Else
+                            RadioButtonList1.Items.FindByValue(3).Enabled = True
                             StateTextBox.Text = "Clinical - Not Treating"
-                        'End If
-                    End If
+                            'End If
+                        End If
                 'Case 2 ' this can only happen for LA machines
                 '    RadioButtonList1.Items.FindByValue(2).Enabled = True
                 '    StateTextBox.Text = "Engineering Approved"
-                Case 3
-                    'If LinacName Like "LA?" Then
-                    '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                    'End If
-                    RadioButtonList1.Items.FindByValue(3).Enabled = True
-                    StateTextBox.Text = "Clinical - Not Treating"
-                Case 4, 5, 8
-                    If Application(suspstate) = 1 Then
+                    Case 3
                         'If LinacName Like "LA?" Then
                         '    RadioButtonList1.Items.FindByValue(2).Enabled = True
                         'End If
                         RadioButtonList1.Items.FindByValue(3).Enabled = True
-                        StateTextBox.Text = "Suspended"
-                    ElseIf Application(repairstate) = 1 Then
-                        'If LinacName Like "LA?" Then
-                        '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                        '    StateTextBox.Text = "Engineering Approved"
-                        'Else
-                        RadioButtonList1.Items.FindByValue(3).Enabled = True
+                        StateTextBox.Text = "Clinical - Not Treating"
+                    Case 4, 5, 8
+                        If Application(suspstate) = 1 Then
+                            'If LinacName Like "LA?" Then
+                            '    RadioButtonList1.Items.FindByValue(2).Enabled = True
+                            'End If
+                            RadioButtonList1.Items.FindByValue(3).Enabled = True
+                            StateTextBox.Text = "Suspended"
+                        ElseIf Application(repairstate) = 1 Then
+                            'If LinacName Like "LA?" Then
+                            '    RadioButtonList1.Items.FindByValue(2).Enabled = True
+                            '    StateTextBox.Text = "Engineering Approved"
+                            'Else
+                            RadioButtonList1.Items.FindByValue(3).Enabled = True
                             StateTextBox.Text = "Clinical - Not Treating"
-                        'End If
-                    End If
-                Case Else
-                    'StateTextBox.Text = "Linac Unauthorised"
-            End Select
+                            'End If
+                        End If
+                    Case Else
+                        'StateTextBox.Text = "Linac Unauthorised"
+                End Select
 
-        ElseIf Application(suspstate) = 1 Then
-            'If LinacName Like "LA?" Then
-            '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-            'End If
-            RadioButtonList1.Items.FindByValue(3).Enabled = True
-            StateTextBox.Text = "Suspended"
-            'End If
-            'Application("Failstate") = 0
-            Dim rtab As String = Application(repairstate)
-        ElseIf Application(repairstate) = 1 Then
-            'If LinacName Like "LA?" Then
-            '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-            '    StateTextBox.Text = "Engineering Approved"
-            'Else
+            ElseIf Application(suspstate) = 1 Then
+                'If LinacName Like "LA?" Then
+                '    RadioButtonList1.Items.FindByValue(2).Enabled = True
+                'End If
+                RadioButtonList1.Items.FindByValue(3).Enabled = True
+                StateTextBox.Text = "Suspended"
+                'End If
+                'Application("Failstate") = 0
+                Dim rtab As String = Application(repairstate)
+            ElseIf Application(repairstate) = 1 Then
+                'If LinacName Like "LA?" Then
+                '    RadioButtonList1.Items.FindByValue(2).Enabled = True
+                '    StateTextBox.Text = "Engineering Approved"
+                'Else
                 RadioButtonList1.Items.FindByValue(3).Enabled = True
                 StateTextBox.Text = "Clinical - Not Treating"
-            'End If
+                'End If
+            End If
         End If
     End Sub
     Protected Sub LockElf_Click(sender As Object, e As System.EventArgs) Handles LockElf.Click
@@ -737,23 +746,23 @@ Partial Class Repairuc
         End Select
 
     End Sub
-    Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
-        'Need to load reportfaultpopupuc here to pass comment box
-        Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
-        Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
-        Dim Comment As String = DaTxtBox.Text
-        Application("TabComment") = Comment
-        Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-        objReportFault.LinacName = LinacName
-        objReportFault.ID = "ReportFaultPopup"
-        objReportFault.ParentControl = REPAIR
-        DynamicControlSelection = FAULTPOPUPSELECTED
+    'Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
+    '    'Need to load reportfaultpopupuc here to pass comment box
+    '    Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
+    '    Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
+    '    Dim Comment As String = DaTxtBox.Text
+    '    Application("TabComment") = Comment
+    '    Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+    '    objReportFault.LinacName = LinacName
+    '    objReportFault.ID = "ReportFaultPopup"
+    '    objReportFault.ParentControl = REPAIR
+    '    DynamicControlSelection = FAULTPOPUPSELECTED
 
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
-        ReportFaultPopUpPlaceHolder.Controls.Add(objReportFault)
-    End Sub
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
+    '    ReportFaultPopUpPlaceHolder.Controls.Add(objReportFault)
+    'End Sub
     Protected Sub RaiseError()
         Dim strScript As String = "<script>"
         strScript += "alert('Problem Updating Fault. Please call Engineer');"
@@ -779,13 +788,13 @@ Partial Class Repairuc
             PlaceHolderModalities.Controls.Remove(ModalityQA)
         End If
     End Sub
-    Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
-        If LinacName = EquipmentId Then
-            DynamicControlSelection = String.Empty
-            Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
-            ReportFaultPopUpPlaceHolder.Controls.Remove(ReportFault)
+    'Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
+    '    If LinacName = EquipmentId Then
+    '        DynamicControlSelection = String.Empty
+    '        Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
+    '        ReportFaultPopUpPlaceHolder.Controls.Remove(ReportFault)
 
-        End If
-    End Sub
+    '    End If
+    'End Sub
 
 End Class

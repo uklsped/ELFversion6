@@ -21,6 +21,8 @@
 
 <%@ Register src="controls/ModalityQAPopUpuc.ascx" tagname="ModalityQAPopUpuc" tagprefix="uc15" %>
 
+<%@ Register src="controls/ReportAFaultuc.ascx" tagname="ReportAFaultuc" tagprefix="uc16" %>
+
 <uc2:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="5"  Tabby="5"  WriteName="Repair" visible="false" runat="server" />
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="5" visible="false" runat="server" />
 
@@ -75,16 +77,38 @@
                 </fieldset>
             </td>
         </tr>
+         <tr><td colspan="2">
+              <br />
+              <br />
+              <asp:UpdatePanel ID="UpdatePanel3" runat="server">
+<ContentTemplate>
+    <uc16:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
+
+</ContentTemplate>
+</asp:UpdatePanel> 
+              </td></tr>
+       <tr>
+           <td colspan="2">
+               <asp:UpdatePanel ID="UpdatePanel4" runat="server" Visible="true">
+<ContentTemplate>
+    <asp:PlaceHolder ID="PlaceHolder1" runat="server">
+    </asp:PlaceHolder>
+        </ContentTemplate>
+        
+</asp:UpdatePanel>
+
+           </td>              
+        </tr>
         </table>
 </div>
-<div class="col200 blue">
+<%--<div class="col200 blue">
         <asp:UpdatePanel ID="UpdatePanel3" runat="server">
             <ContentTemplate>
                 <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" CausesValidation="false" />
                 <asp:PlaceHolder ID="ReportFaultPopUpPlaceHolder" runat="server"></asp:PlaceHolder>
             </ContentTemplate>
         </asp:UpdatePanel>
-</div>
+</div>--%>
 <div class="col300 green">
     <asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="true" UpdateMode="Conditional">
         <ContentTemplate>
@@ -92,11 +116,7 @@
         </ContentTemplate>   
     </asp:UpdatePanel>
 </div>
-       
-          
-    
-       
-          
+        
 </div>
 <div id="left">
    <%-- <asp:UpdatePanel ID="UpdatePanelAtlas" runat="server" Visible="false">

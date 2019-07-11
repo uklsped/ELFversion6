@@ -85,13 +85,13 @@ Partial Class controls_FaultTrackinguc
         'Make this default to Select now
 
         'AssignedToList.SelectedIndex = AssignedToList.Items.IndexOf(AssignedToList.Items.FindByText(ConcessParamsTrial.AssignedTo))
-        If ConcessParamsTrial.PresentFaultState = "Concession" Then
-            FaultOptionList.Items.FindByValue("Open").Enabled = False
-        ElseIf ConcessParamsTrial.PresentFaultState = "New" Then
-            CancelButton.Enabled = False
-        End If
-        'LoadFaultTable(incidentID)
-        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
+        'If ConcessParamsTrial.PresentFaultState = "Concession" Then
+        '    FaultOptionList.Items.FindByValue("Open").Enabled = False
+        If ConcessParamsTrial.PresentFaultState = "New" Then
+                CancelButton.Enabled = False
+            End If
+            'LoadFaultTable(incidentID)
+            Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = LinacName
 
     End Sub

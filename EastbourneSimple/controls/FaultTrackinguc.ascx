@@ -50,7 +50,7 @@
                                                        <asp:Label ID="ProblemStatusLabel" runat="server" Text="New Status"></asp:Label><br />
                                                         <asp:DropDownList ID="FaultOptionList" AutoPostBack="True" DataValueField="Value" runat="server">
                                                         <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
-                                                        <asp:ListItem Text="Open" Value="Open"></asp:ListItem>
+                                                        <%--<asp:ListItem Text="Open" Value="Open"></asp:ListItem>--%>
                                                         <asp:ListItem Text="Concession" Value="Concession"></asp:ListItem>
                                                         <asp:ListItem Text="Closed" Value="Closed"></asp:ListItem>
                                                         </asp:DropDownList>
