@@ -334,16 +334,15 @@ Partial Class ErunupUserControl
         Dim objMFG As controls_MainFaultDisplayuc = Page.LoadControl("controls\MainFaultDisplayuc.ascx")
         CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
         CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
-        AddHandler CType(objMFG, controls_MainFaultDisplayuc).Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_ClosedFaultDisplay
+        AddHandler objMFG.Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_ClosedFaultDisplay
 
-        Dim strScript As String = "<script>"
+        'Dim strScript As String = "<script>"
         'Sets up user comments
         'Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         'Vctrl.LinacName = LinacName
 
         'Sets up view open faults and Lock Elf
-        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
-        lockctrl.LinacName = LinacName
+
         'Objcon = Page.LoadControl("ViewOpenFaults.ascx")
         If UserReason = 1 Then
             CType(objMFG, controls_MainFaultDisplayuc).ParentControl = ENG
@@ -355,6 +354,9 @@ Partial Class ErunupUserControl
 
         End If
         PlaceHolderFaults.Controls.Add(objMFG)
+        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
+        lockctrl.LinacName = LinacName
+
         Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
         ReportFault.LinacName = LinacName
         ReportFault.ParentControl = ENG
