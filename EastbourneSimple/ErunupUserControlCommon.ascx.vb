@@ -338,8 +338,8 @@ Partial Class ErunupUserControl
 
         'Dim strScript As String = "<script>"
         'Sets up user comments
-        'Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
-        'Vctrl.LinacName = LinacName
+        Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
+        Vctrl.LinacName = LinacName
 
         'Sets up view open faults and Lock Elf
 

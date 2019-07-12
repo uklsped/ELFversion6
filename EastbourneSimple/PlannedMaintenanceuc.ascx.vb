@@ -266,8 +266,8 @@ Partial Class Planned_Maintenanceuc
         'AddHandler objMFG.Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_ClosedFaultDisplay
         PlaceHolderFaults.Controls.Add(objMFG)
 
-        'Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
-        'Vctrl.LinacName = LinacName
+        Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
+        Vctrl.LinacName = LinacName
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = LinacName
         Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
