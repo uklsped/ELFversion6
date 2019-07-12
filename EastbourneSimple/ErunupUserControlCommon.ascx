@@ -149,7 +149,7 @@
 </div>
 
 <div class="clear"></div>
-   <asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1507px">
+   <%--<asp:Table ID="Table2" runat="server" CellSpacing="20" GridLines="Both" Width="1507px">
          <asp:TableRow ID ="t2r1" runat="server">
          <asp:TableCell ID="lock" runat="server" Width="160px" HorizontalAlign="Left">
          </asp:TableCell>
@@ -167,7 +167,7 @@
                </asp:TableCell>
               
                         </asp:TableRow>
-               </asp:Table>
+               </asp:Table>--%>
 
  <asp:UpdatePanel ID="UpdatePanel4" runat="server">
             <ContentTemplate>

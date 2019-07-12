@@ -16,7 +16,9 @@
 
 <%@ Register src="controls/ModalityQAPopUpuc.ascx" tagname="ModalityQAPopUpuc" tagprefix="uc14" %>
 
-<div class="clear" style="width:1863px"></div>
+<%@ Register src="controls/ReportAFaultuc.ascx" tagname="ReportAFaultuc" tagprefix="uc15" %>
+
+<%--<div class="clear" style="width:1863px"></div>--%>
 <div class="grid" >
     <div class="col100 grey" >
         <table id="Handover">
@@ -58,18 +60,33 @@
                     
                    </fieldset></td>
             </tr>
+            <tr><td colspan="2">
+              <br />
+              <br />
+              <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+<ContentTemplate>
+    <uc15:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
+    </ContentTemplate>
+</asp:UpdatePanel> 
+              </td></tr>
+
             </table>
     </div>
-    <div class="col200 blue" ><asp:UpdatePanel ID="UpdatePanel3" runat="server">
+   <%-- <div class="col200 blue" ><asp:UpdatePanel ID="UpdatePanel3" runat="server">
                         <ContentTemplate>
                             <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" CausesValidation="false"/>
-                            <%--<uc13:ReportFaultPopUpuc ID="ReportFaultPopUpuc1" LinacName="" Visible="false" ParentControl="4" runat ="server" />--%>
+                            <uc13:ReportFaultPopUpuc ID="ReportFaultPopUpuc1" LinacName="" Visible="false" ParentControl="4" runat ="server" />
                         <asp:PlaceHolder ID="ReportFaultPopupPlaceHolder" runat="server"></asp:PlaceHolder>
                         </ContentTemplate>
-                   </asp:UpdatePanel></div>
+                   </asp:UpdatePanel></div>--%>
     <div class="col300 green" ><asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="true" UpdateMode="Conditional">
         <ContentTemplate>
             <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>&nbsp;
+        </ContentTemplate>
+    </asp:UpdatePanel>
+         <asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="true">
+        <ContentTemplate>
+            <asp:PlaceHolder ID="PlaceHolderModalities" runat="server"></asp:PlaceHolder>
         </ContentTemplate>
     </asp:UpdatePanel>
     </div>
@@ -82,13 +99,15 @@
             <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder>
         </ContentTemplate>
     </asp:UpdatePanel>--%>
-    <asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="true">
+   <%-- <asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="true">
         <ContentTemplate>
             <asp:PlaceHolder ID="PlaceHolderModalities" runat="server"></asp:PlaceHolder>
         </ContentTemplate>
-    </asp:UpdatePanel>
+    </asp:UpdatePanel>--%>
 </div>
 <div id="right">
 </div>
 
 <uc7:ViewCommentsuc ID="ViewCommentsuc1" LinacName="" CommentSort="pm" runat="server" />
+</div>
+
