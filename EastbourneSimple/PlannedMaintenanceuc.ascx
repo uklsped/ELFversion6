@@ -60,15 +60,17 @@
                     
                    </fieldset></td>
             </tr>
-            <tr><td colspan="2">
-              <br />
-              <br />
-              <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-<ContentTemplate>
-    <uc15:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
-    </ContentTemplate>
-</asp:UpdatePanel> 
-              </td></tr>
+            <tr>
+                <td colspan="2">
+                    <br />
+                    <br />
+                    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                        <ContentTemplate>
+                            <uc15:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
+                </td>
+            </tr>
 
             </table>
     </div>
