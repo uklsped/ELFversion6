@@ -107,7 +107,7 @@
 </div>
 <div id="right">
 </div>
-
+<div>
 <uc7:ViewCommentsuc ID="ViewCommentsuc1" LinacName="" CommentSort="pm" runat="server" />
 </div>
 

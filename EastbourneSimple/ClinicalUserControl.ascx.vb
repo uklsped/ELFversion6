@@ -235,27 +235,31 @@ Partial Class ClinicalUserControl
         'End If
 
         'PlaceHolder3.Controls.Add(objDefect)
-        Select Case Me.DynamicControlSelection
-        '    Case REPEATFAULTSELECTED
-            '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
-            Case FAULTPOPUPSELECTED
-                '        'LoadFaultTable(Label2.Text)
-                'ReloadConcessionPopUp()
+        'Select Case Me.DynamicControlSelection
+        ''    Case REPEATFAULTSELECTED
+        '    '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
+        '    Case FAULTPOPUPSELECTED
+        '        '        'LoadFaultTable(Label2.Text)
+        '        'ReloadConcessionPopUp()
 
-                Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-                objReportFault.LinacName = LinacName
-                objReportFault.ID = "ReportFaultPopupuc"
-                objReportFault.ParentControl = CLINICAL
-                'objReportFault.Visible = False
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-                AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
-                ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+        '        Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+        '        objReportFault.LinacName = LinacName
+        '        objReportFault.ID = "ReportFaultPopupuc"
+        '        objReportFault.ParentControl = CLINICAL
+        '        'objReportFault.Visible = False
+        '        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+        '        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+        '        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
+        '        ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
 
-            Case Else
-                '        'no dynamic controls need to be loaded...yet
-        End Select
-
+        '    Case Else
+        '        '        'no dynamic controls need to be loaded...yet
+        'End Select
+        Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
+        ReportFault.LinacName = LinacName
+        ReportFault.ParentControl = CLINICAL
+        AddHandler ReportFault.ReportAFault_UpdateDailyDefectDisplay, AddressOf Update_DefectDailyDisplay
+        AddHandler ReportFault.ReportAFault_UpDateViewOpenFaults, AddressOf Update_ViewOpenFaults
         Dim objMFG As controls_MainFaultDisplayuc = Page.LoadControl("controls\MainFaultDisplayuc.ascx")
         CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
         CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
@@ -730,41 +734,41 @@ Partial Class ClinicalUserControl
 
     End Sub
 
-    Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
-        If LinacName = EquipmentId Then
-            'Don't need if because report fault pop up is the same for both defects now
-            'If LinacName Like "T?" Then
-            'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            'Todaydefectpark.UpDateDefectsEventHandler()
-            'Else
-            'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            'Todaydefect.UpDateDefectsEventHandler()
-            DynamicControlSelection = String.Empty
-            Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
-            ReportFaultPopupPlaceHolder.Controls.Remove(ReportFault)
-            'End If
+    'Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
+    '    If LinacName = EquipmentId Then
+    '        'Don't need if because report fault pop up is the same for both defects now
+    '        'If LinacName Like "T?" Then
+    '        'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+    '        'Todaydefectpark.UpDateDefectsEventHandler()
+    '        'Else
+    '        'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+    '        'Todaydefect.UpDateDefectsEventHandler()
+    '        DynamicControlSelection = String.Empty
+    '        Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
+    '        ReportFaultPopupPlaceHolder.Controls.Remove(ReportFault)
+    '        'End If
 
-        End If
-    End Sub
+    '    End If
+    'End Sub
 
-    Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
-        'Need to load reportfaultpopupuc here to pass comment box
-        Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
-        Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
-        Dim Comment As String = DaTxtBox.Text
-        Application("TabComment") = Comment
+    'Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
+    '    'Need to load reportfaultpopupuc here to pass comment box
+    '    Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
+    '    Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
+    '    Dim Comment As String = DaTxtBox.Text
+    '    Application("TabComment") = Comment
 
-        Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-        objReportFault.LinacName = LinacName
-        objReportFault.ID = "ReportFaultPopupuc"
-        objReportFault.ParentControl = CLINICAL
-        DynamicControlSelection = FAULTPOPUPSELECTED
+    '    Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+    '    objReportFault.LinacName = LinacName
+    '    objReportFault.ID = "ReportFaultPopupuc"
+    '    objReportFault.ParentControl = CLINICAL
+    '    DynamicControlSelection = FAULTPOPUPSELECTED
 
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
-        ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
+    '    ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
 
-    End Sub
+    'End Sub
 
 End Class
