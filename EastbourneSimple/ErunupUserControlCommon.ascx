@@ -86,7 +86,7 @@
         </tr>
           <tr>
               <td style="width: 182px" >
-              <asp:Button ID="LogOffButton" runat="server" Text="Log Off Without Approving Energies" CausesValidation="False" />
+              <asp:Button ID="LogOffButton" runat="server" Text="Log Off Without Approving For Clincal Use" CausesValidation="False" />
           </td>
                   </tr>
           <tr><td style="width: 182px" >

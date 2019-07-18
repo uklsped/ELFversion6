@@ -44,7 +44,7 @@
                                     Height="150px" Width="120px" />
                             </td>
                             <td>
-                                <asp:Button ID="LogOffButton" runat="server" Text="Log Off Linac" Height="150px"
+                                <asp:Button ID="LogOffButton" runat="server" Text="Log Off" Height="150px"
                                     CausesValidation="false" />
                             </td>
 
