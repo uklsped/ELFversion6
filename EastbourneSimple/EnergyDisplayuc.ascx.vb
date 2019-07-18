@@ -79,7 +79,7 @@ Partial Class EnergyDisplayuc
                 Next
                 GridView2.Columns(2).Visible = True
                 GridView2.Columns(13).Visible = True
-            Case "E1", "E2", "B1"
+            Case "E1", "E2", "B1", "B2"
                 GridView2.Columns(13).Visible = True
                 For index As Integer = 10 To 11
                     GridView2.Columns(index).Visible = False
