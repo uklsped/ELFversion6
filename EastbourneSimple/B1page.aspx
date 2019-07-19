@@ -116,14 +116,14 @@
                      ImageUrl="~/Images/if_elf_62126.png" Width="100px" />
                  <asp:Label ID="SoftwareVersion" runat="server" Text="Software Version 6.0"></asp:Label></td>
             </tr>
-            <tr>
+            <%--<tr>
                <td colspan="6">
                    <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
                        <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
                        </asp:PlaceHolder>
                    </asp:Panel>
                 </td>
-            </tr>
+            </tr>--%>
         </table>
         
  <asp:HiddenField ID="LAHiddenFieldcontrol" runat="server" />

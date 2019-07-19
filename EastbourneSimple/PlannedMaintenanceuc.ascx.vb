@@ -34,6 +34,8 @@ Partial Class Planned_Maintenanceuc
     Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
     Const QASELECTED As String = "ModalityQApopupselected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+    Dim Modalities As controls_ModalityDisplayuc
 
     Private Property DynamicControlSelection() As String
         Get
@@ -275,6 +277,18 @@ Partial Class Planned_Maintenanceuc
         ReportFault.ParentControl = PM
         AddHandler ReportFault.ReportAFault_UpdateDailyDefectDisplay, AddressOf Update_DefectDailyDisplay
         AddHandler ReportFault.ReportAFault_UpDateViewOpenFaults, AddressOf Update_ViewOpenFaults
+
+        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
+        CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
+        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
+        If Application(suspstate) = 1 Then
+            CType(Modalities, controls_ModalityDisplayuc).Mode = "Suspended"
+        Else
+            CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
+        End If
+        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
+        ModalityPlaceholder.Controls.Add(Modalities)
+        ModalityDisplayPanel.Visible = True
         'Dim objReportFault As controls_ReportAFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
         'objReportFault.LinacName = LinacName
         'objReportFault.ID = "ReportFaultPopupuc"

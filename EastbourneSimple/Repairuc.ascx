@@ -23,6 +23,8 @@
 
 <%@ Register src="controls/ReportAFaultuc.ascx" tagname="ReportAFaultuc" tagprefix="uc16" %>
 
+<%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc17" %>
+
 <uc2:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="5"  Tabby="5"  WriteName="Repair" visible="false" runat="server" />
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="5" visible="false" runat="server" />
 
@@ -38,6 +40,14 @@
 <div class="grid">
 <div class="col100 grey">
     <table id="Handover">
+         <tr style="vertical-align:top">
+            <td colspan="3">
+                <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
+                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
+                       </asp:PlaceHolder>
+                   </asp:Panel>
+            </td>
+                </tr>
         <tr style="vertical-align:top">
             <td style="width:300px">
                 <asp:Label ID="StateLabel" runat="server" Text="Last State:"></asp:Label><br />
@@ -116,7 +126,7 @@
         </ContentTemplate>   
     </asp:UpdatePanel>
 </div>
-        
+               
 </div>
 <div id="left">
    <%-- <asp:UpdatePanel ID="UpdatePanelAtlas" runat="server" Visible="false">

@@ -35,6 +35,8 @@ Partial Class ClinicalUserControl
     Const CLINICAL As String = "3"
     Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+    Dim Modalities As controls_ModalityDisplayuc
     Private Property DynamicControlSelection() As String
         Get
             Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
@@ -157,6 +159,13 @@ Partial Class ClinicalUserControl
         BindComments()
         BindRunUpComments(connectionString)
         Application(suspstate) = Nothing
+        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
+        CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
+        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
+        CType(Modalities, controls_ModalityDisplayuc).Mode = "Clinical"
+        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
+        ModalityPlaceholder.Controls.Add(Modalities)
+        ModalityDisplayPanel.Visible = True
     End Sub
 
     Public Sub UserApprovedEvent(ByVal tabused As String, ByVal Userinfo As String)

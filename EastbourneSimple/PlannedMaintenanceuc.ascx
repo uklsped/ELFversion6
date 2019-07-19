@@ -18,10 +18,23 @@
 
 <%@ Register src="controls/ReportAFaultuc.ascx" tagname="ReportAFaultuc" tagprefix="uc15" %>
 
-<%--<div class="clear" style="width:1863px"></div>--%>
+<%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc16" %>
+
+<%--<div class="clear" style="width:1863px">--%>
+    
+<%--</div>--%>
 <div class="grid" >
     <div class="col100 grey" >
+         
         <table id="Handover">
+            <tr style="vertical-align:top">
+            <td colspan="3">
+                <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
+                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
+                       </asp:PlaceHolder>
+                   </asp:Panel>
+            </td>
+                </tr>
             <tr style="vertical-align:top">
                 <td style="width: 300px">
                   <asp:Label ID="StateLabel" runat="server" Text="Last State:"></asp:Label><br />
@@ -67,6 +80,7 @@
                     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                         <ContentTemplate>
                             <uc15:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
+                            
                         </ContentTemplate>
                     </asp:UpdatePanel>
                 </td>

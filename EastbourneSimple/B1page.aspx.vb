@@ -48,7 +48,7 @@ Partial Public Class B1page
     Private RegistrationState As String = "regstateB1"
     Private loadup As String = Nothing
     Public Event EngRunuploaded(ByVal connectionString As String)
-    Private Modalities As controls_ModalityDisplayuc
+    'Private Modalities As controls_ModalityDisplayuc
     Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     'Public Event DayEnded(ByVal Tab As String, ByVal UserName As String)
 
@@ -181,18 +181,18 @@ Partial Public Class B1page
 
     End Sub
 
-    Public Sub SetModalities(ByVal connectionString As String)
-        'If Application(appstate) Then
-        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
-        CType(Modalities, controls_ModalityDisplayuc).LinacName = EquipmentID
-        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
-        CType(Modalities, controls_ModalityDisplayuc).Mode = Statelabel.Text
-        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
-        ModalityPlaceholder.Controls.Add(Modalities)
-        ModalityDisplayPanel.Visible = True
-        'End If
+    'Public Sub SetModalities(ByVal connectionString As String)
+    '    'If Application(appstate) Then
+    '    Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
+    '    CType(Modalities, controls_ModalityDisplayuc).LinacName = EquipmentID
+    '    CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
+    '    CType(Modalities, controls_ModalityDisplayuc).Mode = Statelabel.Text
+    '    CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
+    '    ModalityPlaceholder.Controls.Add(Modalities)
+    '    ModalityDisplayPanel.Visible = True
+    '    'End If
 
-    End Sub
+    'End Sub
 
     Protected Sub NullPhysics()
 
@@ -219,8 +219,8 @@ Partial Public Class B1page
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
         AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
-        AddHandler AcceptLinac1.SetModalities, AddressOf SetModalities
-        AddHandler AcceptLinac3.SetModalities, AddressOf SetModalities
+        'AddHandler AcceptLinac1.SetModalities, AddressOf SetModalities
+        'AddHandler AcceptLinac3.SetModalities, AddressOf SetModalities
         Dim ResetDay As String = Nothing
         Dim ConnectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
@@ -492,7 +492,7 @@ Partial Public Class B1page
             Response.Redirect(returnstring)
         Else
             LaunchTab()
-            SetModalities(connectionString)
+            'SetModalities(connectionString)
         End If
     End Sub
 
@@ -945,7 +945,7 @@ Partial Public Class B1page
             RaiseEvent NoApprove()
         End If
         output = connectionString
-        Me.Page.GetType.InvokeMember("SetModalities", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+        'Me.Page.GetType.InvokeMember("SetModalities", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
     End Sub
 
     Public Event MyEventB1 As System.EventHandler

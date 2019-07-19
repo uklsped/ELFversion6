@@ -26,6 +26,9 @@
 <%@ Register src="controls/ReportAFaultuc.ascx" tagname="ReportAFaultuc" tagprefix="uc11" %>
 
 
+<%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc12" %>
+
+
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
 <%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc1" %>
 
@@ -33,6 +36,14 @@
     <div class="col100 grey">
 
         <table id="HandoverTable">
+             <tr style="vertical-align:top">
+            <td colspan="3">
+                <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
+                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
+                       </asp:PlaceHolder>
+                   </asp:Panel>
+            </td>
+                </tr>
             <tr style="vertical-align: top">
                 <td colspan="2">
                     <table>
@@ -165,6 +176,7 @@
     </asp:UpdatePanel>
     </div>
  
+    
 </div>
 
 <div>

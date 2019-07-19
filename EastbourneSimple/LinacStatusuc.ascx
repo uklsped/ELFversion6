@@ -8,6 +8,8 @@
 
 <%@ Register src="Administrationuc.ascx" tagname="administrationuc" tagprefix="uc4" %>
 
+<%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc5" %>
+
 <%-- <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />--%>
 <%--<link rel="stylesheet" type="text/css" href="css\twocol.css" />--%>
  <%--<asp:TextBox ID="TextBox1" runat="server" Width="168px"></asp:TextBox>--%>
@@ -25,8 +27,12 @@
         <asp:GridView ID="DummyGridView" runat="server">
     </asp:GridView>
     
+       
    <br />
-
+<asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
+                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
+                       </asp:PlaceHolder>
+                   </asp:Panel>
    <div>
              <asp:Button id="Button1" runat="server" Text="View Fault History" causesvalidation="false" OnClick="Button1_Click" /> 
              &nbsp;

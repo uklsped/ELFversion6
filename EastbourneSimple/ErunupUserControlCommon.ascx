@@ -33,6 +33,8 @@
 
 <%@ Register src="controls/ReportAFaultuc.ascx" tagname="ReportAFaultuc" tagprefix="uc16" %>
 
+<%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc17" %>
+
 <%--<link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />--%>
 
 <%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>
@@ -43,7 +45,12 @@
         </asp:GridView>    
 
 <div class="grid" >
- 
+ <div class="clear">
+     <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
+                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
+                       </asp:PlaceHolder>
+                   </asp:Panel>
+ </div>
    <div class="col100 grey" >
       <table id="EnergyTable">
         <tr style="vertical-align:top;">     

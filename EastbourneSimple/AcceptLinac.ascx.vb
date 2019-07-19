@@ -124,7 +124,7 @@ Partial Public Class AcceptLinac
                                     'RaiseEvent ShowName(usergroupselected)
                             End Select
                             output = connectionString
-                            Me.Page.GetType.InvokeMember("SetModalities", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+                            'Me.Page.GetType.InvokeMember("SetModalities", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
                             myscope.Complete()
                         End Using
 

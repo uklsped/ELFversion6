@@ -42,6 +42,8 @@ Partial Class Repairuc
     Private ParamApplication As String
     Private ConcessParamsTrial As ConcessionParameters = New ConcessionParameters()
     Dim Repairlist As RadioButtonList
+    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+    Dim Modalities As controls_ModalityDisplayuc
 
     Private Property DynamicControlSelection() As String
         Get
@@ -421,6 +423,17 @@ Partial Class Repairuc
 
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = LinacName
+        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
+        CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
+        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
+        If Application(suspstate) = 1 Then
+            CType(Modalities, controls_ModalityDisplayuc).Mode = "Suspended"
+        Else
+            CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
+        End If
+        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
+        ModalityPlaceholder.Controls.Add(Modalities)
+        ModalityDisplayPanel.Visible = True
         'Removed references to LA 9/4/19
         If Not IsPostBack Then
             If Not LinacName Like "T?" Then

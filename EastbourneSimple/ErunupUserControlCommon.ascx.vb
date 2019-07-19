@@ -45,6 +45,7 @@ Partial Class ErunupUserControl
     Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
     Const QASELECTED As String = "ModalityQApopupselected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    Private Modalities As controls_ModalityDisplayuc
 
     Private Property DynamicControlSelection() As String
         Get
@@ -151,6 +152,7 @@ Partial Class ErunupUserControl
         If Not LinacName Like "T?" Then
             SetEnergies(connectionString)
             SetImaging(connectionString)
+            SetModalities(connectionString)
             PhysicsQA.Visible = True
             'SetModalityDisplay()
         End If
@@ -158,6 +160,18 @@ Partial Class ErunupUserControl
         GridView1.Visible = True
         GridViewImage.Visible = True
         Application(atlasviewstate) = 1
+
+    End Sub
+    Public Sub SetModalities(ByVal connectionString As String)
+        'If Application(appstate) Then
+        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
+        CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
+        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
+        CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
+        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
+        ModalityPlaceholder.Controls.Add(Modalities)
+        ModalityDisplayPanel.Visible = True
+        'End If
 
     End Sub
     'Private Sub SetModalityDisplay()
