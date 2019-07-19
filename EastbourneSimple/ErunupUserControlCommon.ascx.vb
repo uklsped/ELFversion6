@@ -151,6 +151,8 @@ Partial Class ErunupUserControl
         If Not LinacName Like "T?" Then
             SetEnergies(connectionString)
             SetImaging(connectionString)
+            PhysicsQA.Visible = True
+            'SetModalityDisplay()
         End If
 
         GridView1.Visible = True
@@ -158,6 +160,18 @@ Partial Class ErunupUserControl
         Application(atlasviewstate) = 1
 
     End Sub
+    'Private Sub SetModalityDisplay()
+    '    'Dim tabcontainer1 As TabContainer
+    '    Dim DisplayPanel As Panel
+    '    Page = Me.Page
+    '    mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+    '    If Not mpContentPlaceHolder Is Nothing Then
+    '        DisplayPanel = CType(mpContentPlaceHolder.FindControl("ModalityDisplayPanel"), Panel)
+    '        If Not DisplayPanel Is Nothing Then
+    '            DisplayPanel.Visible = True
+    '        End If
+    '    End If
+    'End Sub
     'this updates defect dropdown list because a concession has been closed perhaps rename
     Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
 

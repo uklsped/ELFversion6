@@ -49,6 +49,7 @@ Partial Public Class B1page
     Private loadup As String = Nothing
     Public Event EngRunuploaded(ByVal connectionString As String)
     Private Modalities As controls_ModalityDisplayuc
+    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     'Public Event DayEnded(ByVal Tab As String, ByVal UserName As String)
 
     Protected Sub Update_ReturnButtons()
@@ -180,8 +181,8 @@ Partial Public Class B1page
 
     End Sub
 
-    Protected Sub SetModalities(ByVal connectionString As String)
-
+    Public Sub SetModalities(ByVal connectionString As String)
+        'If Application(appstate) Then
         Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
         CType(Modalities, controls_ModalityDisplayuc).LinacName = EquipmentID
         CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
@@ -189,6 +190,7 @@ Partial Public Class B1page
         CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
         ModalityPlaceholder.Controls.Add(Modalities)
         ModalityDisplayPanel.Visible = True
+        'End If
 
     End Sub
 
@@ -468,7 +470,7 @@ Partial Public Class B1page
             End If
 
         End If
-        SetModalities(ConnectionString)
+        'SetModalities(ConnectionString)
     End Sub
 
 
@@ -490,6 +492,7 @@ Partial Public Class B1page
             Response.Redirect(returnstring)
         Else
             LaunchTab()
+            SetModalities(connectionString)
         End If
     End Sub
 
@@ -504,7 +507,7 @@ Partial Public Class B1page
         Dim lastState As String = ""
         Dim lastuser As String = ""
         Dim lastusergroup As Integer = 0
-
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Page = Me.Page
         mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
@@ -687,7 +690,8 @@ Partial Public Class B1page
                             '        End If
                             '    End If
                             'Else
-                            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                            'Move to top 18/7/19
+                            'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                             Select Case tabref
 
                                 Case 1
@@ -735,6 +739,7 @@ Partial Public Class B1page
                             DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
                             SetUser(lastusergroup)
                             'User = "Engineer/Physicist"
+                            'SetModalities(connectionstring)
                             rucontrol.Visible = True
 
 
@@ -779,7 +784,7 @@ Partial Public Class B1page
                             Dim outputn As String = Application(appstate)
                             If outputn = 1 Then
                                 'should have a transaction
-                                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                                 clinicalcontrol.ClinicalApprovedEvent(connectionString)
                                 'CType(Modalities, controls_ModalityDisplayuc).Mode = "Unauthorised"
                             End If
@@ -939,7 +944,8 @@ Partial Public Class B1page
             Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
             RaiseEvent NoApprove()
         End If
-
+        output = connectionString
+        Me.Page.GetType.InvokeMember("SetModalities", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
     End Sub
 
     Public Event MyEventB1 As System.EventHandler

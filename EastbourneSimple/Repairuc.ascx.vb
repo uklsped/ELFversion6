@@ -423,7 +423,9 @@ Partial Class Repairuc
         lockctrl.LinacName = LinacName
         'Removed references to LA 9/4/19
         If Not IsPostBack Then
-
+            If Not LinacName Like "T?" Then
+                PhysicsQA.Visible = True
+            End If
             RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
                 RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
                 RadioButtonList1.Items.Add(New ListItem("Go To Planned Maintenance", "4", False))

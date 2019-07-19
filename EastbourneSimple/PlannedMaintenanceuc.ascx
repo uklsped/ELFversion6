@@ -42,7 +42,7 @@
             </tr>
             <tr>
                 <td style="width: 145px">
-                    <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" 
+                    <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" visible="false"
                         CausesValidation="false" Width="200px" />
                 </td>
             </tr>

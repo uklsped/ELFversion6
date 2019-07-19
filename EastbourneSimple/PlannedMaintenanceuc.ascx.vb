@@ -314,7 +314,9 @@ Partial Class Planned_Maintenanceuc
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
         If Not IsPostBack Then
-
+            If Not LinacName Like "T?" Then
+                PhysicsQA.Visible = True
+            End If
             RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", True))
             RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
             RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", True))

@@ -33,7 +33,7 @@
 
     // finds a control that had the given server id, of a the given type
     // in the given parent.          
-
+   
     function findControl(parent, tagName, serverId) {
         var items = parent.getElementsByTagName(tagName);
         // walk the items looking for the right guy

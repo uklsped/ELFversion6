@@ -93,7 +93,7 @@
               <asp:Button ID="LockElf" runat="server" Text="Lock Elf/Switch User" causesvalidation="false"/>
               </td></tr>
           <tr><td style="width: 182px" >
-              <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" CausesValidation="false" />
+              <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" Visible="false" CausesValidation="false" />
               </td></tr>
           <tr>
               <td style="width: 182px" >

@@ -59,12 +59,12 @@
         </tr>
         <tr>
             <td style="width:145px;">
-                <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" Width="200px" CausesValidation="false"  />
+                <asp:Button ID="PhysicsQA" runat="server" Text="View Physics Energies/Imaging" Visible="false" Width="200px" CausesValidation="false"  />
             </td>
         </tr>
         <tr>
             <td>
-                <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" causesvalidation="false"/>
+               <%-- <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" causesvalidation="false"/>--%>
             </td>
         </tr>
         <tr>

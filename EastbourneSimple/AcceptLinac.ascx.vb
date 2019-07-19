@@ -106,6 +106,8 @@ Partial Public Class AcceptLinac
                             DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, Reason, False, connectionString)
                             Select Case Tabby
                                 Case 1, 7
+
+
                                     RaiseEvent EngRunuploaded(connectionString)
                                     'RaiseEvent SetModalities(connectionString)
                                 Case 2
@@ -114,12 +116,15 @@ Partial Public Class AcceptLinac
                                     Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
                                     output = "Clinical"
                                     Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+
                                     RaiseEvent ClinicalApproved(connectionString)
                                     'RaiseEvent SetModalities(connectionString)
                                 Case 4, 5, 8
                                     RaiseEvent UpdateReturnButtons()
                                     'RaiseEvent ShowName(usergroupselected)
                             End Select
+                            output = connectionString
+                            Me.Page.GetType.InvokeMember("SetModalities", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
                             myscope.Complete()
                         End Using
 
