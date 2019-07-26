@@ -29,10 +29,7 @@
     
        
    <br />
-<asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
-                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
-                       </asp:PlaceHolder>
-                   </asp:Panel>
+
    <div>
              <asp:Button id="Button1" runat="server" Text="View Fault History" causesvalidation="false" OnClick="Button1_Click" /> 
              &nbsp;

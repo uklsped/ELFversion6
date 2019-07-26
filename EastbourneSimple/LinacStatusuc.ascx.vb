@@ -72,17 +72,6 @@ Partial Class LinacStatusuc
             button.Visible = False
         End If
 
-        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
-        CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
-        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
-        If Application(suspstate) = 1 Then
-            CType(Modalities, controls_ModalityDisplayuc).Mode = "Suspended"
-        Else
-            CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
-        End If
-        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
-        ModalityPlaceholder.Controls.Add(Modalities)
-        ModalityDisplayPanel.Visible = True
     End Sub
     Protected Sub PageLoad()
         Dim returnstring As String
