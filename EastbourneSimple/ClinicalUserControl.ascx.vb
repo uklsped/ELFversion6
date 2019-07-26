@@ -34,6 +34,7 @@ Partial Class ClinicalUserControl
     Private TodayComment As controls_CommentBoxuc
     Const CLINICAL As String = "3"
     Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
+    Const MODALITYDISPLAY As String = "ModalityDisplayLoaded"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     Dim Modalities As controls_ModalityDisplayuc
@@ -159,6 +160,18 @@ Partial Class ClinicalUserControl
         BindComments()
         BindRunUpComments(connectionString)
         Application(suspstate) = Nothing
+        ModalityDisplays(connectionString)
+        'Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
+        'CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
+        'CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
+        'CType(Modalities, controls_ModalityDisplayuc).Mode = "Clinical"
+        'CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
+        'ModalityPlaceholder.Controls.Add(Modalities)
+        'ModalityDisplayPanel.Visible = True
+        'DynamicControlSelection = MODALITYDISPLAY
+    End Sub
+
+    Protected Sub ModalityDisplays(ByVal connectionString As String)
         Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
         CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
         CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
@@ -166,6 +179,7 @@ Partial Class ClinicalUserControl
         CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
         ModalityPlaceholder.Controls.Add(Modalities)
         ModalityDisplayPanel.Visible = True
+        DynamicControlSelection = MODALITYDISPLAY
     End Sub
 
     Public Sub UserApprovedEvent(ByVal tabused As String, ByVal Userinfo As String)
@@ -198,7 +212,7 @@ Partial Class ClinicalUserControl
                     ActivityLabel.Text = "Logged Off"
                     Application(LinacFlag) = "Suspended"
                     Response.Redirect(machinelabel)
-
+                    DynamicControlSelection = String.Empty
                 End If
             Else
                 RaiseLogOffError()
@@ -264,6 +278,14 @@ Partial Class ClinicalUserControl
         '    Case Else
         '        '        'no dynamic controls need to be loaded...yet
         'End Select
+        Select Case Me.DynamicControlSelection
+        '    Case REPEATFAULTSELECTED
+            '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
+            Case MODALITYDISPLAY
+                ModalityDisplays(connectionString)
+            Case Else
+        End Select
+
         Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
         ReportFault.LinacName = LinacName
         ReportFault.ParentControl = CLINICAL
@@ -298,7 +320,7 @@ Partial Class ClinicalUserControl
                     If Application(returnclinical) = 1 Then
 
 
-                        ClinicalApprovedEvent(connectionString1)
+                        'ClinicalApprovedEvent(connectionString1)
                         BindRunUpComments(connectionString1)
 
                         Select Case Application(treatmentstate)
@@ -341,48 +363,48 @@ Partial Class ClinicalUserControl
 
 
 
-    Protected Sub EnergyGridView_DataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView2.RowDataBound
+    'Protected Sub EnergyGridView_DataBound(ByVal sender As Object, ByVal e As GridViewRowEventArgs) Handles GridView2.RowDataBound
 
-        Dim headerRow As GridViewRow = e.Row
-        Dim energy As Integer
-        Dim query As String
-        Dim SqlDataSource1 As New SqlDataSource()
+    '    Dim headerRow As GridViewRow = e.Row
+    '    Dim energy As Integer
+    '    Dim query As String
+    '    Dim SqlDataSource1 As New SqlDataSource()
 
-        query = "Select distinct MV6,MV6FFF, MV10,MV10FFF,MeV4, MeV6, MeV8, " &
-                  "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)"
+    '    query = "Select distinct MV6,MV6FFF, MV10,MV10FFF,MeV4, MeV6, MeV8, " &
+    '              "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r on e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)"
 
-        SqlDataSource1 = QuerySqlConnection(LinacName, query)
+    '    SqlDataSource1 = QuerySqlConnection(LinacName, query)
 
-        If headerRow.RowType = DataControlRowType.Header Then
-            Try
-                Dim dv As DataView
-                dv = CType(SqlDataSource1.Select(DataSourceSelectArguments.Empty), DataView)
-                'added 16march
-                Dim colnum As Integer = dv.Table.Columns.Count - 1
-                For count As Integer = 0 To dv.Table.Columns.Count - 1
-                    'This will fail if for some reason the value n dv.Table.Rows(0)(count) is null
-                    'so check for null and if it is put energy = 0
-                    If IsDBNull(dv.Table.Rows(0)(count)) Then
-                        energy = 0
-                    Else
-                        energy = CType(dv.Table.Rows(0)(count), Integer)
-                    End If
+    '    If headerRow.RowType = DataControlRowType.Header Then
+    '        Try
+    '            Dim dv As DataView
+    '            dv = CType(SqlDataSource1.Select(DataSourceSelectArguments.Empty), DataView)
+    '            'added 16march
+    '            Dim colnum As Integer = dv.Table.Columns.Count - 1
+    '            For count As Integer = 0 To dv.Table.Columns.Count - 1
+    '                'This will fail if for some reason the value n dv.Table.Rows(0)(count) is null
+    '                'so check for null and if it is put energy = 0
+    '                If IsDBNull(dv.Table.Rows(0)(count)) Then
+    '                    energy = 0
+    '                Else
+    '                    energy = CType(dv.Table.Rows(0)(count), Integer)
+    '                End If
 
-                    Select Case energy
-                        Case -1
-                            headerRow.Cells(count).BackColor = System.Drawing.Color.Green
-                        Case 0
-                            headerRow.Cells(count).BackColor = System.Drawing.Color.Red
-                    End Select
+    '                Select Case energy
+    '                    Case -1
+    '                        headerRow.Cells(count).BackColor = System.Drawing.Color.Green
+    '                    Case 0
+    '                        headerRow.Cells(count).BackColor = System.Drawing.Color.Red
+    '                End Select
 
-                Next
+    '            Next
 
-            Finally
+    '        Finally
 
-            End Try
-        End If
+    '        End Try
+    '    End If
 
-    End Sub
+    'End Sub
 
     Private Sub BindComments()
 
@@ -413,53 +435,53 @@ Partial Class ClinicalUserControl
 
     End Sub
 
-    Private Sub BindEnergyData()
-        If LinacName IsNot "T1" Then
-            Dim SqlDataSource1 As New SqlDataSource()
-            'the distinct takes care of when suspended returns via pre-clinical because then there are two pre ids for one runup id
-            'Dim query As String = "Select distinct handoverID, MV6, MV10, MeV6, MeV8, " & _
-            '                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r On e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) As lastrecord from HandoverEnergies where linac=@linac)"
-            'Added isnull as per energy displayuc
-            Dim query As String = "Select distinct handoverID, MV6, ISNULL(MV6FFF, 0) As ""MV6FFF"", MV10 ,ISNULL(MV10FFF, 0) As ""MV10FFF"",ISNULL(MeV4,0) As ""MeV4"", MeV6, MeV8, " &
-                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r On e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) As lastrecord from ClinicalHandover where linac=@linac)"
+    'Private Sub BindEnergyData()
+    '    If LinacName IsNot "T1" Then
+    '        Dim SqlDataSource1 As New SqlDataSource()
+    '        'the distinct takes care of when suspended returns via pre-clinical because then there are two pre ids for one runup id
+    '        'Dim query As String = "Select distinct handoverID, MV6, MV10, MeV6, MeV8, " & _
+    '        '                          "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r On e.handoverid=r.ehandid where e.HandoverID  = (Select max(HandoverID) As lastrecord from HandoverEnergies where linac=@linac)"
+    '        'Added isnull as per energy displayuc
+    '        Dim query As String = "Select distinct handoverID, MV6, ISNULL(MV6FFF, 0) As ""MV6FFF"", MV10 ,ISNULL(MV10FFF, 0) As ""MV10FFF"",ISNULL(MeV4,0) As ""MeV4"", MeV6, MeV8, " &
+    '                      "MeV10, MeV12, MeV15, MeV18, MeV20, iView, XVI from HandoverEnergies e  left outer join clinicalhandover r On e.handoverid=r.ehandid where r.CHandID  = (Select max(CHandID) As lastrecord from ClinicalHandover where linac=@linac)"
 
-            SqlDataSource1 = QuerySqlConnection(LinacName, query)
-            GridView2.DataSource = SqlDataSource1
-            GridView2.DataBind()
+    '        SqlDataSource1 = QuerySqlConnection(LinacName, query)
+    '        GridView2.DataSource = SqlDataSource1
+    '        GridView2.DataBind()
 
-            GridView2.Columns(13).Visible = False
-            Select Case LinacName
-                Case "LA1"
-                    For index As Integer = 1 To 4
-                        GridView2.Columns(index).Visible = False
-                    Next
+    '        GridView2.Columns(13).Visible = False
+    '        Select Case LinacName
+    '            Case "LA1"
+    '                For index As Integer = 1 To 4
+    '                    GridView2.Columns(index).Visible = False
+    '                Next
 
-                Case "LA2", "LA3"
-                    For index As Integer = 1 To 4
-                        GridView2.Columns(index).Visible = False
-                    Next
-                    GridView2.Columns(2).Visible = True
-                Case "LA4"
+    '            Case "LA2", "LA3"
+    '                For index As Integer = 1 To 4
+    '                    GridView2.Columns(index).Visible = False
+    '                Next
+    '                GridView2.Columns(2).Visible = True
+    '            Case "LA4"
 
-                    For index As Integer = 1 To 11
-                        GridView2.Columns(index).Visible = False
-                    Next
-                    GridView2.Columns(2).Visible = True
-                    GridView2.Columns(13).Visible = True
-                Case "E1", "E2", "B1", "B2"
-                    GridView2.Columns(13).Visible = True
-                    For index As Integer = 10 To 11
-                        GridView2.Columns(index).Visible = False
-                    Next
-                Case Else
-                    'All columns are valid and are displayed
+    '                For index As Integer = 1 To 11
+    '                    GridView2.Columns(index).Visible = False
+    '                Next
+    '                GridView2.Columns(2).Visible = True
+    '                GridView2.Columns(13).Visible = True
+    '            Case "E1", "E2", "B1", "B2"
+    '                GridView2.Columns(13).Visible = True
+    '                For index As Integer = 10 To 11
+    '                    GridView2.Columns(index).Visible = False
+    '                Next
+    '            Case Else
+    '                'All columns are valid and are displayed
 
-            End Select
-        Else
-            GridView2.Visible = False
-        End If
+    '        End Select
+    '    Else
+    '        GridView2.Visible = False
+    '    End If
 
-    End Sub
+    'End Sub
     Private Sub SetButtonText()
 
         Dim treatment As String = Application(treatmentstate)
@@ -553,7 +575,8 @@ Partial Class ClinicalUserControl
                         Application(treatmentstate) = "No"
                         LogOffButton.Visible = True
                         ActivityLabel.Text = "Clinical - Treating"
-                        BindEnergyData()
+
+                        'BindEnergyData()
                     Else
 
                         DavesCode.NewCommitClinical.SetTreatment("Not Treating", LinacName, linacstatusid, connectionString)
@@ -563,7 +586,7 @@ Partial Class ClinicalUserControl
                         LogOffButton.Visible = True
                         ActivityLabel.Text = "Clinical - Not Treating"
                     End If
-
+                    'ClinicalApprovedEvent(connectionString)
                     myscope.Complete()
                 End Using
                 StateLabel.Text = "Clinical"

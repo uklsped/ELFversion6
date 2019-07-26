@@ -184,11 +184,11 @@
         BorderStyle="Solid">
 
 
-        <div>
-            <%--<asp:Label ID="StateLabel" runat="server" BackColor="#0066FF" Font-Bold="True" 
-                ForeColor="Yellow"></asp:Label>--%>
-        </div>
-        <div id="header_wrapper">
+      <%--  <div>
+            <asp:Label ID="StateLabel" runat="server" BackColor="#0066FF" Font-Bold="True" 
+                ForeColor="Yellow"></asp:Label>
+        </div>--%>
+        <%--<div id="header_wrapper">
             <div id="temp_header">
                 <asp:Table ID="Table4" runat="server">
                     <asp:TableRow ID="TableRow1" runat="server">
@@ -284,7 +284,7 @@
                 </asp:Table>
             </div>
 
-        </div>
+        </div>--%>
 
 <%--        <asp:Table ID="Table1" runat="server" CellSpacing="20" GridLines="Both"
             Width="1875px" Height="509px">
