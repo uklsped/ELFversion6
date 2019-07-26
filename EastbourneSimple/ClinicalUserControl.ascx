@@ -43,7 +43,7 @@
                 </td>
             </tr>
             <tr style="vertical-align: top">
-                <td colspan="2">
+                <td colspan="3">
                     <table>
                         <tr>
                             <td>
@@ -56,17 +56,20 @@
                                 <asp:Button ID="LogOffButton" runat="server" Text="Log Off" Height="150px"
                                     CausesValidation="false" />
                             </td>
+                            <td style="text-align:right">
+                                <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                                    <ContentTemplate>
+                                        <uc11:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
+                                    </ContentTemplate>
+                                </asp:UpdatePanel>
+                            </td>
                         </tr>
                     </table>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-                        <ContentTemplate>
-                            <uc11:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
-                        </ContentTemplate>
-                    </asp:UpdatePanel>
+                  
                 </td>
             </tr>
             <tr>
