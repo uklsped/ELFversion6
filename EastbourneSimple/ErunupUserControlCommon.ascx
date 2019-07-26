@@ -45,14 +45,17 @@
         </asp:GridView>    
 
 <div class="grid" >
- <div class="clear">
-     <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
+
+   <div class="col100 grey" >
+      <table id="EnergyTable">
+           <%--<tr style="vertical-align:top">
+            <td colspan="3">
+                <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
                        <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
                        </asp:PlaceHolder>
                    </asp:Panel>
- </div>
-   <div class="col100 grey" >
-      <table id="EnergyTable">
+            </td>
+                </tr>--%>
         <tr style="vertical-align:top;">     
            <td  rowspan="6">
            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" visible="false" Width="126px" >

@@ -152,7 +152,7 @@ Partial Class ErunupUserControl
         If Not LinacName Like "T?" Then
             SetEnergies(connectionString)
             SetImaging(connectionString)
-            SetModalities(connectionString)
+            'SetModalities(connectionString)
             PhysicsQA.Visible = True
             'SetModalityDisplay()
         End If
@@ -162,18 +162,18 @@ Partial Class ErunupUserControl
         Application(atlasviewstate) = 1
 
     End Sub
-    Public Sub SetModalities(ByVal connectionString As String)
-        'If Application(appstate) Then
-        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
-        CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
-        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
-        CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
-        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
-        ModalityPlaceholder.Controls.Add(Modalities)
-        ModalityDisplayPanel.Visible = True
-        'End If
+    'Public Sub SetModalities(ByVal connectionString As String)
+    '    'If Application(appstate) Then
+    '    Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
+    '    CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
+    '    CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
+    '    CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
+    '    CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
+    '    ModalityPlaceholder.Controls.Add(Modalities)
+    '    ModalityDisplayPanel.Visible = True
+    '    'End If
 
-    End Sub
+    'End Sub
     'Private Sub SetModalityDisplay()
     '    'Dim tabcontainer1 As TabContainer
     '    Dim DisplayPanel As Panel
