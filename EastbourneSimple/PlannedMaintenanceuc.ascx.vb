@@ -61,60 +61,23 @@ Partial Class Planned_Maintenanceuc
         End If
     End Sub
 
-    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
-        'If LinacName = EquipmentID Then
-        '    'Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
-        '    'todayfault.SetGrid()
-        '    If LinacName Like "T?" Then
-        '        Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-        '        Todaydefectpark.ResetDefectDropDown(incidentID)
-        '    Else
-        '        Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-        '        Todaydefect.ResetDefectDropDown(incidentID)
-        '    End If
+    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String)
+        MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+        MainFaultPanel.Update_FaultClosedDisplay(EquipmentID)
 
-        'End If
     End Sub
 
-    'Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
-    '    If LinacName = EquipmentId Then
-    '        'Don't need if because report fault pop up is the same for both defects now
-    '        'If LinacName Like "T?" Then
-    '        'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-    '        'Todaydefectpark.UpDateDefectsEventHandler()
-    '        'Else
-    '        'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-    '        'Todaydefect.UpDateDefectsEventHandler()
-    '        DynamicControlSelection = String.Empty
-    '            Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
-    '            ReportFaultPopupPlaceHolder.Controls.Remove(ReportFault)
-    '        'End If
-
-    '    End If
-    'End Sub
 
     ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            'Don't need if because report fault pop up is the same for both defects now
-            'If LinacName Like "T?" Then
-            'If LinacName Like "T?" Then
-            'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            'Todaydefectpark.UpDateDefectsEventHandler()
-            'Else
-            'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            'Todaydefect.UpDateDefectsEventHandler()
             MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
-                MainFaultPanel.Update_defectsToday(LinacName)
-            'ReportFaultPopUpuc1.Visible = False
-            'End If
+            MainFaultPanel.Update_defectsToday(LinacName)
 
         End If
     End Sub
     Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            'Objcon = FindControl("ViewOpenFaults")
-            'Objcon.RebindViewFault()
             MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
             MainFaultPanel.Update_OpenConcessions(LinacName)
         End If
@@ -265,6 +228,7 @@ Partial Class Planned_Maintenanceuc
         CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
         CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
         CType(objMFG, controls_MainFaultDisplayuc).ParentControl = PM
+        AddHandler objMFG.Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_FaultClosedDisplays
         'AddHandler objMFG.Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_ClosedFaultDisplay
         PlaceHolderFaults.Controls.Add(objMFG)
 
@@ -289,15 +253,7 @@ Partial Class Planned_Maintenanceuc
         CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
         ModalityPlaceholder.Controls.Add(Modalities)
         ModalityDisplayPanel.Visible = True
-        'Dim objReportFault As controls_ReportAFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-        'objReportFault.LinacName = LinacName
-        'objReportFault.ID = "ReportFaultPopupuc"
-        'objReportFault.ParentControl = PM
-        ''objReportFault.Visible = False
-        'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-        'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
-        'ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+
         Select Case Me.DynamicControlSelection
         '    Case REPEATFAULTSELECTED
             '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
