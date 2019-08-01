@@ -29,7 +29,7 @@
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="5" visible="false" runat="server" />
 
 <div class="clear" style="width:1863px">
-    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+    <asp:UpdatePanel ID="NewFaultPopUpUpdatePanel" runat="server">
         <ContentTemplate>
     <asp:Panel ID="NewFaultPopUpPanel" runat="server">
      <asp:PlaceHolder ID="NewFaultPopupPlaceHolder" runat="server"></asp:PlaceHolder>
@@ -74,7 +74,6 @@
         </tr>
         <tr>
             <td>
-               <%-- <asp:Button ID="ViewAtlasButton" runat="server" Text="View Atlas Energies" causesvalidation="false"/>--%>
             </td>
         </tr>
         <tr>
@@ -90,7 +89,7 @@
          <tr><td colspan="2">
               <br />
               <br />
-              <asp:UpdatePanel ID="UpdatePanel3" runat="server">
+              <asp:UpdatePanel ID="ReportAFaultucUpdatePanel" runat="server">
 <ContentTemplate>
     <uc16:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />
 
@@ -111,16 +110,9 @@
         </tr>
         </table>
 </div>
-<%--<div class="col200 blue">
-        <asp:UpdatePanel ID="UpdatePanel3" runat="server">
-            <ContentTemplate>
-                <asp:Button ID="ReportFaultButton" runat="server" Text="Report Fault" CausesValidation="false" />
-                <asp:PlaceHolder ID="ReportFaultPopUpPlaceHolder" runat="server"></asp:PlaceHolder>
-            </ContentTemplate>
-        </asp:UpdatePanel>
-</div>--%>
+
 <div class="col300 green">
-    <asp:UpdatePanel ID="UpdatePanel2" runat="server" Visible="true" UpdateMode="Conditional">
+    <asp:UpdatePanel ID="PlaceHolderFaultsUpdatePanel" runat="server" Visible="true" UpdateMode="Conditional">
         <ContentTemplate>
             <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>&nbsp;
         </ContentTemplate>   
@@ -129,13 +121,8 @@
                
 </div>
 <div id="left">
-   <%-- <asp:UpdatePanel ID="UpdatePanelAtlas" runat="server" Visible="false">
-<ContentTemplate>
-<asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder>
-</ContentTemplate>   
-</asp:UpdatePanel>--%>
 
-<asp:UpdatePanel ID="UpdatePanelQA" runat="server" Visible="true">
+<asp:UpdatePanel ID="PlaceHolderModalitiesUpdatePanel" runat="server" Visible="true">
 <ContentTemplate>
     <asp:PlaceHolder ID="PlaceHolderModalities" runat="server"></asp:PlaceHolder>
 </ContentTemplate>
