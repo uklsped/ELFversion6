@@ -353,21 +353,7 @@ Partial Class Repairuc
         CommentBox.BoxChanged = BoxChanged
 
         Select Case Me.DynamicControlSelection
-            'Case FAULTPOPUPSELECTED
-            '    Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
-            '    Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
-            '    Dim Comment As String = DaTxtBox.Text
-            '    Application("TabComment") = Comment
-            '    Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-            '    objReportFault.LinacName = LinacName
-            '    objReportFault.ID = "ReportFaultPopup"
-            '    objReportFault.ParentControl = REPAIR
-            '    DynamicControlSelection = FAULTPOPUPSELECTED
-            '    'objReportFault.Visible = False
-            '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-            '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-            '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
-            '    ReportFaultPopUpPlaceHolder.Controls.Add(objReportFault)
+
             Case NEWFAULTSELECTED
 
                 Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
@@ -753,23 +739,7 @@ Partial Class Repairuc
         End Select
 
     End Sub
-    'Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
-    '    'Need to load reportfaultpopupuc here to pass comment box
-    '    Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
-    '    Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
-    '    Dim Comment As String = DaTxtBox.Text
-    '    Application("TabComment") = Comment
-    '    Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-    '    objReportFault.LinacName = LinacName
-    '    objReportFault.ID = "ReportFaultPopup"
-    '    objReportFault.ParentControl = REPAIR
-    '    DynamicControlSelection = FAULTPOPUPSELECTED
 
-    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
-    '    ReportFaultPopUpPlaceHolder.Controls.Add(objReportFault)
-    'End Sub
     Protected Sub RaiseError()
         Dim strScript As String = "<script>"
         strScript += "alert('Problem Updating Fault. Please call Engineer');"
@@ -795,13 +765,5 @@ Partial Class Repairuc
             PlaceHolderModalities.Controls.Remove(ModalityQA)
         End If
     End Sub
-    'Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
-    '    If LinacName = EquipmentId Then
-    '        DynamicControlSelection = String.Empty
-    '        Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
-    '        ReportFaultPopUpPlaceHolder.Controls.Remove(ReportFault)
-
-    '    End If
-    'End Sub
 
 End Class

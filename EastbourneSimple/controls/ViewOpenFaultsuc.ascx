@@ -2,26 +2,14 @@
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
-<%--<%@ Register src="CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc4" %>--%>
-
-<%--<%@ Register src="FaultTrackinguc.ascx" tagname="FaultTrackinguc" tagprefix="uc6" %>--%>
-
 <%@ Register src="ConcessionPopUpuc.ascx" tagname="ConcessionPopUpuc" tagprefix="uc1" %>
-
-<%--<%@ Register src="NewFaultPopUpuc.ascx" tagname="NewFaultPopUpuc" tagprefix="uc7" %>--%>
 
 <%@ Register src="../ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc2" %>
 
-<%--<%@ Register src="DeviceReportedfaultuc.ascx" tagname="DeviceReportedfaultuc" tagprefix="uc5" %>--%>
 
 <asp:Panel ID="UpdatePanel4" runat="server">
     <div>
-   <%-- <asp:Table ID="Table3"  runat="server">
-        <asp:TableRow>
-            <asp:TableCell>
-                <uc2:ManyFaultGriduc ID="ManyFaultGriduc" NewFault="false" runat="server" />
-            </asp:TableCell>
-            <asp:TableCell>--%>
+
                 <fieldset style="width: auto;">
                     <legend>Open Concessions</legend>
                     <asp:GridView ID="ConcessionGrid" runat="server" AutoGenerateColumns="False" CellPadding="4"
@@ -31,7 +19,7 @@
                         OnRowCommand="FaultGridView_RowCommand"
                         ForeColor="#333333" GridLines="None" EmptyDataText="No Data To Display" EmptyDataRowStyle-ForeColor="White" EmptyDataRowStyle-BackColor="Black" Font-Bold="True">
                         <RowStyle CSSClass="grows" />
-                            <%--BackColor="#F7F6F3" ForeColor="#333333" HorizontalAlign="Center" />--%>
+                         
                         <PagerStyle CssClass="cssPager" />
                         <Columns>
                             <asp:BoundField DataField="incidentID" HeaderText="incidentID" InsertVisible="False"
@@ -49,9 +37,7 @@
 
                             <asp:ButtonField ButtonType="Button" CommandName="View" Text="View Concession" />
                             <asp:ButtonField ButtonType="Button" CommandName="Faults" Text="View Faults" />
-<%--                            <asp:TemplateField>
-                                <ItemTemplate></ItemTemplate>
-                            </asp:TemplateField>--%>
+
                         </Columns>
                         <FooterStyle BackColor="#5D7B9D" ForeColor="White" Font-Bold="True" />
                         <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
@@ -63,16 +49,13 @@
 
                 </fieldset>
                 <br />
-          <%--  </asp:TableCell>
-        </asp:TableRow>
-    </asp:Table>--%>
+
 </div>
 </asp:Panel>
 
 <asp:Panel ID="UpdatePanel3" runat="server">
     <asp:PlaceHolder ID="ConcessionPopupPlaceHolder" runat="server"></asp:PlaceHolder>
        
-   <%-- <uc7:NewFaultPopUpuc ID="NewFaultPopUpuc1" ParentName="" visible="false" runat="server" />--%>
     <asp:Panel ID="Panel4" runat="server">
 
        <asp:MultiView ID="MultiView1" runat="server">
@@ -83,7 +66,7 @@
                     <asp:Panel ID="statustechpanel" runat="server" Visible="false">
                        <asp:UpdatePanel ID="UpdatePanel5" runat="server">
                             <ContentTemplate>
-                          <%-- <uc6:FaultTrackinguc ID="FaultTrackinguc1" runat="server" visible="false"/>--%>
+                        
                            </ContentTemplate></asp:UpdatePanel>
                      </asp:Panel>
                         

@@ -52,10 +52,7 @@ Partial Class controls_ViewOpenFaultsuc
         End Set
     End Property
 
-    Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
-    Public Event AddConcessionToDefectDropDownList(ByVal EquipmentName As String, ByVal incidentID As String)
     Public Event ViewOpenFaults_UpdateClosedFaultDisplays(ByVal EquipmentName As String)
-    Public Event ResetViewOpenFaults(ByVal EquipmentName As String)
 
     Public Property ParentControl() As String
     Public Property LinacName() As String
@@ -92,10 +89,10 @@ Partial Class controls_ViewOpenFaultsuc
             Case CONCESSIONSELECTED
 
                 Dim ConcessionPopup As controls_ConcessionPopUpuc = Page.LoadControl("controls\ConcessionPopUpuc.ascx")
-                    CType(ConcessionPopup, controls_ConcessionPopUpuc).ID = "ConcessionPopup"
-                    CType(ConcessionPopup, controls_ConcessionPopUpuc).LinacName = LinacName
-                    CType(ConcessionPopup, controls_ConcessionPopUpuc).ParentName = ParentControl
-                    CType(ConcessionPopup, controls_ConcessionPopUpuc).Visible = True
+                CType(ConcessionPopup, controls_ConcessionPopUpuc).ID = "ConcessionPopup"
+                CType(ConcessionPopup, controls_ConcessionPopUpuc).LinacName = LinacName
+                CType(ConcessionPopup, controls_ConcessionPopUpuc).ParentName = ParentControl
+                CType(ConcessionPopup, controls_ConcessionPopUpuc).Visible = True
                 AddHandler ConcessionPopup.CloseFaultTracking, AddressOf CloseTracking
                 AddHandler ConcessionPopup.UpdateClosedDisplays, AddressOf UpdateCloseDisplays
                 ConcessionPopupPlaceHolder.Controls.Add(ConcessionPopup)
@@ -114,17 +111,6 @@ Partial Class controls_ViewOpenFaultsuc
 
 
     '    'from http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.buttonfield.commandname%28v=vs.110%29.aspx?cs-save-lang=1&cs-lang=vb#code-snippet-2
-
-
-
-    Protected Sub CloseDisplays(ByVal Linac As String)
-        'ConcessionPopUpuc1.Visible = False
-        RaiseEvent ViewOpenFaults_UpdateClosedFaultDisplays(Linac)
-        If ParentControl = "5" Then
-            'TabTech()
-        End If
-
-    End Sub
 
     Protected Sub CloseTracking(ByVal Linac As String)
 
@@ -192,7 +178,7 @@ Partial Class controls_ViewOpenFaultsuc
                                 CType(ConcessionPopup, controls_ConcessionPopUpuc).ParentName = ParentControl
                                 CType(ConcessionPopup, controls_ConcessionPopUpuc).Visible = True
                                 AddHandler ConcessionPopup.CloseFaultTracking, AddressOf CloseTracking
-                                'AddHandler ConcessionPopup.UpdateClosedDisplays, AddressOf CloseDisplays
+                                AddHandler ConcessionPopup.UpdateClosedDisplays, AddressOf UpdateCloseDisplays
                                 ConcessionPopupPlaceHolder.Controls.Add(ConcessionPopup)
                                 ConcessionPopup.SetUpFaultTracking()
 
