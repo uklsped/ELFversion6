@@ -77,7 +77,9 @@ Partial Class Repairuc
         End If
     End Sub
     'This works to update closed faults and to remove concession from defect dropdown list.
-    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
+    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String)
+        MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+        MainFaultPanel.Update_FaultClosedDisplay(EquipmentID)
         'If MachineName = EquipmentID Then
         '    Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
         '    todayfault.SetGrid()
@@ -87,20 +89,6 @@ Partial Class Repairuc
         '    Else
         '        Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
         '        Todaydefect.ResetDefectDropDown(incidentID)
-        '    End If
-
-        'End If
-    End Sub
-    'Adds new concession created via viewopenfaults to defect drop down list
-    Protected Sub Add_ConcessionToDefectDropDownList(ByVal EquipmentID As String, ByVal IncidentID As Integer)
-        'If MachineName = EquipmentID Then
-
-        '    If MachineName Like "T?" Then
-        '        Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
-        '        Todaydefectpark.ResetDefectDropDown(IncidentID)
-        '    Else
-        '        Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-        '        Todaydefect.ResetDefectDropDown(IncidentID)
         '    End If
 
         'End If
@@ -389,7 +377,9 @@ Partial Class Repairuc
                 CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
                 CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
                 AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-                'AddHandler ConcessionPopup.UpdateClosedDisplays, AddressOf CloseDisplays
+                AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
+                AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
+
                 NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
 
             Case QASELECTED
@@ -408,6 +398,7 @@ Partial Class Repairuc
         CType(objMFG, controls_MainFaultDisplayuc).LinacName = LinacName
         CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
         CType(objMFG, controls_MainFaultDisplayuc).ParentControl = REPAIR
+        AddHandler objMFG.Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_FaultClosedDisplays
         PlaceHolderFaults.Controls.Add(objMFG)
 
         Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
@@ -488,7 +479,8 @@ Partial Class Repairuc
                         CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
                         CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
                         AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-                        'AddHandler ConcessionPopup.UpdateClosedDisplays, AddressOf CloseDisplays
+                        AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
+                        AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
                         NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
                         DynamicControlSelection = NEWFAULTSELECTED
                     Else

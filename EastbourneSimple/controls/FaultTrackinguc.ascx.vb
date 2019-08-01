@@ -220,7 +220,6 @@ Partial Class controls_FaultTrackinguc
                             If exists = -1 Then
                                 RaiseError()
                             Else
-                                RaiseEvent AddConcessionToDefectDropDownList(Machine, exists)
                                 RaiseEvent UpdateOpenConcessions(Machine)
                                 RaiseEvent CloseFaultTracking(Machine)
                             End If

@@ -12,6 +12,7 @@ Partial Class controls_NewFaultPopUpuc
     Private FaultParamsApplication As String
     Public Event CloseFaultTracking(ByVal Linac As String)
     Public Event UpdateOpenConcessions(ByVal Linac As String)
+    Public Event UpdateClosedDisplays(ByVal Linac As String)
     'Public Event UpdateClosedDisplays(ByVal Linac As String, ByVal IncidentID As String)
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
         ParamApplication = "Params" + LinacName
@@ -43,6 +44,10 @@ Partial Class controls_NewFaultPopUpuc
         RaiseEvent UpdateOpenConcessions(LinacName)
     End Sub
 
+    Private Sub Update_ClosedDisplays(ByVal LinacName As String)
+        RaiseEvent UpdateClosedDisplays(LinacName)
+    End Sub
+
     'Private Sub CloseDisplays(ByVal LinacName As String, ByVal IncidentID As String)
     '    RaiseEvent UpdateClosedDisplays(LinacName, IncidentID)
     'End Sub
@@ -71,6 +76,7 @@ Partial Class controls_NewFaultPopUpuc
                 FaultTracking.IncidentID = ConcessParamsTrial.IncidentID
                 FaultTracking.InitialiseFaultTracking(ConcessParamsTrial)
             AddHandler FaultTrackinguc1.UpdateOpenConcessions, AddressOf Update_OpenConcessions
+            AddHandler FaultTrackinguc1.UpdateClosedDisplays, AddressOf Update_ClosedDisplays
             AddHandler FaultTracking.CloseFaultTracking, AddressOf CloseTracking
 
             Dim MyString As String
@@ -97,9 +103,6 @@ Partial Class controls_NewFaultPopUpuc
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(Label1, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
-
-
-
 
     Protected Function GetNewIncident() As Short
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString

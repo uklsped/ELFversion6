@@ -119,7 +119,7 @@ Partial Class ManyFaultGriduc
 
     Public Sub BindDefectDataLinac()
         Dim SqlDataSource1 As New SqlDataSource()
-        Dim query As String = "SELECT ConcessionNumber as 'IncidentID', CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as 'DateReported',Area,Energy,GantryAngle,CollimatorAngle from ReportFault where Cast(DateReported As Date) = Cast(GetDate() As Date) And linac=@linac order by FaultID desc"
+        Dim query As String = "SELECT 'IncidentID'= CASE WHEN ConcessionNumber = '' THEN  'Major Fault' ELSE ConcessionNumber END , CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as 'DateReported',Area,Energy,GantryAngle,CollimatorAngle from ReportFault where Cast(DateReported As Date) = Cast(GetDate() As Date) And linac=@linac order by FaultID desc"
         SqlDataSource1 = QuerySqlConnection(query)
         GridViewLinac.DataSource = SqlDataSource1
         GridViewLinac.DataBind()

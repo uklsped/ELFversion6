@@ -5,13 +5,15 @@
                                                     <ContentTemplate>         
     <asp:MultiView ID="MultiView1" runat="server">
         <asp:View id="Linacs" runat="server">
+            <fieldset style="width: auto;">
+                    <legend>Open Concessions</legend>
             <asp:GridView ID="GridViewLinac" AutoGenerateColumns="false" runat="server" MaxHeight="250px;"
                         CellPadding="4" DataKeyNames="IncidentID" AllowPaging="True" PageSize="3" OnPageIndexChanging="OnPaging"
         EnableViewState="False" ForeColor="#333333" GridLines="None" >
         <RowStyle CSSClass="grows" BackColor="#E3EAEB" />
         <AlternatingRowStyle BackColor="White" />
         <Columns>
-           <asp:BoundField DataField="IncidentID" HeaderText="Incident ID" InsertVisible="False" 
+           <asp:BoundField DataField="IncidentID" HeaderText="Fault" InsertVisible="False" 
                 ReadOnly="True"
                  />
              <asp:BoundField DataField="RadiationIncident" HeaderText="Radiation Incident"
@@ -34,7 +36,7 @@
         <PagerStyle BackColor="#666666" ForeColor="White" HorizontalAlign="Center" />
         <SelectedRowStyle BackColor="#C5BBAF" Font-Bold="True" ForeColor="#333333" />
     </asp:GridView>
-    
+    </fieldset>
      </asp:View>
         <asp:View ID="Tomo" runat="server">
               <asp:GridView ID="GridViewTomo" AutoGenerateColumns="false" runat="server"
