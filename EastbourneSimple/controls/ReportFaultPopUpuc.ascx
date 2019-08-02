@@ -23,7 +23,8 @@
                 
           </asp:View>
           <asp:View ID="TomoView" runat="server">
-                <uc2:DefectSavePark ID="DefectSavePark1" runat="server" />
+              <asp:PlaceHolder ID="PlaceHolderDefectSavePark" runat="server"></asp:PlaceHolder>
+                <%--<uc2:DefectSavePark ID="DefectSavePark1" runat="server" />--%>
            </asp:View>
       </asp:MultiView>
   </div>

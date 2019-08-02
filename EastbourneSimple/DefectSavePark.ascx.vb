@@ -56,6 +56,7 @@ Partial Class DefectSavePark
         newFault = False
         SetFaults(newFault)
         RadioIncident.SelectedIndex = -1
+        Dim clear As Button = FindControl("ClearButton")
 
     End Sub
 
@@ -280,8 +281,8 @@ Partial Class DefectSavePark
     End Sub
 
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
-        Defect.SelectedIndex = -1
-        ClearsForm()
+        'Defect.SelectedIndex = -1
+        'ClearsForm()
         RaiseEvent CloseReportFaultPopUp(LinacName)
     End Sub
 
@@ -480,7 +481,8 @@ Partial Class DefectSavePark
             Else
                 'Error action
             End If
-
+            FaultDescription.SetValidation("", "")
+            RadActC.SetValidation("", "")
         End If
     End Sub
     Protected Sub RaiseError()

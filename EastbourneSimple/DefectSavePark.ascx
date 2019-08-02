@@ -76,7 +76,7 @@
                             Display="Dynamic" validationgroup="Tomodefect" forecolor="Red" ></asp:RequiredFieldValidator></td></tr>
             <tr><td><asp:Button ID="SaveDefectButton" runat="server" Text="Save"  CausesValidation="false" Visible="false"/></td>
                 <td><asp:Button ID="UnRecoverableSave" runat="server" CausesValidation="False"  Text="Save" Visible="false" /></td>
-                <td><asp:Button ID="ClearButton" runat="server" Text="Clear" CausesValidation="False" CssClass="buttonmargin" /></td>
+                <td><asp:Button ID="ClearButton" runat="server" Text="Close" CausesValidation="False" CssClass="buttonmargin" /></td>
                 <td></td>
             </tr>
         </table>

@@ -132,8 +132,8 @@ Partial Class controls_ReportFaultPopUpuc
             'FaultTracking.IncidentID = ConcessParamsTrial.IncidentID
             'FaultTracking.InitialiseFaultTracking(ConcessParamsTrial)
         Else
-
-            Dim objDefectPark As DefectSavePark = CType(FindControl("DefectSavePark1"), DefectSavePark)
+            Dim objDefectPark As DefectSavePark = Page.LoadControl("DefectSavePark.ascx")
+            'Dim objDefectPark As DefectSavePark = CType(FindControl("DefectSavePark1"), DefectSavePark)
             'Dim objDefect As DefectSave
             'objDefect = Page.LoadControl("DefectSave.ascx")
             CType(objDefectPark, DefectSavePark).ID = "DefectDisplaypark"
@@ -144,6 +144,7 @@ Partial Class controls_ReportFaultPopUpuc
             AddHandler CType(objDefectPark, DefectSavePark).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
             AddHandler CType(objDefectPark, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
             objDefectPark.InitialiseDefectPage()
+            PlaceHolderDefectSavePark.Controls.Add(objDefectPark)
             DefectView.ActiveViewIndex = 1
         End If
     End Sub

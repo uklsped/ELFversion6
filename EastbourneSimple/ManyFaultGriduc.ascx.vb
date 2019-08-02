@@ -89,21 +89,21 @@ Partial Class ManyFaultGriduc
 
     Protected Sub BindGridViewTomoVEF()
 
-        'Dim SqlDataSource4 As New SqlDataSource With {
-        '    .ID = "SqlDataSource3",
-        '    .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
-        '}
+        Dim SqlDataSource4 As New SqlDataSource With {
+            .ID = "SqlDataSource3",
+            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        }
         'If NewFault Then
         '    SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
         '    SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         '    SqlDataSource4.SelectParameters.Add("linac", MachineName)
         'Else
-        '    SqlDataSource4.SelectCommand = "select IncidentID, FaultID, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID = @IncidentID order by DateReported desc"
-        '    SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
-        '    SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
+        SqlDataSource4.SelectCommand = "select IncidentID, FaultID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy from ReportFault where incidentID = @IncidentID order by DateReported desc"
+        SqlDataSource4.SelectParameters.Add("@incidentID", System.Data.SqlDbType.NVarChar)
+            SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
         'End If
-        'GridViewTomo.DataSource = SqlDataSource4
-        'GridViewTomo.DataBind()
+        GridViewTomo.DataSource = SqlDataSource4
+        GridViewTomo.DataBind()
 
         'If NewFault Then
         '    If Application(technicalstate) = True Then
