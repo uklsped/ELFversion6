@@ -261,7 +261,7 @@ Partial Public Class T2page
             End If
 
             Dim userIP As String = DavesCode.Reuse.GetIPAddress()
-            'Label5.Text = userIP
+            Label5.Text = userIP
             'Label5.Text = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
             ' 20 April handle direct open to repair page
 
@@ -487,7 +487,7 @@ Partial Public Class T2page
         Dim lastState As String = ""
         Dim lastuser As String = ""
         Dim lastusergroup As Integer = 0
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+
         Page = Me.Page
         mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
@@ -670,7 +670,7 @@ Partial Public Class T2page
                             '        End If
                             '    End If
                             'Else
-                            'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                             Select Case tabref
 
                                 Case 1
@@ -715,7 +715,6 @@ Partial Public Class T2page
                             DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
                             SetUser(lastusergroup)
                             'User = "Engineer/Physicist"
-                            rucontrol.EngLogOnEvent(connectionString)
                             rucontrol.Visible = True
                             'textbox = rucontrol.FindControl("commentbox")
                             ''020316
@@ -744,7 +743,6 @@ Partial Public Class T2page
                         Case 2
                             Activity = "Pre-clinical Run Up"
                             UserGroupLabel.Text = "Radiographer"
-                            preccontrol.Preclinloaded(connectionString)
                             preccontrol.Visible = True
                             'textbox = preccontrol.FindControl("commentbox")
                             'textbox.Text = comment
@@ -759,7 +757,7 @@ Partial Public Class T2page
                             Dim outputn As String = Application(appstate)
                             If outputn = 1 Then
                                 'should have a transaction
-                                'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                                 clinicalcontrol.ClinicalApprovedEvent(connectionString)
                             End If
 
@@ -1150,17 +1148,17 @@ Partial Public Class T2page
         Protected Sub EndofDayElf(ByVal Caller As String)
         Dim returnstring As String = EquipmentID + "page.aspx"
         Dim mrucontrol As ErunupUserControl
-        'Dim mpreccontrol As Preclinusercontrol
+        Dim mpreccontrol As Preclinusercontrol
         Dim mclincontrol As ClinicalUserControl
         Dim mplancontrol As Planned_Maintenanceuc
         Dim mrepcontrol As Repairuc
         'Dim mwebcontrol As UserControl = tcl.ActiveTab.FindControl(webusercontrol21ID)
         'Dim mwritecontrol As UserControl = tcl.ActiveTab.FindControl(writedatacontrolID)
-        'Dim mphysicscontrol As UserControl
+        Dim mphysicscontrol As UserControl
         Dim mtrainingcontrol As Traininguc
         Dim grdview As GridView
-        'Dim Commentbox As TextBox
-        'Dim Comment As String
+        Dim Commentbox As TextBox
+        Dim Comment As String
         Dim Logoffuser As String = "System"
         Dim Breakdown As Boolean
         Dim lastState As String
@@ -1190,7 +1188,7 @@ Partial Public Class T2page
                 End If
             End If
 
-        'Label2.Text = "Last state " + lastState
+        Label2.Text = "Last state " + lastState
 
         If Application(appstate) = 1 Then
             'this forces active tab to be actual active tab. This isn't the case if the active tab is tab 0 so find controls fails.
@@ -1203,29 +1201,15 @@ Partial Public Class T2page
             '    suspstate = Nothing
             '    repairstate = Nothing
             'End If
-            'Label3.Text = "Tab is " + activetab
+            Label3.Text = "Tab is " + activetab
             Application(actionstate) = False
             Select Case activetab
 
                 Case 1, 7
                     If activetab = 1 Then
-                        If tcl.ActiveTab.FindControl(runupcontrolId) Is Nothing Then
-                            mrucontrol = Page.LoadControl("ErunupUserControlCommon.ascx")
-                            mrucontrol.ID = runupcontrolId
-                            mrucontrol.LinacName = EquipmentID
-                        Else
-                            mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
-                        End If
-
+                        mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
                     Else
-                        If tcl.ActiveTab.FindControl(emergencycontrolID) Is Nothing Then
-                            mrucontrol = Page.LoadControl("ErunupUserControlCommon.ascx")
-                            mrucontrol.ID = emergencycontrolID
-                            mrucontrol.LinacName = EquipmentID
-                        Else
-                            mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
-                        End If
-
+                        mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
                     End If
 
                     grdview = mrucontrol.FindControl("Gridview1")
@@ -1237,33 +1221,20 @@ Partial Public Class T2page
                     'At the moment if it fails it 
                     'Successful = DavesCode.NewEngRunup.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
                     mrucontrol.UserApprovedEvent(activetab, Logoffuser)
-                'Case 2
-                '    mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
-                '    'Commentbox = mpreccontrol.FindControl("CommentBox")
-                '    'Comment = Commentbox.Text
-                '    'DavesCode.Reuse.CommitPreClin(EquipmentID, Logoffuser, Comment, False, False, False, Breakdown)
-                '    mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
+                Case 2
+                    mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
+                    'Commentbox = mpreccontrol.FindControl("CommentBox")
+                    'Comment = Commentbox.Text
+                    'DavesCode.Reuse.CommitPreClin(EquipmentID, Logoffuser, Comment, False, False, False, Breakdown)
+                    mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
                 Case 3
-                    If tcl.ActiveTab.FindControl(ClinicalUserControlID) Is Nothing Then
-                        mclincontrol = Page.LoadControl("ClinicalUserControl.ascx")
-                        mclincontrol.ID = ClinicalUserControlID
-                        mclincontrol.LinacName = EquipmentID
-                    Else
-                        mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                    End If
-                    mclincontrol.UserApprovedEvent(activetab, Logoffuser)
+                    mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                    mclincontrol.userapprovedevent(activetab, Logoffuser)
                     'DavesCode.NewCommitClinical.CommitClinical(EquipmentID, Logoffuser, Breakdown)
                         'Next line not used because commitclinical modified to remove two step process of suspended then log off
                         'DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 0)
                 Case 4
-                    If tcl.ActiveTab.FindControl(PlannedMaintenanceControlID) Is Nothing Then
-                        mplancontrol = Page.LoadControl("PlannedMaintenanceuc.ascx")
-                        mplancontrol.ID = PlannedMaintenanceControlID
-                        mplancontrol.LinacName = EquipmentID
-                    Else
-                        mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
-                    End If
-
+                    mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
                     'Commentbox = mplancontrol.FindControl("CommentBox")
                     'Comment = Commentbox.Text
                     Application(actionstate) = "EndOfDay"
@@ -1271,16 +1242,7 @@ Partial Public Class T2page
                     'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 4, Breakdown, suspendnull, repairstatenull, False)
 
                 Case 5
-                    If tcl.ActiveTab.FindControl(repcontrolId) Is Nothing Then
-                        mrepcontrol = Page.LoadControl("Repairuc.ascx")
-                        mrepcontrol.ID = repcontrolId
-                        mrepcontrol.LinacName = EquipmentID
-
-                    Else
-                        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
-                    End If
-
-
+                    mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
                     'Commentbox = mrepcontrol.FindControl("CommentBox")
                     'Comment = Commentbox.Text
                     'mrepcontrol.RemoteLockElf()
@@ -1301,20 +1263,13 @@ Partial Public Class T2page
                         mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
                     End If
 
-                'Case 6
-                '    mphysicscontrol = tcl.ActiveTab.FindControl(physicscontrolID)
-                '    Commentbox = mphysicscontrol.FindControl("CommentBox")
-                '    Comment = Commentbox.Text
-                '    DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 6, Breakdown, suspendnull, repairstatenull, False)
+                Case 6
+                    mphysicscontrol = tcl.ActiveTab.FindControl(physicscontrolID)
+                    Commentbox = mphysicscontrol.FindControl("CommentBox")
+                    Comment = Commentbox.Text
+                    DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 6, Breakdown, suspendnull, repairstatenull, False)
                 Case 8
-                    If tcl.ActiveTab.FindControl(trainingcontrolID) Is Nothing Then
-                        mtrainingcontrol = Page.LoadControl("Traininguc.ascx")
-                        mtrainingcontrol.ID = trainingcontrolID
-                        mtrainingcontrol.LinacName = EquipmentID
-                    Else
-                        mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
-                    End If
-
+                    mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
                     'Commentbox = mtrainingcontrol.FindControl("CommentBox")
                     'Comment = Commentbox.Text
                     Application(actionstate) = "EndOfDay"
@@ -1451,10 +1406,10 @@ Partial Public Class T2page
                 'DavesCode.NewEngRunup.CommitRunupNew(grdview, EquipmentID, 666, Userinfo, Comment, Valid, False, False) ' 666 means that blank gridview is written
                 'Application(repairstate) = Nothing
 
-            'Case 2
-            '    mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
-            '    mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
-            '    Application(repairstate) = 1
+            Case 2
+                mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
+                mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
+                Application(repairstate) = 1
             Case 3
                 mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                 mclincontrol.UserApprovedEvent("Recover", Logoffuser)
