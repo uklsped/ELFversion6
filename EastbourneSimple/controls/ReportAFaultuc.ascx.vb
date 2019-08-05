@@ -30,7 +30,10 @@ Partial Class controls_ReportAFaultuc
         '    Case REPEATFAULTSELECTED
             '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
             Case FAULTPOPUPSELECTED
-
+                Dim CommentControl As controls_CommentBoxuc = Parent.FindControl("CommentBox")
+                Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
+                Dim Comment As String = DaTxtBox.Text
+                Application("TabComment") = Comment
                 Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
                 CType(objReportFault, controls_ReportFaultPopUpuc).LinacName = LinacName
                 CType(objReportFault, controls_ReportFaultPopUpuc).ID = "ReportFaultPopupuc"

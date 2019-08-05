@@ -232,7 +232,7 @@ Partial Public Class AcceptLinac
                 Dim MyString As String
                 Dim Tabnumber As String
                 If Tabby = 3 Then
-                    If MachineName IsNot "T1" Then
+                    If Not MachineName Like "T#" Then
                         Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
                         CType(objCon, EnergyDisplayuc).LinacName = MachineName
                         PlaceHolder2.Controls.Add(objCon)

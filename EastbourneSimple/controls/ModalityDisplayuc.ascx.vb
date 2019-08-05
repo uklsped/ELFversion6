@@ -43,7 +43,7 @@ Partial Class controls_ModalityDisplayuc
 
     End Sub
     Private Sub BindEnergyDataClinical()
-        If LinacName IsNot "T1" Then
+        If Not LinacName Like "T#" Then
             Dim SqlDataSource1 As New SqlDataSource()
             'the distinct takes care of when suspended returns via pre-clinical because then there are two pre ids for one runup id
             'Dim query As String = "Select distinct handoverID, MV6, MV10, MeV6, MeV8, " & _

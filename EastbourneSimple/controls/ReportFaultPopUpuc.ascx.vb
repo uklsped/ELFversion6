@@ -112,7 +112,7 @@ Partial Class controls_ReportFaultPopUpuc
         ConcessParamsTrial = Application(ParamApplication)
         'If Not ConcessParamsTrial Is Nothing Then
 
-        If Not LinacName Like "T?" Then
+        If Not LinacName Like "T#" Then
             Dim objDefect As DefectSave = Page.LoadControl("DefectSave.ascx")
             'Dim objDefect As DefectSave
             'objDefect = Page.LoadControl("DefectSave.ascx")
@@ -139,7 +139,7 @@ Partial Class controls_ReportFaultPopUpuc
             CType(objDefectPark, DefectSavePark).ID = "DefectDisplaypark"
             CType(objDefectPark, DefectSavePark).LinacName = LinacName
             CType(objDefectPark, DefectSavePark).ParentControl = ParentControl
-            'CType(objDefectPark, DefectSavePark).ParentControlComment = ParentCommentBox
+            CType(objDefectPark, DefectSavePark).ParentControlComment = ParentCommentBox
             AddHandler CType(objDefectPark, DefectSavePark).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
             AddHandler CType(objDefectPark, DefectSavePark).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
             AddHandler CType(objDefectPark, DefectSavePark).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults

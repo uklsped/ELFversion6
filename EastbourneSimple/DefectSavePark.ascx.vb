@@ -33,6 +33,7 @@ Partial Class DefectSavePark
     Dim SelectedIncident As Integer = 0
     Public Property LinacName() As String
     Public Property ParentControl() As String
+    Public Property ParentControlComment() As String
     Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
     Public Event CloseReportFaultPopUp(ByVal EquipmentName As String)
     Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
@@ -87,6 +88,7 @@ Partial Class DefectSavePark
 
             End If
             ClearsForm()
+            RaiseEvent UpdateViewOpenFaults(LinacName)
             RaiseEvent CloseReportFaultPopUp(LinacName)
         End If
     End Sub
@@ -137,6 +139,8 @@ Partial Class DefectSavePark
         'Added back in for RAD RESET 26/3/18 SEE SPR
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         wctrl.LinacName = LinacName
+        FaultDescription.BoxChanged = FaultDescriptionChanged
+        RadActC.BoxChanged = RadActDescriptionChanged
         'BindDefectData()
     End Sub
     Public Sub ResetDefectDropDown(ByVal incidentid As String)
@@ -219,7 +223,7 @@ Partial Class DefectSavePark
         Dim comm1 As SqlCommand
         Dim DefectString As String = ""
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        ClearsForm()
+        'ClearsForm()
         incidentIDstring = Defect.SelectedItem.Value
         DefectString = Defect.SelectedItem.Text
         Dim result As ListItem
@@ -302,6 +306,14 @@ Partial Class DefectSavePark
     End Sub
 
     Sub NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
+        appstate = "LogOn" + LinacName
+        actionstate = "ActionState" + LinacName
+        suspstate = "Suspended" + LinacName
+        failstate = "FailState" + LinacName
+        repairstate = "rppTab" + LinacName
+        FaultDescriptionChanged = "defectFault" + LinacName
+        RadActDescriptionChanged = "radact" + LinacName
+        'FaultApplication = "FaultParams" + LinacName
         Dim Result As Boolean = False
         Dim usergroupselected As Integer = 0
         'Dim IncidentID As Integer
@@ -353,27 +365,27 @@ Partial Class DefectSavePark
                     Dim susstate As String = Application(suspstate)
                     Dim repstate As String = Application(repairstate)
                     'This gets comment box from tab that defectsave is on
-                    Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
-                    Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
-                    Dim Comment As String = DaTxtBox.Text
-
+                    'Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
+                    'Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
+                    'Dim Comment As String = DaTxtBox.Text
+                    Dim ParentControlComment As String = Application("TabComment")
                     Dim iView As Boolean = False
                     Dim XVI As Boolean = False
 
                     Select Case ParentControl
 
                         Case 1, 7
-                            Result = DavesCode.NewEngRunup.CommitRunup(GridViewEnergy, GridViewImage, LinacName, ParentControl, UserInfo, Comment, Valid, True, False, FaultParams)
+                            Result = DavesCode.NewEngRunup.CommitRunup(GridViewEnergy, GridViewImage, LinacName, ParentControl, UserInfo, ParentControlComment, Valid, True, False, FaultParams)
 
                         Case 2
                             DavesCode.Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
-                            Result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, Comment, iView, XVI, Valid, True, FaultParams)
+                            Result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, ParentControlComment, iView, XVI, Valid, True, FaultParams)
                         Case 3
                             Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, UserInfo, True, FaultParams)
                             Application(suspstate) = 1
 
                         Case 4, 5, 6, 8
-                            Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
+                            Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, ParentControlComment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
 
                         Case Else
                             'Application(failstate) = ParentControl
@@ -406,7 +418,7 @@ Partial Class DefectSavePark
             'End If
         End If
         Defect.SelectedIndex = -1
-        ClearsForm()
+        'ClearsForm()
     End Sub
 
     Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultParams As DavesCode.FaultParameters)

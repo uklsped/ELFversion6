@@ -494,7 +494,7 @@ Partial Class DefectSave
                 'amended because now this control is on reportfaultpopup
                 'Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
                 'Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
-                Dim CommentControl As HiddenField = Me.Parent.FindControl("ParentTabComment")
+                'Dim CommentControl As HiddenField = Me.Parent.FindControl("ParentTabComment")
                 Dim ParentControlComment As String = Application("TabComment")
                 '= CommentControl.Value
                 Dim GridViewE As GridView = Me.Parent.FindControl("Gridview1")

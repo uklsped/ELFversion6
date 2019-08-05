@@ -38,6 +38,7 @@ Partial Class ClinicalUserControl
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     Dim Modalities As controls_ModalityDisplayuc
+    Private MainFaultPanel As controls_MainFaultDisplayuc
     Private Property DynamicControlSelection() As String
         Get
             Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
@@ -67,44 +68,56 @@ Partial Class ClinicalUserControl
         End If
     End Function
 
-    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
+    Protected Sub Update_ClosedFaultDisplay(ByVal EquipmentID As String)
+        If LinacName = EquipmentID Then
+            MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+            MainFaultPanel.Update_FaultClosedDisplay(LinacName)
+        End If
+    End Sub
+    'Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
+    'If LinacName = EquipmentID Then
+    '    Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
+    '    todayfault.SetGrid()
+    '    If LinacName Like "T?" Then
+    '        TodaydefectPark = PlaceHolder1.FindControl("DefectDisplay")
+    '        TodaydefectPark.ResetDefectDropDown(incidentID)
+    '    Else
+    '        Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
+    '        Todaydefect.ResetDefectDropDown(incidentID)
+    '    End If
+
+    'End If
+    'End Sub
+
+    ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
+    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         'If LinacName = EquipmentID Then
-        '    Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
-        '    todayfault.SetGrid()
-        '    If LinacName Like "T?" Then
-        '        TodaydefectPark = PlaceHolder1.FindControl("DefectDisplay")
-        '        TodaydefectPark.ResetDefectDropDown(incidentID)
-        '    Else
-        '        Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-        '        Todaydefect.ResetDefectDropDown(incidentID)
-        '    End If
+        If LinacName = EquipmentID Then
+                MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+                MainFaultPanel.Update_defectsToday(LinacName)
+
+            End If
+        'Don't need if because report fault pop up is the same for both defects now
+        'If LinacName Like "T?" Then
+        'If LinacName Like "T?" Then
+        'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+        'Todaydefectpark.UpDateDefectsEventHandler()
+        'Else
+        'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+        'Todaydefect.UpDateDefectsEventHandler()
+        'MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+        'MainFaultPanel.Update_defectsToday(LinacName)
+        'ReportFaultPopUpuc1.Visible = False
+        'End If
 
         'End If
     End Sub
 
-    ' This updates the defect display on defectsave etc when repeat fault from viewopenfaults
-    Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
-        If LinacName = EquipmentID Then
-            'Don't need if because report fault pop up is the same for both defects now
-            'If LinacName Like "T?" Then
-            'If LinacName Like "T?" Then
-            'Todaydefectpark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            'Todaydefectpark.UpDateDefectsEventHandler()
-            'Else
-            'Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-            'Todaydefect.UpDateDefectsEventHandler()
-            'MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
-            'MainFaultPanel.Update_defectsToday(LinacName)
-            'ReportFaultPopUpuc1.Visible = False
-            'End If
-
-        End If
-    End Sub
-
     Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-            'Dim updatefault As ViewOpenFaults = PlaceHolder4.FindControl("ViewOpenFaults")
-            'updatefault.RebindViewFault()
+            MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+            MainFaultPanel.Update_OpenConcessions(LinacName)
+
         End If
     End Sub
 

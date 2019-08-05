@@ -187,21 +187,21 @@ Partial Class ErunupUserControl
     '    End If
     'End Sub
     'this updates defect dropdown list because a concession has been closed perhaps rename
-    Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
+    'Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
 
-        'If LinacName = EquipmentID Then
+    'If LinacName = EquipmentID Then
 
-        '    'Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
-        '    'todayfault.SetGrid()
-        '    If LinacName Like "T?" Then
-        '            TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-        '            TodaydefectPark.ResetDefectDropDown(incidentID)
-        '        Else
-        '            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-        '            Todaydefect.ResetDefectDropDown(incidentID)
-        '        End If
-        '    End If
-    End Sub
+    '    'Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
+    '    'todayfault.SetGrid()
+    '    If LinacName Like "T?" Then
+    '            TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
+    '            TodaydefectPark.ResetDefectDropDown(incidentID)
+    '        Else
+    '            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
+    '            Todaydefect.ResetDefectDropDown(incidentID)
+    '        End If
+    '    End If
+    'End Sub
     ' This updates the defect display on defectsave etc when repeat fault from defectsave
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
