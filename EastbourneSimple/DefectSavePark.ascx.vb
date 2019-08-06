@@ -394,6 +394,7 @@ Partial Class DefectSavePark
                     End Select
                     If Result Then
                         Application(appstate) = Nothing
+                        Application(failstate) = ParentControl
                         'CreateNewFault(UserInfo, "New", connectionString)
 
                         Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
