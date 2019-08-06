@@ -272,7 +272,7 @@ Partial Class DefectSavePark
                     SaveDefectButton.Visible = False
 
                     'FaultTypeSave.SetActiveView(UnRecoverableView)
-                    ActPanel.Enabled = True
+                    ActPanel.Enabled = False
                 End If
 
             End If
@@ -458,9 +458,19 @@ Partial Class DefectSavePark
     Protected Sub FaultOpenClosed_SelectedIndexChanged(sender As Object, e As EventArgs) Handles FaultOpenClosed.SelectedIndexChanged
         Dim Selected As String = ""
         Selected = FaultOpenClosed.SelectedItem.Text
-        UnRecoverableSave.Visible = True
-        UnRecoverableSave.Enabled = True
-        UnRecoverableSave.BackColor = Drawing.Color.Yellow
+        Select Case Selected
+            Case "Yes"
+                ActPanel.Enabled = True
+                UnRecoverableSave.Visible = True
+                UnRecoverableSave.Enabled = True
+                UnRecoverableSave.BackColor = Drawing.Color.Yellow
+            Case "No"
+                ActPanel.Enabled = False
+                UnRecoverableSave.Visible = True
+                UnRecoverableSave.Enabled = True
+                UnRecoverableSave.BackColor = Drawing.Color.Yellow
+            Case Else
+        End Select
         'AccurayValidation.ValidationGroup = "Tomodefect"
         'FaultDescription.SetValidation = "defect"
         'CorrectiveActionValidation.ValidationGroup = "defect"

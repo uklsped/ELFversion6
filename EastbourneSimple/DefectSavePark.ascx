@@ -43,17 +43,6 @@
                             <uc2:CommentBoxuc ID="FaultDescription" runat="server" />
                         </asp:Panel></td>
             </tr>
-            <tr>
-                <td><asp:Label ID="CorrectiveActionLabel" runat="server" Text="Corrective Action"></asp:Label></td>
-                <td colspan="3"> <asp:Panel ID="ActPanel" Enabled="false" runat="server">
-                            <uc2:CommentBoxuc ID="RadActC" runat="server" />
-                        </asp:Panel></td>
-            </tr>
-            <tr><td><asp:Label ID="PatientIDLabel" runat="server" Text="Patient ID: "></asp:Label></td>
-                <td colspan="3"><asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
-                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" forecolor="Red" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic"  ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator> </td>
-            
-            </tr>
             <tr><td><asp:Label ID="RadIncidentLabel" runat="server" Text="Radiation Incident?: "></asp:Label></td>
                 <td> <asp:RadioButtonList ID="RadioIncident" runat="server" AutoPostBack="false" enabled="true">
                                         <asp:ListItem Text="No" Value="False"></asp:ListItem>
@@ -74,6 +63,18 @@
             </tr>
             <tr><td colspan="2"><asp:RequiredFieldValidator ID="RadioIncidentValidation" runat="server" ControlToValidate="RadioIncident" ErrorMessage="Please complete Radiation Incident Selection"
                             Display="Dynamic" validationgroup="Tomodefect" forecolor="Red" ></asp:RequiredFieldValidator></td></tr>
+            <tr>
+                <td><asp:Label ID="CorrectiveActionLabel" runat="server" Text="Corrective Action"></asp:Label></td>
+                <td colspan="3"> <asp:Panel ID="ActPanel" Enabled="false" runat="server">
+                            <uc2:CommentBoxuc ID="RadActC" runat="server" />
+                        </asp:Panel></td>
+            </tr>
+            <tr><td><asp:Label ID="PatientIDLabel" runat="server" Text="Patient ID: "></asp:Label></td>
+                <td colspan="3"><asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
+                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" forecolor="Red" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic"  ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator> </td>
+            
+            </tr>
+            
             <tr><td><asp:Button ID="SaveDefectButton" runat="server" Text="Save"  CausesValidation="false" Visible="false"/></td>
                 <td><asp:Button ID="UnRecoverableSave" runat="server" CausesValidation="False"  Text="Save" Visible="false" /></td>
                 <td><asp:Button ID="ClearButton" runat="server" Text="Close" CausesValidation="False" CssClass="buttonmargin" /></td>
