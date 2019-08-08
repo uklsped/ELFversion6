@@ -461,6 +461,7 @@ Partial Class DefectSavePark
         Select Case Selected
             Case "Yes"
                 ActPanel.Enabled = True
+                RadActC.SetValidation("Tomodefect", "Please Enter the Corrective Action Taken")
                 UnRecoverableSave.Visible = True
                 UnRecoverableSave.Enabled = True
                 UnRecoverableSave.BackColor = Drawing.Color.Yellow
@@ -481,7 +482,7 @@ Partial Class DefectSavePark
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         AccurayValidation.Enabled = True
         FaultDescription.SetValidation("Tomodefect", "Please Enter a fault description")
-        RadActC.SetValidation("Tomodefect", "Please Enter the Corrective Action Taken")
+        'RadActC.SetValidation("Tomodefect", "Please Enter the Corrective Action Taken")
 
         Page.Validate("Tomodefect")
         If Page.IsValid Then

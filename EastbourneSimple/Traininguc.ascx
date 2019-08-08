@@ -39,7 +39,7 @@
            <td colspan="2" style="height: 92px">
                <table>
                  <tr>
-                     <td><asp:Literal ID="Literal1" runat="server" Text="Runup Comments"></asp:Literal></td>
+                     <td><asp:Literal ID="Literal1" runat="server" Text="Training Comments"></asp:Literal></td>
                  </tr>
                  <tr>
                      <td><uc2:CommentBoxuc ID="CommentBox" runat="server" />
