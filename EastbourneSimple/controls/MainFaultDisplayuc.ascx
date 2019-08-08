@@ -8,22 +8,16 @@
 
 <%@ Register src="NewFaultPopUpuc.ascx" tagname="NewFaultPopUpuc" tagprefix="uc4" %>
 
- <%--<div id="container">
+ <div id="container">
    
-    <div class="main">
+    <main>
         <section class="third"><asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder></section>
         <section class="third"><asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server"></asp:PlaceHolder></section>
         <section class="third"><asp:PlaceHolder ID="PlaceHolderViewOpenFaults"  runat="server"></asp:PlaceHolder></section>
-    </div>
-</div>--%>
-
-<div id="container">
-
-<div id="top_div"><asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder></div>
-<div id="middle_div"><asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server"></asp:PlaceHolder></div>
-<div id="bottom_div"><asp:PlaceHolder ID="PlaceHolderViewOpenFaults"  runat="server"></asp:PlaceHolder></div>
-
+    <main/>
 </div>
+
+
 
 
 

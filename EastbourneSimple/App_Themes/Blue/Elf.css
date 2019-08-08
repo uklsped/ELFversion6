@@ -168,31 +168,3 @@ main {
         background: yellow;
     }
 
-#container {
-    height: 100%;
-}
-
-#top_div {
-    height: 33%;
-    width: 100%;
-    background-color: #009900;
-    margin: auto;
-    text-align: center;
-}
-
-#middle_div {
-    height: 25%;
-    width: 100%;
-    background-color: #009900;
-    margin: auto;
-    text-align: center;
-}
-
-#bottom_div {
-    height: 42%;
-    width: 100%;
-    background-color: #990000;
-    margin: auto;
-    text-align: center;
-    color: #FFFFFF;
-}
