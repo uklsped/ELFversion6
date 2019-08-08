@@ -34,7 +34,7 @@
             <tr>
                 <td><asp:Label ID="AccurayLabel" runat="server" Text="Physicist/Accuracy Job Number: "></asp:Label></td>
                 <td colspan="3"><asp:TextBox ID="Accuray" runat="server" EnableViewState="false"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="AccurayValidation" runat="server" ControlToValidate="Accuray" forecolor="Red" ErrorMessage="Please enter a physicist name or Accuray job number" Display="Dynamic" validationgroup="Tomodefect" Enabled="false"></asp:RequiredFieldValidator></td>
+                        <asp:RequiredFieldValidator ID="AccurayValidation" runat="server" ControlToValidate="Accuray" forecolor="Red" ErrorMessage="Please enter a physicist name or Accuray job number" Display="None" validationgroup="Tomodefect" Enabled="false"></asp:RequiredFieldValidator></td>
                 
             </tr>
             <tr>
@@ -62,7 +62,7 @@
                 
             </tr>
             <tr><td colspan="2"><asp:RequiredFieldValidator ID="RadioIncidentValidation" runat="server" ControlToValidate="RadioIncident" ErrorMessage="Please complete Radiation Incident Selection"
-                            Display="Dynamic" validationgroup="Tomodefect" forecolor="Red" ></asp:RequiredFieldValidator></td></tr>
+                            Display="None" validationgroup="Tomodefect" ></asp:RequiredFieldValidator></td></tr>
             <tr>
                 <td><asp:Label ID="CorrectiveActionLabel" runat="server" Text="Corrective Action"></asp:Label></td>
                 <td colspan="3"> <asp:Panel ID="ActPanel" Enabled="false" runat="server">
@@ -71,14 +71,17 @@
             </tr>
             <tr><td><asp:Label ID="PatientIDLabel" runat="server" Text="Patient ID: "></asp:Label></td>
                 <td colspan="3"><asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
-                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" forecolor="Red" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic"  ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator> </td>
+                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" forecolor="Red" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="None"  ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator> </td>
             
             </tr>
             
-            <tr><td><asp:Button ID="SaveDefectButton" runat="server" Text="Save"  CausesValidation="false" Visible="false"/></td>
+            <tr><td><asp:Button ID="SaveDefectButton" runat="server" Text="Save"  CausesValidation="False" Visible="false"/></td>
                 <td><asp:Button ID="UnRecoverableSave" runat="server" CausesValidation="False"  Text="Save" Visible="false" /></td>
                 <td><asp:Button ID="ClearButton" runat="server" Text="Close" CausesValidation="False" CssClass="buttonmargin" /></td>
                 <td></td>
+            </tr>
+            <tr><td colspan="3"><asp:ValidationSummary ID="ValidationSummary1" HeaderText="You must enter a value in the following fields:" ValidationGroup="Tomodefect" ShowMessageBox="True" ShowSummary="True"  runat="server" /></td>
+                
             </tr>
         </table>
     </fieldset>

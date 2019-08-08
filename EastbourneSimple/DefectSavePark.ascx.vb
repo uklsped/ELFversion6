@@ -101,6 +101,7 @@ Partial Class DefectSavePark
         'End If
         If Defect.SelectedItem.Text = RecoverableFault Then
             FaultDescription.SetValidation("Tomodefect", "Please Enter a fault description")
+
             'RadActC.SetValidation("Tomodefect", "Please Enter the Corrective Action Taken")
         End If
 
