@@ -113,20 +113,42 @@ Partial Class DefectSave
             'RaiseEvent CloseReportFaultPopUp(LinacName)
         End If
     End Sub
-
+    Protected Sub SetValidationControls(ByVal SetReset As String)
+        If SetReset = "Reset" Then
+            FaultDescription.SetValidation("", "")
+            RadActC.SetValidation("", "")
+            AreaValidation.ValidationGroup = ""
+        Else
+            Select Case SetReset
+                Case RADRESET
+                    FaultDescription.SetValidation("defect", "Please Enter a fault description")
+                    RadActC.SetValidation("defect", "Please Enter the Corrective Action Taken")
+                    AreaValidation.ValidationGroup = "defect"
+                Case MAJORFAULT
+                    FaultDescription.SetValidation("defect", "Please Enter a fault description")
+                    AreaValidation.ValidationGroup = "defect"
+            End Select
+        End If
+    End Sub
     Protected Sub SaveDefectButton_Click(sender As Object, e As System.EventArgs) Handles SaveDefectButton.Click
         'No need for reference to WriteDatauc if no signature - March 2016
         'Back in 26/03/2108
+        'ResetValidationControls
         'Set Validation Controls
-        Select Case Defect.SelectedItem.Value
-            Case RADRESET
-                FaultDescription.SetValidation("defect", "Please Enter a fault description")
-                RadActC.SetValidation("defect", "Please Enter the Corrective Action Taken")
-                AreaValidation.ValidationGroup = "defect"
-            Case MAJORFAULT
-                FaultDescription.SetValidation("defect", "Please Enter a fault description")
-                AreaValidation.ValidationGroup = "defect"
-        End Select
+        Dim SetValidation As String
+        SetValidation = "Reset"
+        SetValidationControls(SetValidation)
+        SetValidation = Defect.SelectedItem.Value
+        SetValidationControls(SetValidation)
+        'Select Case Defect.SelectedItem.Value
+        '    Case RADRESET
+        '        FaultDescription.SetValidation("defect", "Please Enter a fault description")
+        '        RadActC.SetValidation("defect", "Please Enter the Corrective Action Taken")
+        '        AreaValidation.ValidationGroup = "defect"
+        '    Case MAJORFAULT
+        '        FaultDescription.SetValidation("defect", "Please Enter a fault description")
+        '        AreaValidation.ValidationGroup = "defect"
+        'End Select
         Dim strScript As String = "<script>"
         Page.Validate("defect")
         If Page.IsValid Then
@@ -151,17 +173,20 @@ Partial Class DefectSave
                 UserApprovedEvent("Defect", "")
             End If
             'reset the validation controls
-            FaultDescription.SetValidation("", "")
-            RadActC.SetValidation("", "")
-            AreaValidation.ValidationGroup = ""
+            SetValidationControls("Reset")
+            'FaultDescription.SetValidation("", "")
+            'RadActC.SetValidation("", "")
+            'AreaValidation.ValidationGroup = ""
         Else
             'Makes sure Area is still available after failed validation - also add descriptions!
             If (Defect.SelectedItem.Value = RADRESET) Or (Defect.SelectedItem.Value = MAJORFAULT) Then
                 'Dim reading As String = Application(FaultDescriptionChanged)
                 DropDownListArea.Enabled = True
+            Else
+                DropDownListArea.Text = AreaOrAccuray.Value
 
             End If
-            FormError()
+            'FormError()
 
         End If
 
@@ -454,10 +479,10 @@ Partial Class DefectSave
 
     End Sub
 
-    Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
+    'Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
 
-        AreaOrAccuray.Value = DropDownListArea.SelectedValue.ToString
-    End Sub
+    'AreaOrAccuray.Value = DropDownListArea.SelectedValue.ToString
+    'End Sub
 
 
 

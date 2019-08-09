@@ -12,7 +12,7 @@
 <asp:PlaceHolder ID="PlaceHolder1" runat="server"></asp:PlaceHolder>
 <asp:UpdatePanel ID="UpdatePanel1" runat="server">
     <ContentTemplate>
-        <asp:Panel ID="Panel1" runat="server" Height="600px" Width="510px" cssclass="modalPopup" style="display:none" >
+        <asp:Panel ID="Panel1" runat="server" Height="700px" Width="510px" cssclass="modalPopup" style="display:none" >
    <asp:UpdatePanel ID="UpdatePanel3" runat="Server" UpdateMode="Conditional">
                 <ContentTemplate>
   <div >

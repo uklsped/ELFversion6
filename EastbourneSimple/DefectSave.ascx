@@ -47,15 +47,15 @@
                     <asp:ListItem Text="IT" Value="IT"></asp:ListItem>
                     <asp:ListItem Text="Other" Value="Other"></asp:ListItem>
                 </asp:DropDownList>
-                <asp:RequiredFieldValidator ID="AreaValidation" ControlToValidate="DropDownListArea" runat="server" InitialValue="Select" ErrorMessage="Please Select Area" Font-Bold="true" Display="Dynamic"></asp:RequiredFieldValidator>
+                <asp:RequiredFieldValidator ID="AreaValidation" ControlToValidate="DropDownListArea" runat="server" InitialValue="Select" ErrorMessage="Please Select Area" Display="None"></asp:RequiredFieldValidator>
             </td>
         <%--</tr>--%>
         <%--<tr>--%>
             <td>Gantry Angle: </td>
             <td>
                 <asp:TextBox ID="GantryAngleBox" runat="server" Width="30px"></asp:TextBox>
-                <asp:CompareValidator ID="GantryAngleCheck" runat="server" ErrorMessage="Please enter Angle as Integer" ControlToValidate="GantryAngleBox" Operator="DataTypeCheck" SetFocusOnError="true" Type="Integer" Display="Dynamic"></asp:CompareValidator>
-                <asp:RangeValidator ID="GantryRangeCheck" runat="server" ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="true" MaximumValue="360" MinimumValue="0" ControlToValidate="GantryAngleBox" Display="Dynamic"></asp:RangeValidator>
+                <asp:CompareValidator ID="GantryAngleCheck" runat="server" ErrorMessage="Please enter Gantry Angle as an Integer" ControlToValidate="GantryAngleBox" Operator="DataTypeCheck" SetFocusOnError="true" Type="Integer" ValidationGroup="defect" Display="None"></asp:CompareValidator>
+                <asp:RangeValidator ID="GantryRangeCheck" runat="server" ErrorMessage="Gantry Angle Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="true" MaximumValue="360" MinimumValue="0" ControlToValidate="GantryAngleBox" ValidationGroup="defect" Display="None"></asp:RangeValidator>
             </td>
             
         </tr>
@@ -67,8 +67,8 @@
             <td>Collimator Angle: </td>
             <td colspan="3">
                 <asp:TextBox ID="CollimatorAngleBox" runat="server" Width="30px"></asp:TextBox>
-                <asp:CompareValidator ID="CollimatorAngleCheck" runat="server" ErrorMessage="Please enter Angle as Integer" ControlToValidate="CollimatorAngleBox" Operator="DataTypeCheck" SetFocusOnError="true" Type="Integer" Display="Dynamic"></asp:CompareValidator>
-                <asp:RangeValidator ID="CollimatorRangeCheck" runat="server" ErrorMessage="Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="true" MaximumValue="360" MinimumValue="0" ControlToValidate="CollimatorAngleBox" Display="Dynamic"></asp:RangeValidator>
+                <asp:CompareValidator ID="CollimatorAngleCheck" runat="server" ErrorMessage="Please enter Collimator Angle as an Integer" ControlToValidate="CollimatorAngleBox" Operator="DataTypeCheck" SetFocusOnError="true" Type="Integer" ValidationGroup="defect" Display="None"></asp:CompareValidator>
+                <asp:RangeValidator ID="CollimatorRangeCheck" runat="server" ErrorMessage="Collimator Angle Range is 0 to 360 degrees" Type="Integer" SetFocusOnError="true" MaximumValue="360" MinimumValue="0" ControlToValidate="CollimatorAngleBox" ValidationGroup="defect" Display="None"></asp:RangeValidator>
             </td>
         </tr>
         <tr>
@@ -91,7 +91,7 @@
             <td>Patient ID: </td>
             <td>
                 <asp:TextBox ID="PatientIDBox" runat="server"></asp:TextBox>
-                <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID" SetFocusOnError="true"></asp:RegularExpressionValidator>
+                <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="None" ValidationGroup="defect" ErrorMessage="Please enter a BSUH ID in the correct format" SetFocusOnError="true"></asp:RegularExpressionValidator>
             </td>
             <td colspan="2"></td>
         </tr>
@@ -102,13 +102,16 @@
                 <asp:ListItem Text="No" Value="False"></asp:ListItem>
                 <asp:ListItem Text="Yes" Value="True"></asp:ListItem>
                 </asp:RadioButtonList>
-                <asp:RequiredFieldValidator ID="RadioIncidentValidation" runat="server" ControlToValidate="RadioIncident" ErrorMessage="Please complete Radiation Incident Selection" Display="Dynamic" ValidationGroup="defect"></asp:RequiredFieldValidator>
+                <asp:RequiredFieldValidator ID="RadioIncidentValidation" runat="server" ControlToValidate="RadioIncident" ErrorMessage="Please complete Radiation Incident Selection" Display="None" ValidationGroup="defect"></asp:RequiredFieldValidator>
             </td>
         <%--</tr>--%>
         <%--<tr>--%>
             <td><asp:Button ID="SaveDefectButton" runat="server" Text="Save" CausesValidation="false" Enabled="false" /> </td>
             <td><asp:Button ID="ClearButton" runat="server" Text="Close" CausesValidation="false"/></td>
         </tr>
+        <tr><td colspan="3"><asp:ValidationSummary ID="ValidationSummarydefect" Forecolor="Red" HeaderText="Please correct the errors in the following fields:" ValidationGroup="defect" ShowMessageBox="True" ShowSummary="True" EnableClientScript="false" runat="server" /></td>
+                
+            </tr>
     </table>
    </fieldset>
 
