@@ -205,7 +205,7 @@ Partial Class ViewFaultsuc
         Dim reader As SqlDataReader
         Dim connectionstring As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         conn = New SqlConnection(connectionstring)
-        comm = New SqlCommand("Select Top 1 IncidentID, Description, ReportedBy, DateReported, Area, Energy, GantryAngle,CollimatorAngle, BSUHID from ReportFault where IncidentID = @IncidentID", conn)
+        comm = New SqlCommand("Select Top 1 IncidentID, Description, ReportedBy, DateReported, Area, Energy, GantryAngle,CollimatorAngle, BSUHID from ReportFault where IncidentID = @IncidentID order by DateReported", conn)
         comm.Parameters.Add("IncidentID", System.Data.SqlDbType.Int)
         comm.Parameters.Item("IncidentID").Value = Convert.ToInt16(IncidentNumber)
         Try

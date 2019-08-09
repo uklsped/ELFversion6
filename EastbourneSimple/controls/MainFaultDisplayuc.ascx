@@ -14,7 +14,7 @@
         <section class="third"><asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder></section>
         <section class="third"><asp:PlaceHolder ID="PlaceHolderTodaysclosedfaults" runat="server"></asp:PlaceHolder></section>
         <section class="third"><asp:PlaceHolder ID="PlaceHolderViewOpenFaults"  runat="server"></asp:PlaceHolder></section>
-    <main/>
+    </main>
 </div>
 
 
