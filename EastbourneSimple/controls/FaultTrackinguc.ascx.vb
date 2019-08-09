@@ -135,6 +135,24 @@ Partial Class controls_FaultTrackinguc
 
     End Sub
 
+    Protected Sub SetValidationControls(ByVal SetReset As String)
+        If SetReset = "Reset" Then
+            ConcessiondescriptionBoxC.SetValidation("", "")
+            ConcessionActionBox.SetValidation("", "")
+
+        Else
+            Select Case SetReset
+
+                Case CONCESSION
+                        'Concessiondescription validator doesn't work if panel is disabled
+                        If CDescriptionPanel.Enabled = True Then
+                            ConcessiondescriptionBoxC.SetValidation("faulttracking", "Please Enter a Concession description")
+                        End If
+                        ConcessionActionBox.SetValidation("faulttracking", "Please Enter the Corrective Action")
+                End Select
+        End If
+    End Sub
+
     Protected Sub SaveAFault_Click(ByVal sender As Object, ByVal e As EventArgs) Handles SaveAFault.Click
         Dim validator As System.Web.UI.WebControls.BaseValidator
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc3"), WriteDatauc)
@@ -144,15 +162,19 @@ Partial Class controls_FaultTrackinguc
         Dim incidentid As String
         'Dim UniqueC As Boolean
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-
-        Select Case FaultOptionList.SelectedItem.Text
-            Case CONCESSION
-                'Concessiondescription validator doesn't work if panel is disabled
-                If CDescriptionPanel.Enabled = True Then
-                    ConcessiondescriptionBoxC.SetValidation("faulttracking", "Please Enter a Concession description")
-                End If
-                ConcessionActionBox.SetValidation("faulttracking", "Please Enter the Corrective Action")
-        End Select
+        Dim SetValidation As String
+        SetValidation = "Reset"
+        SetValidationControls(SetValidation)
+        SetValidation = FaultOptionList.SelectedItem.Text
+        SetValidationControls(SetValidation)
+        'Select Case FaultOptionList.SelectedItem.Text
+        '    Case CONCESSION
+        '        'Concessiondescription validator doesn't work if panel is disabled
+        '        If CDescriptionPanel.Enabled = True Then
+        '            ConcessiondescriptionBoxC.SetValidation("faulttracking", "Please Enter a Concession description")
+        '        End If
+        '        ConcessionActionBox.SetValidation("faulttracking", "Please Enter the Corrective Action")
+        'End Select
         'this is concessparamstrial.incidentid
         incidentid = ConcessParamsTrial.IncidentID
 
@@ -164,7 +186,7 @@ Partial Class controls_FaultTrackinguc
             Application(actionstate) = "Confirm"
             wctrl.Visible = True
             ForceFocus(wctext)
-
+            SetValidationControls("Reset")
             'BindTrackingGridTech(incidentid)
         Else
             For Each validator In Page.Validators
@@ -176,7 +198,7 @@ Partial Class controls_FaultTrackinguc
                 End If
             Next validator
 
-            FormError()
+            'FormError()
         End If
 
     End Sub
