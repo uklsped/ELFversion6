@@ -12,7 +12,7 @@
     <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False"
                                 DataKeyNames="HandoverId"
                                 BackColor="White" BorderColor="#CC9966" BorderStyle="None" BorderWidth="1px"
-                                CellPadding="4" EditRowStyle-BorderStyle="NotSet" Width="906px">
+                                CellPadding="4" EditRowStyle-BorderStyle="NotSet" Width="785px">
                                 <RowStyle BackColor="White" ForeColor="#330099" />
                                 <Columns>
                                     <asp:TemplateField HeaderText="6 MV">
