@@ -4,7 +4,7 @@
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc2" %>
 <%@ Register src="AtlasEnergyViewuc.ascx" tagname="AtlasEnergyViewuc" tagprefix="uc3" %>
 <%@ Register src="controls/Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc4" %>
-<%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc5" %>
+<%--<%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc5" %>--%>
 <%@ Register src="ViewCommentsuc.ascx" tagname="ViewCommentsuc" tagprefix="uc6" %>
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc7" %>
 <%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>

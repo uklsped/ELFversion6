@@ -28,9 +28,15 @@
          <td class="style1"><asp:Button ID="AcceptOK" runat="server" Text="" causesvalidation="false" /></td>
          <td class="style1"><asp:Button ID="btnchkcancel" runat="server" causesvalidation="false" Text="Cancel" /></td>
       </tr>
+         <tr>
+             <td>
+                 <asp:Label ID="LoginErrorDetails" runat="server" Font-Italic="True" ForeColor="Red"></asp:Label>
+             </td>
+
+         </tr>
     </table>
   </div>
-  <asp:Label ID="LoginErrorDetails" runat="server" Font-Italic="True" ForeColor="Red"></asp:Label>
+  <%--<asp:Label ID="LoginErrorDetails" runat="server" Font-Italic="True" ForeColor="Red"></asp:Label>--%>
             
 </asp:Panel>
 

@@ -15,8 +15,6 @@
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc9" %>
 
-<%@ Register src="PhysicsQAuc.ascx" tagname="PhysicsQAuc" tagprefix="uc10" %>
-
 <%@ Register src="Traininguc.ascx" tagname="Traininguc" tagprefix="uc12" %>
 
 <%@ Register src="RegisterUseruc.ascx" tagname="RegisterUseruc" tagprefix="uc13" %>
@@ -116,14 +114,7 @@
                      ImageUrl="~/Images/if_elf_62126.png" Width="100px" />
                  <asp:Label ID="SoftwareVersion" runat="server" Text="Software Version 6.0"></asp:Label></td>
             </tr>
-            <%--<tr>
-               <td colspan="6">
-                   <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
-                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
-                       </asp:PlaceHolder>
-                   </asp:Panel>
-                </td>
-            </tr>--%>
+          
         </table>
         
  <asp:HiddenField ID="LAHiddenFieldcontrol" runat="server" />
@@ -143,8 +134,6 @@
         
        </asp:UpdatePanel>
  
-<%--  <asp:Button ID="RestoreButton" runat="server" visible="true" CausesValidation="False" style="height: 26px" Text="RESTORE ELF" />--%>
-                 <%--  <br />--%>
   <input id="inpHide" type="hidden" runat="server" value="9" />
        <%-- <br />--%>
 
@@ -289,7 +278,7 @@ B1 Status
 <asp:Button ID="Button1" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
 <asp:Panel ID="TabContent6" runat="server" Visible="false">
 <uc4:AcceptLinac ID="AcceptLinac6" LinacName="B1" UserReason="6" Tabby="6" runat="server" visible="false"/>
-<uc10:PhysicsQAuc ID="PhysicsQAuc1" LinacName="B1"  Visible="false" runat="server" />
+
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>

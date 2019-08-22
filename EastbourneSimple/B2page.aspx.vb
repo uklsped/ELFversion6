@@ -180,22 +180,6 @@ Partial Public Class B2page
 
     End Sub
 
-    Protected Sub SetModalities(ByVal connectionString As String)
-
-        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
-        CType(Modalities, controls_ModalityDisplayuc).LinacName = EquipmentID
-        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
-        CType(Modalities, controls_ModalityDisplayuc).Mode = Statelabel.Text
-        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
-        ModalityPlaceholder.Controls.Add(Modalities)
-        ModalityDisplayPanel.Visible = True
-
-    End Sub
-
-    Protected Sub NullPhysics()
-
-    End Sub
-
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
         Dim Reload As Boolean = False
@@ -208,8 +192,6 @@ Partial Public Class B2page
         AddHandler AcceptLinac8.ShowName, AddressOf SetUser
         AddHandler AcceptLinac3.ClinicalApproved, AddressOf ClinicalApprovedEvent
         AddHandler AcceptLinac3.AcknowledgeEnergies, AddressOf AcknowledgeEnergies
-        AddHandler AcceptLinac3.NullPhysics, AddressOf NullPhysics
-        'AddHandler AcceptLinac8.UpdateTraining, AddressOf Update_Training
         AddHandler AcceptLinac4.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler AcceptLinac5.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler AcceptLinac8.UpdateReturnButtons, AddressOf Update_ReturnButtons
@@ -217,8 +199,7 @@ Partial Public Class B2page
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
         AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
-        AddHandler AcceptLinac1.SetModalities, AddressOf SetModalities
-        AddHandler AcceptLinac3.SetModalities, AddressOf SetModalities
+
         Dim ResetDay As String = Nothing
         Dim ConnectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
@@ -468,7 +449,7 @@ Partial Public Class B2page
             End If
 
         End If
-        SetModalities(ConnectionString)
+
     End Sub
 
 

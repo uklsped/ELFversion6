@@ -15,7 +15,6 @@ Partial Public Class AcceptLinac
 
     Public Event ClinicalApproved(ByVal connectionString As String)
     Public Event AcknowledgeEnergies()
-    Public Event NullPhysics()
     Public Event UpdateReturnButtons()
     Public Event ShowName(ByVal LastUserGroup As Integer)
     Public Event EngRunuploaded(ByVal connectionString As String)

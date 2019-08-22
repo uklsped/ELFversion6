@@ -55,7 +55,7 @@ Partial Class controls_FaultTrackinguc
 
         Application(ParamApplication) = ConcessObject
         SetupStatusTech(ConcessObject.IncidentID)
-        'SetUpOriginalFault(ConcessObject.IncidentID)
+        SetUpOriginalFault(ConcessObject.IncidentID)
         SaveAFault.Enabled = False
         CCommentPanel.Enabled = False
         CActionPanel.Enabled = False
@@ -64,14 +64,24 @@ Partial Class controls_FaultTrackinguc
         'BindTrackingGridTech(ConcessObject.IncidentID)
 
     End Sub
-    'Protected Sub SetUpOriginalFault(ByVal incidentID As String)
-    '    Dim objOriginalFault As controls_OriginalReportedfaultuc = Page.LoadControl("controls\OriginalReportedFaultuc.ascx")
-    '    'CType(objCon, ManyFaultGriduc).NewFault = False
-    '    CType(objOriginalFault, controls_OriginalReportedfaultuc).IncidentID = incidentID
-    '    'to accomodate Tomo now need to pass equipment name?
-    '    CType(objOriginalFault, controls_OriginalReportedfaultuc).Device = LinacName
-    '    PlaceHolderOriginalFault.Controls.Add(objOriginalFault)
-    'End Sub
+    Protected Sub SetUpOriginalFault(ByVal incidentID As String)
+        Dim objOriginalFault As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
+        CType(objOriginalFault, ManyFaultGriduc).NewFault = True
+        'CType(objOriginalFault, ManyFaultGriduc).newfault = True
+        CType(objOriginalFault, ManyFaultGriduc).IncidentID = incidentID
+        'to accomodate Tomo now need to pass equipment name?
+        CType(objOriginalFault, ManyFaultGriduc).LinacName = LinacName
+        PlaceHolderFaults.Controls.Add(objOriginalFault)
+        'OriginalFault.NewFault = True
+        'OriginalFault.LinacName = LinacName
+        'OriginalFault.IncidentID = incidentID
+        '    Dim objOriginalFault As controls_OriginalReportedfaultuc = Page.LoadControl("controls\OriginalReportedFaultuc.ascx")
+        '    'CType(objCon, ManyFaultGriduc).NewFault = False
+        '    CType(objOriginalFault, controls_OriginalReportedfaultuc).IncidentID = incidentID
+        '    'to accomodate Tomo now need to pass equipment name?
+        '    CType(objOriginalFault, controls_OriginalReportedfaultuc).Device = LinacName
+        '    PlaceHolderOriginalFault.Controls.Add(objOriginalFault)
+    End Sub
 
 
     Protected Sub SetupStatusTech(ByVal incidentID As String)
@@ -87,6 +97,7 @@ Partial Class controls_FaultTrackinguc
         'AssignedToList.SelectedIndex = AssignedToList.Items.IndexOf(AssignedToList.Items.FindByText(ConcessParamsTrial.AssignedTo))
         'If ConcessParamsTrial.PresentFaultState = "Concession" Then
         '    FaultOptionList.Items.FindByValue("Open").Enabled = False
+
         If ConcessParamsTrial.PresentFaultState = "New" Then
                 CancelButton.Enabled = False
             End If

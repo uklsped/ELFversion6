@@ -6,8 +6,8 @@ Partial Class controls_ConcessionHistoryuc
         Dim SqlDataSource1 As New SqlDataSource With {
             .ID = "SqlDataSource1",
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
-            .SelectCommand = "select t.TrackingID, t.action, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn  " _
-        & "from FaultTracking t  where t.incidentID=@incidentID order by t.TrackingID desc"
+            .SelectCommand = "select t.TrackingID, t.action, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, ConcessionNumber  " _
+        & "from FaultTracking t left outer join ConcessionTable c on c.incidentID=t.incidentID where t.incidentID=@incidentID order by t.TrackingID asc"
         }
 
         SqlDataSource1.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)

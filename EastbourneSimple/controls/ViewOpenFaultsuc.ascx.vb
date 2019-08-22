@@ -19,6 +19,7 @@ Partial Class controls_ViewOpenFaultsuc
     Private RadRow As DataTable
     Const REPEATFAULTSELECTED As String = "REPEAT"
     Const CONCESSIONSELECTED As String = "CSelected"
+    Const VIEWFAULTSELECTED As String = "FSelected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Const EMPTYSTRING As String = ""
     Const CONCESSION As String = "Concession"
@@ -98,6 +99,19 @@ Partial Class controls_ViewOpenFaultsuc
                 ConcessionPopupPlaceHolder.Controls.Add(ConcessionPopup)
                 ConcessionPopup.SetUpFaultTracking()
 
+            Case VIEWFAULTSELECTED
+                'Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
+                'CType(objCon, ManyFaultGriduc).NewFault = False
+                'CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
+                ''to accomodate Tomo now need to pass equipment name?
+                'CType(objCon, ManyFaultGriduc).LinacName = LinacName
+                'PlaceHolderFaults.Controls.Add(objCon)
+                'UpdatePanel2.Visible = True
+                'MultiView1.SetActiveView(View2)
+                'ConcessionGrid.Enabled = False
+                'Hidefaults.Visible = True
+                'HideFaultsclinicalview.Visible = True
+                'ConcessionSelectionPanel.Visible = False
             Case Else
                 '        'no dynamic controls need to be loaded...yet
         End Select
@@ -121,7 +135,7 @@ Partial Class controls_ViewOpenFaultsuc
             ConcessionGrid.Enabled = True
             BindConcessionGrid()
 
-            UpdatePanel4.Visible = True
+            ConcessionSelectionPanel.Visible = True
 
             Application(technicalstate) = Nothing
 
@@ -169,7 +183,7 @@ Partial Class controls_ViewOpenFaultsuc
                                 Application(ParamApplication) = ConcessParamsTrial
 
                                 ConcessionGrid.Enabled = False
-                                UpdatePanel4.Visible = False
+                                ConcessionSelectionPanel.Visible = False
                                 DynamicControlSelection = CONCESSIONSELECTED
 
                                 Dim ConcessionPopup As controls_ConcessionPopUpuc = Page.LoadControl("controls\ConcessionPopUpuc.ascx")
@@ -187,31 +201,34 @@ Partial Class controls_ViewOpenFaultsuc
                             End If
 
                         Case Else
-                            BindTrackingGrid(IncidentID)
+                            ConcessionHistoryuc1.BindConcessionHistoryGrid(IncidentID)
+                            'BindTrackingGrid(IncidentID)
                             HideFaultsclinicalview.Visible = True
-                            UpdatePanel1.Visible = True
-                            MultiView2.SetActiveView(statusother)
+                            'UpdatePanel1.Visible = True
+                            'MultiView2.SetActiveView(statusother)
                             MultiView1.SetActiveView(View1)
                             ConcessionGrid.Enabled = False
-                            UpdatePanel4.Visible = False
+                            ConcessionSelectionPanel.Visible = False
                     End Select
 
 
                     ''from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
                     'This displays associated faults - look at how it closes at the moment
                 Case "Faults"
-                    Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-                    'CType(objCon, ManyFaultGriduc).NewFault = False
+                    Dim objCon As ManyFaultGriduc = Page.LoadControl("ManyFaultGriduc.ascx")
+                    CType(objCon, ManyFaultGriduc).NewFault = False
                     CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
                     'to accomodate Tomo now need to pass equipment name?
                     CType(objCon, ManyFaultGriduc).LinacName = LinacName
+
                     PlaceHolderFaults.Controls.Add(objCon)
-                    UpdatePanel2.Visible = True
+
+                    'UpdatePanel2.Visible = True
                     MultiView1.SetActiveView(View2)
                     ConcessionGrid.Enabled = False
                     Hidefaults.Visible = True
                     HideFaultsclinicalview.Visible = True
-                    UpdatePanel4.Visible = False
+                    ConcessionSelectionPanel.Visible = False
             End Select
 
         End If
@@ -278,45 +295,47 @@ Partial Class controls_ViewOpenFaultsuc
         CheckEmptyGrid(ConcessionGrid)
 
     End Sub
-    Protected Sub BindTrackingGrid(ByVal incidentID As String)
-        Dim incidentNumber As String = incidentID
-        Dim SqlDataSource3 As New SqlDataSource With {
-            .ID = "SqlDataSource3",
-            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
-            .SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, c.ConcessionNumber, t.linac, t.incidentID " _
-& "from FaultTracking t left outer join ConcessionTable c on c.incidentID=t.incidentID where t.linac=@linac and t.incidentID=@incidentID order by trackingid asc"
-        }
-        SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-        SqlDataSource3.SelectParameters.Add("linac", LinacName)
-        SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
-        SqlDataSource3.SelectParameters.Add("incidentID", incidentNumber)
-        GridView2.DataSource = SqlDataSource3
-        GridView2.DataBind()
-    End Sub
-    Protected Sub BindTrackingGridTech(ByVal incidentID As String)
-        Dim SqlDataSource3 As New SqlDataSource With {
-            .ID = "SqlDataSource3",
-            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
-            .SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " _
-        & "from FaultTracking t  where t.linac=@linac and t.incidentID=@incidentID order by t.TrackingID desc"
-        }
-        SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-        SqlDataSource3.SelectParameters.Add("linac", LinacName)
-        SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
-        SqlDataSource3.SelectParameters.Add("incidentID", incidentID)
+    '    Protected Sub BindTrackingGrid(ByVal incidentID As String)
+    '        Dim incidentNumber As String = incidentID
+    '        Dim SqlDataSource3 As New SqlDataSource With {
+    '            .ID = "SqlDataSource3",
+    '            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
+    '            .SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, c.ConcessionNumber, t.linac, t.incidentID " _
+    '& "from FaultTracking t left outer join ConcessionTable c on c.incidentID=t.incidentID where t.linac=@linac and t.incidentID=@incidentID order by trackingid asc"
+    '        }
+    '        SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+    '        SqlDataSource3.SelectParameters.Add("linac", LinacName)
+    '        SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
+    '        SqlDataSource3.SelectParameters.Add("incidentID", incidentNumber)
+    '        GridView2.DataSource = SqlDataSource3
+    '        GridView2.DataBind()
 
-    End Sub
+    '    End Sub
+    'Protected Sub BindTrackingGridTech(ByVal incidentID As String)
+    '    Dim SqlDataSource3 As New SqlDataSource With {
+    '        .ID = "SqlDataSource3",
+    '        .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
+    '        .SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " _
+    '    & "from FaultTracking t  where t.linac=@linac and t.incidentID=@incidentID order by t.TrackingID desc"
+    '    }
+    '    SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+    '    SqlDataSource3.SelectParameters.Add("linac", LinacName)
+    '    SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
+    '    SqlDataSource3.SelectParameters.Add("incidentID", incidentID)
+
+    'End Sub
 
     Protected Sub Hidefaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles Hidefaults.Click, HideFaultsclinicalview.Click
         ConcessionGrid.Visible = True
         ConcessionGrid.Enabled = True
         ConcessionGrid.SelectedIndex = -1
-        UpdatePanel2.Visible = False
+        'UpdatePanel2.Visible = False
         Hidefaults.Visible = False
         HideFaultsclinicalview.Visible = False
-        UpdatePanel4.Visible = True
+        ConcessionSelectionPanel.Visible = True
         'SetViewFault(True)
     End Sub
+
     'delete 3/7/18
 
     '    'from http://www.aspsnippets.com/Articles/Programmatically-add-items-to-DropDownList-on-Button-Click-in-ASPNet-using-C-and-VBNet.aspx
@@ -326,7 +345,7 @@ Partial Class controls_ViewOpenFaultsuc
 
         ConcessionGrid.Enabled = True
         'UpdatePanelRepeatFault.Visible = False
-        UpdatePanel4.Visible = True
+        ConcessionSelectionPanel.Visible = True
         'SetViewFault(True)
         Me.DynamicControlSelection = String.Empty
         Page_Load(Page, EventArgs.Empty)

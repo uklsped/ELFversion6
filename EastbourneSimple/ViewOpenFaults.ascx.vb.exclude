@@ -453,7 +453,7 @@ Partial Class ViewOpenFaults
 
                 Case "Faults"
                     Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-                    'CType(objCon, ManyFaultGriduc).NewFault = False
+                    CType(objCon, ManyFaultGriduc).NewFault = False
                     CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
                     'to accomodate Tomo now need to pass equipment name?
                     CType(objCon, ManyFaultGriduc).LinacName = LinacName

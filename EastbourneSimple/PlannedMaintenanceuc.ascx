@@ -6,7 +6,7 @@
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc3" %>
 <%@ Register Src="AtlasEnergyViewuc.ascx" TagName="AtlasEnergyViewuc" TagPrefix="uc4" %>
 <%@ Register src="controls/Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc5" %>
-<%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc6" %>
+<%--<%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc6" %>--%>
 <%@ Register Src="ViewCommentsuc.ascx" TagName="ViewCommentsuc" TagPrefix="uc7" %>
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc8" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc9" %>
@@ -109,7 +109,7 @@
 </div>
         <uc3:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="4" Tabby="4" Visible="false" runat="server" />
         <uc1:LockElfuc ID="LockElfuc1" LinacName="" UserReason="4" Tabby="4"  visible="false" runat="server" />
-<div id="left">
+<%--<div id="left">--%>
     <%--<asp:UpdatePanel ID="UpdatePanelAtlas" runat="server" Visible="false" UpdateMode="Conditional">
         <ContentTemplate>
             <asp:PlaceHolder ID="PlaceHolder2" runat="server"></asp:PlaceHolder>
@@ -120,9 +120,9 @@
             <asp:PlaceHolder ID="PlaceHolderModalities" runat="server"></asp:PlaceHolder>
         </ContentTemplate>
     </asp:UpdatePanel>--%>
-</div>
+<%--</div>
 <div id="right">
-</div>
+</div>--%>
 <div>
 <uc7:ViewCommentsuc ID="ViewCommentsuc1" LinacName="" CommentSort="pm" runat="server" />
 </div>

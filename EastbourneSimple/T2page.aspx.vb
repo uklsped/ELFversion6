@@ -195,8 +195,6 @@ Partial Public Class T2page
         AddHandler AcceptLinac8.ShowName, AddressOf SetUser
         AddHandler AcceptLinac3.ClinicalApproved, AddressOf ClinicalApprovedEvent
         AddHandler AcceptLinac3.AcknowledgeEnergies, AddressOf AcknowledgeEnergies
-        AddHandler AcceptLinac3.NullPhysics, AddressOf NullPhysics
-        'AddHandler AcceptLinac8.UpdateTraining, AddressOf Update_Training
         AddHandler AcceptLinac4.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler AcceptLinac5.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler AcceptLinac8.UpdateReturnButtons, AddressOf Update_ReturnButtons

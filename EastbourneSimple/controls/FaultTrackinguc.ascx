@@ -109,6 +109,11 @@
      </asp:TableRow>
        
      <asp:TableRow>
+         <asp:TableCell>
+           <asp:PlaceHolder ID="PlaceHolderFaults" runat="server">This is where the original fault will display</asp:PlaceHolder>
+         </asp:TableCell>
+     </asp:TableRow>
+       <asp:TableRow>
                                             <asp:TableCell>
   
 
@@ -119,6 +124,7 @@
                                             </asp:TableCell></asp:TableRow>
    </asp:Table>
       <asp:ValidationSummary ID="ValidationSummarydefect" Forecolor="Red" HeaderText="Please correct the errors in the following fields:" ValidationGroup="faulttracking" ShowMessageBox="True" ShowSummary="True" EnableClientScript="false" runat="server" />   
+  
   </asp:Panel>
 
 

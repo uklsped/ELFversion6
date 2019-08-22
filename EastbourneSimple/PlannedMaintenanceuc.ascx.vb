@@ -24,7 +24,6 @@ Partial Class Planned_Maintenanceuc
     Private Event AutoApproved(ByVal Tab As String, ByVal UserName As String)
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private tabstate As String
-    Private Objcon As ViewOpenFaults
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
     Public Property LinacName() As String
     Private comment As String

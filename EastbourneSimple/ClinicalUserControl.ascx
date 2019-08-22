@@ -30,7 +30,7 @@
 
 
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
-<%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc1" %>
+<%--<%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc1" %>--%>
 
 <div class="grid">
     <div class="col100 grey">

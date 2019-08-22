@@ -1,13 +1,13 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="ManyFaultGriduc.ascx.vb" Inherits="ManyFaultGriduc" %>
 
-<fieldset style="width:auto; height=250px;" >
+<fieldset style="width:auto; height:auto;" >
                <asp:UpdatePanel ID="UpdatePanelVEF"  runat="server">
                                                     <ContentTemplate>         
     <asp:MultiView ID="MultiView1" runat="server">
         <asp:View id="Linacs" runat="server">
             <fieldset style="width: auto;">
-                    <legend>Open Concessions</legend>
-            <asp:GridView ID="GridViewLinac" AutoGenerateColumns="false" runat="server" MaxHeight="250px;"
+                    <%--<legend>Open Faults</legend>--%>
+            <asp:GridView ID="GridViewLinac" AutoGenerateColumns="false" runat="server" 
                         CellPadding="4" DataKeyNames="IncidentID" AllowPaging="True" PageSize="3" OnPageIndexChanging="OnPaging"
         EnableViewState="False" ForeColor="#333333" GridLines="None" >
         <RowStyle CSSClass="grows" BackColor="#E3EAEB" />
@@ -65,7 +65,7 @@
 
         </asp:View>
         </asp:MultiView>
-                            
+                                                            
                     </ContentTemplate>
                         </asp:UpdatePanel>
            

@@ -15,7 +15,6 @@
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc9" %>
 
-<%@ Register src="PhysicsQAuc.ascx" tagname="PhysicsQAuc" tagprefix="uc10" %>
 
 <%@ Register src="Traininguc.ascx" tagname="Traininguc" tagprefix="uc12" %>
 
@@ -120,14 +119,7 @@
 								  
                  <asp:Label ID="SoftwareVersion" runat="server" Text="Software Version 6.0"></asp:Label></td>
             </tr>
-            <tr>
-               <td colspan="6">
-                   <asp:Panel ID="ModalityDisplayPanel" runat="server" Visible="false">
-                       <asp:PlaceHolder ID="ModalityPlaceholder" runat="server">
-                       </asp:PlaceHolder>
-                   </asp:Panel>
-                </td>
-            </tr>
+           
         </table>
        
 								
@@ -155,77 +147,8 @@
 
 	
   <input id="inpHide" type="hidden" runat="server" value="9" />
-    
 
-   <%-- <asp:UpdatePanel ID="UpdatePanel8" runat="server"><ContentTemplate>
-    <div>
-    
-         <table style="width: 100%;">
-            <tr>
-                <td>
-    <asp:Label ID="CurrentStateLabel" runat="server" Text="Current Linac State: " 
-            Height="50px" Width="1200px"  Font-Size="XX-Large" BackColor="White" 
-            ForeColor="Black"></asp:Label>
-<asp:Label ID="Statelabel" runat="server" Text="" Height="50px" Width="1200px"  Font-Size="XX-Large" BackColor="White" ForeColor="Black"></asp:Label>
-        <asp:Label ID="CurrentActivityLabel" runat="server" Text="Current Activity: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-<asp:Label ID="ActivityLabel" runat="server" Text="" Height="25px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-        <asp:Label ID="CurrentUserGroupLabel" runat="server" Text="Current User: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-<asp:Label ID="UserGroupLabel" runat="server" Text="" Height="40px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-<asp:Label ID="Label4" runat="server" Text="ELF IP Address: " Height="20px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-<asp:Label ID="Label5" runat="server" Text="" Height="40px" Width="1200px"  Font-Size="Large" BackColor="#3399FF" ForeColor="#FFFF66"></asp:Label>
-                     </td>
-                <td>
-                    
-                </td>
-                <td>
-                    <asp:Image id="Image2" runat="server"
-            ImageUrl="~/Images/bsuh_logo.gif" Width="250" Height="74"
-            AlternateText="BSUH Linacs" />
-                    <br>
-            <br />
-             <asp:Image id="ImagT1" runat="server"
-            ImageUrl="~/Images/if_elf_62126.png" Width="100px" Height="100px"
-            AlternateText="ELF" />
-            <asp:Label ID="Label15" runat="server" Text="Software Version 5.0"></asp:Label>
-                </td>
-            </tr>
-                   </table>
-
-</div>
-    <asp:HiddenField ID="LAHiddenFieldcontrol" runat="server" />
-
-      </ContentTemplate>
-    </asp:UpdatePanel>
-      <asp:Timer ID="Timer1" runat="server" Interval="7200000">
-       
-    </asp:Timer>
-    <asp:UpdatePanel ID="UpdatePanel9" runat="server">
-    <Triggers>
-    <asp:AsyncPostBackTrigger ControlID="Timer1" EventName="Tick" />
-    </Triggers>
-    <ContentTemplate>
-    <div>
-     <asp:Label ID="Label2" runat="server"></asp:Label><br />
-     <asp:Label ID="Label1" runat="server"></asp:Label>
-                <br />
-     <asp:Label ID="Label3" runat="server" ></asp:Label><br />
-     </div>
-    </ContentTemplate>
-        
-       </asp:UpdatePanel>
-       
-       
-  <asp:Button ID="EndOfDay" runat="server" Text="End of Day"  causesvalidation="false"/>              
-
-
-            <asp:Button ID="RestoreButton" runat="server" visible="true" CausesValidation="False" 
-        style="height: 26px" Text="RESTORE ELF" />
-                   <br />
-    <input id="inpHide" type="hidden" runat="server" value="9" />
-        <br />--%>
-
-    
-    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+        <asp:UpdatePanel ID="UpdatePanel2" runat="server">
             <ContentTemplate>
              <asp:PlaceHolder ID="PlaceHolder4" runat="server">
             <uc9:WriteDatauc ID="WriteDatauc1" LinacName="T2" UserReason="10"  Tabby="EndDay"  WriteName="EndDayData"   Visible="False" runat="server" />
@@ -365,7 +288,6 @@ T2 Status
 <asp:Button ID="Button1" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
 <asp:Panel ID="TabContent6" runat="server" Visible="false"><uc4:AcceptLinac ID="AcceptLinac6" LinacName="T2" UserReason="6" Tabby="6" runat="server" visible="false"/>
 
- <uc10:PhysicsQAuc ID="PhysicsQAuc1" LinacName="T2"  Visible="false" runat="server" />
  </asp:Panel>
  </ContentTemplate>
  </asp:UpdatePanel>

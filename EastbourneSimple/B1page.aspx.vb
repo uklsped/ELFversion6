@@ -48,7 +48,6 @@ Partial Public Class B1page
     Private RegistrationState As String = "regstateB1"
     Private loadup As String = Nothing
     Public Event EngRunuploaded(ByVal connectionString As String)
-    'Private Modalities As controls_ModalityDisplayuc
     Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     'Public Event DayEnded(ByVal Tab As String, ByVal UserName As String)
 
@@ -181,22 +180,6 @@ Partial Public Class B1page
 
     End Sub
 
-    'Public Sub SetModalities(ByVal connectionString As String)
-    '    'If Application(appstate) Then
-    '    Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
-    '    CType(Modalities, controls_ModalityDisplayuc).LinacName = EquipmentID
-    '    CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
-    '    CType(Modalities, controls_ModalityDisplayuc).Mode = Statelabel.Text
-    '    CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
-    '    ModalityPlaceholder.Controls.Add(Modalities)
-    '    ModalityDisplayPanel.Visible = True
-    '    'End If
-
-    'End Sub
-
-    Protected Sub NullPhysics()
-
-    End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
@@ -210,8 +193,6 @@ Partial Public Class B1page
         AddHandler AcceptLinac8.ShowName, AddressOf SetUser
         AddHandler AcceptLinac3.ClinicalApproved, AddressOf ClinicalApprovedEvent
         AddHandler AcceptLinac3.AcknowledgeEnergies, AddressOf AcknowledgeEnergies
-        AddHandler AcceptLinac3.NullPhysics, AddressOf NullPhysics
-        'AddHandler AcceptLinac8.UpdateTraining, AddressOf Update_Training
         AddHandler AcceptLinac4.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler AcceptLinac5.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler AcceptLinac8.UpdateReturnButtons, AddressOf Update_ReturnButtons
@@ -219,18 +200,10 @@ Partial Public Class B1page
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
         AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
-        'AddHandler AcceptLinac1.SetModalities, AddressOf SetModalities
-        'AddHandler AcceptLinac3.SetModalities, AddressOf SetModalities
         Dim ResetDay As String = Nothing
         Dim ConnectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
-
-
-        'Dim EndofDayWait As Button = FindControl("EndOfDay")
-        'If Not FindControl("EndOfDayWait") Is Nothing Then
         EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
-        'End If
-
 
         'If PreviousPage IsNot Nothing Then
         refpage = Nothing
@@ -465,12 +438,12 @@ Partial Public Class B1page
                     Case Else
 
                 End Select
-                'Added this to set up modality view
+
 
             End If
 
         End If
-        'SetModalities(ConnectionString)
+
     End Sub
 
 
