@@ -202,10 +202,7 @@ Partial Class controls_ViewOpenFaultsuc
 
                         Case Else
                             ConcessionHistoryuc1.BindConcessionHistoryGrid(IncidentID)
-                            'BindTrackingGrid(IncidentID)
                             HideFaultsclinicalview.Visible = True
-                            'UpdatePanel1.Visible = True
-                            'MultiView2.SetActiveView(statusother)
                             MultiView1.SetActiveView(View1)
                             ConcessionGrid.Enabled = False
                             ConcessionSelectionPanel.Visible = False
@@ -220,10 +217,7 @@ Partial Class controls_ViewOpenFaultsuc
                     CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
                     'to accomodate Tomo now need to pass equipment name?
                     CType(objCon, ManyFaultGriduc).LinacName = LinacName
-
                     PlaceHolderFaults.Controls.Add(objCon)
-
-                    'UpdatePanel2.Visible = True
                     MultiView1.SetActiveView(View2)
                     ConcessionGrid.Enabled = False
                     Hidefaults.Visible = True
@@ -295,36 +289,6 @@ Partial Class controls_ViewOpenFaultsuc
         CheckEmptyGrid(ConcessionGrid)
 
     End Sub
-    '    Protected Sub BindTrackingGrid(ByVal incidentID As String)
-    '        Dim incidentNumber As String = incidentID
-    '        Dim SqlDataSource3 As New SqlDataSource With {
-    '            .ID = "SqlDataSource3",
-    '            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
-    '            .SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, c.ConcessionNumber, t.linac, t.incidentID " _
-    '& "from FaultTracking t left outer join ConcessionTable c on c.incidentID=t.incidentID where t.linac=@linac and t.incidentID=@incidentID order by trackingid asc"
-    '        }
-    '        SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-    '        SqlDataSource3.SelectParameters.Add("linac", LinacName)
-    '        SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
-    '        SqlDataSource3.SelectParameters.Add("incidentID", incidentNumber)
-    '        GridView2.DataSource = SqlDataSource3
-    '        GridView2.DataBind()
-
-    '    End Sub
-    'Protected Sub BindTrackingGridTech(ByVal incidentID As String)
-    '    Dim SqlDataSource3 As New SqlDataSource With {
-    '        .ID = "SqlDataSource3",
-    '        .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
-    '        .SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo, t.Status, t.LastUpDatedBy, t.LastUpDatedOn, t.linac, t.action " _
-    '    & "from FaultTracking t  where t.linac=@linac and t.incidentID=@incidentID order by t.TrackingID desc"
-    '    }
-    '    SqlDataSource3.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-    '    SqlDataSource3.SelectParameters.Add("linac", LinacName)
-    '    SqlDataSource3.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
-    '    SqlDataSource3.SelectParameters.Add("incidentID", incidentID)
-
-    'End Sub
-
     Protected Sub Hidefaults_Click(ByVal sender As Object, ByVal e As EventArgs) Handles Hidefaults.Click, HideFaultsclinicalview.Click
         ConcessionGrid.Visible = True
         ConcessionGrid.Enabled = True
