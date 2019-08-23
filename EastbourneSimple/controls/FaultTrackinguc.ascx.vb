@@ -12,7 +12,7 @@ Partial Class controls_FaultTrackinguc
     Const EMPTYSTRING As String = ""
     Const CONCESSION As String = "Concession"
     Const CLOSED As String = "Closed"
-    Const OPEN As String = "Open"
+    Const NEWFAULT As String = "New"
     Const TECH As String = "Tech"
     Private ConcessionDescriptionChanged As String
     Private ConcessionActionChanged As String
@@ -24,7 +24,7 @@ Partial Class controls_FaultTrackinguc
     Public Event AddConcessionToDefectDropDownList(ByVal EquipmentName As String, ByVal incidentID As String)
     Public Event CloseFaultTracking(ByVal EquipmentName As String)
     Public Event UpdateOpenConcessions(ByVal EquipmentName As String)
-
+    Private faultstate As String
     Public Property LinacName() As String
     Public Property IncidentID As String
 
@@ -32,7 +32,7 @@ Partial Class controls_FaultTrackinguc
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
 
         AddHandler WriteDatauc3.UserApproved, AddressOf UserApprovedEvent
-
+        faultstate = "OpenFault" + LinacName
         actionstate = "ActionState" + LinacName
         technicalstate = "techstate" + LinacName
 
@@ -55,12 +55,21 @@ Partial Class controls_FaultTrackinguc
 
         Application(ParamApplication) = ConcessObject
         SetupStatusTech(ConcessObject.IncidentID)
-        SetUpOriginalFault(ConcessObject.IncidentID)
+        Select Case ConcessObject.PresentFaultState
+            Case NEWFAULT
+                SetUpOriginalFault(ConcessObject.IncidentID)
+                MultiView_NewFaultConcessionDisplay.SetActiveView(NewFaultView)
+            Case CONCESSION
+                ConcessionHistoryuc1.BindConcessionHistoryGrid(ConcessObject.IncidentID)
+                MultiView_NewFaultConcessionDisplay.SetActiveView(ConcessionHistoryView)
+        End Select
+
+
         SaveAFault.Enabled = False
         CCommentPanel.Enabled = False
         CActionPanel.Enabled = False
         CDescriptionPanel.Enabled = False
-        ConcessionHistoryuc1.BindConcessionHistoryGrid(ConcessObject.IncidentID)
+
         'BindTrackingGridTech(ConcessObject.IncidentID)
 
     End Sub
@@ -72,15 +81,7 @@ Partial Class controls_FaultTrackinguc
         'to accomodate Tomo now need to pass equipment name?
         CType(objOriginalFault, ManyFaultGriduc).LinacName = LinacName
         PlaceHolderFaults.Controls.Add(objOriginalFault)
-        'OriginalFault.NewFault = True
-        'OriginalFault.LinacName = LinacName
-        'OriginalFault.IncidentID = incidentID
-        '    Dim objOriginalFault As controls_OriginalReportedfaultuc = Page.LoadControl("controls\OriginalReportedFaultuc.ascx")
-        '    'CType(objCon, ManyFaultGriduc).NewFault = False
-        '    CType(objOriginalFault, controls_OriginalReportedfaultuc).IncidentID = incidentID
-        '    'to accomodate Tomo now need to pass equipment name?
-        '    CType(objOriginalFault, controls_OriginalReportedfaultuc).Device = LinacName
-        '    PlaceHolderOriginalFault.Controls.Add(objOriginalFault)
+
     End Sub
 
 
@@ -98,11 +99,11 @@ Partial Class controls_FaultTrackinguc
         'If ConcessParamsTrial.PresentFaultState = "Concession" Then
         '    FaultOptionList.Items.FindByValue("Open").Enabled = False
 
-        If ConcessParamsTrial.PresentFaultState = "New" Then
-                CancelButton.Enabled = False
-            End If
-            'LoadFaultTable(incidentID)
-            Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
+        If ConcessParamsTrial.PresentFaultState = NEWFAULT Then
+            CancelButton.Enabled = False
+        End If
+        'LoadFaultTable(incidentID)
+        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         lockctrl.LinacName = LinacName
 
     End Sub
@@ -253,6 +254,7 @@ Partial Class controls_FaultTrackinguc
                             If exists = -1 Then
                                 RaiseError()
                             Else
+                                Application(faultstate) = False
                                 RaiseEvent UpdateOpenConcessions(Machine)
                                 RaiseEvent CloseFaultTracking(Machine)
                             End If
@@ -272,7 +274,7 @@ Partial Class controls_FaultTrackinguc
                             RaiseError()
                         Else
                             If ConcessParamsTrial.FutureFaultState = "Closed" Then
-
+                                Application(faultstate) = False
                                 RaiseEvent UpdateClosedDisplays(Machine)
 
                             End If

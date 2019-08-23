@@ -638,7 +638,9 @@ Partial Public Class T2page
                         If (refpage = "Fault") Then
                             Select Case failingstate
                                 Case 1, 4, 5, 6
+                                    logcontrol.Visible = False
                                     AcceptOKnosigpass(5, lastuser, lastusergroup)
+
                                 Case Else
                                     If (Not logcontrol Is Nothing) Then
                                         Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
@@ -785,6 +787,7 @@ Partial Public Class T2page
                             Activity = "Repair"
                             DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
                             SetUser(lastusergroup)
+                            'repcontrol.Repairlogon(connectionString)
                             'User = "Engineer/Physicist"
                             repcontrol.Visible = True
                             'textbox = repcontrol.FindControl("commentbox")
@@ -807,6 +810,7 @@ Partial Public Class T2page
                                 End If
                             Else
                                 'added GetlastTech because for a fault this is not called earlier so statelabel and set user are blank
+                                repcontrol.Repairlogon()
                                 DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
                                 Statelabel.Text = lastState
 

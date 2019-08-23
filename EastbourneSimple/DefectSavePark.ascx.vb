@@ -9,6 +9,7 @@ Partial Class DefectSavePark
     Private suspstate As String
     Private failstate As String
     Private repairstate As String
+    Private faultstate As String
     Const RADIO As Integer = 103
     Private time As DateTime
     Const RecoverableFault As String = "Recoverable Fault"
@@ -46,6 +47,7 @@ Partial Class DefectSavePark
         suspstate = "Suspended" + LinacName
         failstate = "FailState" + LinacName
         repairstate = "rppTab" + LinacName
+        faultstate = "OpenFault" + LinacName
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
     End Sub
@@ -396,6 +398,7 @@ Partial Class DefectSavePark
                     If Result Then
                         Application(appstate) = Nothing
                         Application(failstate) = ParentControl
+                        Application(faultstate) = True
                         'CreateNewFault(UserInfo, "New", connectionString)
 
                         Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="

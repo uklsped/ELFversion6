@@ -20,6 +20,7 @@ Partial Public Class AcceptLinac
     Public Event EngRunuploaded(ByVal connectionString As String)
     Public Event PreRunuploaded(ByVal connectionString As String)
     Public Event SetModalities(ByVal connectionString As String)
+    Public Event Repairloaded()
 
 
     'Private LinacObj As LinacState
@@ -118,9 +119,12 @@ Partial Public Class AcceptLinac
 
                                     RaiseEvent ClinicalApproved(connectionString)
                                     'RaiseEvent SetModalities(connectionString)
-                                Case 4, 5, 8
+                                Case 4, 8
                                     RaiseEvent UpdateReturnButtons()
                                     'RaiseEvent ShowName(usergroupselected)
+                                Case 5
+                                    RaiseEvent Repairloaded()
+                                    'RaiseEvent Repairloaded(connectionString)
                             End Select
                             output = connectionString
                             'Me.Page.GetType.InvokeMember("SetModalities", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
