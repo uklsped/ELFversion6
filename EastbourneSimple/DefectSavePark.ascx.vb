@@ -484,16 +484,22 @@ Partial Class DefectSavePark
         Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        AccurayValidation.Enabled = True
+        Dim Selected As String = ""
+        'AccurayValidation.Enabled = True
         FaultDescription.SetValidation("Tomodefect", "Please Enter a fault description")
         'RadActC.SetValidation("Tomodefect", "Please Enter the Corrective Action Taken")
-
+        Selected = FaultOpenClosed.SelectedItem.Text
+        If Selected.Equals(FaultAnswerNo) Then
+            AccurayValidation.Enabled = False
+        Else
+            AccurayValidation.Enabled = True
+        End If
         Page.Validate("Tomodefect")
         If Page.IsValid Then
-            Dim Selected As String = ""
+            'Dim Selected As String = ""
             UnRecoverableSave.BackColor = Drawing.Color.LightGray
             UnRecoverableSave.Enabled = False
-            Selected = FaultOpenClosed.SelectedItem.Text
+            'Selected = FaultOpenClosed.SelectedItem.Text
             If Selected.Equals(FaultAnswerNo) Then
                 wcbutton.Text = "Saving New Fault"
                 Application(actionstate) = "Confirm"

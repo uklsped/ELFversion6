@@ -87,18 +87,18 @@ Partial Class Repairuc
             '    End If
             StateTextBox.Text = laststate
         Else
-            ConcessParamsTrial = Application(ParamApplication)
-            Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
-            CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
-            CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
+            'ConcessParamsTrial = Application(ParamApplication)
+            'Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
+            'CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
+            'CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
 
-            CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
-            CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
-            AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-            AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
-            AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
-            NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
-            DynamicControlSelection = NEWFAULTSELECTED
+            'CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
+            'CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
+            'AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
+            'AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
+            'AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
+            'NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
+            'DynamicControlSelection = NEWFAULTSELECTED
         End If
     End Sub
     'This works to update closed faults and to remove concession from defect dropdown list.
@@ -166,67 +166,6 @@ Partial Class Repairuc
         ParamApplication = "Params" + LinacName
 
     End Sub
-
-    'Public Sub Repairlogon(ByVal connectionString As String)
-    '    Dim success As Boolean = False
-    '    Dim NumOpen As Integer = 0
-    '    Dim IncidentID As Integer = 0
-    '    Dim conn As SqlConnection
-    '    Dim comm As SqlCommand
-    '    Dim reader As SqlDataReader
-    '    Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-    '        "connectionstring").ConnectionString
-    '    conn = New SqlConnection(connectionString1)
-    '    'comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
-    '    comm = New SqlCommand("select IncidentID from FaultIDTable where Status in ('New') and linac=@linac", conn)
-    '    comm.Parameters.AddWithValue("@linac", LinacName)
-
-    '    conn.Open()
-    '    reader = comm.ExecuteReader()
-    '    If Not FindControl("RadioButtonlist1") Is Nothing Then
-    '        Repairlist = FindControl("RadioButtonlist1")
-    '        If reader.Read() Then
-
-    '            IncidentID = reader.Item("IncidentID")
-    '            'If NumOpen <> 0 Then
-    '            'This sets only return option as log off with open fault
-    '            'after review meeting 6th august decided that should disable option to log off with open fault. Item 4 disabled in aspx file
-    '            'Repairlist.Items(4).Enabled = True
-    '            'Repairlist.Items(4).Selected = True
-    '            StateTextBox.Text = "Fault"
-    '            Application(faultstate) = True
-    '            isFault = Application(faultstate)
-    '            LogOffButton.Enabled = False
-    '            success = ConcessParamsTrial.CreateObject(IncidentID)
-
-    '            'success = DavesCode.ConcessionParameters.CreateObject(IncidentID, LinacName)
-
-    '            If success Then
-    '                Application(ParamApplication) = ConcessParamsTrial
-    '                Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
-    '                CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
-    '                CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
-
-    '                CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
-    '                CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
-    '                AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-    '                AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
-    '                AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
-    '                NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
-    '                DynamicControlSelection = NEWFAULTSELECTED
-    '            Else
-    '                RaiseError()
-    '            End If
-    '        Else
-
-    '            SetLeavingButtons()
-
-    '        End If
-
-    '    End If
-    '    conn.Close()
-
-    'End Sub
 
     Protected Sub SetStates()
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
@@ -558,18 +497,18 @@ Partial Class Repairuc
                     'success = DavesCode.ConcessionParameters.CreateObject(IncidentID, LinacName)
 
                     If success Then
-                        'Application(ParamApplication) = ConcessParamsTrial
-                        'Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
-                        'CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
-                        'CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
+                        Application(ParamApplication) = ConcessParamsTrial
+                        Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
+                        CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
+                        CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
 
-                        'CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
-                        'CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
-                        'AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-                        'AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
-                        'AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
-                        'NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
-                        'DynamicControlSelection = NEWFAULTSELECTED
+                        CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
+                        CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
+                        AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
+                        AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
+                        AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
+                        NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
+                        DynamicControlSelection = NEWFAULTSELECTED
                     Else
                         RaiseError()
                     End If
