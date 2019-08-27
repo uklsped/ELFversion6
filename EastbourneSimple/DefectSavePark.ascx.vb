@@ -63,11 +63,6 @@ Partial Class DefectSavePark
 
     End Sub
 
-    'Public Sub UpDateDefectsEventHandler()
-    '    BindDefectData()
-    '    'SetFaults()
-    'End Sub
-
     'No need to pass any references now or to have if statements. Analysis 23/11/16 Back in 29/03/18
 
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
@@ -82,8 +77,6 @@ Partial Class DefectSavePark
             Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
             wctrl.Visible = False
             If Action = "Confirm" Then
-                'BindDefectData()
-
                 NewWriteRadReset(Userinfo, ConcessionNumber)
             Else
                 Defect.SelectedIndex = -1
@@ -144,7 +137,7 @@ Partial Class DefectSavePark
         wctrl.LinacName = LinacName
         FaultDescription.BoxChanged = FaultDescriptionChanged
         RadActC.BoxChanged = RadActDescriptionChanged
-        'BindDefectData()
+
     End Sub
     Public Sub ResetDefectDropDown(ByVal incidentid As String)
 
@@ -192,16 +185,6 @@ Partial Class DefectSavePark
 
     End Sub
 
-
-    'Private Sub BindDefectData()
-
-    '    Dim SqlDataSource1 As New SqlDataSource()
-    '    Dim query As String = "SELECT RIGHT(CONVERT(VARCHAR, DateReported, 100),7) as DefectTime, ConcessionNumber, Description FROM [ReportFault] where Cast(DateReported as Date) = Cast(GetDate() as Date) and linac=@linac and ConcessionNumber != '' order by DateReported desc"
-    '    SqlDataSource1 = QuerySqlConnection(LinacName, query)
-    '    GridView1.DataSource = SqlDataSource1
-    '    GridView1.DataBind()
-    'End Sub
-
     Protected Function QuerySqlConnection(ByVal MachineName As String, ByVal query As String) As SqlDataSource
         'This uses the sqldatasource instead of the individual conn definitions so reader can't be used
         'this solution is from http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.sqldatasource.select%28v=vs.90%29.aspx
@@ -214,7 +197,6 @@ Partial Class DefectSavePark
         SqlDataSource1.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
         SqlDataSource1.SelectParameters.Add("linac", MachineName)
         Return SqlDataSource1
-
 
     End Function
 
@@ -314,6 +296,7 @@ Partial Class DefectSavePark
         suspstate = "Suspended" + LinacName
         failstate = "FailState" + LinacName
         repairstate = "rppTab" + LinacName
+        'faultstate = "OpenFault" + LinacName
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
         'FaultApplication = "FaultParams" + LinacName
@@ -345,7 +328,6 @@ Partial Class DefectSavePark
                         If Result Then
                             Status = Concession
                             SetFaults(True)
-                            'BindDefectData()
                             RaiseEvent UpdateViewOpenFaults(LinacName)
                         Else
                             RaiseError()
@@ -413,17 +395,13 @@ Partial Class DefectSavePark
 
             Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
             If Result Then
-                'BindDefectData()
                 RaiseEvent UpDateDefectDailyDisplay(LinacName)
             Else
                 RaiseError()
             End If
-
-            'End If
-            'End If
         End If
         Defect.SelectedIndex = -1
-        'ClearsForm()
+
     End Sub
 
     Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultParams As DavesCode.FaultParameters)

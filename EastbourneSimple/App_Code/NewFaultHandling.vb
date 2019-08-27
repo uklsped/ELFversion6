@@ -407,7 +407,7 @@ Namespace DavesCode
                     incidentfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.VarChar, 7)
                     incidentfault.Parameters("@BSUHID").Value = FaultP.PatientID
                     incidentfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
-                    incidentfault.Parameters("@ConcessionNumber").Value = ConcessionNumber
+                    incidentfault.Parameters("@ConcessionNumber").Value = FaultP.ConcessionNumber
                     incidentfault.Parameters.Add("@OriginalFaultID", System.Data.SqlDbType.Int)
                     incidentfault.Parameters("@OriginalFaultID").Value = 0
                     incidentfault.Parameters.Add("@RadiationIncident", System.Data.SqlDbType.Bit)
@@ -521,7 +521,7 @@ Namespace DavesCode
             'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString)
             'Dim incidentfault As SqlCommand
-            Const CONCESSIONNUMBER = ""
+            'Const CONCESSIONNUMBER = ""
             Dim logInStatusID As Integer = 0
             Dim constateid As SqlCommand
             constateid = New SqlCommand("SELECT stateid FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
@@ -598,7 +598,7 @@ Namespace DavesCode
                 incidentfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.VarChar, 7)
                 incidentfault.Parameters("@BSUHID").Value = FaultP.PatientID
                 incidentfault.Parameters.Add("@ConcessionNumber", System.Data.SqlDbType.NVarChar, 25)
-                incidentfault.Parameters("@ConcessionNumber").Value = CONCESSIONNUMBER
+                incidentfault.Parameters("@ConcessionNumber").Value = FaultP.ConcessionNumber
                 incidentfault.Parameters.Add("@OriginalFaultID", System.Data.SqlDbType.Int)
                 incidentfault.Parameters("@OriginalFaultID").Value = ORIGINALFAULTID
                 incidentfault.Parameters.Add("@RadiationIncident", System.Data.SqlDbType.Bit)

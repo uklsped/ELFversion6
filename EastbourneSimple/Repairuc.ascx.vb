@@ -7,7 +7,7 @@ Partial Class Repairuc
     Private mpContentPlaceHolder As ContentPlaceHolder
     Private SelectCount As Boolean
     Private Radioselect As Integer = 102 'default to end of day
-    Public LinName As String
+    'Public LinName As String
     Private appstate As String
     Private suspstate As String
     Private actionstate As String
@@ -87,44 +87,31 @@ Partial Class Repairuc
             '    End If
             StateTextBox.Text = laststate
         Else
-            'ConcessParamsTrial = Application(ParamApplication)
-            'Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
-            'CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
-            'CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
+            ConcessParamsTrial = Application(ParamApplication)
+            Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
+            CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
+            CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
 
-            'CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
-            'CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
-            'AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-            'AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
-            'AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
-            'NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
-            'DynamicControlSelection = NEWFAULTSELECTED
+            CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
+            CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
+            AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
+            AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
+            AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
+            NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
+            DynamicControlSelection = NEWFAULTSELECTED
         End If
     End Sub
     'This works to update closed faults and to remove concession from defect dropdown list.
     Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String)
         MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
         MainFaultPanel.Update_FaultClosedDisplay(EquipmentID)
-        'If MachineName = EquipmentID Then
-        '    Dim todayfault As TodayClosedFault = PlaceHolder5.FindControl("Todaysfaults")
-        '    todayfault.SetGrid()
-        '    If MachineName Like "T?" Then
-        '        Todaydefectpark = PlaceHolder1.FindControl("DefectDisplay")
-        '        Todaydefectpark.ResetDefectDropDown(incidentID)
-        '    Else
-        '        Todaydefect = PlaceHolder1.FindControl("DefectDisplay")
-        '        Todaydefect.ResetDefectDropDown(incidentID)
-        '    End If
 
-        'End If
     End Sub
 
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
-
             MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
             MainFaultPanel.Update_defectsToday(LinacName)
-
         End If
     End Sub
     Protected Sub Update_ViewOpenFaults(ByVal EquipmentID As String)
@@ -149,20 +136,7 @@ Partial Class Repairuc
             End If
         End If
 
-        AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
-        AddHandler AutoApproved, AddressOf UserApprovedEvent
-
-        appstate = "LogOn" + LinacName
-        actionstate = "ActionState" + LinacName
-        suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
-        faultviewstate = "Faultsee" + LinacName
-        atlasviewstate = "Atlassee" + LinacName
-        qaviewstate = "QAsee" + LinacName
-        faultstate = "OpenFault" + LinacName
-        BoxChanged = "RepBoxChanged" + LinacName
-        tabstate = "ActTab" + LinacName
+        SetStates()
         ParamApplication = "Params" + LinacName
 
     End Sub
@@ -218,7 +192,7 @@ Partial Class Repairuc
             result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
             If result Then
                 If Action = "Confirm" Then
-
+                    DynamicControlSelection = String.Empty
                     CommentBox.ResetCommentBox(String.Empty)
 
                     Dim strScript As String = "<script>"
@@ -240,48 +214,33 @@ Partial Class Repairuc
                     Select Case Radioselect
 
                         Case 1
-                            'LinacStateID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, 7, MachineName, 5)
                             Application(failstate) = Nothing
                             Application(repairstate) = Nothing
                             Application(suspstate) = Nothing
                             Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             Response.Redirect(returnstring)
-                        'Case 2
-                        '    ' LinacStateID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, 7, MachineName, 5)
-                        '    Application(suspstate) = Nothing
-                        '    Application(failstate) = Nothing
-                        '    Application(repairstate) = 1
-                        '    'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                        '    ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+
                         Case 3
                             Application(suspstate) = 1
                             Application(failstate) = Nothing
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                        'LinacStateID = DavesCode.Reuse.SetStatus(username, "Clinical", 5, 7, MachineName, 5)
+
                         Case 4
                             Application(failstate) = Nothing
-                            'LinacStateID = DavesCode.Reuse.SetStatus(username, "Planned Maintenance", 5, 7, MachineName, 5)
-                            'ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                             Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             Response.Redirect(returnstring)
                         Case 6
                             Application(failstate) = Nothing
                             Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             Response.Redirect(returnstring)
                         Case 102
                             Application(failstate) = Nothing
                             Application(repairstate) = Nothing
                             Application(suspstate) = Nothing
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                         Case 8
                             Application(failstate) = Nothing
                             Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             Response.Redirect(returnstring)
                     End Select
 
@@ -319,6 +278,7 @@ Partial Class Repairuc
             success = WriteFaultIDTable()
         End If
         If success Then
+
             If Not RadioButtonList1.SelectedItem Is Nothing Then
                 Application(actionstate) = "Confirm"
                 Radioselect = RadioButtonList1.SelectedItem.Value
@@ -326,10 +286,7 @@ Partial Class Repairuc
                     Case 1
                         wcbutton.Text = "Go To Engineering Run up"
                         RaiseEvent AutoApproved(5, lastusername)
-                    'Case 2
-                    '    wcbutton.Text = "Needs Pre-clinical Run up"
-                    '    WriteDatauc1.Visible = True
-                    '    ForceFocus(wctext)
+
                     Case 3
                         wcbutton.Text = "Return to clinical"
                         WriteDatauc1.Visible = True
@@ -388,25 +345,25 @@ Partial Class Repairuc
         '    'The solution of how to pass parameter to dynamically loaded user control is from here:
         '    'http://weblogs.asp.net/aghausman/archive/2009/04/15/how-to-pass-parameters-to-the-dynamically-added-user-control.aspx
 
-        'Dim lastusergroup As Integer
-
         CommentBox.BoxChanged = BoxChanged
 
         Select Case Me.DynamicControlSelection
 
             Case NEWFAULTSELECTED
-
-                Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
-                CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
-                CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
-                'ConcessParamsTrial.Linac
-                CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
-                CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
-                AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-                AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
-                AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
-
-                NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
+                Dim reloadnewfaultselected As controls_NewFaultPopUpuc
+                reloadnewfaultselected = CType(FindControl("NewFaultPopup"), controls_NewFaultPopUpuc)
+                If reloadnewfaultselected Is Nothing Then
+                    Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
+                    CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
+                    CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
+                    'ConcessParamsTrial.Linac
+                    CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
+                    CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
+                    AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
+                    AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
+                    AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
+                    NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
+                End If
 
             Case QASELECTED
                 Dim ObjQA As controls_ModalityQAPopUpuc = Page.LoadControl("controls\ModalityQAPopUpuc.ascx")
@@ -451,8 +408,9 @@ Partial Class Repairuc
         CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
         ModalityPlaceholder.Controls.Add(Modalities)
         ModalityDisplayPanel.Visible = True
-        'Removed references to LA 9/4/19
+
         If Not IsPostBack Then
+
             If Not LinacName Like "T?" Then
                 PhysicsQA.Visible = True
             End If
@@ -472,7 +430,6 @@ Partial Class Repairuc
             Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             conn = New SqlConnection(connectionString1)
-            'comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
             comm = New SqlCommand("select IncidentID from FaultIDTable where Status in ('New') and linac=@linac", conn)
             comm.Parameters.AddWithValue("@linac", LinacName)
 
@@ -481,34 +438,26 @@ Partial Class Repairuc
             If Not FindControl("RadioButtonlist1") Is Nothing Then
                 Repairlist = FindControl("RadioButtonlist1")
                 If reader.Read() Then
-
                     IncidentID = reader.Item("IncidentID")
-                    'If NumOpen <> 0 Then
-                    'This sets only return option as log off with open fault
-                    'after review meeting 6th august decided that should disable option to log off with open fault. Item 4 disabled in aspx file
-                    'Repairlist.Items(4).Enabled = True
-                    'Repairlist.Items(4).Selected = True
                     StateTextBox.Text = "Fault"
                     Application(faultstate) = True
                     isFault = Application(faultstate)
                     LogOffButton.Enabled = False
                     success = ConcessParamsTrial.CreateObject(IncidentID)
 
-                    'success = DavesCode.ConcessionParameters.CreateObject(IncidentID, LinacName)
-
                     If success Then
                         Application(ParamApplication) = ConcessParamsTrial
-                        Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
-                        CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
-                        CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
+                        'Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
+                        'CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
+                        'CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
 
-                        CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
-                        CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
-                        AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-                        AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
-                        AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
-                        NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
-                        DynamicControlSelection = NEWFAULTSELECTED
+                        'CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
+                        'CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
+                        'AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
+                        'AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
+                        'AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
+                        'NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
+                        'DynamicControlSelection = NEWFAULTSELECTED
                     Else
                         RaiseError()
                     End If
@@ -548,66 +497,38 @@ Partial Class Repairuc
                 Select Case Application(failstate)
                     Case 0
                         If Application(repairstate) = 1 Then
-                            'If LinacName Like "LA?" Then
-                            '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                            '    StateTextBox.Text = "Engineering Approved"
-                            'Else
                             RadioButtonList1.Items.FindByValue(3).Enabled = True
                             StateTextBox.Text = "Clinical - Not Treating"
-                            'End If
                         End If
-                'Case 2 ' this can only happen for LA machines
-                '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                '    StateTextBox.Text = "Engineering Approved"
+
                     Case 3
-                        'If LinacName Like "LA?" Then
-                        '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                        'End If
+
                         RadioButtonList1.Items.FindByValue(3).Enabled = True
                         StateTextBox.Text = "Clinical - Not Treating"
                     Case 4, 5, 8
                         If Application(suspstate) = 1 Then
-                            'If LinacName Like "LA?" Then
-                            '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                            'End If
                             RadioButtonList1.Items.FindByValue(3).Enabled = True
                             StateTextBox.Text = "Suspended"
                         ElseIf Application(repairstate) = 1 Then
-                            'If LinacName Like "LA?" Then
-                            '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                            '    StateTextBox.Text = "Engineering Approved"
-                            'Else
                             RadioButtonList1.Items.FindByValue(3).Enabled = True
                             StateTextBox.Text = "Clinical - Not Treating"
-                            'End If
                         End If
                     Case Else
                         'StateTextBox.Text = "Linac Unauthorised"
                 End Select
 
             ElseIf Application(suspstate) = 1 Then
-                'If LinacName Like "LA?" Then
-                '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                'End If
                 RadioButtonList1.Items.FindByValue(3).Enabled = True
                 StateTextBox.Text = "Suspended"
-                'End If
-                'Application("Failstate") = 0
                 Dim rtab As String = Application(repairstate)
             ElseIf Application(repairstate) = 1 Then
-                'If LinacName Like "LA?" Then
-                '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                '    StateTextBox.Text = "Engineering Approved"
-                'Else
                 RadioButtonList1.Items.FindByValue(3).Enabled = True
                 StateTextBox.Text = "Clinical - Not Treating"
-                'End If
             End If
         End If
     End Sub
     Protected Sub LockElf_Click(sender As Object, e As System.EventArgs) Handles LockElf.Click
         RemoteLockElf(True)
-
     End Sub
 
     Public Sub RemoteLockElf(ByVal realbut As Boolean)
@@ -616,8 +537,6 @@ Partial Class Repairuc
         Dim suspendvalue As String
         Dim repairvalue As String
         Dim username As String = "Lockuser"
-        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-        'Dim comment As String = Textboxcomment.Text
         comment = CommentBox.Currentcomment
         suspendvalue = Application(suspstate)
         repairvalue = Application(repairstate)
@@ -629,7 +548,6 @@ Partial Class Repairuc
         faultstate = DavesCode.Reuse.GetLastState(LinacName, 0)
         RaiseEvent BlankGroup(0)
         If faultstate = "Fault" Then
-            'radioselect = 101
             breakdown = True
         End If
         If Not realbut Then
@@ -652,7 +570,6 @@ Partial Class Repairuc
             Else
                 RaiseLockError()
             End If
-            'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, radioselect, tabused, breakdown, suspendvalue, repairvalue, lock)
             lockctrl.Visible = True
         End If
         ForceFocus(lockctrltext)
