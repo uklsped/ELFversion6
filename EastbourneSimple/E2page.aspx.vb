@@ -484,12 +484,12 @@ Partial Public Class E2page
                 statusmultiview.Visible = False
                 Dim setView As View = statusmultiview.FindControl("View0")
                 statusmultiview.SetActiveView(setView)
-                Dim E2 As Button = linacstatusuc.FindControl("Button1")
-                Dim B2 As Button = linacstatusuc.FindControl("Button2")
-                Dim B3 As Button = linacstatusuc.FindControl("Button3")
-                E2.Visible = True
-                B2.Visible = True
-                B3.Visible = True
+                Dim Button1 As Button = linacstatusuc.FindControl("Button1")
+                Dim Button2 As Button = linacstatusuc.FindControl("Button2")
+                Dim Button3 As Button = linacstatusuc.FindControl("Button3")
+                Button1.Visible = True
+                Button2.Visible = True
+                Button3.Visible = True
                 Dim hidfield1 As HiddenField = linacstatusuc.FindControl("HiddenField1")
                 hidfield1.Value = False
                 hidfield2 = linacstatusuc.FindControl("HiddenField2")
