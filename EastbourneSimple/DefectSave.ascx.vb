@@ -13,7 +13,7 @@ Partial Class DefectSave
     Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
     Public Property ParentControl() As String
     Public Property LinacName() As String
-
+    Private faultstate As String
     Private appstate As String
     Private suspstate As String
     Private repairstate As String
@@ -54,7 +54,7 @@ Partial Class DefectSave
         'Added back in 26/3/18 see SPR
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
         AddHandler WriteDatauc2.UserApproved, AddressOf UserApprovedEvent
-
+        faultstate = "OpenFault" + LinacName
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
@@ -213,6 +213,7 @@ Partial Class DefectSave
         wctrl2.LinacName = LinacName
         'This now in mainfaultdisplay
         'BindDefectData()
+        faultstate = "OpenFault" + LinacName
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
@@ -479,10 +480,10 @@ Partial Class DefectSave
 
     End Sub
 
-    'Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
+    Protected Sub DropDownListArea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles DropDownListArea.SelectedIndexChanged
 
-    'AreaOrAccuray.Value = DropDownListArea.SelectedValue.ToString
-    'End Sub
+        AreaOrAccuray.Value = DropDownListArea.SelectedValue.ToString
+    End Sub
 
 
 
@@ -495,6 +496,7 @@ Partial Class DefectSave
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
         FaultApplication = "FaultParams" + LinacName
+        faultstate = "OpenFault" + LinacName
         Dim Concession As String = "Concession"
         Dim Status As String = EMPTYSTRING
         Dim Result As Boolean = False
@@ -553,6 +555,7 @@ Partial Class DefectSave
 
                     Application(appstate) = Nothing
                     Application(failstate) = ParentControl
+                    Application(faultstate) = True
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir
                     'PopupAck()
                     Comment = String.Empty
@@ -567,9 +570,7 @@ Partial Class DefectSave
             Case Else
                 Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
                 If Result Then
-                    'BindDefectData()
-
-                    'RaiseEvent UpDateDefectDailyDisplay(LinacName)
+                    RaiseEvent UpDateDefectDailyDisplay(LinacName)
                     Return Result
                     'RaiseEvent CloseReportFaultPopUp(LinacName)
 

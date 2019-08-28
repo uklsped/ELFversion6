@@ -87,18 +87,22 @@ Partial Class Repairuc
             '    End If
             StateTextBox.Text = laststate
         Else
-            ConcessParamsTrial = Application(ParamApplication)
-            Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
-            CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
-            CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
+            Dim reloadnewfaultselected As controls_NewFaultPopUpuc
+            reloadnewfaultselected = CType(FindControl("NewFaultPopup"), controls_NewFaultPopUpuc)
+            If reloadnewfaultselected Is Nothing Then
+                ConcessParamsTrial = Application(ParamApplication)
+                Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
+                CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
+                CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName
 
-            CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
-            CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
-            AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
-            AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
-            AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
-            NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
-            DynamicControlSelection = NEWFAULTSELECTED
+                CType(NewFaultPopup, controls_NewFaultPopUpuc).ParentName = REPAIR
+                CType(NewFaultPopup, controls_NewFaultPopUpuc).Visible = True
+                AddHandler NewFaultPopup.CloseFaultTracking, AddressOf CloseTracking
+                AddHandler NewFaultPopup.UpdateClosedDisplays, AddressOf Update_FaultClosedDisplays
+                AddHandler NewFaultPopup.UpdateOpenConcessions, AddressOf Update_ViewOpenFaults
+                NewFaultPopupPlaceHolder.Controls.Add(NewFaultPopup)
+                DynamicControlSelection = NEWFAULTSELECTED
+            End If
         End If
     End Sub
     'This works to update closed faults and to remove concession from defect dropdown list.

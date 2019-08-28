@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="VB" MasterPageFile="~/Elf.master"  AutoEventWireup="false" CodeFile="T1page.aspx.vb" Inherits="T1page"  %>
+﻿<%@ Page Title="" Language="VB" MasterPageFile="~/Elf.master"  AutoEventWireup="false" CodeFile="T1page .aspx.vb" Inherits="T1page"  %>
 <%@ MasterType VirtualPath="~/Elf.master" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <%@ Register src="ErunupUserControlCommon.ascx" tagname="ErunupUserControlCommon" tagprefix="uc1" %>
@@ -14,6 +14,7 @@
 <%@ Register src="Repairuc.ascx" tagname="Repairuc" tagprefix="uc7" %>
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc9" %>
+
 
 <%@ Register src="Traininguc.ascx" tagname="Traininguc" tagprefix="uc12" %>
 
@@ -146,9 +147,8 @@
 
 	
   <input id="inpHide" type="hidden" runat="server" value="9" />
-    
-    
-    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+
+        <asp:UpdatePanel ID="UpdatePanel2" runat="server">
             <ContentTemplate>
              <asp:PlaceHolder ID="PlaceHolder4" runat="server">
             <uc9:WriteDatauc ID="WriteDatauc1" LinacName="T1" UserReason="10"  Tabby="EndDay"  WriteName="EndDayData"   Visible="False" runat="server" />

@@ -56,7 +56,7 @@
                                 <asp:Button ID="LogOffButton" runat="server" Text="Log Off" Height="150px"
                                     CausesValidation="false" />
                             </td>
-                            <td style="text-align:right">
+                            <td>
                                 <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                                     <ContentTemplate>
                                         <uc11:ReportAFaultuc ID="ReportAFaultuc1" runat="server" />

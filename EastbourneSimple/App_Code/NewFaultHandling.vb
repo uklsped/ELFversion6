@@ -663,6 +663,30 @@ Namespace DavesCode
             Return IncidentID
         End Function
 
+        Public Shared Function CheckForOpenFault(ByVal machinename As String) As Boolean
+            Dim openfault As Boolean = False
+            Dim conn As SqlConnection
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            "connectionstring").ConnectionString
+            Dim existingfault As SqlCommand
+            Dim LinacStatusID As String = ""
+            Dim reader As SqlDataReader
+            conn = New SqlConnection(connectionString)
+
+            existingfault = New SqlCommand("SELECT TOP(1) [IncidentID], [StatusID] FROM [FaultIDTable] where Linac = @linac and ReportClosed is Null and statusid is not NULL ORDER BY [IncidentID] DESC", conn)
+            existingfault.Parameters.AddWithValue("@linac", machinename)
+            conn.Open()
+            reader = existingfault.ExecuteReader()
+            If reader.HasRows() Then
+                'Have to now actually read the rows
+                reader.Read()
+                LinacStatusID = reader.Item("StatusID").ToString()
+                openfault = True
+                'Application(appstate) = 1
+            End If
+
+            Return openfault
+        End Function
         Public Shared Sub LogError(ex As Exception)
             Dim message As String = String.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"))
             message += Environment.NewLine
