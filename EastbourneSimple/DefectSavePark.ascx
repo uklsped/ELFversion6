@@ -29,7 +29,7 @@
             </tr>
             <tr>
                 <td><asp:Label ID="ErrorCodeLabel" runat="server" Text="Error Code: "></asp:Label></td>
-                <td colspan="3"><asp:TextBox ID="ErrorCode" runat="server" Text="" ReadOnly="false" forecolor="Red" EnableViewState="False" Visible="true"></asp:TextBox></td>
+                <td colspan="3"><asp:TextBox ID="ErrorCode" runat="server" Text="" ReadOnly="false" EnableViewState="False" Visible="true"></asp:TextBox></td>
             </tr>
             <tr>
                 <td><asp:Label ID="AccurayLabel" runat="server" Text="Physicist/Accuracy Job Number: "></asp:Label></td>
@@ -71,7 +71,7 @@
             </tr>
             <tr><td><asp:Label ID="PatientIDLabel" runat="server" Text="Patient ID: "></asp:Label></td>
                 <td colspan="3"><asp:TextBox ID="PatientIDBox" Text="" runat="server"></asp:TextBox>
-                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" forecolor="Red" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="Dynamic"  ErrorMessage="Please enter a BSUH ID"></asp:RegularExpressionValidator> </td>
+                        <asp:RegularExpressionValidator ID="RegularExpressionPatient" runat="server" forecolor="Red" ControlToValidate="PatientIDBox" ValidationExpression="^\d{7}$" Display="None"  ErrorMessage="Please enter a BSUH ID" validationgroup="Tomodefect"></asp:RegularExpressionValidator> </td>
             
             </tr>
             
