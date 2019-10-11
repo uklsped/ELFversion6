@@ -2806,7 +2806,7 @@ Namespace DavesCode
                 activity = reader.Item("userreason")
                 StateID = reader.Item("StateID")
                 Status = reader.Item("State")
-                oldtime = oldtime.Date.AddDays(-1) 'test line
+                'oldtime = oldtime.Date.AddDays(-1) 'test line
                 oldDayofyear = oldtime.DayOfYear
                 newDayofyear = time.DayOfYear
 

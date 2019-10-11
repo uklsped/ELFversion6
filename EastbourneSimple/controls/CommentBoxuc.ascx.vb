@@ -27,7 +27,8 @@ Partial Class controls_CommentBoxuc
         End If
         If NoWrite Then
             TextBox.ReadOnly = True
-            TextBox.BackColor = System.Drawing.SystemColors.Window
+            TextBox.ForeColor = Drawing.Color.DarkBlue
+            TextBox.BackColor = Drawing.SystemColors.Window
             CommentWordCount.Text = String.Empty
         Else
             CommentWordCount.Text = MaxCount - Currentcomment.Length

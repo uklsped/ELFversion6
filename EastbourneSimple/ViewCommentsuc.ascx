@@ -56,7 +56,7 @@
         Operator="GreaterThanEqual" Type="Date"></asp:CompareValidator>
 
     <asp:Button ID="submitButton" runat="server" Text="View History" 
-            OnClientClick='"submitButton_Click"' CausesValidation="true" />
+            OnClientClick='"submitButton_Click"' CausesValidation="false" />
         
 <asp:UpdatePanel ID="UpdatePanel1" visible="false"  runat="server">
 <ContentTemplate>
