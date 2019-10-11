@@ -1238,10 +1238,6 @@ Partial Public Class T1page
             Activity = 5
             activetab = 5
         End If
-
-
-
-
         Select Case activetab
             'Case 7
             '        DavesCode.Reuse.SetStatus(Userinfo, "Linac Unauthorised", 5, 7, MachineName, 0)
@@ -1249,9 +1245,23 @@ Partial Public Class T1page
                 'only need dummy gridview when passing to commit run up not when using runup control
                 'tab 666 is for commit run up - same as for fault condition
                 If activetab = 1 Then
-                    mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
+                    If tcl.ActiveTab.FindControl(runupcontrolId) Is Nothing Then
+                        mrucontrol = Page.LoadControl("ErunupUserControlCommon.ascx")
+                        mrucontrol.ID = runupcontrolId
+                        mrucontrol.LinacName = EquipmentID
+                    Else
+                        mrucontrol = tcl.ActiveTab.FindControl(runupcontrolId)
+                    End If
+
                 Else
-                    mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
+                    If tcl.ActiveTab.FindControl(emergencycontrolID) Is Nothing Then
+                        mrucontrol = Page.LoadControl("ErunupUserControlCommon.ascx")
+                        mrucontrol.ID = emergencycontrolID
+                        mrucontrol.LinacName = EquipmentID
+                    Else
+                        mrucontrol = tcl.ActiveTab.FindControl(emergencycontrolID)
+                    End If
+
                 End If
 
                 'grdview = mrucontrol.FindControl("Gridview1")
@@ -1269,7 +1279,13 @@ Partial Public Class T1page
             '    mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
             '    Application(repairstate) = 1
             Case 3
-                mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                If tcl.ActiveTab.FindControl(ClinicalUserControlID) Is Nothing Then
+                    mclincontrol = Page.LoadControl("ClinicalUserControl.ascx")
+                    mclincontrol.ID = ClinicalUserControlID
+                    mclincontrol.LinacName = EquipmentID
+                Else
+                    mclincontrol = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                End If
                 mclincontrol.UserApprovedEvent("Recover", Logoffuser)
                 'DavesCode.Reuse.CommitClinical(EquipmentID, Userinfo, breakdown)
                 Application(treatmentstate) = "Yes"
@@ -1287,23 +1303,35 @@ Partial Public Class T1page
 
                 Select Case activetab
                     Case 4
-                        mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+                        If tcl.ActiveTab.FindControl(PlannedMaintenanceControlID) Is Nothing Then
+                            mplancontrol = Page.LoadControl("PlannedMaintenanceuc.ascx")
+                            mplancontrol.ID = PlannedMaintenanceControlID
+                            mplancontrol.LinacName = EquipmentID
+                        Else
+                            mplancontrol = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+                        End If
                         mplancontrol.UserApprovedEvent(activetab, Logoffuser)
                     Case 5
-                        mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
+                        If tcl.ActiveTab.FindControl(repcontrolId) Is Nothing Then
+                            mrepcontrol = Page.LoadControl("Repairuc.ascx")
+                            mrepcontrol.ID = repcontrolId
+                            mrepcontrol.LinacName = EquipmentID
+
+                        Else
+                            mrepcontrol = tcl.ActiveTab.FindControl(repcontrolId)
+                        End If
                         mrepcontrol.UserApprovedEvent(activetab, Logoffuser)
                     Case 8
-                        mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
+                        If tcl.ActiveTab.FindControl(trainingcontrolID) Is Nothing Then
+                            mtrainingcontrol = Page.LoadControl("Traininguc.ascx")
+                            mtrainingcontrol.ID = trainingcontrolID
+                            mtrainingcontrol.LinacName = EquipmentID
+                        Else
+                            mtrainingcontrol = tcl.ActiveTab.FindControl(trainingcontrolID)
+                        End If
                         mtrainingcontrol.UserApprovedEvent(activetab, Logoffuser)
                 End Select
-                ' DavesCode.Reuse.WriteAuxTables(EquipmentID, Userinfo, Comment, Radio, Activity, breakdown, susstate, repstate, False)
-            Case Else
-                'This caters for when the system is already idling as it were.
-                returnstring = EquipmentID + "page.aspx"
-                Application(appstate) = Nothing
-                Response.Redirect(returnstring)
-        End Select
-        returnstring = EquipmentID + "page.aspx?tabref=" + Convert.ToString(Activity) + "&recovered=1"
+                returnstring = EquipmentID + "page.aspx?tabref=" + Convert.ToString(Activity) + "&recovered=1"
         Application(technicalstate) = Nothing
         Application(appstate) = Nothing
 
