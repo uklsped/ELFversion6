@@ -942,15 +942,27 @@ Partial Public Class B1page
 
     Protected Sub Timer1_Tick(sender As Object, e As System.EventArgs) Handles Timer1.Tick
         'modified to handle browser being closed without end of day or equivalent 16/11/17
-        Dim HoursSinceMidnight As Double = Date.Now.Subtract(Date.Today).TotalHours
+        'Dim HoursSinceMidnight As Double = Date.Now.Subtract(Date.Today).TotalHours
+
         'This falls over if + is used and is only instrumentation code
         'Label1.Text = "Hours since midnight " + HoursSinceMidnight
-        If HoursSinceMidnight < 3 Then
-            EndofDayElf("Timer")
-        End If
+        'If HoursSinceMidnight < 3 Then
+        '    EndofDayElf("Timer")
+        'End If
+        Dim ResetDay As String = Nothing
+        ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
+
+        Select Case ResetDay
+            Case "Ignore"
+                        'Ignore
+            Case "EndDay"
+                EndofDayElf(ResetDay)
+            Case "Error"
+                'Do nothing
+        End Select
     End Sub
 
-        Protected Sub EndofDayElf(ByVal Caller As String)
+    Protected Sub EndofDayElf(ByVal Caller As String)
         Dim returnstring As String = EquipmentID + "page.aspx"
         Dim mrucontrol As ErunupUserControl
         'Dim mpreccontrol As Preclinusercontrol

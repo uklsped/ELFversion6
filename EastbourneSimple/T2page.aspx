@@ -131,7 +131,7 @@
       </ContentTemplate>
     </asp:UpdatePanel>
   </div>   
-      <asp:Timer ID="Timer1" runat="server" Interval="7200000"></asp:Timer>
+      <asp:Timer ID="Timer1" runat="server" Interval="60000"></asp:Timer>
 
 				
     <asp:UpdatePanel ID="UpdatePanel9" runat="server">

@@ -219,7 +219,7 @@
     <fieldset style="width:auto;">
     <legend>Recover Password</legend>
         
-        <asp:PasswordRecovery ID="PasswordRecovery1" runat="server" EnableViewState="false" ViewStateMode="Disabled">
+       <asp:PasswordRecovery ID="PasswordRecovery1" runat="server" EnableViewState="false" ViewStateMode="Disabled">
             <UserNameTemplate>
                 <table cellpadding="1" cellspacing="0" style="border-collapse:collapse;">
                     <tr>
@@ -254,8 +254,8 @@
                                     <td align="center" colspan="1">
                                         <asp:Button ID="SubmitButton" runat="server" CommandName="Submit" Text="Recover Password" ValidationGroup="ctl00$PasswordRecovery1"  />
                                             <td align="center">
-                                                <asp:Button id="Reset3" causesvalidation="false" Text="Clear" OnClientClick="this.form.reset();return false;" runat="server" />
-                                                <%--<asp:Button ID="Button2" runat="server" Text="Cancel" OnClick="ClearPage" causesvalidation="false"/>--%>
+                                                <asp:Button id="Reset3" causesvalidation="false" Text="Clear" OnClick="ClearPage" runat="server" />
+                                                
                                             </td>
                                     </td>
                                 </tr>
@@ -351,7 +351,7 @@
                                                 />
                                        </td>
                                        <td align="right">
-                                           <input id="Reset1" type="reset" value="Clear" />
+                                           <input id="Reset1" type="reset" value="Clear"/>
                                             <%--<asp:Button ID="Button3" runat="server" Text="Cancel" OnClick="ClearPage" causesvalidation="false"/>--%>
                                        </td>
                                    </tr>
@@ -417,5 +417,7 @@
         <asp:PostBackTrigger ControlID="Button4" />
     </Triggers>
 </asp:UpdatePanel>--%>
+
+
 
 

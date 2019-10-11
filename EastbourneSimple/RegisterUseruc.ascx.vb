@@ -88,12 +88,12 @@ Partial Class RegisterUseruc
         Dim message As MailMessage = New MailMessage()
         Try
             Dim fromAddress As New MailAddress("VISIRSERVER@VISIRSERVER.bsuh.nhs.uk", "ELF")
-            Dim toAddress As New MailAddress("david.spendley@bsuh.nhs.uk")
+            Dim toAddress As New MailAddress("david.spendley@nhs.net")
             message.From = fromAddress
             message.To.Add(toAddress)
             message.Subject = "ELF registration"
             message.Body = "Someone has registered for ELF"
-            smtpClient.Host = "10.216.8.19"
+            smtpClient.Host = "10.216.10.47"
             smtpClient.Send(message)
 
             Dim regAddress As New MailAddress(UserEmail)
@@ -101,10 +101,11 @@ Partial Class RegisterUseruc
             message.To.Add(regAddress)
             message.Subject = "ELF registration"
             message.Body = "Thank you for registering with ELF. You will be notified when your account has been approved"
-            smtpClient.Host = "10.216.8.19"
+            smtpClient.Host = "10.216.10.47"
             smtpClient.Send(message)
 
         Catch ex As Exception
+            DavesCode.NewFaultHandling.LogError(ex)
             'should be an error action here
         End Try
     End Sub

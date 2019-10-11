@@ -2806,10 +2806,10 @@ Namespace DavesCode
                 activity = reader.Item("userreason")
                 StateID = reader.Item("StateID")
                 Status = reader.Item("State")
-
+                oldtime = oldtime.Date.AddDays(-1) 'test line
                 oldDayofyear = oldtime.DayOfYear
                 newDayofyear = time.DayOfYear
-                'oldtime = oldtime.Date.AddDays(-1) test line
+
                 activity = reader.Item("userreason")
                 If activity = "102" Then
                     nowstatus = "Ignore"
@@ -2846,31 +2846,33 @@ Namespace DavesCode
 
 
                 'this an instrumentation table it could be removed at a later update.
-                ResetDayCom = New SqlCommand("INSERT INTO ResetDay (DateCreated,StateID, State, ApplicationState, Activity, OldDayofYear, newDayofYear,nowstatus, Linac) VALUES (@DateCreated,@StateID, @State, @ApplicationState, @Activity, @OldDayofYear, @newDayofYear,@nowstatus, @Linac)", conn)
-                ResetDayCom.Parameters.Add("@DateCreated", System.Data.SqlDbType.DateTime)
-                ResetDayCom.Parameters("@DateCreated").Value = time
-                ResetDayCom.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
-                ResetDayCom.Parameters("@StateID").Value = StateID
-                ResetDayCom.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
-                ResetDayCom.Parameters("@State").Value = Status
-                ResetDayCom.Parameters.Add("@ApplicationState", System.Data.SqlDbType.Int)
-                ResetDayCom.Parameters("@ApplicationState").Value = AppState
-                ResetDayCom.Parameters.Add("@Activity", System.Data.SqlDbType.Int)
-                ResetDayCom.Parameters("@Activity").Value = activity
-                ResetDayCom.Parameters.Add("@OldDayofYear", System.Data.SqlDbType.Int)
-                ResetDayCom.Parameters("@OldDayofYear").Value = oldDayofyear
-                ResetDayCom.Parameters.Add("@newDayofYear", System.Data.SqlDbType.Int)
-                ResetDayCom.Parameters("@newDayofYear").Value = newDayofyear
-                ResetDayCom.Parameters.Add("@nowstatus", System.Data.SqlDbType.NVarChar, 10)
-                ResetDayCom.Parameters("@nowstatus").Value = nowstatus
-                ResetDayCom.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                ResetDayCom.Parameters("@linac").Value = linacName
+                If nowstatus = "EndDay" Then
+                    ResetDayCom = New SqlCommand("INSERT INTO ResetDay (DateCreated,StateID, State, ApplicationState, Activity, OldDayofYear, newDayofYear,nowstatus, Linac) VALUES (@DateCreated,@StateID, @State, @ApplicationState, @Activity, @OldDayofYear, @newDayofYear,@nowstatus, @Linac)", conn)
+                    ResetDayCom.Parameters.Add("@DateCreated", System.Data.SqlDbType.DateTime)
+                    ResetDayCom.Parameters("@DateCreated").Value = time
+                    ResetDayCom.Parameters.Add("@StateID", System.Data.SqlDbType.Int)
+                    ResetDayCom.Parameters("@StateID").Value = StateID
+                    ResetDayCom.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
+                    ResetDayCom.Parameters("@State").Value = Status
+                    ResetDayCom.Parameters.Add("@ApplicationState", System.Data.SqlDbType.Int)
+                    ResetDayCom.Parameters("@ApplicationState").Value = AppState
+                    ResetDayCom.Parameters.Add("@Activity", System.Data.SqlDbType.Int)
+                    ResetDayCom.Parameters("@Activity").Value = activity
+                    ResetDayCom.Parameters.Add("@OldDayofYear", System.Data.SqlDbType.Int)
+                    ResetDayCom.Parameters("@OldDayofYear").Value = oldDayofyear
+                    ResetDayCom.Parameters.Add("@newDayofYear", System.Data.SqlDbType.Int)
+                    ResetDayCom.Parameters("@newDayofYear").Value = newDayofyear
+                    ResetDayCom.Parameters.Add("@nowstatus", System.Data.SqlDbType.NVarChar, 10)
+                    ResetDayCom.Parameters("@nowstatus").Value = nowstatus
+                    ResetDayCom.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                    ResetDayCom.Parameters("@linac").Value = linacName
 
-                conn.Open()
-                ResetDayCom.ExecuteNonQuery()
-                conn.Close()
+                    conn.Open()
+                    ResetDayCom.ExecuteNonQuery()
+                    conn.Close()
+                End If
             End If
-            Return nowstatus
+                Return nowstatus
         End Function
 
         Public Shared Function GetLastTech(ByVal linac As String, ByVal index As Integer, ByRef lastState As String, ByRef lastusername As String, ByRef lastusergroup As Integer) As Integer

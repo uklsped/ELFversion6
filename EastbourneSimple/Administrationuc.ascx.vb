@@ -189,7 +189,7 @@ Partial Class Administrationuc
             message.To.Add(regAddress)
             message.Subject = "ELF registration"
             message.Body = "Your registration for ELF is now complete."
-            smtpClient.Host = "10.216.8.19"
+            smtpClient.Host = "10.216.10.47"
             smtpClient.Send(message)
 
         Catch ex As Exception
