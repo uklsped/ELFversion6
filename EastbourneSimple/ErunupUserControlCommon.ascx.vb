@@ -229,7 +229,7 @@ Partial Class ErunupUserControl
     Public Sub UserApprovedEvent(ByVal Tabset As String, ByVal Userinfo As String)
 
         'If Tabset = "1" Or "7" Then what about 7?
-        If (Tabset = "1") Or (Tabset = "666") Then
+        If (Tabset = "1") Or (Tabset = "666") Or (Tabset = "7") Then
             Dim Action As String = Application(actionstate)
             Dim machinelabel As String = LinacName & "Page.aspx';"
             Dim Valid As Boolean = False
@@ -267,9 +267,9 @@ Partial Class ErunupUserControl
                     '    ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                     'Else
                     Application(LinacFlag) = "Clinical"
-                        Dim returnstring As String = LinacName + "page.aspx?tabref=3"
-                        Application(suspstate) = 1
-                        Response.Redirect(returnstring)
+                    Dim returnstring As String = LinacName + "page.aspx?tabref=3"
+                    Application(suspstate) = 1
+                    Response.Redirect(returnstring)
                     'End If
                 Else
                     RaiseError("WriteEnergies")
@@ -279,6 +279,7 @@ Partial Class ErunupUserControl
                 Valid = False
                 If Tabset = "666" Then
                     grdview = CType(mpContentPlaceHolder.FindControl("DummyGridview"), GridView)
+                    grdviewI = CType(mpContentPlaceHolder.FindControl("DummyGridViewImaging"), GridView)
                 End If
                 Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, comment, Valid, False, False, FaultParams)
                 If Successful Then
@@ -318,7 +319,7 @@ Partial Class ErunupUserControl
         strScript += "window.location='"
         strScript += machinelabel
         strScript += "</script>"
-        'ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+        ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
     Protected Sub RaiseError(ByVal message As String)
 
@@ -342,7 +343,7 @@ Partial Class ErunupUserControl
         strScript += "window.location='"
         strScript += machinelabel
         strScript += "</script>"
-        'ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+        ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
 
     End Sub
     Protected Sub RaiseLockError()
@@ -441,7 +442,7 @@ Partial Class ErunupUserControl
             'added imaging
             SelCommand = "SELECT * FROM [physicsenergies] where linac= @linac and Energy not in ('iView','XVI')"
         Else
-            SelCommand = "SELECT * FROM [physicsenergies] where linac= @linac and EnergyID in (1,2,10,11,19,27,28)"
+            SelCommand = "SELECT * FROM [physicsenergies] where linac= @linac and Energy in ('6 MV', '10 MV')"
         End If
         Dim SqlDataSource1 As New SqlDataSource With {
             .ID = "SqlDataSource1",
@@ -466,7 +467,7 @@ Partial Class ErunupUserControl
             'added imaging
             comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy not in ('iView','XVI')", conn)
         Else
-            comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and EnergyID in (1,2,10,11,19,27,28)", conn)
+            comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy in ('6 MV', '10 MV')", conn)
         End If
         comm.Parameters.Add("@linac", Data.SqlDbType.NVarChar, 10)
         comm.Parameters("@linac").Value = LinacName
@@ -497,11 +498,17 @@ Partial Class ErunupUserControl
         Dim count As Integer = 0
         Dim conn As SqlConnection
         Dim Success As Boolean = False
+        Dim Scommand As String
+        If UserReason = ENG Then
+            Scommand = "SELECT * FROM [physicsenergies] where linac=@linac and Energy in ('iView','XVI') order by energy"
+        Else
+            Scommand = "SELECT * FROM [physicsenergies] where linac=@linac and Energy in ('iView', 'XVI') order by energy"
+        End If
 
         Dim SqlDataSource1 As New SqlDataSource With {
             .ID = "SqlDataSource1",
             .ConnectionString = connectionString,
-            .SelectCommand = "SELECT * FROM [physicsenergies] where linac=@linac and Energy in ('iView','XVI') order by energy"
+            .SelectCommand = Scommand
         }
 
         SqlDataSource1.SelectParameters.Add("@linac", Data.SqlDbType.NVarChar)
@@ -514,8 +521,11 @@ Partial Class ErunupUserControl
         Dim reader As SqlDataReader
 
         conn = New SqlConnection(connectionString)
-        comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy in ('iView','XVI') order by energy", conn)
-
+        If UserReason = ENG Then
+            comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy in ('iView','XVI') order by energy", conn)
+        Else
+            comm = New SqlCommand("SELECT EnergyID, Approved FROM physicsenergies where linac=@linac and Energy in ('iView') order by energy", conn)
+        End If
         comm.Parameters.Add("@linac", Data.SqlDbType.NVarChar, 10)
         comm.Parameters("@linac").Value = LinacName
 
@@ -540,6 +550,10 @@ Partial Class ErunupUserControl
         reader.Close()
 
         conn.Close()
+        'disables XVI for emergency run up
+        If Not UserReason = ENG Then
+            CType(GridViewImage.Rows(1).FindControl("RowLevelCheckBoxImage"), CheckBox).Enabled = False
+        End If
 
         Return Success
 

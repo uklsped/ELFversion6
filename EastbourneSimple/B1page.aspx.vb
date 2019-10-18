@@ -1333,7 +1333,14 @@ Partial Public Class B1page
                         End If
                         mtrainingcontrol.UserApprovedEvent(activetab, Logoffuser)
                 End Select
-                returnstring = EquipmentID + "page.aspx?tabref=" + Convert.ToString(Activity) + "&recovered=1"
+                ' DavesCode.Reuse.WriteAuxTables(EquipmentID, Userinfo, Comment, Radio, Activity, breakdown, susstate, repstate, False)
+            Case Else
+                'This caters for when the system is already idling as it were.
+                returnstring = EquipmentID + "page.aspx"
+                Application(appstate) = Nothing
+                Response.Redirect(returnstring)
+        End Select
+        returnstring = EquipmentID + "page.aspx?tabref=" + Convert.ToString(Activity) + "&recovered=1"
         Application(technicalstate) = Nothing
         Application(appstate) = Nothing
 

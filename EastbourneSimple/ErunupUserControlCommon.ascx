@@ -42,7 +42,8 @@
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="1" Tabby="1" visible="false" runat="server" />
 
  <asp:GridView ID="DummyGridView" runat="server">
-        </asp:GridView>    
+        </asp:GridView>
+<asp:GridView ID="DummyGridViewImaging" runat="server"></asp:GridView>
 
 <div class="grid" >
 
