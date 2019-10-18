@@ -296,7 +296,7 @@ B2 Status
 </ContentTemplate>
 </asp:TabPanel>
 
-<asp:TabPanel ID="TabPanel7" runat="server" HeaderText="Emergency Run up">
+<asp:TabPanel ID="TabPanel7" runat="server" HeaderText="B2 Emergency Run up">
     <%--DynamicContextKey='Emerunup' CssClass="ajax__tab_header" hidden="false" Enabled="true">--%>
      <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel7" runat="server">
