@@ -448,6 +448,7 @@ Partial Class DefectSavePark
                 UnRecoverableSave.Enabled = True
                 UnRecoverableSave.BackColor = Drawing.Color.Yellow
             Case "No"
+                RadActC.SetValidation("", "")
                 ActPanel.Enabled = False
                 UnRecoverableSave.Visible = True
                 UnRecoverableSave.Enabled = True
