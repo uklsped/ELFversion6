@@ -431,8 +431,7 @@ Partial Class Repairuc
             Dim conn As SqlConnection
             Dim comm As SqlCommand
             Dim reader As SqlDataReader
-            Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
+            Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString1)
             comm = New SqlCommand("select IncidentID from FaultIDTable where Status in ('New') and linac=@linac", conn)
             comm.Parameters.AddWithValue("@linac", LinacName)
