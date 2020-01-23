@@ -23,6 +23,7 @@ Partial Class DefectSavePark
     Const Closed As String = "Closed"
     Const Radiographer As Integer = 3
     Const EMPTYSTRING As String = ""
+    Const SELECTED As String = "Select"
     'Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
     'Public Event UpdateFaultClosedDisplays(ByVal EquipmentName As String, ByVal IncidentID As String)
     Private Valid As Boolean = False
@@ -201,7 +202,7 @@ Partial Class DefectSavePark
     End Function
 
     Protected Sub Defect_SelectedIndexChanged(sender As Object, e As System.EventArgs) Handles Defect.SelectedIndexChanged
-
+        'Beef up error handling
         Dim incidentIDstring As String = ""
         Dim incidentID As Integer
         Dim conn1 As SqlConnection
@@ -215,35 +216,27 @@ Partial Class DefectSavePark
         result = Defect.Items.FindByValue(incidentIDstring)
         Dim index As Integer
         index = Defect.Items.IndexOf(result)
-        If Integer.TryParse(incidentIDstring, incidentID) Then
+        If incidentIDstring = SELECTED Then
+            ClearsForm()
+        Else
+            If Integer.TryParse(incidentIDstring, incidentID) Then
 
-            SelectedIncidentID.Value = incidentID
-            TimeFaultSelected.Value = Now().ToString
+                SelectedIncidentID.Value = incidentID
+                TimeFaultSelected.Value = Now().ToString
 
-            conn1 = New SqlConnection(connectionString)
-            If incidentID > 0 Then 'concession
-                comm1 = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn1) 'Corrective action
+                conn1 = New SqlConnection(connectionString)
+                If incidentID > 0 Then 'concession
+                    comm1 = New SqlCommand("SELECT Action FROM ConcessionTable where incidentID=@incidentID", conn1) 'Corrective action
 
-                comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
-                comm1.Parameters("@incidentID").Value = incidentID
+                    comm1.Parameters.Add("@incidentID", System.Data.SqlDbType.Int)
+                    comm1.Parameters("@incidentID").Value = incidentID
 
-                conn1.Open()
+                    conn1.Open()
 
-                Dim sqlresult1 As Object = comm1.ExecuteScalar()
-                'RadAct.Text = sqlresult1.ToString
-                'RadAct.ReadOnly = True
-                RadActC.ResetCommentBox(sqlresult1.ToString)
-                'FaultTypeSave.SetActiveView(RecoverableView)
-                FaultClosedLabel.Visible = False
-                FaultOpenClosed.Visible = False
-                UnRecoverableSave.Visible = False
-                SaveDefectButton.Visible = True
-                SaveDefectButton.Enabled = True
-                SaveDefectButton.BackColor = Drawing.Color.Yellow
-                conn1.Close()
-
-            ElseIf Not String.IsNullOrEmpty(DefectString) Then
-                If DefectString = RecoverableFault Then
+                    Dim sqlresult1 As Object = comm1.ExecuteScalar()
+                    'RadAct.Text = sqlresult1.ToString
+                    'RadAct.ReadOnly = True
+                    RadActC.ResetCommentBox(sqlresult1.ToString)
                     'FaultTypeSave.SetActiveView(RecoverableView)
                     FaultClosedLabel.Visible = False
                     FaultOpenClosed.Visible = False
@@ -251,20 +244,42 @@ Partial Class DefectSavePark
                     SaveDefectButton.Visible = True
                     SaveDefectButton.Enabled = True
                     SaveDefectButton.BackColor = Drawing.Color.Yellow
-                ElseIf DefectString = UnRecoverableFault Then
-                    FaultClosedLabel.Visible = True
-                    FaultOpenClosed.Visible = True
-                    SaveDefectButton.Visible = False
+                    FaultPanel.Enabled = True
+                    conn1.Close()
 
-                    'FaultTypeSave.SetActiveView(UnRecoverableView)
-                    ActPanel.Enabled = False
+                ElseIf Not String.IsNullOrEmpty(DefectString) Then
+                    If DefectString = RecoverableFault Then
+                        'FaultTypeSave.SetActiveView(RecoverableView)
+                        FaultClosedLabel.Visible = False
+                        FaultOpenClosed.Visible = False
+                        UnRecoverableSave.Visible = False
+                        SaveDefectButton.Visible = True
+                        SaveDefectButton.Enabled = True
+                        SaveDefectButton.BackColor = Drawing.Color.Yellow
+                        FaultPanel.Enabled = True
+                    ElseIf DefectString = UnRecoverableFault Then
+                        FaultClosedLabel.Visible = True
+                        FaultOpenClosed.Visible = True
+                        SaveDefectButton.Visible = False
+
+                        'FaultTypeSave.SetActiveView(UnRecoverableView)
+                        ActPanel.Enabled = False
+                        FaultPanel.Enabled = True
+                    ElseIf DefectString = "Select" Then
+                        ClearsForm()
+                    Else
+                        ClearsForm()
+                        RaiseError()
+
+                    End If
+
                 End If
+                'FaultPanel.Enabled = True
 
+            Else
+                ClearsForm()
+                RaiseError()
             End If
-            FaultPanel.Enabled = True
-
-        Else
-            SelectedIncidentID.Value = -1000
         End If
 
     End Sub
@@ -286,8 +301,10 @@ Partial Class DefectSavePark
         RadActC.ResetCommentBox(EMPTYSTRING)
         SaveDefectButton.BackColor = Drawing.Color.LightGray
         SaveDefectButton.Enabled = False
+        UnRecoverableSave.Visible = False
         FaultPanel.Enabled = False
         ActPanel.Enabled = False
+        Defect.SelectedIndex = -1
     End Sub
 
     Sub NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String)

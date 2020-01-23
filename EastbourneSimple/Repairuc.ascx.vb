@@ -42,6 +42,7 @@ Partial Class Repairuc
     Const EMPTYSTRING As String = ""
     Private ParamApplication As String
     Private ConcessParamsTrial As ConcessionParameters = New ConcessionParameters()
+    'Private ConcessParamsTrial As ConcessionParameters
     Dim Repairlist As RadioButtonList
     Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     Dim Modalities As controls_ModalityDisplayuc
@@ -90,7 +91,7 @@ Partial Class Repairuc
             Dim reloadnewfaultselected As controls_NewFaultPopUpuc
             reloadnewfaultselected = CType(FindControl("NewFaultPopup"), controls_NewFaultPopUpuc)
             If reloadnewfaultselected Is Nothing Then
-                ConcessParamsTrial = Application(ParamApplication)
+                'ConcessParamsTrial = Application(ParamApplication)
                 Dim NewFaultPopup As controls_NewFaultPopUpuc = Page.LoadControl("controls\NewFaultPopUpuc.ascx")
                 CType(NewFaultPopup, controls_NewFaultPopUpuc).ID = "NewFaultPopup"
                 CType(NewFaultPopup, controls_NewFaultPopUpuc).LinacName = LinacName

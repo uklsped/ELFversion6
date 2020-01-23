@@ -77,7 +77,7 @@
             
             <tr><td><asp:Button ID="SaveDefectButton" runat="server" Text="Save"  CausesValidation="False" Visible="false"/></td>
                 <td><asp:Button ID="UnRecoverableSave" runat="server" CausesValidation="False"  Text="Save" Visible="false" /></td>
-                <td><asp:Button ID="ClearButton" runat="server" Text="Close" CausesValidation="False" CssClass="buttonmargin" /></td>
+                <td><asp:Button ID="ClearButton" runat="server" Text="Close Without Saving" CausesValidation="False" CssClass="buttonmargin" /></td>
                 <td></td>
             </tr>
             <tr><td colspan="3"><asp:ValidationSummary ID="ValidationSummary1" ForeColor="Red" HeaderText="You must enter a value in the following fields:" ValidationGroup="Tomodefect" ShowMessageBox="True" ShowSummary="True"  runat="server" /></td>
