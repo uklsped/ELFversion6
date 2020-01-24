@@ -14,7 +14,9 @@ Partial Class DefectSavePark
     Private time As DateTime
     Const RecoverableFault As String = "Recoverable Fault"
     Const UnRecoverableFault As String = "UnRecoverable Fault"
+    Const OtherFault As String = "Other Fault"
     Const UnRecoverableID As Integer = -23
+    Const OtherfaultID As Integer = -25
     Const FaultAnswerNo As String = "No"
     Const FaultAnswerYes As String = "Yes"
     Const RadioIncidentAnswerYes As String = "Yes"
@@ -170,7 +172,7 @@ Partial Class DefectSavePark
             comm.Parameters.AddWithValue("@Linac", LinacName)
         Else
 
-            comm = New SqlCommand(" SELECT  Defect as Fault, IncidentID From [DefectTable] where linacType in('T') and Active = 'True' UNION SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' order by IncidentID", conn)
+            comm = New SqlCommand("SELECT  Defect as Fault, IncidentID From [DefectTable] where linacType in('T') and Active = 'True' UNION SELECT ConcessionNumber + ' ' + ConcessionDescription As Fault, IncidentID FROM [ConcessionTable] where linac=@linac and ConcessionActive = 'TRUE' order by IncidentID", conn)
             comm.Parameters.AddWithValue("@Linac", LinacName)
 
         End If
@@ -257,14 +259,30 @@ Partial Class DefectSavePark
                         SaveDefectButton.Enabled = True
                         SaveDefectButton.BackColor = Drawing.Color.Yellow
                         FaultPanel.Enabled = True
+                        ActPanel.Enabled = False
+                        RadioIncident.ClearSelection()
                     ElseIf DefectString = UnRecoverableFault Then
                         FaultClosedLabel.Visible = True
                         FaultOpenClosed.Visible = True
+                        FaultOpenClosed.ClearSelection()
                         SaveDefectButton.Visible = False
-
+                        UnRecoverableSave.Visible = False
                         'FaultTypeSave.SetActiveView(UnRecoverableView)
                         ActPanel.Enabled = False
                         FaultPanel.Enabled = True
+                        RadioIncident.ClearSelection()
+                    ElseIf DefectString = OtherFault Then
+                        RadActC.SetValidation("", "")
+                        FaultPanel.Enabled = True
+                        ActPanel.Enabled = False
+                        FaultClosedLabel.Visible = False
+                        FaultOpenClosed.Visible = False
+                        FaultOpenClosed.SelectedValue = -1
+                        SaveDefectButton.Visible = False
+                        UnRecoverableSave.Visible = True
+                        UnRecoverableSave.Enabled = True
+                        UnRecoverableSave.BackColor = Drawing.Color.Yellow
+                        RadioIncident.ClearSelection()
                     ElseIf DefectString = "Select" Then
                         ClearsForm()
                     Else
@@ -292,8 +310,8 @@ Partial Class DefectSavePark
 
     Protected Sub ClearsForm()
         'FaultTypeSave.ActiveViewIndex = -1
-        FaultOpenClosed.SelectedIndex = -1
-        RadioIncident.SelectedIndex = -1
+        FaultOpenClosed.ClearSelection()
+        RadioIncident.ClearSelection()
         ErrorCode.Text = Nothing
         Accuray.Text = Nothing
         FaultDescription.ResetCommentBox(EMPTYSTRING)
@@ -333,7 +351,7 @@ Partial Class DefectSavePark
 
         'Using myscope As TransactionScope = New TransactionScope()
 
-        If SelectedIncident = UnRecoverableID Then
+        If (SelectedIncident = UnRecoverableID) Or (SelectedIncident = OtherfaultID) Then
 
             FaultSelected = FaultOpenClosed.SelectedItem.Text
             'If FaultSelected.Equals(FaultAnswerYes) Then
@@ -488,7 +506,8 @@ Partial Class DefectSavePark
         If Selected.Equals(FaultAnswerNo) Then
             AccurayValidation.Enabled = False
         Else
-            AccurayValidation.Enabled = True
+            'changed to false for now as unrecoverable doesn't seem to have to have a physicist approval
+            AccurayValidation.Enabled = False
         End If
         Page.Validate("Tomodefect")
         If Page.IsValid Then
