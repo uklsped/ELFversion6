@@ -544,7 +544,7 @@ Partial Class Preclinusercontrol
 
     End Sub
 
-    Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
+    Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String, ByVal ErrorStatus As Boolean)
         If LinacName = EquipmentId Then
             'Don't need if because report fault pop up is the same for both defects now
             'If LinacName Like "T?" Then

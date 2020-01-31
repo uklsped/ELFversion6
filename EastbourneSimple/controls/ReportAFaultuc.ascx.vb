@@ -80,12 +80,25 @@ Partial Class controls_ReportAFaultuc
 
         End If
     End Sub
-    Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
+    Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String, ByVal ErrorState As Boolean)
         If LinacName = EquipmentId Then
+            If Not ErrorState Then
+                RaiseError()
+            End If
             DynamicControlSelection = String.Empty
             Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
             ReportFaultPopupPlaceHolder.Controls.Remove(ReportFault)
+
         End If
+
+    End Sub
+
+    Protected Sub RaiseError()
+        Dim strScript As String = "<script>"
+
+        strScript += "alert('Problem Updating Fault. Please call Engineering');"
+        strScript += "</script>"
+        ScriptManager.RegisterStartupScript(ReportFaultButton, Me.GetType(), "JSCR", (strScript.ToString()), False)
 
     End Sub
 End Class

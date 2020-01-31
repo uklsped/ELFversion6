@@ -10,7 +10,7 @@ Partial Class controls_ReportFaultPopUpuc
     Private ConcessParamsTrial As ConcessionParameters = New ConcessionParameters()
     Public Event UpDateDefectDailyDisplay(ByVal Linac As String)
     Public Event UpdateViewOpenFaults(ByVal Linac As String)
-    Public Event CloseReportFaultPopUp(ByVal Linac As String)
+    Public Event CloseReportFaultPopUp(ByVal Linac As String, ByVal ErrorStatus As Boolean)
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
         ParamApplication = "Params" + LinacName
 
@@ -71,9 +71,9 @@ Partial Class controls_ReportFaultPopUpuc
             DefectView.ActiveViewIndex = 1
         End If
     End Sub
-    Protected Sub Close_ReportFaultPopUp(ByVal Linac As String)
+    Protected Sub Close_ReportFaultPopUp(ByVal Linac As String, ByVal ErrorStatus As Boolean)
         If LinacName = Linac Then
-            RaiseEvent CloseReportFaultPopUp(Linac)
+            RaiseEvent CloseReportFaultPopUp(Linac, ErrorStatus)
         End If
     End Sub
 

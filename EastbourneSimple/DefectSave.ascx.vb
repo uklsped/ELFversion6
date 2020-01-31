@@ -29,7 +29,7 @@ Partial Class DefectSave
     Private RadActComment As String
     Private FaultApplication As String
     Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
-    Public Event CloseReportFaultPopUp(ByVal EquipmentName As String)
+    Public Event CloseReportFaultPopUp(ByVal EquipmentName As String, ByVal ErrorStatus As Boolean)
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Private FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters
 
@@ -93,7 +93,7 @@ Partial Class DefectSave
 
             End If
             If Success Then
-                RaiseEvent CloseReportFaultPopUp(LinacName)
+                RaiseEvent CloseReportFaultPopUp(LinacName, Success)
                 SelectedIncident = SelectedIncidentID.Value
                 If SelectedIncident = RADRESET Then
                     RaiseEvent UpdateViewOpenFaults(LinacName)
@@ -460,7 +460,7 @@ Partial Class DefectSave
 
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
         'ClearsForm()
-        RaiseEvent CloseReportFaultPopUp(LinacName)
+        RaiseEvent CloseReportFaultPopUp(LinacName, True)
     End Sub
 
     Protected Sub ClearsForm()

@@ -39,7 +39,7 @@ Partial Class DefectSavePark
     Public Property ParentControl() As String
     Public Property ParentControlComment() As String
     Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
-    Public Event CloseReportFaultPopUp(ByVal EquipmentName As String)
+    Public Event CloseReportFaultPopUp(ByVal EquipmentName As String, ByVal ErrorStatus As Boolean)
     Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
@@ -71,7 +71,7 @@ Partial Class DefectSavePark
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
         Dim Action As String = Application(actionstate)
         'Dim Energy As String
-
+        Dim Result As Boolean
         ConcessionNumber = Defect.SelectedItem.ToString
         If ConcessionNumber.Contains("ELF") Then
             ConcessionNumber = Left(ConcessionNumber, 7)
@@ -80,15 +80,24 @@ Partial Class DefectSavePark
             Dim wctrl As WriteDatauc = CType(FindControl("WriteDatauc1"), WriteDatauc)
             wctrl.Visible = False
             If Action = "Confirm" Then
-                NewWriteRadReset(Userinfo, ConcessionNumber)
+                Result = NewWriteRadReset(Userinfo, ConcessionNumber)
             Else
                 Defect.SelectedIndex = -1
 
             End If
-            ClearsForm()
-            RaiseEvent UpdateViewOpenFaults(LinacName)
-            RaiseEvent CloseReportFaultPopUp(LinacName)
-        End If
+            If Result Then
+                ClearsForm()
+                RaiseEvent UpdateViewOpenFaults(LinacName)
+            End If
+            RaiseEvent CloseReportFaultPopUp(LinacName, Result)
+                'Else
+                'RaiseError()
+
+                'End If
+                'ClearsForm()
+                'RaiseEvent UpdateViewOpenFaults(LinacName)
+                'RaiseEvent CloseReportFaultPopUp(LinacName)
+            End If
     End Sub
 
     Protected Sub SaveDefectButton_Click(sender As Object, e As System.EventArgs) Handles SaveDefectButton.Click
@@ -305,7 +314,7 @@ Partial Class DefectSavePark
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
         'Defect.SelectedIndex = -1
         'ClearsForm()
-        RaiseEvent CloseReportFaultPopUp(LinacName)
+        RaiseEvent CloseReportFaultPopUp(LinacName, False)
     End Sub
 
     Protected Sub ClearsForm()
@@ -325,7 +334,8 @@ Partial Class DefectSavePark
         Defect.SelectedIndex = -1
     End Sub
 
-    Sub NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String)
+    Function NewWriteRadReset(ByVal UserInfo As String, ByVal ConcessionNumber As String) As Boolean
+
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
@@ -364,19 +374,19 @@ Partial Class DefectSavePark
                             Status = Concession
                             SetFaults(True)
                             RaiseEvent UpdateViewOpenFaults(LinacName)
-                        Else
-                            RaiseError()
+                            'Else
+                            'RaiseError()
                         End If
                     Else
                         Result = DavesCode.NewFaultHandling.InsertNewFault("Closed", FaultParams)
                         If Result Then
                             RaiseEvent UpDateDefectDailyDisplay(LinacName)
                             'RaiseEvent UpdateFaultClosedDisplays(LinacName, IncidentID)
-                        Else
-                            RaiseError()
+                            'Else
+                            'RaiseError()
                         End If
                     End If
-                    'Unrecoverable fault isn't closed
+                    'Unrecoverable fault isn't closed neither is other fault
                 Case FaultAnswerNo
                     'ElseIf FaultSelected.Equals(FaultAnswerNo) Then
                     'Write equivalent of report fault assume only one fault at a time at the moment
@@ -408,6 +418,7 @@ Partial Class DefectSavePark
                             Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, ParentControlComment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
 
                         Case Else
+                            Result = False
                             'Application(failstate) = ParentControl
                             'DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False)
 
@@ -420,8 +431,8 @@ Partial Class DefectSavePark
 
                         Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
                         Response.Redirect(returnstring & ParentControl & "&comment=" & "")
-                    Else
-                        RaiseError()
+                        'Else
+                        'Return Result
                     End If
                 Case Else
             End Select
@@ -429,15 +440,17 @@ Partial Class DefectSavePark
         Else 'This is a recoverable fault - So won't have concession number?
 
             Result = DavesCode.NewFaultHandling.InsertRepeatFault(FaultParams)
+
             If Result Then
                 RaiseEvent UpDateDefectDailyDisplay(LinacName)
             Else
-                RaiseError()
+
+                'RaiseError()
             End If
         End If
         Defect.SelectedIndex = -1
-
-    End Sub
+        Return Result
+    End Function
 
     Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultParams As DavesCode.FaultParameters)
         If (Not HttpContext.Current.Application(FaultDescriptionChanged) Is Nothing) Then
@@ -539,6 +552,7 @@ Partial Class DefectSavePark
 
         strScript += "alert('Problem Updating Fault. Please call Engineering');"
         strScript += "</script>"
-        ScriptManager.RegisterStartupScript(UnRecoverableSave, Me.GetType(), "JSCR", strScript.ToString(), False)
+        ScriptManager.RegisterStartupScript(ClearButton, Me.GetType(), "JSCR", (strScript.ToString()), False)
+        'RaiseEvent CloseReportFaultPopUp(LinacName)
     End Sub
 End Class
