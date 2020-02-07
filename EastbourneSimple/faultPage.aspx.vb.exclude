@@ -6,8 +6,8 @@ Partial Class faultPage
     Private appstate As String
     Private suspstate As String
     Private actionstate As String
-    Private failstate As String
-    Private repairstate As String
+    Private FaultOriginTab As String
+    Private RunUpDone As String
     Private treatmentstate As String
     Private clinicalstate As String
     Private returnclinical As String
@@ -28,8 +28,8 @@ Partial Class faultPage
         appstate = "LogOn" + machinename
         actionstate = "ActionState" + machinename
         suspstate = "Suspended" + machinename
-        failstate = "FailState" + machinename
-        repairstate = "rppTab" + machinename
+        FaultOriginTab = "FOT" + machinename
+        RunUpDone = "rppTab" + machinename
         clinicalstate = "ClinicalOn" + machinename
         treatmentstate = "Treatment" + machinename
         returnclinical = "ReturnClinical" + machinename
@@ -41,8 +41,8 @@ Partial Class faultPage
             Dim mpContentPlaceHolder As ContentPlaceHolder
             Dim grdview As GridView
 
-            mpContentPlaceHolder = _
-            CType(Me.Master.FindControl("ContentPlaceHolder1"),  _
+            mpContentPlaceHolder =
+            CType(Me.Master.FindControl("ContentPlaceHolder1"),
             ContentPlaceHolder)
             If Not mpContentPlaceHolder Is Nothing Then
                 grdview = CType(mpContentPlaceHolder.FindControl("DummyGridview"), GridView)
@@ -60,13 +60,13 @@ Partial Class faultPage
                 Dim breakdown As Boolean = True
                 Dim LinacStatusID As String = ""
                 Dim susstate As String = Application(suspstate)
-                Dim repstate As String = Application(repairstate)
+                Dim RunUpBoolean As String = Application(RunUpDone)
                 time = Now()
                 'This has the effect of logging off the linac
 
                 '20 April
                 Dim conn As SqlConnection
-                Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+                Dim connectionString As String = ConfigurationManager.ConnectionStrings(
                 "connectionstring").ConnectionString
                 Dim existingfault As SqlCommand
 
@@ -86,7 +86,7 @@ Partial Class faultPage
                     LinacStatusID = reader.Item("StatusID").ToString()
 
                 Else
-                    
+
                     Select Case reportTab
                         Case 0
                             Dim Usergroup As Integer
@@ -100,11 +100,11 @@ Partial Class faultPage
                             LinacStatusID = DavesCode.Reuse.CommitClinical(LinacID, Userinfo, True)
                             Application(suspstate) = 1
                         Case 4, 5, 6, 8
-                            LinacStatusID = DavesCode.Reuse.WriteAuxTables(LinacID, Userinfo, comment, radio, reportTab, True, susstate, repstate, False)
+                            LinacStatusID = DavesCode.Reuse.WriteAuxTables(LinacID, Userinfo, comment, radio, reportTab, True, susstate, RunUpBoolean, False)
 
                         Case Else
-                            Application(failstate) = reportTab
-                            LinacStatusID = DavesCode.Reuse.WriteAuxTables(LinacID, Userinfo, comment, radio, reportTab, True, susstate, repstate, False)
+                            Application(FaultOriginTab) = reportTab
+                            LinacStatusID = DavesCode.Reuse.WriteAuxTables(LinacID, Userinfo, comment, radio, reportTab, True, susstate, RunUpBoolean, False)
                     End Select
 
                     Application(appstate) = Nothing
@@ -172,91 +172,91 @@ Partial Class faultPage
                 commfault.Parameters("@IncidentID").Value = LastIncident
                 commfault.Parameters.Add("@BSUHID", System.Data.SqlDbType.NVarChar, 7)
                 commfault.Parameters("@BSUHID").Value = PatientIDTextBox.Text
-                    Try
-                        conn.Open()
-                        commfault.ExecuteNonQuery()
+                Try
+                    conn.Open()
+                    commfault.ExecuteNonQuery()
+                    conn.Close()
+                    'This reads the number of the newly created fault to put into the fault tracking database
+
+                    comm1 = New SqlCommand("Select FaultID from ReportFault where FaultId = (select max(FaultId) from ReportFault where linac = @linac)", conn)
+                    comm1.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+                    comm1.Parameters("@Linac").Value = LinacID
+                    conn.Open()
+                    reader1 = comm1.ExecuteReader()
+                    If reader1.Read() Then
+                        LastFault = reader1.Item("FaultID")
+                        reader1.Close()
                         conn.Close()
-                        'This reads the number of the newly created fault to put into the fault tracking database
+                    End If
 
-                        comm1 = New SqlCommand("Select FaultID from ReportFault where FaultId = (select max(FaultId) from ReportFault where linac = @linac)", conn)
-                        comm1.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
-                        comm1.Parameters("@Linac").Value = LinacID
-                        conn.Open()
-                        reader1 = comm1.ExecuteReader()
-                        If reader1.Read() Then
-                            LastFault = reader1.Item("FaultID")
-                            reader1.Close()
-                            conn.Close()
-                        End If
+                Finally
+                    conn.Close()
 
-                    Finally
-                        conn.Close()
+                End Try
 
-                    End Try
-
-                    Dim commtrack As SqlCommand
+                Dim commtrack As SqlCommand
                 commtrack = New SqlCommand("Insert into FaultTracking (Trackingcomment, AssignedTo, Status, LastupdatedBy, Lastupdatedon, Linac, IncidentID) " _
                                             & "VALUES (@Trackingcomment, @AssignedTo, @Status, @LastupdatedBy, @Lastupdatedon, @Linac, @IncidentID)", conn)
                 'The tracking comment should be "" at this stage 11/04/18 not TextBox4.Text as that is fault description
                 commtrack.Parameters.Add("@Trackingcomment", System.Data.SqlDbType.NVarChar, 250)
                 commtrack.Parameters("@Trackingcomment").Value = ""
                 commtrack.Parameters.Add("@AssignedTo", Data.SqlDbType.NVarChar, 50)
-                    commtrack.Parameters("@AssignedTo").Value = "Unassigned"
-                    commtrack.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
-                    commtrack.Parameters("@Status").Value = "New"
-                    commtrack.Parameters.Add("@LastupdatedBy", System.Data.SqlDbType.NVarChar, 50)
-                    commtrack.Parameters("@LastupdatedBy").Value = Userinfo
-                    commtrack.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
-                    commtrack.Parameters("@Lastupdatedon").Value = time
-                    commtrack.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
-                    commtrack.Parameters("@Linac").Value = MachineLabel.Text
-                    commtrack.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
-                    commtrack.Parameters("@IncidentID").Value = LastIncident
-                    Try
-                        conn.Open()
-                        commtrack.ExecuteNonQuery()
-
-
-                    Finally
-                        conn.Close()
-
-                    End Try
-
-                    'update incident table with fault id then don't need it in fault tracking table?
-
-                    incidentfault = New SqlCommand("Update FaultIDTable SET originalFaultID=@originalFaultID where incidentID=@incidentID", conn)
-                    incidentfault.Parameters.Add("@originalFaultID", Data.SqlDbType.Int)
-                    incidentfault.Parameters("@originalFaultID").Value = LastFault
-                    incidentfault.Parameters.Add("@incidentID", Data.SqlDbType.Int)
-                    incidentfault.Parameters("@incidentID").Value = LastIncident
+                commtrack.Parameters("@AssignedTo").Value = "Unassigned"
+                commtrack.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
+                commtrack.Parameters("@Status").Value = "New"
+                commtrack.Parameters.Add("@LastupdatedBy", System.Data.SqlDbType.NVarChar, 50)
+                commtrack.Parameters("@LastupdatedBy").Value = Userinfo
+                commtrack.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
+                commtrack.Parameters("@Lastupdatedon").Value = time
+                commtrack.Parameters.Add("@Linac", System.Data.SqlDbType.NVarChar, 10)
+                commtrack.Parameters("@Linac").Value = MachineLabel.Text
+                commtrack.Parameters.Add("@IncidentID", System.Data.SqlDbType.Int)
+                commtrack.Parameters("@IncidentID").Value = LastIncident
+                Try
                     conn.Open()
-                    incidentfault.ExecuteNonQuery()
+                    commtrack.ExecuteNonQuery()
+
+
+                Finally
                     conn.Close()
 
-                Application(treatmentstate) = "Yes"
-                    'FailState is the flag that tells repair and view open faults which tab the fault was reported from
-                    '18 April move this to page load to enable multiple faults from tab 0 after fault reported
-                    'Application(failstate) = HiddenField1.Value
-                    '21 april
-                'Dim tab As Stringa
-                    'This sets the return tab as repair - important that it is always tab 5!
-                    Dim state As String = Application(appstate)
-                    'tab = "5"
-                    If reportTab = "5" Then
-                    'Application(appstate) = 1
-                        'Application(suspstate) = Nothing
-                        'Application(repairstate) = Nothing
-                        'Application(treatmentstate) = "Yes"
+                End Try
 
-                    Else
-                        'don't want to return saved value of comment here because this sets the fault page. Want empty string
-                        comment = ""
-                    End If
-                    state = Application(appstate)
+                'update incident table with fault id then don't need it in fault tracking table?
+
+                incidentfault = New SqlCommand("Update FaultIDTable SET originalFaultID=@originalFaultID where incidentID=@incidentID", conn)
+                incidentfault.Parameters.Add("@originalFaultID", Data.SqlDbType.Int)
+                incidentfault.Parameters("@originalFaultID").Value = LastFault
+                incidentfault.Parameters.Add("@incidentID", Data.SqlDbType.Int)
+                incidentfault.Parameters("@incidentID").Value = LastIncident
+                conn.Open()
+                incidentfault.ExecuteNonQuery()
+                conn.Close()
+
+                Application(treatmentstate) = "Yes"
+                'FaultOriginTab is the flag that tells repair and view open faults which tab the fault was reported from
+                '18 April move this to page load to enable multiple faults from tab 0 after fault reported
+                'Application(FaultOriginTab) = HiddenField1.Value
+                '21 april
+                'Dim tab As Stringa
+                'This sets the return tab as repair - important that it is always tab 5!
+                Dim state As String = Application(appstate)
+                'tab = "5"
+                If reportTab = "5" Then
+                    'Application(appstate) = 1
+                    'Application(suspstate) = Nothing
+                    'Application(RunUpDone) = Nothing
+                    'Application(treatmentstate) = "Yes"
+
+                Else
+                    'don't want to return saved value of comment here because this sets the fault page. Want empty string
+                    comment = ""
+                End If
+                state = Application(appstate)
 
                 'Return where it came from now
-                    Dim returnstring As String = LinacID + "page.aspx?pageref=Fault&Tabindex="
-                    Response.Redirect(returnstring & reportTab & "&comment=" & comment)
+                Dim returnstring As String = LinacID + "page.aspx?pageref=Fault&Tabindex="
+                Response.Redirect(returnstring & reportTab & "&comment=" & comment)
 
             End If
 
@@ -277,8 +277,8 @@ Partial Class faultPage
         'This finds control because here because it needs to be disabled if select because there are instances where it can pop up again
         ' added page.is valid
         If Page.IsValid Then
-            mpContentPlaceHolder = _
-               CType(Me.Master.FindControl("ContentPlaceHolder1"),  _
+            mpContentPlaceHolder =
+               CType(Me.Master.FindControl("ContentPlaceHolder1"),
                ContentPlaceHolder)
             If Not mpContentPlaceHolder Is Nothing Then
                 wctrl = CType(mpContentPlaceHolder.FindControl("Writedataucfr"), WriteDatauc)
@@ -312,7 +312,7 @@ Partial Class faultPage
         'End If
         'Application("Someoneisloggedin") = 1
         Dim LinacID As String = MachineLabel.Text
-        failstate = "FailState" + LinacID
+        FaultOriginTab = "FOT" + LinacID
         returnclinical = "ReturnClinical" + LinacID
         Dim tab As String
 
@@ -321,9 +321,9 @@ Partial Class faultPage
         Dim comment As String = DummyCommentBox.Value
         'if the cancel originated from the repair, maintenance or physics tabs then want to remember original tab. Otherwise set to nothing
         If tab = "5" Or tab = "4" Or tab = "6" Then
-            'don't alter failstate
+            'don't alter FaultOriginTab
         Else
-            Application(failstate) = Nothing
+            Application(FaultOriginTab) = Nothing
         End If
 
         If tab = "3" Then
@@ -356,16 +356,16 @@ Partial Class faultPage
             appstate = "LogOn" + machinename
             actionstate = "ActionState" + machinename
             suspstate = "Suspended" + machinename
-            failstate = "FailState" + machinename
-            repairstate = "rppTab" + machinename
+            FaultOriginTab = "FOT" + machinename
+            RunUpDone = "rppTab" + machinename
             clinicalstate = "ClinicalOn" + machinename
             treatmentstate = "Treatment" + machinename
             returnclinical = "ReturnClinical" + machinename
             AddEnergyItem()
-            
+
             'Some error handling for if a problem and fault already open
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             "connectionstring").ConnectionString
             Dim existingfault As SqlCommand
 
@@ -395,9 +395,9 @@ Partial Class faultPage
                     Response.Redirect(returnstring & tab & "&comment=" & comment)
                 End If
             Else
-                'FailState is the flag that tells repair and view open faults which tab the fault was reported from
+                'FaultOriginTab is the flag that tells repair and view open faults which tab the fault was reported from
                 '18 April move this to page load to enable multiple faults from tab 0 after fault reported
-                Application(failstate) = HiddenField1.Value
+                Application(FaultOriginTab) = HiddenField1.Value
                 'Dim reportTab As String = HiddenField1.Value
                 Dim commentbox As String = Request.QueryString("commentbox")
                 DummyCommentBox.Value = commentbox

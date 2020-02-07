@@ -2,7 +2,7 @@
 Imports System.Transactions
 Namespace DavesCode
     Public Class NewWriteAux
-        Public Shared Function WriteAuxTables(ByVal LinacName As String, ByVal LogOffName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal NewFault As Boolean, ByVal suspstate As String, ByVal repstate As String, ByVal lock As Boolean, ByVal FaultParams As DavesCode.FaultParameters) As Boolean
+        Public Shared Function WriteAuxTables(ByVal LinacName As String, ByVal LogOffName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal NewFault As Boolean, ByVal suspstate As String, ByVal RunUpBoolean As String, ByVal lock As Boolean, ByVal FaultParams As DavesCode.FaultParameters) As Boolean
             Dim Successful As Boolean = False
             Dim NewIncidentID As Integer = 0
             Dim FaultParamsApplication As String
@@ -10,7 +10,7 @@ Namespace DavesCode
             Try
                 Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 Using myscope As TransactionScope = New TransactionScope()
-                    WriteAuxTablesNew(LinacName, LogOffName, comment, Radioselect, Tabused, NewFault, suspstate, repstate, lock, connectionString)
+                    WriteAuxTablesNew(LinacName, LogOffName, comment, Radioselect, Tabused, NewFault, suspstate, RunUpBoolean, lock, connectionString)
                     If NewFault Then
                         NewIncidentID = NewFaultHandling.InsertMajorFault(FaultParams, connectionString)
                         FaultParams.SelectedIncident = NewIncidentID
@@ -24,7 +24,7 @@ Namespace DavesCode
             End Try
             Return Successful
         End Function
-        Public Shared Function WriteAuxTablesNew(ByVal LinacName As String, ByVal LogOffName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal Fault As Boolean, ByVal suspstate As String, ByVal repstate As String, ByVal lock As Boolean, ByVal connectionString As String) As String
+        Public Shared Function WriteAuxTablesNew(ByVal LinacName As String, ByVal LogOffName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal Fault As Boolean, ByVal suspstate As String, ByVal RunUpBoolean As String, ByVal lock As Boolean, ByVal connectionString As String) As String
             'writes the aux tables depending on the options picked. And writes the linac status table first.
             'When tidying this up look at whether radio is the same as tab used - no it's not
             Dim state As String = "Linac Unauthorised" 'most common value
@@ -56,13 +56,13 @@ Namespace DavesCode
 
 
             If reader.Read() Then
-                    StartTime = reader.Item("DateTime")
-                    LoginName = reader.Item("UserName")
-                    LoginStatusID = reader.Item("stateID")
+                StartTime = reader.Item("DateTime")
+                LoginName = reader.Item("UserName")
+                LoginStatusID = reader.Item("stateID")
                 'state = reader.Item("State")
             End If
-                reader.Close()
-                conn.Close()
+            reader.Close()
+            conn.Close()
             'If Fault Then
             '    state = "Fault"
             'End If
@@ -70,11 +70,11 @@ Namespace DavesCode
 
 
             Select Case Radioselect
-                    Case 101, 102, 103
-                        userreason = Radioselect
-                    Case Else
-                        userreason = 7
-                End Select
+                Case 101, 102, 103
+                    userreason = Radioselect
+                Case Else
+                    userreason = 7
+            End Select
             If Fault Then
                 state = "Fault"
                 userreason = 103
@@ -86,7 +86,7 @@ Namespace DavesCode
                     Case 4, 5, 6, 8, 101
                         If suspstate = 1 Then
                             state = "Suspended"
-                        ElseIf repstate = 1 Then
+                        ElseIf RunUpBoolean = 1 Then
                             state = "Engineering Approved"
                         Else
 

@@ -7,8 +7,8 @@ Partial Class Planned_Maintenanceuc
     Private appstate As String
     Private suspstate As String
     Private actionstate As String
-    Private failstate As String
-    Private repairstate As String
+    Private FaultOriginTab As String
+    Private RunUpDone As String
     Private faultviewstate As String
     Private atlasviewstate As String
     Private qaviewstate As String
@@ -100,8 +100,8 @@ Partial Class Planned_Maintenanceuc
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
         faultviewstate = "Faultsee" + LinacName
         atlasviewstate = "Atlassee" + LinacName
         qaviewstate = "QAsee" + LinacName
@@ -114,7 +114,7 @@ Partial Class Planned_Maintenanceuc
         Dim username As String = Userinfo
         Dim LinacStateID As String = ""
         Dim suspendvalue As String = Nothing
-        Dim repairvalue As String = Nothing
+        Dim RunUpBoolean As String = Nothing
         Dim EndofDay As Integer = 102
         Dim Recovery As Integer = 101
         Dim result As Boolean = False
@@ -135,7 +135,7 @@ Partial Class Planned_Maintenanceuc
             wctrl.Visible = False
             Dim Action As String = Application(actionstate)
             suspendvalue = Application(suspstate)
-            repairvalue = Application(repairstate)
+            RunUpBoolean = Application(RunUpDone)
             If Action = "EndOfDay" Then
                 Radioselect = EndofDay
                 Action = "Confirm"
@@ -146,7 +146,7 @@ Partial Class Planned_Maintenanceuc
                 Radioselect = RadioButtonList1.SelectedItem.Value
             End If
 
-            result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
+            result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
             If result Then
                 If Action = "Confirm" Then
 
@@ -155,27 +155,27 @@ Partial Class Planned_Maintenanceuc
                     'Dim comment As String = Textboxcomment.Text
 
 
-                    'result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
+                    'result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
                     Application(tabstate) = String.Empty
                     Application(appstate) = Nothing
                     CommentBox.ResetCommentBox(String.Empty)
                     Select Case Radioselect
                         Case 1
-                            Application(failstate) = Nothing
-                            Application(repairstate) = Nothing
+                            Application(FaultOriginTab) = Nothing
+                            Application(RunUpDone) = Nothing
                             Application(suspstate) = Nothing
                             Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
                             'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             Response.Redirect(returnstring)
                         Case 2
                             Application(suspstate) = Nothing
-                            Application(failstate) = Nothing
-                            Application(repairstate) = 1
+                            Application(FaultOriginTab) = Nothing
+                            Application(RunUpDone) = 1
                             'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                         Case 3
                             Application(suspstate) = 1
-                            Application(failstate) = Nothing
+                            Application(FaultOriginTab) = Nothing
                             'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                         Case 5
@@ -187,8 +187,8 @@ Partial Class Planned_Maintenanceuc
                             'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             Response.Redirect(returnstring)
                         Case 102
-                            Application(failstate) = Nothing
-                            Application(repairstate) = Nothing
+                            Application(FaultOriginTab) = Nothing
+                            Application(RunUpDone) = Nothing
                             Application(suspstate) = Nothing
                             'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
@@ -306,7 +306,7 @@ Partial Class Planned_Maintenanceuc
                 RadioButtonList1.Items.FindByValue(3).Enabled = True
                 StateTextBox.Text = "Suspended"
 
-                'ElseIf Application(repairstate) = 1 Then
+                'ElseIf Application(RunUpDone) = 1 Then
                 '    If LinacName Like "LA?" Then
                 '        RadioButtonList1.Items.FindByValue(2).Enabled = True
                 '        StateTextBox.Text = "Engineering Approved"
@@ -387,19 +387,19 @@ Partial Class Planned_Maintenanceuc
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         Dim lockctrltext As TextBox = CType(lockctrl.FindControl("txtchkUserName"), TextBox)
         Dim suspendvalue As String
-        Dim repairvalue As String
+        Dim RunUpBoolean As String
         Dim username As String = "Lockuser"
         'Dim Textboxcomment As TextBox = FindControl("CommentBox")
         Dim comment As String
         comment = CommentBox.Currentcomment
         suspendvalue = Application(suspstate)
-        repairvalue = Application(repairstate)
+        RunUpBoolean = Application(RunUpDone)
         Dim tabused As Integer = 4
         Dim radioselect As Integer = 101
         Dim success As Boolean = False
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         'has to be tablable to cope with either tab 1 or 7 control
-        success = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, False, suspendvalue, repairvalue, True, FaultParams)
+        success = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, False, suspendvalue, RunUpBoolean, True, FaultParams)
 
         If success Then
             RaiseEvent BlankGroup(0)

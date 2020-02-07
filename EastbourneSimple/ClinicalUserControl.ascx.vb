@@ -17,8 +17,8 @@ Partial Class ClinicalUserControl
     Private appstate As String
     Private suspstate As String
     Private actionstate As String
-    Private failstate As String
-    Private repairstate As String
+    Private FaultOriginTab As String
+    Private RunUpDone As String
     Private faultviewstate As String
     Private treatmentstate As String
     Private clinicalstate As String
@@ -93,10 +93,10 @@ Partial Class ClinicalUserControl
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         'If LinacName = EquipmentID Then
         If LinacName = EquipmentID Then
-                MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
-                MainFaultPanel.Update_defectsToday(LinacName)
+            MainFaultPanel = PlaceHolderFaults.FindControl("MainFaultDisplay")
+            MainFaultPanel.Update_defectsToday(LinacName)
 
-            End If
+        End If
         'Don't need if because report fault pop up is the same for both defects now
         'If LinacName Like "T?" Then
         'If LinacName Like "T?" Then
@@ -149,8 +149,8 @@ Partial Class ClinicalUserControl
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
         faultviewstate = "Faultsee" + LinacName
         clinicalstate = "ClinicalOn" + LinacName
         treatmentstate = "Treatment" + LinacName
@@ -220,7 +220,7 @@ Partial Class ClinicalUserControl
                     Application(treatmentstate) = "Yes"
                     Application(appstate) = Nothing
                     Application(suspstate) = 1
-                    Application(repairstate) = Nothing
+                    Application(RunUpDone) = Nothing
                     StateLabel.Text = "Suspended"
                     ActivityLabel.Text = "Logged Off"
                     Application(LinacFlag) = "Suspended"

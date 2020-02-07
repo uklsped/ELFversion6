@@ -218,9 +218,9 @@ Partial Public Class AcceptLinac
         suspstate = "Suspended" + MachineName
 
     End Sub
-    Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
-        Response.Redirect("faultPage.aspx?val=LA1")
-    End Sub
+    'Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    Response.Redirect("faultPage.aspx?val=LA1")
+    'End Sub
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim reload As String
         Dim clinstate As String = "Clinical"

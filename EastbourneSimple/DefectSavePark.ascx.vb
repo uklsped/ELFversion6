@@ -7,8 +7,8 @@ Partial Class DefectSavePark
     Private appstate As String
     Private actionstate As String
     Private suspstate As String
-    Private failstate As String
-    Private repairstate As String
+    Private FaultOriginTab As String
+    Private RunUpDone As String
     Private faultstate As String
     Const RADIO As Integer = 103
     Private time As DateTime
@@ -48,8 +48,8 @@ Partial Class DefectSavePark
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
         faultstate = "OpenFault" + LinacName
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
@@ -90,14 +90,14 @@ Partial Class DefectSavePark
                 RaiseEvent UpdateViewOpenFaults(LinacName)
             End If
             RaiseEvent CloseReportFaultPopUp(LinacName, Result)
-                'Else
-                'RaiseError()
+            'Else
+            'RaiseError()
 
-                'End If
-                'ClearsForm()
-                'RaiseEvent UpdateViewOpenFaults(LinacName)
-                'RaiseEvent CloseReportFaultPopUp(LinacName)
-            End If
+            'End If
+            'ClearsForm()
+            'RaiseEvent UpdateViewOpenFaults(LinacName)
+            'RaiseEvent CloseReportFaultPopUp(LinacName)
+        End If
     End Sub
 
     Protected Sub SaveDefectButton_Click(sender As Object, e As System.EventArgs) Handles SaveDefectButton.Click
@@ -339,8 +339,8 @@ Partial Class DefectSavePark
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
         'faultstate = "OpenFault" + LinacName
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
@@ -393,7 +393,7 @@ Partial Class DefectSavePark
                     'Close current tab
 
                     Dim susstate As String = Application(suspstate)
-                    Dim repstate As String = Application(repairstate)
+                    Dim RunUpBoolean As String = Application(RunUpDone)
                     'This gets comment box from tab that defectsave is on
                     'Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
                     'Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
@@ -415,17 +415,17 @@ Partial Class DefectSavePark
                             Application(suspstate) = 1
 
                         Case 4, 5, 6, 8
-                            Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, ParentControlComment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
+                            Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, ParentControlComment, RADIO, ParentControl, True, susstate, RunUpBoolean, False, FaultParams)
 
                         Case Else
                             Result = False
-                            'Application(failstate) = ParentControl
-                            'DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, repstate, False)
+                            'Application(FaultOriginTab) = ParentControl
+                            'DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, RunUpBoolean, False)
 
                     End Select
                     If Result Then
                         Application(appstate) = Nothing
-                        Application(failstate) = ParentControl
+                        Application(FaultOriginTab) = ParentControl
                         Application(faultstate) = True
                         'CreateNewFault(UserInfo, "New", connectionString)
 

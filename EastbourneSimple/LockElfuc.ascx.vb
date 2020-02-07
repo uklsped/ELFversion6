@@ -11,7 +11,7 @@ Partial Public Class LockElfuc
     Private appstate As String
     Private suspstate As String
     Private isFault As Boolean
-    Private repairstate As String
+    Private RunUpDone As String
     Private faultstate As String
     Dim modalpopupextenderLock As New ModalPopupExtender
     'Public Event ClinicalApproved(ByVal sender As Object, ByVal e As CommandEventArgs)
@@ -73,7 +73,7 @@ Partial Public Class LockElfuc
 
         Dim Activity As String
         Dim su As String = Application(suspstate)
-        Dim en As String = Application(repairstate)
+        Dim en As String = Application(RunUpDone)
         Activity = DavesCode.Reuse.ReturnActivity(Reason)
 
         'When tidying up don't now need to pass linac name to successful logon
@@ -84,7 +84,7 @@ Partial Public Class LockElfuc
             If tablabel = 1 Then
 
             Else
-                'DavesCode.Reuse.WriteAuxTables(MachineName, loginUsername, "", tablabel, tablabel, Application(faultstate), Application(suspstate), Application(repairstate))
+                'DavesCode.Reuse.WriteAuxTables(MachineName, loginUsername, "", tablabel, tablabel, Application(faultstate), Application(suspstate), Application(RunUpDone))
             End If
 
             DavesCode.Reuse.MachineState(loginUsername, usergroupselected, MachineName, Reason, True)
@@ -109,15 +109,15 @@ Partial Public Class LockElfuc
         'AddHandler AcceptLinac.AcceptHandler, AddressOf BlankTabs
         
     End Sub
-    Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
-        Response.Redirect("faultPage.aspx?val=LA1")
-    End Sub
+    'Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    Response.Redirect("faultPage.aspx?val=LA1")
+    'End Sub
     Protected Sub page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim button As Button = FindControl("UnlockElf")
         button.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(button, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         appstate = "LogOn" + MachineName
         suspstate = "Suspended" + MachineName
-        repairstate = "rppTab" + MachineName
+        RunUpDone = "rppTab" + MachineName
         faultstate = "OpenFault" + MachineName
         If Application(appstate) = 1 Then
             Dim MyString As String

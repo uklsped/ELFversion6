@@ -16,8 +16,8 @@ Partial Class DefectSave
     Private faultstate As String
     Private appstate As String
     Private suspstate As String
-    Private repairstate As String
-    Private failstate As String
+    Private RunUpDone As String
+    Private FaultOriginTab As String
     Private Valid As Boolean = False
     Const RADIO As Integer = 103
     Dim ConcessionNumber As String = ""
@@ -58,8 +58,8 @@ Partial Class DefectSave
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
         FaultApplication = "FaultParams" + LinacName
@@ -217,8 +217,8 @@ Partial Class DefectSave
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
         FaultApplication = "FaultParams" + LinacName
@@ -427,21 +427,21 @@ Partial Class DefectSave
         'This is a mad way of doing it but I don't know how to dim the energy list without constructing it at the same time
 
         Select Case LinacName
-                Case "LA1"
-                    Dim Energy1() As String = {"Select", "6 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
-                    ConstructEnergylist(Energy1)
-                Case "LA2", "LA3"
-                    Dim Energy1() As String = {"Select", "6 MV", "10 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
-                    ConstructEnergylist(Energy1)
-                Case "LA4"
-                    Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
-                    ConstructEnergylist(Energy1)
-                Case "E1", "E2", "B1", "B2"
-                    Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
-                    ConstructEnergylist(Energy1)
-                Case Else
-                    'Don't show any energies
-            End Select
+            Case "LA1"
+                Dim Energy1() As String = {"Select", "6 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
+                ConstructEnergylist(Energy1)
+            Case "LA2", "LA3"
+                Dim Energy1() As String = {"Select", "6 MV", "10 MV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV", "18 MeV", "20 MeV"}
+                ConstructEnergylist(Energy1)
+            Case "LA4"
+                Dim Energy1() As String = {"Select", "6 MV", "10 MV"}
+                ConstructEnergylist(Energy1)
+            Case "E1", "E2", "B1", "B2"
+                Dim Energy1() As String = {"Select", "6 MV", "6 MV FFF", "10 MV", "10 MV FFF", "4 MeV", "6 MeV", "8 MeV", "10 MeV", "12 MeV", "15 MeV"}
+                ConstructEnergylist(Energy1)
+            Case Else
+                'Don't show any energies
+        End Select
 
 
     End Sub
@@ -491,8 +491,8 @@ Partial Class DefectSave
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
         FaultDescriptionChanged = "defectFault" + LinacName
         RadActDescriptionChanged = "radact" + LinacName
         FaultApplication = "FaultParams" + LinacName
@@ -516,7 +516,7 @@ Partial Class DefectSave
             Case MAJORFAULT
 
                 Dim susstate As String = Application(suspstate)
-                Dim repstate As String = Application(repairstate)
+                Dim RunUpBoolean As String = Application(RunUpDone)
                 'This gets comment box from tab that defectsave is on
                 'amended because now this control is on reportfaultpopup
                 'Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
@@ -543,7 +543,7 @@ Partial Class DefectSave
                         Application(suspstate) = 1
 
                     Case 4, 5, 6, 8
-                        Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, ParentControlComment, RADIO, ParentControl, True, susstate, repstate, False, FaultParams)
+                        Result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, ParentControlComment, RADIO, ParentControl, True, susstate, RunUpBoolean, False, FaultParams)
 
                     Case Else
                         'Put up error message
@@ -554,7 +554,7 @@ Partial Class DefectSave
                 If Result Then
 
                     Application(appstate) = Nothing
-                    Application(failstate) = ParentControl
+                    Application(FaultOriginTab) = ParentControl
                     Application(faultstate) = True
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir
                     'PopupAck()

@@ -8,8 +8,8 @@ Partial Class Traininguc
     Private appstate As String
     Private suspstate As String
     Private actionstate As String
-    Private failstate As String
-    Private repairstate As String
+    Private FaultOriginTab As String
+    Private RunUpDone As String
     Private faultviewstate As String
     Private atlasviewstate As String
     Private qaviewstate As String
@@ -120,8 +120,8 @@ Partial Class Traininguc
         appstate = "LogOn" + MachineName
         actionstate = "ActionState" + MachineName
         suspstate = "Suspended" + MachineName
-        failstate = "FailState" + MachineName
-        repairstate = "rppTab" + MachineName
+        FaultOriginTab = "FOT" + MachineName
+        RunUpDone = "rppTab" + MachineName
         faultviewstate = "Faultsee" + MachineName
         atlasviewstate = "Atlassee" + MachineName
         qaviewstate = "QAsee" + MachineName
@@ -134,7 +134,7 @@ Partial Class Traininguc
         Dim username As String = Userinfo
         Dim LinacStateID As String = ""
         Dim suspendvalue As String
-        Dim repairvalue As String
+        Dim RunUpBoolean As String
         Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
         Dim EndofDay As Integer = 102
         Dim Recovery As Integer = 101
@@ -150,7 +150,7 @@ Partial Class Traininguc
             Dim result As Boolean = False
 
             suspendvalue = Application(suspstate)
-            repairvalue = Application(repairstate)
+            RunUpBoolean = Application(RunUpDone)
             If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
                 comment = HttpContext.Current.Application(BoxChanged).ToString
             Else
@@ -166,7 +166,7 @@ Partial Class Traininguc
                 Radioselect = RadioButtonList1.SelectedItem.Value
             End If
 
-            result = DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, repairvalue, False, FaultParams)
+            result = DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
 
             If result Then
                 If Action = "Confirm" Then
@@ -177,8 +177,8 @@ Partial Class Traininguc
                     Select Case Radioselect
                         Case 1
 
-                            Application(failstate) = Nothing
-                            Application(repairstate) = Nothing
+                            Application(FaultOriginTab) = Nothing
+                            Application(RunUpDone) = Nothing
                             Application(suspstate) = Nothing
                             If lastusergroup <> 3 Then
                                 Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
@@ -189,7 +189,7 @@ Partial Class Traininguc
 
                         Case 3
                             Application(suspstate) = 1
-                            Application(failstate) = Nothing
+                            Application(FaultOriginTab) = Nothing
 
                             If lastusergroup = 3 Then
                                 Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
@@ -222,8 +222,8 @@ Partial Class Traininguc
                             End If
                         Case 102
 
-                            Application(failstate) = Nothing
-                            Application(repairstate) = Nothing
+                            Application(FaultOriginTab) = Nothing
+                            Application(RunUpDone) = Nothing
                             Application(suspstate) = Nothing
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                     End Select

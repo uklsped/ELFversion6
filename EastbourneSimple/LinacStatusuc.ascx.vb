@@ -6,8 +6,8 @@ Partial Class LinacStatusuc
     Private appstate As String
     Private actionstate As String
     Private suspstate As String
-    Private repairstate As String
-    Private failstate As String
+    Private RunUpDone As String
+    Private FaultOriginTab As String
     Private clinicalstate As String
     Private treatmentstate As String
     Private technicalstate As String
@@ -33,13 +33,13 @@ Partial Class LinacStatusuc
         AddHandler RegisterUseruc1.ReloadTab, AddressOf PageLoad
         'Added handler so viewfaultsuc1 is reset to cope with nonmachinepage
         AddHandler ViewFaultsuc1.ReloadFaultsTab, AddressOf PageLoad
-       
+
         appstate = "LogOn" + MachineName
         suspstate = "Suspended" + MachineName
         actionstate = "ActionState" + MachineName
-        failstate = "FailState" + MachineName
+        FaultOriginTab = "FOT" + MachineName
         clinicalstate = "ClinicalOn" + MachineName
-        repairstate = "rppTab" + MachineName
+        RunUpDone = "rppTab" + MachineName
         treatmentstate = "Treatment" + MachineName
         technicalstate = "techstate" + MachineName
         RegistrationState = "regstate" + MachineName
@@ -113,14 +113,14 @@ Partial Class LinacStatusuc
         '    button.Visible = False
         'End If
     End Sub
-   
+
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
         Dim tab As String = Tabused
         Dim reader As SqlDataReader
         Dim Status As String = ""
         Dim conn As SqlConnection
         Dim conActivity As SqlCommand
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
         "connectionstring").ConnectionString
         Dim returnstring As String
 
@@ -148,9 +148,9 @@ Partial Class LinacStatusuc
             End If
             Application(suspstate) = Nothing
             Application(appstate) = Nothing
-            Application(failstate) = Nothing
+            Application(FaultOriginTab) = Nothing
             Application(clinicalstate) = Nothing
-            Application(repairstate) = Nothing
+            Application(RunUpDone) = Nothing
             Application(treatmentstate) = "Yes"
             Application(technicalstate) = Nothing
             Response.Redirect(returnstring)

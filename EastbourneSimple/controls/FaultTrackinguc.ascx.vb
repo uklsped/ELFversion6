@@ -381,7 +381,7 @@ Partial Class controls_FaultTrackinguc
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
         Dim lockctrltext As TextBox = CType(lockctrl.FindControl("txtchkUserName"), TextBox)
         Dim suspendvalue As String = 0
-        Dim repairvalue As String = 0
+        Dim RunUpBoolean As String = 0
         Dim username As String = "Lockuser"
 
         Dim comment As String = String.Empty
@@ -391,7 +391,7 @@ Partial Class controls_FaultTrackinguc
         Dim success As Boolean = False
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         'has to be tablable to cope with either tab 1 or 7 control
-        success = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, False, suspendvalue, repairvalue, True, FaultParams)
+        success = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, False, suspendvalue, RunUpBoolean, True, FaultParams)
 
         If success Then
 

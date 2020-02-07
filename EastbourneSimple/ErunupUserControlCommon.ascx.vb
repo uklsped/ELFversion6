@@ -9,8 +9,8 @@ Partial Class ErunupUserControl
     Private appstate As String
     Private suspstate As String
     Private actionstate As String
-    Private failstate As String
-    Private repairstate As String
+    Private FaultOriginTab As String
+    Private RunUpDone As String
     Private faultviewstate As String
     Private atlasviewstate As String
     Private qaviewstate As String
@@ -136,8 +136,8 @@ Partial Class ErunupUserControl
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
-        repairstate = "rppTab" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
         faultviewstate = "Faultsee" + LinacName
         atlasviewstate = "Atlassee" + LinacName
         qaviewstate = "QAsee" + LinacName
@@ -249,7 +249,7 @@ Partial Class ErunupUserControl
                 Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, comment, Valid, False, False, FaultParams)
                 If Successful Then
                     'This app sets for repair, maintenance and physics tab to know that run up was done
-                    Application(repairstate) = 1
+                    Application(RunUpDone) = 1
                     'Valid = True
                     Application(appstate) = Nothing
                     Application(tabstate) = String.Empty
@@ -284,7 +284,7 @@ Partial Class ErunupUserControl
                 Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, comment, Valid, False, False, FaultParams)
                 If Successful Then
                     Application(LinacFlag) = "Linac Unauthorised"
-                    Application(repairstate) = Nothing
+                    Application(RunUpDone) = Nothing
                     Application(appstate) = Nothing
                     Application(tabstate) = String.Empty
                     If Not Userinfo = "Restored" Then
@@ -310,7 +310,7 @@ Partial Class ErunupUserControl
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Application(LinacFlag) = "Linac Unauthorised"
-        Application(repairstate) = Nothing
+        Application(RunUpDone) = Nothing
         Application(appstate) = Nothing
         HttpContext.Current.Application(BoxChanged) = Nothing
         Application(tabstate) = String.Empty
@@ -335,7 +335,7 @@ Partial Class ErunupUserControl
         Dim strScript As String = "<script>"
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Application(LinacFlag) = "Linac Unauthorised"
-        Application(repairstate) = Nothing
+        Application(RunUpDone) = Nothing
         Application(appstate) = Nothing
         'CommentBox.ResetCommentBox(String.Empty)
         Application(tabstate) = String.Empty

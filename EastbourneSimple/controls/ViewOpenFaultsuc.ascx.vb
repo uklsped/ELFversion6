@@ -9,9 +9,9 @@ Partial Class controls_ViewOpenFaultsuc
     Private FaultStatus As String
     Private ClinicalButton As Button
     Private suspstate As String
-    Private failstate As String
+    Private FaultOriginTab As String
     Private actionstate As String
-    Private repairstate As String
+    Private RunUpDone As String
     Private laststate As String
     Private faultviewstate As String
     Private technicalstate As String
@@ -60,9 +60,9 @@ Partial Class controls_ViewOpenFaultsuc
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
 
         suspstate = "Suspended" + LinacName
-        failstate = "FailState" + LinacName
+        FaultOriginTab = "FOT" + LinacName
         actionstate = "ActionState" + LinacName
-        repairstate = "rppTab" + LinacName
+        RunUpDone = "rppTab" + LinacName
         laststate = "previousstate" + LinacName
         faultviewstate = "Faultsee" + LinacName
         technicalstate = "techstate" + LinacName

@@ -19,8 +19,8 @@ Partial Public Class T2page
     Private appstate As String = "LogOnT2"
     Private suspstate As String = "SuspendedT2"
     Private actionstate As String = "ActionStateT2"
-    Private repairstate As String = "rppTabT2"
-    Private failstate As String = "FailStateT2"
+    Private RunUpDone As String = "rppTabT2"
+    Private FaultOriginTab As String = "FOTT2"
     Private clinicalstate As String = "ClinicalOnT2"
     Private treatmentstate As String = "TreatmentT2"
     Private activetabstate As String = "ActTabT2"
@@ -116,9 +116,9 @@ Partial Public Class T2page
                                 Application(LinacFlag) = "Linac Unauthorised"
                                 Application(suspstate) = Nothing
                                 Application(appstate) = Nothing
-                                Application(failstate) = Nothing
+                                Application(FaultOriginTab) = Nothing
                                 Application(clinicalstate) = Nothing
-                                Application(repairstate) = Nothing
+                                Application(RunUpDone) = Nothing
                                 Application(treatmentstate) = "Yes"
                                 Application(activetabstate) = Nothing
                         End Select
@@ -571,7 +571,7 @@ Partial Public Class T2page
                     End If
 
                     If Application(appstate) <> 1 Then
-                        Dim failingstate As String = Application(failstate)
+                        Dim failingstate As String = Application(FaultOriginTab)
                         If (refpage = "Fault") Then
                             Select Case failingstate
                                 Case 1, 4, 5, 6
@@ -670,7 +670,7 @@ Partial Public Class T2page
                             plancontrol.Visible = True
 
                             If Not Application(suspstate) = 1 Then
-                                If Application(repairstate) = 1 Then
+                                If Application(RunUpDone) = 1 Then
                                     Statelabel.Text = "Engineering Approved"
                                 Else
                                     Statelabel.Text = "Linac Unauthorised"
@@ -687,7 +687,7 @@ Partial Public Class T2page
                             If Application(faultstate) <> True Then
 
                                 If Not Application(suspstate) = 1 Then
-                                    If Application(repairstate) = 1 Then
+                                    If Application(RunUpDone) = 1 Then
 
                                     Else
                                         Statelabel.Text = "Linac Unauthorised"
@@ -709,7 +709,7 @@ Partial Public Class T2page
                             SetUser(lastusergroup)
                             physicscontrol.Visible = True
                             If Not Application(suspstate) = 1 Then
-                                If Application(repairstate) = 1 Then
+                                If Application(RunUpDone) = 1 Then
                                     Statelabel.Text = "Engineering Approved"
                                 Else
                                     Statelabel.Text = "Linac Unauthorised"
@@ -730,7 +730,7 @@ Partial Public Class T2page
                             Update_ReturnButtons()
 
                             If Not Application(suspstate) = 1 Then
-                                If Application(repairstate) = 1 Then
+                                If Application(RunUpDone) = 1 Then
                                     Statelabel.Text = "Engineering Approved"
                                 Else
                                     Statelabel.Text = "Linac Unauthorised"
@@ -771,7 +771,7 @@ Partial Public Class T2page
         Activity = DavesCode.Reuse.ReturnActivity(Task)
         'Don't want to write status if already on tab 5
         laststate = DavesCode.Reuse.GetLastState(EquipmentID, 0)
-        If laststate = "Fault" And Application(failstate) = 5 Then
+        If laststate = "Fault" And Application(FaultOriginTab) = 5 Then
             DavesCode.Reuse.MachineState(user, usergroup, EquipmentID, Task, False)
         Else
             DavesCode.Reuse.MachineState(user, usergroup, EquipmentID, Task, False)
@@ -960,7 +960,7 @@ Partial Public Class T2page
         End Select
     End Sub
 
-        Protected Sub EndofDayElf(ByVal Caller As String)
+    Protected Sub EndofDayElf(ByVal Caller As String)
         Dim returnstring As String = EquipmentID + "page.aspx"
         Dim mrucontrol As ErunupUserControl
         'Dim mpreccontrol As Preclinusercontrol
@@ -988,20 +988,20 @@ Partial Public Class T2page
         Dim Successful As Boolean = False
 
         lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
-            conn = New SqlConnection(connectionString1)
-            comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
-            comm.Parameters.AddWithValue("@linac", EquipmentID)
+        conn = New SqlConnection(connectionString1)
+        comm = New SqlCommand("select Count(*) as Numopen from FaultIDTable where Status in ('New','Open') and linac=@linac", conn)
+        comm.Parameters.AddWithValue("@linac", EquipmentID)
 
-            conn.Open()
-            reader = comm.ExecuteReader()
-            If reader.Read() Then
-                NumOpen = reader.Item("NumOpen")
-                If NumOpen <> 0 Then
-                    Breakdown = True
-                Else
-                    Breakdown = False
-                End If
+        conn.Open()
+        reader = comm.ExecuteReader()
+        If reader.Read() Then
+            NumOpen = reader.Item("NumOpen")
+            If NumOpen <> 0 Then
+                Breakdown = True
+            Else
+                Breakdown = False
             End If
+        End If
 
         'Label2.Text = "Last state " + lastState
 
@@ -1014,7 +1014,7 @@ Partial Public Class T2page
             'This is superfluous
             'If Not Breakdown Then and was also breaking application states
             '    suspstate = Nothing
-            '    repairstate = Nothing
+            '    RunUpDone = Nothing
             'End If
             'Label3.Text = "Tab is " + activetab
             Application(actionstate) = False
@@ -1131,31 +1131,31 @@ Partial Public Class T2page
                     'Commentbox = mtrainingcontrol.FindControl("CommentBox")
                     'Comment = Commentbox.Text
                     Application(actionstate) = "EndOfDay"
-                    mtrainingcontrol.userapprovedevent(activetab, Logoffuser)
+                    mtrainingcontrol.UserApprovedEvent(activetab, Logoffuser)
                     'DavesCode.Reuse.WriteAuxTables(EquipmentID, Logoffuser, Comment, 102, 8, Breakdown, suspendnull, repairstatenull, False)
 
             End Select
         Else
             If Breakdown = False Then
                 'this is to make sure that equivalent of end of day happens
-                'Only want this to happen if repairstate or suspended but no one is logged on.
-                If Application(suspstate) = 1 Or Application(repairstate) = 1 Then
+                'Only want this to happen if RunUpDone or suspended but no one is logged on.
+                If Application(suspstate) = 1 Or Application(RunUpDone) = 1 Then
                     DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 10)
                 End If
             End If
         End If
         If Not Breakdown Then
-                Application(suspstate) = Nothing
-                Application(appstate) = Nothing
-                Application(failstate) = Nothing
-                Application(clinicalstate) = Nothing
-                Application(repairstate) = Nothing
-                Application(treatmentstate) = "Yes"
-                Application(activetabstate) = Nothing
-                Response.Redirect(returnstring)
-            End If
-            'This is in the wrong place because it redirects even if there is a fault and this confuses the system
-            'Response.Redirect(returnstring)
+            Application(suspstate) = Nothing
+            Application(appstate) = Nothing
+            Application(FaultOriginTab) = Nothing
+            Application(clinicalstate) = Nothing
+            Application(RunUpDone) = Nothing
+            Application(treatmentstate) = "Yes"
+            Application(activetabstate) = Nothing
+            Response.Redirect(returnstring)
+        End If
+        'This is in the wrong place because it redirects even if there is a fault and this confuses the system
+        'Response.Redirect(returnstring)
 
     End Sub
 
@@ -1167,7 +1167,7 @@ Partial Public Class T2page
 
     'From http://www.pberblog.com/blog/set-focus-to-a-control-of-a-modalpopupextender-programmatically/
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 
@@ -1181,7 +1181,7 @@ Partial Public Class T2page
         Application(actionstate) = False
         Dim activetab As String
         Dim susstate As String = Nothing
-        Dim repstate As String = Nothing
+        Dim RunUpBoolean As String = Nothing
         'Dim Userinfo As String = "Restored"
         Dim Logoffuser As String = "Restored"
         Dim reader As SqlDataReader
@@ -1276,12 +1276,12 @@ Partial Public Class T2page
                 'Successful = DavesCode.NewEngRunup.CommitRunup(grdview, EquipmentID, 666, Logoffuser, Comment, False, Breakdown, False)
                 mrucontrol.UserApprovedEvent("666", Logoffuser)
                 'DavesCode.NewEngRunup.CommitRunupNew(grdview, EquipmentID, 666, Userinfo, Comment, Valid, False, False) ' 666 means that blank gridview is written
-                'Application(repairstate) = Nothing
+                'Application(RunUpDone) = Nothing
 
             'Case 2
             '    mpreccontrol = tcl.ActiveTab.FindControl(preclincontrolID)
             '    mpreccontrol.UserApprovedEvent(activetab, Logoffuser)
-            '    Application(repairstate) = 1
+            '    Application(RunUpDone) = 1
             Case 3
                 If tcl.ActiveTab.FindControl(ClinicalUserControlID) Is Nothing Then
                     mclincontrol = Page.LoadControl("ClinicalUserControl.ascx")
@@ -1296,11 +1296,11 @@ Partial Public Class T2page
             Case 4, 5, 6, 8
                 If (Not HttpContext.Current.Application(suspstate) Is Nothing) Then
                     susstate = HttpContext.Current.Application(suspstate).ToString
-                    '        DavesCode.Reuse.WriteAuxTables(MachineName, Userinfo, comment, -1, Activity, breakdown, suspstate, repstate)
+                    '        DavesCode.Reuse.WriteAuxTables(MachineName, Userinfo, comment, -1, Activity, breakdown, suspstate, RunUpBoolean)
                 Else
                 End If
-                If (Not HttpContext.Current.Application(repairstate) Is Nothing) Then
-                    repstate = HttpContext.Current.Application(repairstate).ToString
+                If (Not HttpContext.Current.Application(RunUpDone) Is Nothing) Then
+                    RunUpBoolean = HttpContext.Current.Application(RunUpDone).ToString
 
                 Else
                 End If
@@ -1335,7 +1335,7 @@ Partial Public Class T2page
                         End If
                         mtrainingcontrol.UserApprovedEvent(activetab, Logoffuser)
                 End Select
-                ' DavesCode.Reuse.WriteAuxTables(EquipmentID, Userinfo, Comment, Radio, Activity, breakdown, susstate, repstate, False)
+                ' DavesCode.Reuse.WriteAuxTables(EquipmentID, Userinfo, Comment, Radio, Activity, breakdown, susstate, RunUpBoolean, False)
             Case Else
                 'This caters for when the system is already idling as it were.
                 returnstring = EquipmentID + "page.aspx"

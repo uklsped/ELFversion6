@@ -1814,7 +1814,7 @@ Namespace DavesCode
 
 
         End Function
-        Public Shared Function WriteAuxTables(ByVal MachineName As String, ByVal logOutName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal Fault As Boolean, ByVal suspstate As String, ByVal repstate As String, ByVal lock As Boolean) As String
+        Public Shared Function WriteAuxTables(ByVal MachineName As String, ByVal logOutName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal Fault As Boolean, ByVal suspstate As String, ByVal RunUpBoolean As String, ByVal lock As Boolean) As String
             'writes the aux tables depending on the options picked. And writes the linac status table first.
             'When tidying this up look at whether radio is the same as tab used - no it's not
             Dim state As String = "Linac Unauthorised" 'most common value
@@ -1841,7 +1841,7 @@ Namespace DavesCode
             Dim InsertData As String = "(Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
                                        "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)"
             'Dim suspstate As String = suspendvalue
-            'Dim repstate As String = repairvalue
+            'Dim RunUpBoolean As String = RunUpBoolean
             Dim userreason As Integer
 
             conn = New SqlConnection(connectionString)
@@ -1902,7 +1902,7 @@ Namespace DavesCode
                         If suspstate = 1 Then
                             'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
                             state = "Suspended"
-                        ElseIf repstate = 1 Then
+                        ElseIf RunUpBoolean = 1 Then
                             'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
                             state = "Engineering Approved"
                         Else
