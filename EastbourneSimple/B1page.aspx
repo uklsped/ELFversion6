@@ -22,7 +22,7 @@
 <%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc8" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
-<asp:Content ID="ContenB1" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+<asp:Content ID="Contentt2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 
 
 <script type="text/javascript">
@@ -297,7 +297,7 @@ B1 Status
 </asp:TabPanel>
 
 <asp:TabPanel ID="TabPanel7" runat="server" HeaderText="B1 Emergency Run up">
-   <%-- DynamicContextKey='Emerunup' CssClass="ajax__tab_header" hidden="true" Enabled="false">--%>
+    <%--DynamicContextKey='Emerunup' CssClass="ajax__tab_header" hidden="false" Enabled="true">--%>
      <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel7" runat="server">
 <ContentTemplate>

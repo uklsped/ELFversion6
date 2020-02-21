@@ -44,7 +44,7 @@ Partial Class Repairuc
     Private ConcessParamsTrial As ConcessionParameters = New ConcessionParameters()
     'Private ConcessParamsTrial As ConcessionParameters
     Dim Repairlist As RadioButtonList
-    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+    'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     Dim Modalities As controls_ModalityDisplayuc
 
     Private Property DynamicControlSelection() As String
@@ -66,7 +66,8 @@ Partial Class Repairuc
     Public Property LinacName() As String
     Public Sub UpdateReturnButtonsHandler()
         If Application(faultstate) <> True Then
-            DavesCode.Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
+
+            Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
             '    If (lastusergroup = 4) Then
             '        RadioButtonList1.Items.FindByValue(6).Enabled = True
             '    Else
@@ -76,16 +77,16 @@ Partial Class Repairuc
         End If
     End Sub
 
-    Public Sub Repairlogon()
+    Public Sub Repairlogon(ByVal connectionString As String)
         Dim breakdown As Boolean
         'Now find which user group is logged on
         'disabled to test removal of physics QA button 31 march 2016
         'This doesn't work if faultstate is corrupted so it will be best to test to see if there is an open fault instead
         'If Application(faultstate) <> True Then
-        breakdown = DavesCode.Reuse.CheckForOpenFault(LinacName)
+        breakdown = Reuse.CheckForOpenFault(LinacName, connectionString)
         If Not breakdown Then
             Application(faultstate) = False
-            DavesCode.Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
+            DavesCode.Reuse.GetLastTechNew(LinacName, 0, laststate, lastuser, lastusergroup, connectionString)
             '    If (lastusergroup = 4) Then
             '        RadioButtonList1.Items.FindByValue(6).Enabled = True
             '    Else
@@ -200,7 +201,7 @@ Partial Class Repairuc
                 Radioselect = RadioButtonList1.SelectedItem.Value
             End If
 
-            result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
+            result = NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
             If result Then
                 If Action = "Confirm" Then
                     DynamicControlSelection = String.Empty
@@ -283,8 +284,10 @@ Partial Class Repairuc
         Dim lastusername As String = ""
         Dim lastusergroup As Integer
         Dim success As Boolean = True
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
 
-        DavesCode.Reuse.GetLastTech(LinacName, 0, laststate, lastusername, lastusergroup)
+        Reuse.GetLastTechNew(LinacName, 0, laststate, lastusername, lastusergroup, connectionString)
+
         If laststate = "Fault" Then
             success = WriteFaultIDTable()
         End If
@@ -416,6 +419,7 @@ Partial Class Repairuc
         Else
             CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
         End If
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
         ModalityPlaceholder.Controls.Add(Modalities)
         ModalityDisplayPanel.Visible = True
@@ -484,7 +488,7 @@ Partial Class Repairuc
     End Sub
 
     Protected Sub SetLeavingButtons()
-        DavesCode.Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
+        Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
         LogOffButton.Enabled = False
         If Not isFault Then
 
@@ -555,7 +559,7 @@ Partial Class Repairuc
         Dim breakdown As Boolean = False
         Dim faultstate As String = Nothing
 
-        faultstate = DavesCode.Reuse.GetLastState(LinacName, 0)
+        faultstate = Reuse.GetLastState(LinacName, 0)
         RaiseEvent BlankGroup(0)
         If faultstate = "Fault" Then
             breakdown = True
@@ -571,7 +575,7 @@ Partial Class Repairuc
             Dim success As Boolean = False
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             'has to be tablable to cope with either tab 1 or 7 control
-            success = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, breakdown, suspendvalue, RunUpBoolean, True, FaultParams)
+            success = NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, breakdown, suspendvalue, RunUpBoolean, True, FaultParams)
 
             If success Then
                 RaiseEvent BlankGroup(0)
@@ -601,7 +605,7 @@ Partial Class Repairuc
     End Sub
 
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 
@@ -631,11 +635,11 @@ Partial Class Repairuc
 
                 updatefault = New SqlCommand("UPDATE  FaultIDTable SET ReportClosed = @ReportClosed where StatusID  = @statusId", conn)
                 'updatefault = New SqlCommand("UPDATE  FaultIDTable SET ReportClosed = @ReportClosed where IncidentID  = (Select max(IncidentID) as lastrecord from FaultIDtable where linac=@linac)", conn)
-                updatefault.Parameters.Add("@ReportClosed", System.Data.SqlDbType.DateTime)
+                updatefault.Parameters.Add("@ReportClosed", Data.SqlDbType.DateTime)
                 updatefault.Parameters("@ReportClosed").Value = Now()
-                updatefault.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                updatefault.Parameters.Add("@linac", Data.SqlDbType.NVarChar, 10)
                 updatefault.Parameters("@linac").Value = LinacName
-                updatefault.Parameters.Add("@statusID", System.Data.SqlDbType.Int)
+                updatefault.Parameters.Add("@statusID", Data.SqlDbType.Int)
                 updatefault.Parameters("@statusID").Value = CInt(laststateid)
 
                 conn.Open()

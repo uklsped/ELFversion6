@@ -124,122 +124,122 @@ Namespace DavesCode
 
         End Function
 
-        Public Shared Function SetPageLoad(ByVal linac As String) As String
-            'This is here to check day run up was done but will only work if page is reloaded
-            Dim machine As String = linac
-            Dim status As String
-            Dim NowTime As DateTime
-            NowTime = DateTime.Now
-            Dim RunTime As DateTime
-            Dim conn1 As SqlConnection
-            Dim comm2 As SqlCommand
-            Dim reader1 As SqlDataReader
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
-            status = "Linac Unauthorised"
+        'Public Shared Function SetPageLoad(ByVal linac As String) As String
+        '    'This is here to check day run up was done but will only work if page is reloaded
+        '    Dim machine As String = linac
+        '    Dim status As String
+        '    Dim NowTime As DateTime
+        '    NowTime = DateTime.Now
+        '    Dim RunTime As DateTime
+        '    Dim conn1 As SqlConnection
+        '    Dim comm2 As SqlCommand
+        '    Dim reader1 As SqlDataReader
+        '    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+        '    "connectionstring").ConnectionString
+        '    status = "Linac Unauthorised"
 
-            conn1 = New SqlConnection(connectionString)
-            'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
-            comm2 = New SqlCommand("SELECT state, RunTime FROM (select max(datetime) as RunTime from LinacStatus as a where state = 'Engineering Approved' and linac=@linac) t1, (select state as state from linacstatus as b where stateid = (select max(stateid) from linacstatus where linac=@linac)) t2", conn1)
-            comm2.Parameters.AddWithValue("@linac", machine)
-            'comm2 = New SqlCommand("Select state from linacstatus where stateid = (select max(stateid) from linacstatus where linac='LA1')", conn1)
-            conn1.Open()
-            reader1 = comm2.ExecuteReader()
-            If reader1.HasRows() Then
-                If reader1.Read() Then
-                    status = reader1.Item("state")
-                    If Not IsDBNull(reader1.Item("RunTime")) Then
-                        RunTime = reader1.Item("RunTime")
-                    End If
+        '    conn1 = New SqlConnection(connectionString)
+        '    'from http://www.sqlservercentral.com/Forums/Topic1416029-1292-1.aspx
+        '    comm2 = New SqlCommand("SELECT state, RunTime FROM (select max(datetime) as RunTime from LinacStatus as a where state = 'Engineering Approved' and linac=@linac) t1, (select state as state from linacstatus as b where stateid = (select max(stateid) from linacstatus where linac=@linac)) t2", conn1)
+        '    comm2.Parameters.AddWithValue("@linac", machine)
+        '    'comm2 = New SqlCommand("Select state from linacstatus where stateid = (select max(stateid) from linacstatus where linac='LA1')", conn1)
+        '    conn1.Open()
+        '    reader1 = comm2.ExecuteReader()
+        '    If reader1.HasRows() Then
+        '        If reader1.Read() Then
+        '            status = reader1.Item("state")
+        '            If Not IsDBNull(reader1.Item("RunTime")) Then
+        '                RunTime = reader1.Item("RunTime")
+        '            End If
 
-                End If
-            Else
-                'DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, machine, 1)
-                MachineState("No User", 5, machine, 7, False)
-                status = "Linac Unauthorised"
-            End If
-            reader1.Close()
-            conn1.Close()
-            'Select Case status
-            '    Case "Fault", "Repair", "Linac Unauthorised"
-            '        'do nothing
-            '    Case Else
-            '        If DateTime.Compare(NowTime.Date, RunTime.Date) > 0 Then
-            '            DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, "LA1", 1)
-            '            status = "Linac Unauthorised"
-            '        End If
-            'End Select
+        '        End If
+        '    Else
+        '        'DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, machine, 1)
+        '        MachineState("No User", 5, machine, 7, False)
+        '        status = "Linac Unauthorised"
+        '    End If
+        '    reader1.Close()
+        '    conn1.Close()
+        '    'Select Case status
+        '    '    Case "Fault", "Repair", "Linac Unauthorised"
+        '    '        'do nothing
+        '    '    Case Else
+        '    '        If DateTime.Compare(NowTime.Date, RunTime.Date) > 0 Then
+        '    '            DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, "LA1", 1)
+        '    '            status = "Linac Unauthorised"
+        '    '        End If
+        '    'End Select
 
-            Return status
+        '    Return status
 
-        End Function
+        'End Function
 
-        Public Shared Function BrowserLoaded(ByVal linac As String) As Boolean
-            Dim machine As String = linac
-            Dim status As Boolean
-            Dim conn1 As SqlConnection
-            Dim comm2 As SqlCommand
-            Dim reader1 As SqlDataReader
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
-            status = False
+        'Public Shared Function BrowserLoaded(ByVal linac As String) As Boolean
+        '    Dim machine As String = linac
+        '    Dim status As Boolean
+        '    Dim conn1 As SqlConnection
+        '    Dim comm2 As SqlCommand
+        '    Dim reader1 As SqlDataReader
+        '    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+        '    "connectionstring").ConnectionString
+        '    status = False
 
-            conn1 = New SqlConnection(connectionString)
+        '    conn1 = New SqlConnection(connectionString)
 
-            comm2 = New SqlCommand("SELECT browserOpen FROM BrowserState where id = (Select max(id) from BrowserState where linac=@linac)", conn1)
-            comm2.Parameters.AddWithValue("@linac", machine)
-            conn1.Open()
-            reader1 = comm2.ExecuteReader()
-            If reader1.HasRows() Then
-                If reader1.Read() Then
-                    status = reader1.Item("browserOpen")
-                End If
-            Else
-                status = False
-            End If
-            reader1.Close()
-            conn1.Close()
-            Return status
-        End Function
+        '    comm2 = New SqlCommand("SELECT browserOpen FROM BrowserState where id = (Select max(id) from BrowserState where linac=@linac)", conn1)
+        '    comm2.Parameters.AddWithValue("@linac", machine)
+        '    conn1.Open()
+        '    reader1 = comm2.ExecuteReader()
+        '    If reader1.HasRows() Then
+        '        If reader1.Read() Then
+        '            status = reader1.Item("browserOpen")
+        '        End If
+        '    Else
+        '        status = False
+        '    End If
+        '    reader1.Close()
+        '    conn1.Close()
+        '    Return status
+        'End Function
 
-        Public Shared Sub ToggleBrowser(ByVal linac As String, ByVal toggle As Boolean)
-            Dim conn1 As SqlConnection
-            Dim comm2 As SqlCommand
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
+        'Public Shared Sub ToggleBrowser(ByVal linac As String, ByVal toggle As Boolean)
+        '    Dim conn1 As SqlConnection
+        '    Dim comm2 As SqlCommand
+        '    Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+        '    "connectionstring").ConnectionString
 
-            conn1 = New SqlConnection(connectionString)
+        '    conn1 = New SqlConnection(connectionString)
 
-            comm2 = New SqlCommand("Insert into BrowserState (linac, browserOpen) VALUES (@linac, @browserOpen)", conn1)
-            comm2.Parameters.AddWithValue("@linac", linac)
-            comm2.Parameters.AddWithValue("@browserOpen", toggle)
-            conn1.Open()
+        '    comm2 = New SqlCommand("Insert into BrowserState (linac, browserOpen) VALUES (@linac, @browserOpen)", conn1)
+        '    comm2.Parameters.AddWithValue("@linac", linac)
+        '    comm2.Parameters.AddWithValue("@browserOpen", toggle)
+        '    conn1.Open()
 
 
-            comm2.ExecuteNonQuery()
+        '    comm2.ExecuteNonQuery()
 
-            conn1.Close()
+        '    conn1.Close()
 
-        End Sub
+        'End Sub
 
-        Public Shared Function RandomNumber(ByVal MaxNumber As Integer,
-    Optional ByVal MinNumber As Integer = 0) As Integer
+        '    Public Shared Function RandomNumber(ByVal MaxNumber As Integer,
+        'Optional ByVal MinNumber As Integer = 0) As Integer
 
-            'initialize random number generator
-            Dim r As New Random(System.DateTime.Now.Millisecond)
+        '        'initialize random number generator
+        '        Dim r As New Random(System.DateTime.Now.Millisecond)
 
-            'if passed incorrect arguments, swap them
-            'can also throw exception or return 0
+        '        'if passed incorrect arguments, swap them
+        '        'can also throw exception or return 0
 
-            If MinNumber > MaxNumber Then
-                Dim t As Integer = MinNumber
-                MinNumber = MaxNumber
-                MaxNumber = t
-            End If
+        '        If MinNumber > MaxNumber Then
+        '            Dim t As Integer = MinNumber
+        '            MinNumber = MaxNumber
+        '            MaxNumber = t
+        '        End If
 
-            Return r.Next(MinNumber, MaxNumber)
+        '        Return r.Next(MinNumber, MaxNumber)
 
-        End Function
+        '    End Function
 
         'Used
         Public Shared Function SuccessfulLogin(ByVal username As String, ByVal userpassword As String, ByVal Need As Integer, ByVal Texbox As TextBox, ByVal pasword As TextBox, ByVal logerror As Label, ByVal modalp As ModalPopupExtender) As Integer
@@ -312,7 +312,7 @@ Namespace DavesCode
                     'Return Nothing
                 End If
             End If
-        End Function
+        End Function ' Don't want to return if invalid user name or password. Want to leave pop up until correct value or cancel is selected.
         'Used Finds out which user group user is in
         Public Shared Function GetRole(ByVal user As String) As Integer
             Dim loginUsername As String = user
@@ -475,8 +475,10 @@ Namespace DavesCode
                 conn.Close()
                 'This creates in the Activity table the entry for the start of an activity so long as it is not as a result of switching the user.
                 If Not unlock Then
-                    WriteActivityTable(LinacStatusID, time, possessreason, linacName)
+                    'WriteActivityTable(LinacStatusID, time, possessreason, linacName)
                 End If
+            Catch ex As Exception
+                DavesCode.NewFaultHandling.LogError(ex)
 
             Finally
                 conn.Close()
@@ -538,64 +540,65 @@ Namespace DavesCode
             Machinestatus.Parameters("@UserName").Value = loginName
 
 
-            'Try
-            'To get the identity of the record just inserted from
-            'http://www.aspsnippets.com/Articles/Return-Identity-Auto-Increment-Column-value-after-record-insert-in-SQL-Server-Database-using-ADONet-with-C-and-VBNet.aspx
-            conn.Open()
-            'commstatus.ExecuteNonQuery()
+            Try
+                'To get the identity of the record just inserted from
+                'http://www.aspsnippets.com/Articles/Return-Identity-Auto-Increment-Column-value-after-record-insert-in-SQL-Server-Database-using-ADONet-with-C-and-VBNet.aspx
+                conn.Open()
+                'commstatus.ExecuteNonQuery()
 
-            Dim obj As Object = Machinestatus.ExecuteScalar()
+                Dim obj As Object = Machinestatus.ExecuteScalar()
                 'Dim LinacStatusIDs As String = obj.ToString()
                 LinacStatusID = CInt(obj)
-            conn.Close()
-            'This creates in the Activity table the entry for the start of an activity so long as it is not as a result of switching the user.
-            If Not unlock Then
-                WriteActivityTableNew(LinacStatusID, time, possessreason, linacName, ConnectionString)
-            End If
-
-            'Finally
-            '    conn.Close()
-            'End Try
-
-
-        End Sub
-        Public Shared Sub WriteActivityTable(ByVal StateID As Integer, ByVal timestamp As DateTime, ByVal possessreason As Integer, ByVal linacname As String)
-            Dim laststateid As Integer = 0
-            Dim lastState As String = ""
-            Dim Activestatus As SqlCommand
-            Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-            Try
-                laststateid = GetLastTech(linacname, 1, lastState, lastusername:="", lastusergroup:=0)
-
-
-                conn = New SqlConnection(connectionString)
-
-                Activestatus = New SqlCommand("INSERT INTO ActiveTime (userreason, StartID, StartTime, Linac, PreviousStateID ) " &
-                                        "VALUES (@userreason,@StartID, @StartTime, @Linac, @PreviousStateID)", conn)
-                Activestatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
-                Activestatus.Parameters("@userreason").Value = possessreason
-                Activestatus.Parameters.AddWithValue("@StartID", System.Data.SqlDbType.Int)
-                Activestatus.Parameters("@StartID").Value = StateID
-                Activestatus.Parameters.Add("@StartTime", System.Data.SqlDbType.DateTime)
-                Activestatus.Parameters("@StartTime").Value = timestamp
-                Activestatus.Parameters.AddWithValue("@linac", System.Data.SqlDbType.NVarChar)
-                Activestatus.Parameters("@linac").Value = linacname
-                Activestatus.Parameters.AddWithValue("@PreviousStateID", System.Data.SqlDbType.Int)
-                Activestatus.Parameters("@PreviousStateID").Value = laststateid
-
-
-                conn.Open()
-
-                Activestatus.ExecuteNonQuery()
+                conn.Close()
+                'This creates in the Activity table the entry for the start of an activity so long as it is not as a result of switching the user.
+                If Not unlock Then
+                    WriteActivityTableNew(LinacStatusID, time, possessreason, linacName, ConnectionString)
+                End If
             Catch ex As Exception
                 DavesCode.NewFaultHandling.LogError(ex)
-
             Finally
                 conn.Close()
             End Try
 
+
         End Sub
+        'Public Shared Sub WriteActivityTable(ByVal StateID As Integer, ByVal timestamp As DateTime, ByVal possessreason As Integer, ByVal linacname As String)
+        '    Dim laststateid As Integer = 0
+        '    Dim lastState As String = ""
+        '    Dim Activestatus As SqlCommand
+        '    Dim conn As SqlConnection
+        '    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        '    Try
+        '        laststateid = GetLastTech(linacname, 1, lastState, lastusername:="", lastusergroup:=0)
+
+
+        '        conn = New SqlConnection(connectionString)
+
+        '        Activestatus = New SqlCommand("INSERT INTO ActiveTime (userreason, StartID, StartTime, Linac, PreviousStateID ) " &
+        '                                "VALUES (@userreason,@StartID, @StartTime, @Linac, @PreviousStateID)", conn)
+        '        Activestatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
+        '        Activestatus.Parameters("@userreason").Value = possessreason
+        '        Activestatus.Parameters.AddWithValue("@StartID", System.Data.SqlDbType.Int)
+        '        Activestatus.Parameters("@StartID").Value = StateID
+        '        Activestatus.Parameters.Add("@StartTime", System.Data.SqlDbType.DateTime)
+        '        Activestatus.Parameters("@StartTime").Value = timestamp
+        '        Activestatus.Parameters.AddWithValue("@linac", System.Data.SqlDbType.NVarChar)
+        '        Activestatus.Parameters("@linac").Value = linacname
+        '        Activestatus.Parameters.AddWithValue("@PreviousStateID", System.Data.SqlDbType.Int)
+        '        Activestatus.Parameters("@PreviousStateID").Value = laststateid
+
+
+        '        conn.Open()
+
+        '        Activestatus.ExecuteNonQuery()
+        '    Catch ex As Exception
+        '        DavesCode.NewFaultHandling.LogError(ex)
+
+        '    Finally
+        '        conn.Close()
+        '    End Try
+
+        'End Sub
         Public Shared Sub WriteActivityTableNew(ByVal StateID As Integer, ByVal timestamp As DateTime, ByVal possessreason As Integer, ByVal linacname As String, ByVal ConnectionString As String)
             Dim laststateid As Integer = 0
             Dim lastState As String = ""
@@ -1814,147 +1817,147 @@ Namespace DavesCode
 
 
         End Function
-        Public Shared Function WriteAuxTables(ByVal MachineName As String, ByVal logOutName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal Fault As Boolean, ByVal suspstate As String, ByVal RunUpBoolean As String, ByVal lock As Boolean) As String
-            'writes the aux tables depending on the options picked. And writes the linac status table first.
-            'When tidying this up look at whether radio is the same as tab used - no it's not
-            Dim state As String = "Linac Unauthorised" 'most common value
-            'Dim Breakdown As Boolean = Fault
-            Dim time As DateTime
-            time = Now()
-            'Dim Tabused As Integer = TAB()
-            Dim LoginStatusID As String = ""
-            Dim conn As SqlConnection
-            'Dim localcomment As String = comment
-            ' Dim MachineName As String = LinacID
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-            Dim commpm As SqlCommand
-            Dim StartTime As DateTime
-            Dim LoginName As String = ""
-            'Dim logOutName As String = username
-            Dim LogOutStatusID As String = ""
-            Dim contime As SqlCommand
-            Dim reader As SqlDataReader
-            'Dim Radioselect As Integer = Radio
-            'Dim builder As New StringBuilder()
-            'Dim TableName As String = "AuxTable"
-            Dim Activity As String = ""
-            Dim InsertData As String = "(Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
-                                       "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)"
-            'Dim suspstate As String = suspendvalue
-            'Dim RunUpBoolean As String = RunUpBoolean
-            Dim userreason As Integer
+        'Public Shared Function WriteAuxTables(ByVal MachineName As String, ByVal logOutName As String, ByVal comment As String, ByVal Radioselect As Integer, ByVal Tabused As Integer, ByVal Fault As Boolean, ByVal suspstate As String, ByVal RunUpBoolean As String, ByVal lock As Boolean) As String
+        '    'writes the aux tables depending on the options picked. And writes the linac status table first.
+        '    'When tidying this up look at whether radio is the same as tab used - no it's not
+        '    Dim state As String = "Linac Unauthorised" 'most common value
+        '    'Dim Breakdown As Boolean = Fault
+        '    Dim time As DateTime
+        '    time = Now()
+        '    'Dim Tabused As Integer = TAB()
+        '    Dim LoginStatusID As String = ""
+        '    Dim conn As SqlConnection
+        '    'Dim localcomment As String = comment
+        '    ' Dim MachineName As String = LinacID
+        '    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        '    Dim commpm As SqlCommand
+        '    Dim StartTime As DateTime
+        '    Dim LoginName As String = ""
+        '    'Dim logOutName As String = username
+        '    Dim LogOutStatusID As String = ""
+        '    Dim contime As SqlCommand
+        '    Dim reader As SqlDataReader
+        '    'Dim Radioselect As Integer = Radio
+        '    'Dim builder As New StringBuilder()
+        '    'Dim TableName As String = "AuxTable"
+        '    Dim Activity As String = ""
+        '    Dim InsertData As String = "(Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
+        '                               "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)"
+        '    'Dim suspstate As String = suspendvalue
+        '    'Dim RunUpBoolean As String = RunUpBoolean
+        '    Dim userreason As Integer
 
-            conn = New SqlConnection(connectionString)
+        '    conn = New SqlConnection(connectionString)
 
-            contime = New SqlCommand("SELECT stateID,DateTime, UserName FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
-            contime.Parameters.AddWithValue("@linac", MachineName)
-            conn.Open()
-            reader = contime.ExecuteReader()
+        '    contime = New SqlCommand("SELECT stateID,DateTime, UserName FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+        '    contime.Parameters.AddWithValue("@linac", MachineName)
+        '    conn.Open()
+        '    reader = contime.ExecuteReader()
 
-            If reader.Read() Then
-                StartTime = reader.Item("DateTime")
-                LoginName = reader.Item("UserName")
-                LoginStatusID = reader.Item("stateID")
-            End If
-            reader.Close()
-            conn.Close()
+        '    If reader.Read() Then
+        '        StartTime = reader.Item("DateTime")
+        '        LoginName = reader.Item("UserName")
+        '        LoginStatusID = reader.Item("stateID")
+        '    End If
+        '    reader.Close()
+        '    conn.Close()
 
-            Select Case Tabused
-                'created a new table AuxTable for all of the aux values so table name is redundant - don't know what activity is used for here
-                Case 4
-                    'TableName = "PMTable"
-                    Activity = "Planned Maintenance"
-                Case 5
-                    'TableName = "RepairTable"
-                    Activity = "Repair"
-                Case 6
-                    'TableName = "PQATable"
-                    Activity = "Physics QA"
-                Case 8
-                    'TableName = "TrainingTable"
-                    Activity = "Training"
-                Case Else
+        '    Select Case Tabused
+        '        'created a new table AuxTable for all of the aux values so table name is redundant - don't know what activity is used for here
+        '        Case 4
+        '            'TableName = "PMTable"
+        '            Activity = "Planned Maintenance"
+        '        Case 5
+        '            'TableName = "RepairTable"
+        '            Activity = "Repair"
+        '        Case 6
+        '            'TableName = "PQATable"
+        '            Activity = "Physics QA"
+        '        Case 8
+        '            'TableName = "TrainingTable"
+        '            Activity = "Training"
+        '        Case Else
 
-            End Select
+        '    End Select
 
-            'builder.Append("INSERT INTO ")
-            'builder.Append(TableName)
-            'builder.Append(" ")
-            'builder.Append(InsertData)
-            'Dim output As String = builder.ToString
+        '    'builder.Append("INSERT INTO ")
+        '    'builder.Append(TableName)
+        '    'builder.Append(" ")
+        '    'builder.Append(InsertData)
+        '    'Dim output As String = builder.ToString
 
-            Select Case Radioselect
-                Case 101, 102, 103
-                    userreason = Radioselect
-                Case Else
-                    userreason = 7
-            End Select
+        '    Select Case Radioselect
+        '        Case 101, 102, 103
+        '            userreason = Radioselect
+        '        Case Else
+        '            userreason = 7
+        '    End Select
 
-            If Fault Then
-                'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Fault", 5, userreason, MachineName, Tabused)
-                state = "Fault"
-            Else
-                'Radioselect determines how to SetStatus as a result of which radiobutton selected
-                Select Case Radioselect
-                    Case 1
-                        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
-                    Case 4, 5, 6, 8, 101
-                        If suspstate = 1 Then
-                            'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
-                            state = "Suspended"
-                        ElseIf RunUpBoolean = 1 Then
-                            'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
-                            state = "Engineering Approved"
-                        Else
-                            'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
-                        End If
+        '    If Fault Then
+        '        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Fault", 5, userreason, MachineName, Tabused)
+        '        state = "Fault"
+        '    Else
+        '        'Radioselect determines how to SetStatus as a result of which radiobutton selected
+        '        Select Case Radioselect
+        '            Case 1
+        '                'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
+        '            Case 4, 5, 6, 8, 101
+        '                If suspstate = 1 Then
+        '                    'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
+        '                    state = "Suspended"
+        '                ElseIf RunUpBoolean = 1 Then
+        '                    'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
+        '                    state = "Engineering Approved"
+        '                Else
+        '                    'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
+        '                End If
 
-                    Case 2
-                        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
-                        state = "Engineering Approved"
-                    Case 3
-                        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
-                        state = "Suspended"
-                    Case 102
-                        'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
+        '            Case 2
+        '                'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Engineering Approved", 5, userreason, MachineName, Tabused)
+        '                state = "Engineering Approved"
+        '            Case 3
+        '                'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Suspended", 5, userreason, MachineName, Tabused)
+        '                state = "Suspended"
+        '            Case 102
+        '                'LogOutStatusID = DavesCode.Reuse.SetStatus(username, "Linac Unauthorised", 5, userreason, MachineName, Tabused)
 
-                End Select
-            End If
-            LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, state, 5, userreason, MachineName, Tabused, connectionString)
-            commpm = New SqlCommand("INSERT INTO AuxTable (Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
-                                       "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)", conn)
+        '        End Select
+        '    End If
+        '    LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, state, 5, userreason, MachineName, Tabused, connectionString)
+        '    commpm = New SqlCommand("INSERT INTO AuxTable (Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
+        '                               "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)", conn)
 
-            'commpm = New SqlCommand(builder.ToString, conn)
-            commpm.Parameters.Add("@Tab", System.Data.SqlDbType.Int)
-            commpm.Parameters("@Tab").Value = Tabused
-            commpm.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
-            commpm.Parameters("@LogInDate").Value = StartTime
-            commpm.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
-            commpm.Parameters("@LogOutDate").Value = time
-            commpm.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
-            commpm.Parameters("@LogInName").Value = LoginName
-            commpm.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
-            commpm.Parameters("@LogOutName").Value = logOutName
-            commpm.Parameters.Add("Comment", System.Data.SqlDbType.NVarChar, 250)
-            commpm.Parameters("Comment").Value = comment
-            commpm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            commpm.Parameters("@linac").Value = MachineName
-            commpm.Parameters.Add("@LogInStatusID", System.Data.SqlDbType.NVarChar, 10)
-            commpm.Parameters("@LogInStatusID").Value = LoginStatusID
-            commpm.Parameters.Add("@LogOutStatusID", System.Data.SqlDbType.NVarChar, 10)
-            commpm.Parameters("@LogOutStatusID").Value = LogOutStatusID
-            Try
-                conn.Open()
-                commpm.ExecuteNonQuery()
-            Finally
-                conn.Close()
+        '    'commpm = New SqlCommand(builder.ToString, conn)
+        '    commpm.Parameters.Add("@Tab", System.Data.SqlDbType.Int)
+        '    commpm.Parameters("@Tab").Value = Tabused
+        '    commpm.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
+        '    commpm.Parameters("@LogInDate").Value = StartTime
+        '    commpm.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
+        '    commpm.Parameters("@LogOutDate").Value = time
+        '    commpm.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
+        '    commpm.Parameters("@LogInName").Value = LoginName
+        '    commpm.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
+        '    commpm.Parameters("@LogOutName").Value = logOutName
+        '    commpm.Parameters.Add("Comment", System.Data.SqlDbType.NVarChar, 250)
+        '    commpm.Parameters("Comment").Value = comment
+        '    commpm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+        '    commpm.Parameters("@linac").Value = MachineName
+        '    commpm.Parameters.Add("@LogInStatusID", System.Data.SqlDbType.NVarChar, 10)
+        '    commpm.Parameters("@LogInStatusID").Value = LoginStatusID
+        '    commpm.Parameters.Add("@LogOutStatusID", System.Data.SqlDbType.NVarChar, 10)
+        '    commpm.Parameters("@LogOutStatusID").Value = LogOutStatusID
+        '    Try
+        '        conn.Open()
+        '        commpm.ExecuteNonQuery()
+        '    Finally
+        '        conn.Close()
 
-            End Try
-            If Not lock Then
-                UpdateActivityTable(MachineName, LogOutStatusID, connectionString)
-            End If
-            Return LogOutStatusID
-        End Function
+        '    End Try
+        '    If Not lock Then
+        '        UpdateActivityTable(MachineName, LogOutStatusID, connectionString)
+        '    End If
+        '    Return LogOutStatusID
+        'End Function
         'Used
         Public Shared Function CommitPreClin(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal Imgchk1 As Boolean, ByVal Imgchk2 As Boolean, ByVal Valid As Boolean, ByVal Fault As Boolean) As String
             'Public Shared Function CommitPreClin(ByVal LinacN As String, ByVal username As String, ByVal TextBoxp As String, ByVal GridViewI As GridView, ByVal Valid As Boolean, ByVal Fault As Boolean) As String
@@ -2519,59 +2522,60 @@ Namespace DavesCode
                 Dim commstatus As New SqlCommand With {
                 .Connection = conn
                 }
-                'Dim ObjTransaction As SqlTransaction
-                'ObjTransaction = Nothing
-                'Try
-                conn.Open()
-                'ObjTransaction = conn.BeginTransaction()
-                commstatus.CommandText = "usp_InsertLinacStatus"
-                commstatus.CommandType = CommandType.StoredProcedure
-                'commstatus.Transaction = ObjTransaction
-                'commstatus = New SqlCommand("INSERT INTO LinacStatus ( State, DateTime, Usergroup, Userreason, linac, UserName) " &
-                '"VALUES ( @State, @Datetime, @Usergroup, @Userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
-                commstatus.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
-                commstatus.Parameters("@State").Value = StateType
-                commstatus.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
-                commstatus.Parameters("@DateTime").Value = time
-                commstatus.Parameters.Add("@usergroup", System.Data.SqlDbType.Int)
-                commstatus.Parameters("@usergroup").Value = UserType
-                commstatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
-                commstatus.Parameters("@userreason").Value = ReasonType
-                commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-                commstatus.Parameters("@linac").Value = MachineType
-                commstatus.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 50)
-                commstatus.Parameters("@UserName").Value = userName
-                Dim outPutParameter = New SqlParameter With {
-                        .ParameterName = "@LinacStatusID",
-                        .SqlDbType = System.Data.SqlDbType.Int,
-                        .Direction = System.Data.ParameterDirection.Output
-                        }
-                commstatus.Parameters.Add(outPutParameter)
-                commstatus.ExecuteNonQuery()
-                'ObjTransaction.Commit()
-                commstatus.Parameters.Clear()
-                Dim Newstatusid As String = outPutParameter.Value.ToString
-                LinacStatusID = CInt(Newstatusid)
-                'Try
-                'To get the identity of the record just inserted from
-                'http://www.aspsnippets.com/Articles/Return-Identity-Auto-Increment-Column-value-after-record-insert-in-SQL-Server-Database-using-ADONet-with-C-and-VBNet.aspx
-                'conn.Open()
-                'commstatus.ExecuteNonQuery()
+                Try
+                    'Dim ObjTransaction As SqlTransaction
+                    'ObjTransaction = Nothing
+                    'Try
+                    conn.Open()
+                    'ObjTransaction = conn.BeginTransaction()
+                    commstatus.CommandText = "usp_InsertLinacStatus"
+                    commstatus.CommandType = CommandType.StoredProcedure
+                    'commstatus.Transaction = ObjTransaction
+                    'commstatus = New SqlCommand("INSERT INTO LinacStatus ( State, DateTime, Usergroup, Userreason, linac, UserName) " &
+                    '"VALUES ( @State, @Datetime, @Usergroup, @Userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
+                    commstatus.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 50)
+                    commstatus.Parameters("@State").Value = StateType
+                    commstatus.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
+                    commstatus.Parameters("@DateTime").Value = time
+                    commstatus.Parameters.Add("@usergroup", System.Data.SqlDbType.Int)
+                    commstatus.Parameters("@usergroup").Value = UserType
+                    commstatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
+                    commstatus.Parameters("@userreason").Value = ReasonType
+                    commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                    commstatus.Parameters("@linac").Value = MachineType
+                    commstatus.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 50)
+                    commstatus.Parameters("@UserName").Value = userName
+                    Dim outPutParameter = New SqlParameter With {
+                            .ParameterName = "@LinacStatusID",
+                            .SqlDbType = System.Data.SqlDbType.Int,
+                            .Direction = System.Data.ParameterDirection.Output
+                            }
+                    commstatus.Parameters.Add(outPutParameter)
+                    commstatus.ExecuteNonQuery()
+                    'ObjTransaction.Commit()
+                    commstatus.Parameters.Clear()
+                    Dim Newstatusid As String = outPutParameter.Value.ToString
+                    LinacStatusID = CInt(Newstatusid)
+                    'Try
+                    'To get the identity of the record just inserted from
+                    'http://www.aspsnippets.com/Articles/Return-Identity-Auto-Increment-Column-value-after-record-insert-in-SQL-Server-Database-using-ADONet-with-C-and-VBNet.aspx
+                    'conn.Open()
+                    'commstatus.ExecuteNonQuery()
 
-                'Dim obj As Object = commstatus.ExecuteScalar()
-                '    'Dim LinacStatusIDs As String = obj.ToString()
-                '    LinacStatusID = CInt(obj)
-                '    conn.Close()
-                If Activity > 0 Then
-                    'WriteDurationnew(MachineType, Activity, time, StartTime, minutesDuration, LinacStatusID)
-                End If
-                'Catch ex As Exception
-                '    ObjTransaction.Rollback()
-                '    LinacStatusID = -1
-                '    NewFaultHandling.LogError(ex)
-                'Finally
-                '    conn.Close()
-                'End Try
+                    'Dim obj As Object = commstatus.ExecuteScalar()
+                    '    'Dim LinacStatusIDs As String = obj.ToString()
+                    '    LinacStatusID = CInt(obj)
+                    '    conn.Close()
+                    If Activity > 0 Then
+                        'WriteDurationnew(MachineType, Activity, time, StartTime, minutesDuration, LinacStatusID)
+                    End If
+                Catch ex As Exception
+
+                    LinacStatusID = -1
+                    NewFaultHandling.LogError(ex)
+                Finally
+                    conn.Close()
+                End Try
             End Using
             Return LinacStatusID
         End Function
@@ -2739,7 +2743,45 @@ Namespace DavesCode
             End If
             reader.Close()
             conn.Close()
+
             Return nowstatus
+        End Function
+
+        Public Shared Function GetLastStateNew(ByVal linac As String, ByVal index As Integer, ByVal connectionString As String) As String
+            Dim time As DateTime
+            time = Now()
+            Dim PreviousState As Integer = index
+            Dim reader As SqlDataReader
+            Dim nowstatus As String
+            Dim linacName As String = linac
+            Dim conn As SqlConnection
+            Dim StatusNow As SqlCommand
+            conn = New SqlConnection(connectionString)
+
+            'If PreviousState = 0 Then
+            '    StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            'Else
+            '    'This doesn't work it just gets penultimate record irrespective of linac
+            '    'StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
+            '    'from http://stackoverflow.com/questions/8198962/taking-the-second-last-row-with-only-one-select-in-sql-server
+            '    StatusNow = New SqlCommand("SELECT TOP 1 * From (select Top 2 * from (select * from [LinacStatus] where linac=@linac) as a ORDER BY a.stateid DESC)  as x ORDER BY x.stateid", conn)
+
+            'End If
+            'StatusNow.Parameters.AddWithValue("@linac", linacName)
+            'conn.Open()
+            'reader = StatusNow.ExecuteReader()
+
+            'If reader.Read() Then
+            '    nowstatus = reader.Item("state").ToString()
+            'Else
+            '    'added for problem of when new linac so no previous state 6/7/17
+            '    nowstatus = Nothing
+            'End If
+            'reader.Close()
+            'conn.Close()
+
+            'Return nowstatus
+            nowstatus = "Linac Unauthorised"
         End Function
 
         Public Shared Function GetLastTime(ByVal linac As String, ByVal index As Integer) As String
@@ -2823,6 +2865,7 @@ Namespace DavesCode
             End If
             reader.Close()
             conn.Close()
+
             'This line checks to see if Appstate was null, if it was it will still be 100 from the start of the sub.
             'If it is null then the application states are reset depending on the last entry in the database.
             If nowstatus IsNot "Error" Then
@@ -2882,34 +2925,39 @@ Namespace DavesCode
             Dim reader As SqlDataReader
             Dim linacName As String = linac
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             'Dim Machinestatus As SqlCommand
             Dim StatusNow As SqlCommand
 
             conn = New SqlConnection(connectionString)
+            Try
+                If PreviousState = 0 Then
+                    StatusNow = New SqlCommand("SELECT state, username, usergroup, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+                Else
+                    'This doesn't work it just gets penultimate record irrespective of linac
+                    'StatusNow = New SqlCommand("SELECT state, username, usergroup FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
+                    'from http://stackoverflow.com/questions/8198962/taking-the-second-last-row-with-only-one-select-in-sql-server
+                    StatusNow = New SqlCommand("SELECT TOP 1 * From (select Top 2 * from (select * from [LinacStatus] where linac=@linac) as a ORDER BY a.stateid DESC)  as x ORDER BY x.stateid", conn)
 
-            If PreviousState = 0 Then
-                StatusNow = New SqlCommand("SELECT state, username, usergroup, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
-            Else
-                'This doesn't work it just gets penultimate record irrespective of linac
-                'StatusNow = New SqlCommand("SELECT state, username, usergroup FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
-                'from http://stackoverflow.com/questions/8198962/taking-the-second-last-row-with-only-one-select-in-sql-server
-                StatusNow = New SqlCommand("SELECT TOP 1 * From (select Top 2 * from (select * from [LinacStatus] where linac=@linac) as a ORDER BY a.stateid DESC)  as x ORDER BY x.stateid", conn)
+                End If
+                StatusNow.Parameters.AddWithValue("@linac", linacName)
+                conn.Open()
+                reader = StatusNow.ExecuteReader()
 
-            End If
-            StatusNow.Parameters.AddWithValue("@linac", linacName)
-            conn.Open()
-            reader = StatusNow.ExecuteReader()
+                If reader.Read() Then
+                    lastState = reader.Item("state").ToString()
+                    lastusername = reader.Item("username").ToString()
+                    lastusergroup = reader.Item("usergroup")
+                    laststateid = reader.Item("stateID")
+                End If
+            Catch ex As Exception
+                DavesCode.NewFaultHandling.LogError(ex)
+                'RaiseLoadError()
 
-            If reader.Read() Then
-                lastState = reader.Item("state").ToString()
-                lastusername = reader.Item("username").ToString()
-                lastusergroup = reader.Item("usergroup")
-                laststateid = reader.Item("stateID")
-            End If
-            reader.Close()
-            conn.Close()
+            Finally
+                reader.Close()
+                conn.Close()
+            End Try
 
             Return laststateid
         End Function
@@ -2922,7 +2970,7 @@ Namespace DavesCode
             Dim conn As SqlConnection
             'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
             '"connectionstring").ConnectionString
-            'Dim Machinestatus As SqlCommand
+            'Dim keyestatus As SqlCommand
             Dim StatusNow As SqlCommand
 
             conn = New SqlConnection(ConnectionString)
@@ -2952,11 +3000,9 @@ Namespace DavesCode
             Return laststateid
         End Function
 
-        Public Shared Function CheckForOpenFault(ByVal machinename As String) As Boolean
+        Public Shared Function CheckForOpenFault(ByVal machinename As String, ByVal connectionString As String) As Boolean
             Dim openfault As Boolean = False
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
             Dim existingfault As SqlCommand
             Dim LinacStatusID As String = ""
             Dim reader As SqlDataReader
@@ -2973,8 +3019,9 @@ Namespace DavesCode
                 openfault = True
                 'Application(appstate) = 1
             End If
-
+            conn.Close()
             Return openfault
+
         End Function
 
         Public Shared Sub ArchiveEnergies(ByVal EnergyIndex As Integer)

@@ -12,7 +12,6 @@ Partial Public Class AcceptLinac
     Private appstate As String
     Private suspstate As String
     Dim modalpopupextendergen As New ModalPopupExtender
-
     Public Event ClinicalApproved(ByVal connectionString As String)
     Public Event AcknowledgeEnergies()
     Public Event UpdateReturnButtons()
@@ -20,7 +19,7 @@ Partial Public Class AcceptLinac
     Public Event EngRunuploaded(ByVal connectionString As String)
     Public Event PreRunuploaded(ByVal connectionString As String)
     Public Event SetModalities(ByVal connectionString As String)
-    Public Event Repairloaded()
+    Public Event Repairloaded(ByVal connectionString As String)
 
 
     'Private LinacObj As LinacState
@@ -106,8 +105,6 @@ Partial Public Class AcceptLinac
                             DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, Reason, False, connectionString)
                             Select Case Tabby
                                 Case 1, 7
-
-
                                     RaiseEvent EngRunuploaded(connectionString)
                                     'RaiseEvent SetModalities(connectionString)
                                 Case 2
@@ -123,7 +120,7 @@ Partial Public Class AcceptLinac
                                     RaiseEvent UpdateReturnButtons()
                                     'RaiseEvent ShowName(usergroupselected)
                                 Case 5
-                                    RaiseEvent Repairloaded()
+                                    RaiseEvent Repairloaded(connectionString)
                                     'RaiseEvent Repairloaded(connectionString)
                             End Select
                             output = connectionString

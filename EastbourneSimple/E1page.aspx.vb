@@ -2,6 +2,7 @@
 Imports System.Data
 Imports AjaxControlToolkit
 Imports System.Web.Services
+Imports System.Transactions
 
 Partial Public Class E1page
     Inherits System.Web.UI.Page
@@ -212,20 +213,6 @@ Partial Public Class E1page
         Dim lastState As String
         lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
         Statelabel.Text = lastState
-        'This block was wrong for Application names and anyway is unnecessary apart from setting statelabel to laststate
-        'If Application("Suspended") = 1 Then
-        '    Statelabel.Text = "Suspended"
-        'ElseIf lastState = "Clinical" Then
-        '    Statelabel.Text = lastState
-        'ElseIf Application("rppTab") = 1 Then
-        '    Statelabel.Text = "Engineering Approved"
-        'Else
-        '    'Statelabel.Text = "Linac Unauthorised"
-        '    Statelabel.Text = lastState
-        'End If
-
-
-        'DavesCode.Reuse.ReturnApplicationState("First Start")
 
         If Not IsPostBack Then
 
@@ -471,7 +458,7 @@ Partial Public Class E1page
         Dim lastState As String = ""
         Dim lastuser As String = ""
         Dim lastusergroup As Integer = 0
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Page = Me.Page
         mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
@@ -532,228 +519,237 @@ Partial Public Class E1page
             End If
 
             If Reload = True Then
-                If Application(appstate) = 1 Then
-                    tabActive = Application(activetabstate)
-                    tcl.ActiveTabIndex = tabActive
-                Else
-                    DavesCode.Reuse.GetLastTech(EquipmentID, 1, lastState, lastuser, lastusergroup)
-                    If Not Request.QueryString("pageref") Is Nothing Then
-                        refpage = Request.QueryString("pageref").ToString
-                        tabActive = 5
-                        tcl.ActiveTabIndex = tabActive
-                    Else
-                        tabActive = tcl.ActiveTabIndex
-                    End If
-
-                End If
-                Dim containerId As String = "TabContent" & tabActive
-                Application(activetabstate) = tabActive
-                Dim logcontrolId As String = "AcceptLinac" & tcl.ActiveTabIndex
-                Dim panel As Panel = tcl.ActiveTab.FindControl(containerId)
-                Dim modalpopupextendername As String = "modalpopupextendergen"
-                modalpopupextendername = modalpopupextendername & tabActive
-
-                Dim logcontrol As AcceptLinac = tcl.ActiveTab.FindControl(logcontrolId)
-                Dim rucontrol As ErunupUserControl = tcl.ActiveTab.FindControl(runupcontrolId)
-                Dim preccontrol As Preclinusercontrol = tcl.ActiveTab.FindControl(preclincontrolID)
-                Dim clincontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                Dim plancontrol As Planned_Maintenanceuc = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
-                Dim repcontrol As Repairuc = tcl.ActiveTab.FindControl(repcontrolId)
-                Dim writecontrol As WriteDatauc = tcl.ActiveTab.FindControl(writedatacontrolID)
-                Dim physicscontrol As UserControl = tcl.ActiveTab.FindControl(physicscontrolID)
-                Dim emergencycontrol As ErunupUserControl = tcl.ActiveTab.FindControl(emergencycontrolID)
-                Dim trainingcontrol As Traininguc = tcl.ActiveTab.FindControl(trainingcontrolID)
-
-                If (Not panel Is Nothing) Then
-                    panel.Visible = True
-                    If (Not clincontrol Is Nothing) Then
-                        clincontrol.Visible = False
-                    End If
-
-                    If Application(appstate) <> 1 Then
-                        Dim failingstate As String = Application(FaultOriginTab)
-                        If (refpage = "Fault") Then
-                            Select Case failingstate
-                                Case 1, 4, 5, 6
-                                    logcontrol.Visible = False
-                                    AcceptOKnosigpass(5, lastuser, lastusergroup)
-                                    repcontrol.Repairlogon()
-
-                                Case Else
-                                    If (Not logcontrol Is Nothing) Then
-                                        Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
-                                        Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
-                                        logcontrol.Visible = True
-                                        'added 50416
-                                        ForceFocus(textboxmodal)
-                                        If (Not modalid Is Nothing) Then
-                                            modalid.Show()
-
-                                        End If
-                                    End If
-                            End Select
-
+                Try
+                    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                    Using myscope As TransactionScope = New TransactionScope()
+                        If Application(appstate) = 1 Then
+                            tabActive = Application(activetabstate)
+                            tcl.ActiveTabIndex = tabActive
                         Else
+                            DavesCode.Reuse.GetLastTechNew(EquipmentID, 1, lastState, lastuser, lastusergroup, connectionString)
+                            If Not Request.QueryString("pageref") Is Nothing Then
+                                refpage = Request.QueryString("pageref").ToString
+                                tabActive = 5
+                                tcl.ActiveTabIndex = tabActive
+                            Else
+                                tabActive = tcl.ActiveTabIndex
+                            End If
 
-                            Select Case tabref
+                        End If
+                        Dim containerId As String = "TabContent" & tabActive
+                        Application(activetabstate) = tabActive
+                        Dim logcontrolId As String = "AcceptLinac" & tcl.ActiveTabIndex
+                        Dim panel As Panel = tcl.ActiveTab.FindControl(containerId)
+                        Dim modalpopupextendername As String = "modalpopupextendergen"
+                        modalpopupextendername = modalpopupextendername & tabActive
+
+                        Dim logcontrol As AcceptLinac = tcl.ActiveTab.FindControl(logcontrolId)
+                        Dim rucontrol As ErunupUserControl = tcl.ActiveTab.FindControl(runupcontrolId)
+                        Dim preccontrol As Preclinusercontrol = tcl.ActiveTab.FindControl(preclincontrolID)
+                        Dim clincontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                        Dim plancontrol As Planned_Maintenanceuc = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+                        Dim repcontrol As Repairuc = tcl.ActiveTab.FindControl(repcontrolId)
+                        Dim writecontrol As WriteDatauc = tcl.ActiveTab.FindControl(writedatacontrolID)
+                        Dim physicscontrol As UserControl = tcl.ActiveTab.FindControl(physicscontrolID)
+                        Dim emergencycontrol As ErunupUserControl = tcl.ActiveTab.FindControl(emergencycontrolID)
+                        Dim trainingcontrol As Traininguc = tcl.ActiveTab.FindControl(trainingcontrolID)
+
+                        If (Not panel Is Nothing) Then
+                            panel.Visible = True
+                            If (Not clincontrol Is Nothing) Then
+                                clincontrol.Visible = False
+                            End If
+
+                            If Application(appstate) <> 1 Then
+                                Dim failingstate As String = Application(FaultOriginTab)
+                                If (refpage = "Fault") Then
+                                    Select Case failingstate
+                                        Case 1, 4, 5, 6
+                                            logcontrol.Visible = False
+                                            AcceptOKnosigpass(5, lastuser, lastusergroup, connectionString)
+                                            repcontrol.Repairlogon(connectionString)
+
+                                        Case Else
+                                            If (Not logcontrol Is Nothing) Then
+                                                Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
+                                                Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
+                                                logcontrol.Visible = True
+                                                'added 50416
+                                                ForceFocus(textboxmodal)
+                                                If (Not modalid Is Nothing) Then
+                                                    modalid.Show()
+
+                                                End If
+                                            End If
+                                    End Select
+
+                                Else
+
+                                    Select Case tabref
+
+                                        Case 1
+                                            'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                            AcceptOKnosigpass(tabref, lastuser, lastusergroup, connectionString)
+                                            rucontrol.EngLogOnEvent(connectionString)
+                                        Case 4, 5, 6, 8
+                                            AcceptOKnosigpass(tabref, lastuser, lastusergroup, connectionString)
+                                        Case 2
+                                            AcceptOKnosigpass(tabref, lastuser, lastusergroup, connectionString)
+                                            preccontrol.Preclinloaded(connectionString)
+                                        Case 3
+
+                                        Case Else
+                                            If (Not logcontrol Is Nothing) Then
+                                                Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
+                                                Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
+                                                logcontrol.Visible = True
+                                                'added 50416
+                                                ForceFocus(textboxmodal)
+                                                If (Not modalid Is Nothing) Then
+                                                    modalid.Show()
+                                                End If
+                                            End If
+                                    End Select
+                                    'End If
+                                End If
+                            End If
+
+                            Dim Activity As String = ""
+                            Dim User As String = ""
+
+                            Select Case tabActive
+                                Case 0
 
                                 Case 1
-                                    'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-                                    AcceptOKnosigpass(tabref, lastuser, lastusergroup)
+                                    Activity = "Engineering Run Up"
+                                    DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
+                                    SetUser(lastusergroup)
+                                    'User = "Engineer/Physicist"
                                     rucontrol.EngLogOnEvent(connectionString)
-                                Case 4, 5, 6, 8
-                                    AcceptOKnosigpass(tabref, lastuser, lastusergroup)
-                                Case 2
-                                    AcceptOKnosigpass(tabref, lastuser, lastusergroup)
-                                    preccontrol.Preclinloaded(connectionString)
-                                Case 3
+                                    rucontrol.Visible = True
+                                    Dim panelcontrol As TabPanel = tcl.FindControl("TabPanel5")
+                                    If (Not panelcontrol Is Nothing) Then
+                                        'panelcontrol.Enabled = False
+                                        panelcontrol.Dispose()
+                                    End If
 
-                                Case Else
-                                    If (Not logcontrol Is Nothing) Then
-                                        Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
-                                        Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
-                                        logcontrol.Visible = True
-                                        'added 50416
-                                        ForceFocus(textboxmodal)
-                                        If (Not modalid Is Nothing) Then
-                                            modalid.Show()
+                                Case 2
+                                    Activity = "Pre-clinical Run Up"
+                                    UserGroupLabel.Text = "Radiographer"
+                                    preccontrol.Preclinloaded(connectionString)
+                                    preccontrol.Visible = True
+                                    tcl.ActiveTabIndex = 2
+                                    UpdatePaneln.Update()
+                                Case 3
+                                    Activity = ActivityLabel.Text
+                                    UserGroupLabel.Text = "Radiographer"
+                                    clincontrol.Visible = True
+                                    Dim output As String = "Clinical"
+                                    Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
+                                    Dim outputn As String = Application(appstate)
+                                    If outputn = 1 Then
+                                        'should have a transaction
+                                        'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                        clinicalcontrol.ClinicalApprovedEvent(connectionString)
+                                    End If
+
+                                Case 4
+                                    Activity = "Planned Maintenance"
+                                    DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
+                                    SetUser(lastusergroup)
+                                    plancontrol.Visible = True
+
+                                    If Not Application(suspstate) = 1 Then
+                                        If Application(RunUpDone) = 1 Then
+                                            Statelabel.Text = "Engineering Approved"
+                                        Else
+                                            Statelabel.Text = "Linac Unauthorised"
                                         End If
+                                    Else
+                                        Statelabel.Text = "Suspended"
+
+                                    End If
+                                Case 5
+                                    Activity = "Repair"
+                                    DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
+                                    SetUser(lastusergroup)
+                                    repcontrol.Visible = True
+                                    If Not DavesCode.Reuse.CheckForOpenFault(EquipmentID, connectionString) Then
+
+                                        'If Application(faultstate) <> True Then
+
+                                        If Not Application(suspstate) = 1 Then
+                                            If Application(RunUpDone) = 1 Then
+
+                                            Else
+                                                Statelabel.Text = "Linac Unauthorised"
+                                            End If
+                                        Else
+                                            Statelabel.Text = "Suspended"
+                                        End If
+                                        'repcontrol.Repairlogon()
+                                    Else
+                                        'added GetlastTech because for a fault this is not called earlier so statelabel and set user are blank
+                                        DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
+                                        Statelabel.Text = lastState
+
+                                    End If
+
+                                Case 6
+                                    Activity = "Physics QA"
+                                    DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
+                                    SetUser(lastusergroup)
+                                    physicscontrol.Visible = True
+                                    If Not Application(suspstate) = 1 Then
+                                        If Application(RunUpDone) = 1 Then
+                                            Statelabel.Text = "Engineering Approved"
+                                        Else
+                                            Statelabel.Text = "Linac Unauthorised"
+                                        End If
+                                    Else
+                                        Statelabel.Text = "Suspended"
+                                    End If
+                                Case 7
+                                    Activity = "Emergency Run Up"
+                                    UserGroupLabel.Text = "Radiographer"
+                                    emergencycontrol.Visible = True
+
+                                Case 8
+                                    Activity = "Training/Development"
+                                    DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
+                                    SetUser(lastusergroup)
+                                    trainingcontrol.Visible = True
+                                    Update_ReturnButtons()
+
+                                    If Not Application(suspstate) = 1 Then
+                                        If Application(RunUpDone) = 1 Then
+                                            Statelabel.Text = "Engineering Approved"
+                                        Else
+                                            Statelabel.Text = "Linac Unauthorised"
+                                        End If
+                                    Else
+                                        Statelabel.Text = "Suspended"
                                     End If
                             End Select
-                            'End If
+
+                            ActivityLabel.Text = Activity
+                            Select Case tabActive
+                                Case 4, 5, 6, 8
+                                    SetUser(lastusergroup)
+                            End Select
+                            Application(activetabstate) = tcl.ActiveTabIndex
+
+                            If recover = 1 Then
+                                recoverbuttonscript()
+                            End If
+                            Application("RegistrationState") = False
+
                         End If
-                    End If
-
-                    Dim Activity As String = ""
-                    Dim User As String = ""
-
-                    Select Case tabActive
-                        Case 0
-
-                        Case 1
-                            Activity = "Engineering Run Up"
-                            DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
-                            SetUser(lastusergroup)
-                            'User = "Engineer/Physicist"
-                            rucontrol.EngLogOnEvent(connectionString)
-                            rucontrol.Visible = True
-                            Dim panelcontrol As TabPanel = tcl.FindControl("TabPanel5")
-                            If (Not panelcontrol Is Nothing) Then
-                                'panelcontrol.Enabled = False
-                                panelcontrol.Dispose()
-                            End If
-
-                        Case 2
-                            Activity = "Pre-clinical Run Up"
-                            UserGroupLabel.Text = "Radiographer"
-                            preccontrol.Preclinloaded(connectionString)
-                            preccontrol.Visible = True
-                            tcl.ActiveTabIndex = 2
-                            UpdatePaneln.Update()
-                        Case 3
-                            Activity = ActivityLabel.Text
-                            UserGroupLabel.Text = "Radiographer"
-                            clincontrol.Visible = True
-                            Dim output As String = "Clinical"
-                            Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                            Dim outputn As String = Application(appstate)
-                            If outputn = 1 Then
-                                'should have a transaction
-                                'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-                                clinicalcontrol.ClinicalApprovedEvent(connectionString)
-                            End If
-
-                        Case 4
-                            Activity = "Planned Maintenance"
-                            DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
-                            SetUser(lastusergroup)
-                            plancontrol.Visible = True
-
-                            If Not Application(suspstate) = 1 Then
-                                If Application(RunUpDone) = 1 Then
-                                    Statelabel.Text = "Engineering Approved"
-                                Else
-                                    Statelabel.Text = "Linac Unauthorised"
-                                End If
-                            Else
-                                Statelabel.Text = "Suspended"
-
-                            End If
-                        Case 5
-                            Activity = "Repair"
-                            DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
-                            SetUser(lastusergroup)
-                            repcontrol.Visible = True
-                            If Not DavesCode.Reuse.CheckForOpenFault(EquipmentID) Then
-
-                                'If Application(faultstate) <> True Then
-
-                                If Not Application(suspstate) = 1 Then
-                                    If Application(RunUpDone) = 1 Then
-
-                                    Else
-                                        Statelabel.Text = "Linac Unauthorised"
-                                    End If
-                                Else
-                                    Statelabel.Text = "Suspended"
-                                End If
-                                'repcontrol.Repairlogon()
-                            Else
-                                'added GetlastTech because for a fault this is not called earlier so statelabel and set user are blank
-                                DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
-                                Statelabel.Text = lastState
-
-                            End If
-
-                        Case 6
-                            Activity = "Physics QA"
-                            DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
-                            SetUser(lastusergroup)
-                            physicscontrol.Visible = True
-                            If Not Application(suspstate) = 1 Then
-                                If Application(RunUpDone) = 1 Then
-                                    Statelabel.Text = "Engineering Approved"
-                                Else
-                                    Statelabel.Text = "Linac Unauthorised"
-                                End If
-                            Else
-                                Statelabel.Text = "Suspended"
-                            End If
-                        Case 7
-                            Activity = "Emergency Run Up"
-                            UserGroupLabel.Text = "Radiographer"
-                            emergencycontrol.Visible = True
-
-                        Case 8
-                            Activity = "Training/Development"
-                            DavesCode.Reuse.GetLastTech(EquipmentID, 0, lastState, lastuser, lastusergroup)
-                            SetUser(lastusergroup)
-                            trainingcontrol.Visible = True
-                            Update_ReturnButtons()
-
-                            If Not Application(suspstate) = 1 Then
-                                If Application(RunUpDone) = 1 Then
-                                    Statelabel.Text = "Engineering Approved"
-                                Else
-                                    Statelabel.Text = "Linac Unauthorised"
-                                End If
-                            Else
-                                Statelabel.Text = "Suspended"
-                            End If
-                    End Select
-
-                    ActivityLabel.Text = Activity
-                    Select Case tabActive
-                        Case 4, 5, 6, 8
-                            SetUser(lastusergroup)
-                    End Select
-                    Application(activetabstate) = tcl.ActiveTabIndex
-
-                    If recover = 1 Then
-                        recoverbuttonscript()
-                    End If
-                    Application("RegistrationState") = False
-                End If
+                        myscope.Complete()
+                    End Using
+                Catch ex As Exception
+                    DavesCode.NewFaultHandling.LogError(ex)
+                End Try
             Else
 
                 tabActive = tcl.ActiveTabIndex
@@ -765,19 +761,21 @@ Partial Public Class E1page
         End If
 
     End Sub
-    Public Sub AcceptOKnosigpass(ByVal Task As Integer, ByVal user As String, ByVal usergroup As Integer)
+    Public Sub AcceptOKnosigpass(ByVal Task As Integer, ByVal user As String, ByVal usergroup As Integer, ByVal connectionString As String)
         Dim output As String
         Dim strScript As String = "<script>"
         Dim Activity As String
         Dim laststate As String
+        Activity = "Error"
         Activity = DavesCode.Reuse.ReturnActivity(Task)
         'Don't want to write status if already on tab 5
-        laststate = DavesCode.Reuse.GetLastState(EquipmentID, 0)
-        If laststate = "Fault" And Application(FaultOriginTab) = 5 Then
-            DavesCode.Reuse.MachineState(user, usergroup, EquipmentID, Task, False)
-        Else
-            DavesCode.Reuse.MachineState(user, usergroup, EquipmentID, Task, False)
-        End If
+        'Check how this works 21/02/20
+        'laststate = DavesCode.Reuse.GetLastState(EquipmentID, 0)
+        'If laststate = "Fault" And Application(FaultOriginTab) = 5 Then
+        DavesCode.Reuse.MachineStateNew(user, usergroup, EquipmentID, Task, False, connectionString)
+        'Else
+        'DavesCode.Reuse.MachineStateNew(user, usergroup, EquipmentID, Task, False, connectionString)
+        'End If
         Application(appstate) = 1
         output = Application(appstate)
         'eg from http://dotnetbites.wordpress.com/2014/02/15/call-parent-page-method-from-user-control-using-reflection/
@@ -789,6 +787,7 @@ Partial Public Class E1page
         If Task = 3 Then
             output = "Clinical"
             Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+            'Might cause a problem
             RaiseEvent NoApprove()
         End If
 
@@ -1207,15 +1206,14 @@ Partial Public Class E1page
         strScript += "</script>"
         Dim returnstring As String
         Dim mrucontrol As ErunupUserControl
-        Dim mpreccontrol As Preclinusercontrol
         Dim mclincontrol As ClinicalUserControl
         Dim mplancontrol As Planned_Maintenanceuc
         Dim mrepcontrol As Repairuc
-        Dim mphysicscontrol As UserControl
         Dim mtrainingcontrol As Traininguc
         activetab = Application(activetabstate)
-
-        breakdown = DavesCode.Reuse.CheckForOpenFault(EquipmentID)
+        Try
+            Using myscope As TransactionScope = New TransactionScope()
+            breakdown = DavesCode.Reuse.CheckForOpenFault(EquipmentID, connectionString)
         mpContentPlaceHolder = CType(FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             grdview = CType(mpContentPlaceHolder.FindControl("DummyGridview"), GridView)
@@ -1340,11 +1338,19 @@ Partial Public Class E1page
                 Application(appstate) = Nothing
                 Response.Redirect(returnstring)
         End Select
-        returnstring = EquipmentID + "page.aspx?tabref=" + Convert.ToString(Activity) + "&recovered=1"
+        returnstring = EquipmentID + "page.aspx?tabref=" + Convert.ToString(activetab) + "&recovered=1"
         Application(technicalstate) = Nothing
         Application(appstate) = Nothing
 
-        Response.Redirect(returnstring)
+
+                myscope.Complete()
+                Response.Redirect(returnstring)
+
+            End Using
+        Catch ex As Exception
+            DavesCode.NewFaultHandling.LogError(ex)
+            'pop up error message here
+        End Try
     End Sub
 
 End Class
