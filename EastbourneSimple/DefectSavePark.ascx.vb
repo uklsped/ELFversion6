@@ -314,7 +314,7 @@ Partial Class DefectSavePark
     Protected Sub ClearButton_Click(sender As Object, e As System.EventArgs) Handles ClearButton.Click
         'Defect.SelectedIndex = -1
         'ClearsForm()
-        RaiseEvent CloseReportFaultPopUp(LinacName, False)
+        RaiseEvent CloseReportFaultPopUp(LinacName, True)
     End Sub
 
     Protected Sub ClearsForm()

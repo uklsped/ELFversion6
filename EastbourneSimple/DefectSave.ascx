@@ -107,7 +107,7 @@
         <%--</tr>--%>
         <%--<tr>--%>
             <td><asp:Button ID="SaveDefectButton" runat="server" Text="Save" CausesValidation="false" Enabled="false" /> </td>
-            <td><asp:Button ID="ClearButton" runat="server" Text="Close" CausesValidation="false"/></td>
+            <td><asp:Button ID="ClearButton" runat="server" Text="Close without saving" CausesValidation="false"/></td>
         </tr>
         <tr><td colspan="3"><asp:ValidationSummary ID="ValidationSummarydefect" Forecolor="Red" HeaderText="Please correct the errors in the following fields:" ValidationGroup="defect" ShowMessageBox="True" ShowSummary="True" EnableClientScript="false" runat="server" /></td>
                 
