@@ -45,6 +45,7 @@
                 Session("ErrorMsg") = lastError.Message
                 Session("ExceptionType") = lastError.GetType.ToString
                 Session("StackTrace") = lastError.StackTrace
+
             End If
             ' 5. Clear the error from the server
             Server.ClearError()

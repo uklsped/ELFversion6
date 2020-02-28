@@ -6,43 +6,17 @@ Imports System.Text
 Imports System.IO
 Partial Class WriteDatauc
     Inherits System.Web.UI.UserControl
-    Private MachineName As String
-    Private Reason As Integer
-    Private tablabel As String
+
     Private Action As String
     Private actionstate As String
     Private appstate As String
     Dim modalpopupextendercom As New ModalPopupExtender
     Public Event UserApproved(ByVal Tab As String, ByVal UserName As String)
-
-
     Public Property Tabby() As String
-        Get
-            Return tablabel
-        End Get
-        Set(ByVal value As String)
-            tablabel = value
-        End Set
-    End Property
     Public Property UserReason() As Integer
 
-        Get
-            Return Reason
-        End Get
-        Set(ByVal value As Integer)
-            Reason = value
-        End Set
-    End Property
-
     Public Property LinacName() As String
-        Get
-            Return MachineName
-        End Get
-        Set(ByVal value As String)
-            MachineName = value
-        End Set
-    End Property
-    
+
     Public ReadOnly Property username() As String
         Get
             username = txtchkUserName.Text.Trim()
@@ -54,24 +28,22 @@ Partial Class WriteDatauc
             userpassword = txtchkPWD.Text.Trim()
         End Get
     End Property
-    Protected Sub page_init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
-        
-    End Sub
-    Protected Sub page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+    Protected Sub Page_load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
         WaitButtons("Acknowledge")
-        appstate = "LogOn" + MachineName
-        actionstate = "ActionState" + MachineName
+        appstate = "LogOn" + LinacName
+        actionstate = "ActionState" + LinacName
         Dim logerrorbox As Label = FindControl("LoginErrordetails")
         logerrorbox.Text = Nothing
         'Reference to defect removed 23/11/16 Added back in 26/03/18
         'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Report" Or tablabel = "handover" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "Defect" Or tablabel = "recover" Or tablabel = "Image" Or tablabel = "Major" Then
-        If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Report" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "Defect" Or tablabel = "recover" Or tablabel = "Image" Or tablabel = "Major" Then
+        If Application(appstate) = 1 Or Tabby = "3" Or Tabby = "Report" Or Tabby = "EndDay" Or Tabby = "Admin" Or Tabby = "Updatefault" Or Tabby = "incident" Or Tabby = "0" Or Tabby = "Defect" Or Tabby = "recover" Or Tabby = "Image" Or Tabby = "Major" Then
             'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Report" Or tablabel = "handover" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "recover" Or tablabel = "Image" Then
 
             Dim MyString As String
             Dim Tabnumber As String
             MyString = "ModalPopupextendercom"
-            Tabnumber = tablabel
+            Tabnumber = Tabby
             MyString = MyString & Tabnumber
             modalpopupextendercom.ID = MyString
             modalpopupextendercom.BehaviorID = MyString
@@ -104,21 +76,25 @@ Partial Class WriteDatauc
         If wctrl IsNot Nothing Then
             wctrl.Visible = False
             'added to deal with clearing defect form if wrong user type 19/03/18
-            If (tablabel = "Admin") Or (tablabel = "Defect") Then
+            If (Tabby = "Admin") Or (Tabby = "Defect") Then
                 Application(actionstate) = "Cancel"
-                RaiseEvent UserApproved(tablabel, "dummy")
+                RaiseEvent UserApproved(Tabby, "dummy")
             End If
         End If
         Dim wctrl1 As WriteDatauc = CType(Me.Parent.FindControl("Writedatauc2"), WriteDatauc)
         If wctrl1 IsNot Nothing Then
             wctrl1.Visible = False
+            If Tabby = "Major" Then
+                Application(actionstate) = "Cancel"
+                RaiseEvent UserApproved(Tabby, "dummy")
+            End If
         End If
         Dim wctrl2 As WriteDatauc = CType(Me.Parent.FindControl("Writedatauc3"), WriteDatauc)
         If wctrl2 IsNot Nothing Then
             wctrl2.Visible = False
-            If tablabel = "incident" Then
+            If Tabby = "incident" Then
                 Application(actionstate) = "Cancel"
-                RaiseEvent UserApproved(tablabel, "dummy")
+                RaiseEvent UserApproved(Tabby, "dummy")
             End If
         End If
     End Sub
@@ -148,13 +124,13 @@ Partial Class WriteDatauc
 
         Dim modalidentifier As String
 
-        If DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, Reason, textboxUser, passwordUser, logerrorbox, modalpop) <> 0 Then
+        If DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox, modalpop) <> 0 Then
             If modalpop IsNot Nothing Then
                 'modalpop.Dispose()
                 resetLogInscreen()
                 'eg from http://dotnetbites.wordpress.com/2014/02/15/call-parent-page-method-from-user-control-using-reflection/
 
-                RaiseEvent UserApproved(tablabel, loginUsername)
+                RaiseEvent UserApproved(Tabby, loginUsername)
                 'DavesCode.Reuse.writeLogFile(Reason, loginUsername, False)
                 'activity = DavesCode.Reuse.ReturnActivity(Reason)
                 'Me.Page.GetType.InvokeMember("UpdateDisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {activity})

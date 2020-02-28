@@ -5,9 +5,6 @@ Imports System.Data
 Partial Public Class LockElfuc
     Inherits System.Web.UI.UserControl
     Public Event AcceptHandler As EventHandler
-    Private MachineName As String
-    Private Reason As Integer
-    Private tablabel As String
     Private appstate As String
     Private suspstate As String
     Private isFault As Boolean
@@ -17,31 +14,8 @@ Partial Public Class LockElfuc
     'Public Event ClinicalApproved(ByVal sender As Object, ByVal e As CommandEventArgs)
     Public Event ClinicalApproved()
     Public Property Tabby() As String
-        Get
-            Return tablabel
-        End Get
-        Set(ByVal value As String)
-            tablabel = value
-        End Set
-    End Property
     Public Property UserReason() As Integer
-
-        Get
-            Return Reason
-        End Get
-        Set(ByVal value As Integer)
-            Reason = value
-        End Set
-    End Property
-
     Public Property LinacName() As String
-        Get
-            Return MachineName
-        End Get
-        Set(ByVal value As String)
-            MachineName = value
-        End Set
-    End Property
 
     Public ReadOnly Property username() As String
         Get
@@ -57,8 +31,7 @@ Partial Public Class LockElfuc
 
 
     Protected Sub UnlockElf_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles UnlockElf.Click
-        'Public Sub UnlockElf_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles UnlockElf.Click
-        'why is this a public sub?
+
         Dim strScript As String = "<script>"
         Dim textboxUser As TextBox = FindControl("txtchkUserName") 'This gets username textbox to pass to login
         Dim passwordUser As TextBox = FindControl("txtchkPWD")  'This gets password textbox to pass to login
@@ -70,24 +43,19 @@ Partial Public Class LockElfuc
         'Get the values entered by the user
         Dim loginUsername As String = username
         Dim loginPassword As String = userpassword
-
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim Activity As String
         Dim su As String = Application(suspstate)
         Dim en As String = Application(RunUpDone)
-        Activity = DavesCode.Reuse.ReturnActivity(Reason)
+        Activity = DavesCode.Reuse.ReturnActivity(UserReason)
 
         'When tidying up don't now need to pass linac name to successful logon
-        Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, Reason, textboxUser, passwordUser, logerrorbox, modalpop)
+        Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox, modalpop)
         If usergroupselected <> Nothing Then
             '    'what happens if machinestate fails?
             resetLogInscreen()
-            If tablabel = 1 Then
-
-            Else
-                'DavesCode.Reuse.WriteAuxTables(MachineName, loginUsername, "", tablabel, tablabel, Application(faultstate), Application(suspstate), Application(RunUpDone))
-            End If
-
-            DavesCode.Reuse.MachineState(loginUsername, usergroupselected, MachineName, Reason, True)
+            DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, UserReason, True, connectionString)
+            'DavesCode.Reuse.MachineState(loginUsername, usergroupselected, LinacName, UserReason, True)
             modalpop.Hide()
             'DavesCode.Reuse.ReturnApplicationState(Activity)
             Dim lockoff As LockElfuc = CType(Me.Parent.FindControl("lockElfuc1"), LockElfuc)
@@ -107,7 +75,7 @@ Partial Public Class LockElfuc
     Public Event LaunchControl(ByVal Control As Integer)
     Protected Sub page_init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
         'AddHandler AcceptLinac.AcceptHandler, AddressOf BlankTabs
-        
+
     End Sub
     'Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
     '    Response.Redirect("faultPage.aspx?val=LA1")
@@ -115,15 +83,15 @@ Partial Public Class LockElfuc
     Protected Sub page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim button As Button = FindControl("UnlockElf")
         button.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(button, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
-        appstate = "LogOn" + MachineName
-        suspstate = "Suspended" + MachineName
-        RunUpDone = "rppTab" + MachineName
-        faultstate = "OpenFault" + MachineName
+        appstate = "LogOn" + LinacName
+        suspstate = "Suspended" + LinacName
+        RunUpDone = "rppTab" + LinacName
+        faultstate = "OpenFault" + LinacName
         If Application(appstate) = 1 Then
             Dim MyString As String
             Dim Tabnumber As String
             MyString = "ModalPopupextenderLock"
-            Tabnumber = tablabel
+            Tabnumber = Tabby
             MyString = MyString & Tabnumber
 
             modalpopupextenderLock.ID = MyString

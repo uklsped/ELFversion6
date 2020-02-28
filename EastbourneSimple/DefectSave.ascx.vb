@@ -77,7 +77,7 @@ Partial Class DefectSave
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
         Dim Action As String = Application(actionstate)
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        Dim Success As Boolean
+        Dim Success As Boolean = False
         ConcessionNumber = Defect.SelectedItem.ToString
         If ConcessionNumber.Contains("ELF") Then
             ConcessionNumber = Left(ConcessionNumber, 7)
@@ -90,25 +90,25 @@ Partial Class DefectSave
             If Action = "Confirm" Then
                 'What happens if this fails
                 Success = NewWriteradreset(Userinfo, connectionString)
+            Else
+                Success = True
 
             End If
             If Success Then
-                RaiseEvent CloseReportFaultPopUp(LinacName, Success)
-                SelectedIncident = SelectedIncidentID.Value
+                 SelectedIncident = SelectedIncidentID.Value
                 If SelectedIncident = RADRESET Then
                     RaiseEvent UpdateViewOpenFaults(LinacName)
                 Else
                     RaiseEvent UpDateDefectDailyDisplay(LinacName)
                 End If
-            Else
-                RaiseError()
-                Dim sender As Object
-                Dim e As EventArgs
-                Dim clear As Button = FindControl("ClearButton")
-                ClearButton_Click(sender, e)
-
-
+                'Else
+                '    RaiseError()
+                '    Dim sender As Object
+                '    Dim e As EventArgs
+                '    Dim clear As Button = FindControl("ClearButton")
+                '    ClearButton_Click(sender, e)
             End If
+            RaiseEvent CloseReportFaultPopUp(LinacName, Success)
             'ClearsForm()
             'RaiseEvent CloseReportFaultPopUp(LinacName)
         End If

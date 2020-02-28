@@ -71,7 +71,7 @@ Partial Class DefectSavePark
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
         Dim Action As String = Application(actionstate)
         'Dim Energy As String
-        Dim Result As Boolean
+        Dim Result As Boolean = False
         ConcessionNumber = Defect.SelectedItem.ToString
         If ConcessionNumber.Contains("ELF") Then
             ConcessionNumber = Left(ConcessionNumber, 7)
@@ -82,7 +82,8 @@ Partial Class DefectSavePark
             If Action = "Confirm" Then
                 Result = NewWriteRadReset(Userinfo, ConcessionNumber)
             Else
-                Defect.SelectedIndex = -1
+                Result = True
+                'Defect.SelectedIndex = -1
 
             End If
             If Result Then
