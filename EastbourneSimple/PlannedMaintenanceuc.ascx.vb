@@ -157,7 +157,7 @@ Partial Class Planned_Maintenanceuc
 
                     'result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
                     Application(tabstate) = String.Empty
-                    Application(appstate) = Nothing
+                    Application(appstate) = 0
                     CommentBox.ResetCommentBox(String.Empty)
                     Select Case Radioselect
                         Case 1

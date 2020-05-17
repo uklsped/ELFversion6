@@ -2915,8 +2915,105 @@ Namespace DavesCode
                     conn.Close()
                 End If
             End If
-                Return nowstatus
+            Return nowstatus
         End Function
+
+        Public Shared Sub ListParameters(ByVal linac As String, ByVal index As Integer)
+            Dim time As DateTime
+            time = Now()
+            Dim PreviousState As Integer = index
+            Dim reader As SqlDataReader
+            Dim nowstatus As String = "Error"
+            Dim linacName As String = linac
+            Dim conn As SqlConnection
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            "connectionstring").ConnectionString
+            'Dim Machinestatus As SqlCommand
+            Dim StatusNow As SqlCommand
+            Dim ResetDayCom As SqlCommand
+            Dim oldtime As DateTime
+            Dim activity As String = ""
+            Dim StateID As String = ""
+            Dim oldDayofyear As Integer
+            Dim newDayofyear As Integer
+            Dim Status As String = ""
+            Dim AppState As Integer = 100 ' this is set to 100 to detect if Appstate is null later.
+            Dim LogOn As String
+            Dim LiveTab As String
+            Dim SuspValue As String
+            Dim RunupVal As String
+
+            LogOn = "LogOn" + linacName
+            LiveTab = "ActTab" + linacName
+            SuspValue = "Suspended" + linacName
+            RunupVal = "rppTab" + linacName
+            Dim ActiveTab As Integer
+            Dim Runup As Integer
+            Dim suspended As Integer
+            conn = New SqlConnection(connectionString)
+
+
+
+            If (Not HttpContext.Current.Application(LogOn) Is Nothing) Then
+                AppState = CInt(HttpContext.Current.Application(LogOn))
+            End If
+            If (Not HttpContext.Current.Application(LiveTab) Is Nothing) Then
+                ActiveTab = CInt(HttpContext.Current.Application(LogOn))
+            End If
+            If (Not HttpContext.Current.Application(SuspValue) Is Nothing) Then
+                suspended = CInt(HttpContext.Current.Application(SuspValue))
+            End If
+            If (Not HttpContext.Current.Application(RunupVal) Is Nothing) Then
+                Runup = CInt(HttpContext.Current.Application(RunupVal))
+            End If
+
+
+
+            If PreviousState = 0 Then
+
+                'StatusNow = New SqlCommand("SELECT dateadd(dd,0, datediff(dd,0,datetime)) FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+
+                'StatusNow = New SqlCommand("SELECT stateid, datetime, userreason FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+                StatusNow = New SqlCommand("SELECT TOP 1 stateid, state, datetime, userreason FROM [LinacStatus] where linac=@linac order by StateID desc", conn)
+            Else
+                'This doesn't work it just gets penultimate record irrespective of linac
+                'StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
+                'from http://stackoverflow.com/questions/8198962/taking-the-second-last-row-with-only-one-select-in-sql-server
+                StatusNow = New SqlCommand("SELECT TOP 1 * From (select Top 2 * from (select * from [LinacStatus] where linac=@linac) as a ORDER BY a.stateid DESC)  as x ORDER BY x.stateid", conn)
+
+            End If
+            StatusNow.Parameters.AddWithValue("@linac", linacName)
+            conn.Open()
+            reader = StatusNow.ExecuteReader()
+
+
+
+            If reader.Read() Then
+                oldtime = reader.Item("datetime")
+                activity = reader.Item("userreason")
+                StateID = reader.Item("StateID")
+                Status = reader.Item("State")
+                'oldtime = oldtime.Date.AddDays(-1) 'test line
+                oldDayofyear = oldtime.DayOfYear
+                newDayofyear = time.DayOfYear
+
+                activity = reader.Item("userreason")
+                If activity = "102" Then
+                    nowstatus = "Ignore"
+                ElseIf Not newDayofyear = oldDayofyear Then
+                    nowstatus = "EndDay"
+                ElseIf newDayofyear = oldDayofyear Then
+                    nowstatus = "Ignore"
+                End If
+            Else
+                nowstatus = "Error"
+            End If
+            reader.Close()
+            conn.Close()
+
+
+
+        End Sub
 
         Public Shared Function GetLastTech(ByVal linac As String, ByVal index As Integer, ByRef lastState As String, ByRef lastusername As String, ByRef lastusergroup As Integer) As Integer
             'Changed this to a function to return the linac state ID where necessary

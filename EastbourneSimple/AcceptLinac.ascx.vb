@@ -279,7 +279,7 @@ Partial Public Class AcceptLinac
             If myAppState <> 1 Then
                 Dim loginUsername As String = username
                 Dim returnstring As String
-                Application(appstate) = Nothing
+                Application(appstate) = 0
                 'If Application(suspstate) = 1 Then
                 'DavesCode.Reuse.SetStatus(loginUsername, "Clinical - Not Treating", 3, 3, MachineName, 7)
                 'DavesCode.Reuse.SetStatus(loginUsername, "Suspended", 5, 7, MachineName, 7) 'This line of code removed after testing 28th may as the state shouldn't be written to.

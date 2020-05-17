@@ -49,23 +49,31 @@ Partial Class controls_ReportAFaultuc
         End Select
     End Sub
     Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
+        'To bodge a solution this needs to check if there is an open fault already that hasn't been handled because of a problem.
         'Need to load reportfaultpopupuc here to pass comment box
-        Dim CommentControl As controls_CommentBoxuc = Parent.FindControl("CommentBox")
-        Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
-        Dim Comment As String = DaTxtBox.Text
-        Application("TabComment") = Comment
+        Dim ThereIsAnOpenFault As Boolean = True
+        ThereIsAnOpenFault = DavesCode.NewFaultHandling.CheckForOpenFault(LinacName)
+        If ThereIsAnOpenFault Then
+            RaiseError()
+            'do popup
+        Else
+            Dim CommentControl As controls_CommentBoxuc = Parent.FindControl("CommentBox")
+            Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
+            Dim Comment As String = DaTxtBox.Text
+            Application("TabComment") = Comment
 
-        Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-        CType(objReportFault, controls_ReportFaultPopUpuc).LinacName = LinacName
-        CType(objReportFault, controls_ReportFaultPopUpuc).ID = "ReportFaultPopupuc"
-        CType(objReportFault, controls_ReportFaultPopUpuc).ParentControl = ParentControl
-        DynamicControlSelection = FAULTPOPUPSELECTED
+            Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
+            CType(objReportFault, controls_ReportFaultPopUpuc).LinacName = LinacName
+            CType(objReportFault, controls_ReportFaultPopUpuc).ID = "ReportFaultPopupuc"
+            CType(objReportFault, controls_ReportFaultPopUpuc).ParentControl = ParentControl
+            DynamicControlSelection = FAULTPOPUPSELECTED
 
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopup, AddressOf Close_ReportFaultPopUp
-        ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
-        objReportFault.SetUpReportFault()
+            AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
+            AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
+            AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
+            ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+            objReportFault.SetUpReportFault()
+        End If
     End Sub
 
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)

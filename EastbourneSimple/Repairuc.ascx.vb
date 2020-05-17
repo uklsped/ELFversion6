@@ -216,7 +216,7 @@ Partial Class Repairuc
                     'If this fails it writes an error to file but carries on.
                     'DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False)
                     'DavesCode.Reuse.Writerep(MachineName, username, comment, LinacStatusID)
-                    Application(appstate) = Nothing
+                    Application(appstate) = 0
                     Application(tabstate) = String.Empty
                     ' this is an instrumentation field that displays application number ie 0 or 1
                     'Dim output As String = Application(appstate)

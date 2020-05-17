@@ -82,8 +82,9 @@
         }
 
     }
-
+ 
   </script>
+    <%--<script type="text/javascript" src="BrowserKill.js"></script>--%>
  <div class="gridheader">
 	
 
@@ -159,8 +160,7 @@
 
 
             
-    <asp:TabContainer ID="tcl" runat="server"  activetabindex="0" 
-          OnClientActiveTabChanged="loadTabPanel"  height="930px" >
+    <asp:TabContainer ID="tcl" runat="server"  activetabindex="0" OnClientActiveTabChanged="loadTabPanel"  height="930px" >
          
 <asp:TabPanel runat="server" HeaderText="T1 Status" ID="TabPanel0"><HeaderTemplate>
 T1 Status

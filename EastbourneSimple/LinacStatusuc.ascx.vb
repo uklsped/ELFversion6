@@ -146,11 +146,11 @@ Partial Class LinacStatusuc
                 DavesCode.Reuse.SetStatus(Userinfo, "Linac Unauthorised", 5, 7, MachineName, 0)
                 returnstring = MachineName + "page.aspx"
             End If
-            Application(suspstate) = Nothing
-            Application(appstate) = Nothing
+            Application(suspstate) = 0
+            Application(appstate) = 0
             Application(FaultOriginTab) = Nothing
             Application(clinicalstate) = Nothing
-            Application(RunUpDone) = Nothing
+            Application(RunUpDone) = 0
             Application(treatmentstate) = "Yes"
             Application(technicalstate) = Nothing
             Response.Redirect(returnstring)

@@ -553,7 +553,7 @@ Partial Class DefectSave
 
                 If Result Then
 
-                    Application(appstate) = Nothing
+                    Application(appstate) = 0
                     Application(FaultOriginTab) = ParentControl
                     Application(faultstate) = True
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir

@@ -11,7 +11,7 @@ Namespace DavesCode
                 Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 Using myscope As TransactionScope = New TransactionScope()
                     WriteAuxTablesNew(LinacName, LogOffName, comment, Radioselect, Tabused, NewFault, suspstate, RunUpBoolean, lock, connectionString)
-                    If NewFault Then
+                    If NewFault And Not lock Then
                         NewIncidentID = NewFaultHandling.InsertMajorFault(FaultParams, connectionString)
                         FaultParams.SelectedIncident = NewIncidentID
                         HttpContext.Current.Application(FaultParamsApplication) = FaultParams
@@ -77,7 +77,7 @@ Namespace DavesCode
             End Select
             If Fault Then
                 state = "Fault"
-                userreason = 103
+                'userreason = 103
             Else
                 'Radioselect determines how to SetStatus as a result of which radiobutton selected
                 Select Case Radioselect

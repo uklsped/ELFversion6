@@ -69,7 +69,8 @@ Partial Class controls_FaultTrackinguc
         CCommentPanel.Enabled = False
         CActionPanel.Enabled = False
         CDescriptionPanel.Enabled = False
-
+        Dim appstate As String
+        appstate = Application("LogOnT1")
         'BindTrackingGridTech(ConcessObject.IncidentID)
 
     End Sub
@@ -391,7 +392,7 @@ Partial Class controls_FaultTrackinguc
         Dim success As Boolean = False
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         'has to be tablable to cope with either tab 1 or 7 control
-        success = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, False, suspendvalue, RunUpBoolean, True, FaultParams)
+        success = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, True, suspendvalue, RunUpBoolean, True, FaultParams)
 
         If success Then
 

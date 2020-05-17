@@ -81,15 +81,16 @@ Partial Class DefectSavePark
             wctrl.Visible = False
             If Action = "Confirm" Then
                 Result = NewWriteRadReset(Userinfo, ConcessionNumber)
+                If Result Then
+
+                    RaiseEvent UpdateViewOpenFaults(LinacName)
+                End If
             Else
                 Result = True
                 'Defect.SelectedIndex = -1
 
             End If
-            If Result Then
-                ClearsForm()
-                RaiseEvent UpdateViewOpenFaults(LinacName)
-            End If
+            ClearsForm()
             RaiseEvent CloseReportFaultPopUp(LinacName, Result)
             'Else
             'RaiseError()
@@ -425,7 +426,7 @@ Partial Class DefectSavePark
 
                     End Select
                     If Result Then
-                        Application(appstate) = Nothing
+                        Application(appstate) = 0
                         Application(FaultOriginTab) = ParentControl
                         Application(faultstate) = True
                         'CreateNewFault(UserInfo, "New", connectionString)

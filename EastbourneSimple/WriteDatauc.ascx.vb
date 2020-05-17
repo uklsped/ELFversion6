@@ -6,7 +6,6 @@ Imports System.Text
 Imports System.IO
 Partial Class WriteDatauc
     Inherits System.Web.UI.UserControl
-
     Private Action As String
     Private actionstate As String
     Private appstate As String
@@ -72,6 +71,7 @@ Partial Class WriteDatauc
     End Sub
     Protected Sub btnchkcancel_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnchkcancel.Click
         resetLogInscreen()
+
         Dim wctrl As WriteDatauc = CType(Me.Parent.FindControl("Writedatauc1"), WriteDatauc)
         If wctrl IsNot Nothing Then
             wctrl.Visible = False
