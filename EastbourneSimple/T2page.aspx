@@ -82,8 +82,9 @@
         }
 
     }
-
+ 
   </script>
+    <%--<script type="text/javascript" src="BrowserKill.js"></script>--%>
  <div class="gridheader">
 	
 
@@ -159,8 +160,7 @@
 
 
             
-    <asp:TabContainer ID="tcl" runat="server"  activetabindex="0" 
-          OnClientActiveTabChanged="loadTabPanel"  height="930px" >
+    <asp:TabContainer ID="tcl" runat="server"  activetabindex="0" OnClientActiveTabChanged="loadTabPanel"  height="930px" >
          
 <asp:TabPanel runat="server" HeaderText="T2 Status" ID="TabPanel0"><HeaderTemplate>
 T2 Status
@@ -212,7 +212,7 @@ T2 Status
 <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePaneln" updatemode ="Conditional"  runat="server">
 <ContentTemplate><asp:Button ID="TabButton2" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
-<asp:Panel ID="TabContenT2" runat="server" Visible="false"
+<asp:Panel ID="TabContent2" runat="server" Visible="false"
 ><uc4:AcceptLinac ID="AcceptLinac2" LinacName="T2" UserReason="2" Tabby="2" runat="server" visible="false"/>
 <uc2:Preclinusercontrol ID="Preclinusercontrol1" LinacName = "T2" DataName="PreData" runat="server"/>
 </asp:Panel>
@@ -303,8 +303,16 @@ T2 Status
 <asp:UpdatePanel ID="UpdatePanelEmergency" runat="server" >
 <ContentTemplate><asp:Button ID="TabButton7" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent7" runat="server" Visible="False">
-<uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "T1"  Tabby="7" UserReason = "9" visible="false" />
- <uc1:ErunupUserControlCommon ID="ErunupUserControl2" LinacName="T1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
+<uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "T2"  Tabby="7" UserReason = "9" visible="false" />
+ <uc1:ErunupUserControlCommon ID="ErunupUserControl2" LinacName="T2" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
+
+</asp:Panel>
+</ContentTemplate>
+</asp:UpdatePanel>
+</ContentTemplate>
+</asp:UpdatePanel>
+</ContentTemplate>
+ </asp:TabPanel>
 
 </asp:Panel>
 </ContentTemplate>
