@@ -261,46 +261,76 @@ Partial Class DefectSavePark
                     conn1.Close()
 
                 ElseIf Not String.IsNullOrEmpty(DefectString) Then
-                    If DefectString = RecoverableFault Then
-                        'FaultTypeSave.SetActiveView(RecoverableView)
-                        FaultClosedLabel.Visible = False
-                        FaultOpenClosed.Visible = False
-                        UnRecoverableSave.Visible = False
-                        SaveDefectButton.Visible = True
-                        SaveDefectButton.Enabled = True
-                        SaveDefectButton.BackColor = Drawing.Color.Yellow
-                        FaultPanel.Enabled = True
-                        ActPanel.Enabled = False
-                        RadioIncident.ClearSelection()
-                    ElseIf DefectString = UnRecoverableFault Then
-                        FaultClosedLabel.Visible = True
-                        FaultOpenClosed.Visible = True
-                        FaultOpenClosed.ClearSelection()
-                        SaveDefectButton.Visible = False
-                        UnRecoverableSave.Visible = False
-                        'FaultTypeSave.SetActiveView(UnRecoverableView)
-                        ActPanel.Enabled = False
-                        FaultPanel.Enabled = True
-                        RadioIncident.ClearSelection()
-                    ElseIf DefectString = OtherFault Then
-                        RadActC.SetValidation("", "")
-                        FaultPanel.Enabled = True
-                        ActPanel.Enabled = False
-                        FaultClosedLabel.Visible = False
-                        FaultOpenClosed.Visible = False
-                        FaultOpenClosed.SelectedValue = -1
-                        SaveDefectButton.Visible = False
-                        UnRecoverableSave.Visible = True
-                        UnRecoverableSave.Enabled = True
-                        UnRecoverableSave.BackColor = Drawing.Color.Yellow
-                        RadioIncident.ClearSelection()
-                    ElseIf DefectString = "Select" Then
-                        ClearsForm()
-                    Else
-                        ClearsForm()
-                        RaiseError()
+                    'change to make other fault act like unrecoverable fault LA 21/05/20
+                    'change if statement to case
+                    Select Case DefectString
+                        Case RecoverableFault
+                            FaultClosedLabel.Visible = False
+                            FaultOpenClosed.Visible = False
+                            UnRecoverableSave.Visible = False
+                            SaveDefectButton.Visible = True
+                            SaveDefectButton.Enabled = True
+                            SaveDefectButton.BackColor = Drawing.Color.Yellow
+                            FaultPanel.Enabled = True
+                            ActPanel.Enabled = False
+                            RadioIncident.ClearSelection()
+                        Case UnRecoverableFault, OtherFault
+                            FaultClosedLabel.Visible = True
+                            FaultOpenClosed.Visible = True
+                            FaultOpenClosed.ClearSelection()
+                            SaveDefectButton.Visible = False
+                            UnRecoverableSave.Visible = False
+                            'FaultTypeSave.SetActiveView(UnRecoverableView)
+                            ActPanel.Enabled = False
+                            FaultPanel.Enabled = True
+                            RadioIncident.ClearSelection()
+                        Case "Select"
+                            ClearsForm()
+                        Case Else
+                            ClearsForm()
+                            RaiseError()
 
-                    End If
+                    End Select
+                    'If DefectString = RecoverableFault Then
+                    '    'FaultTypeSave.SetActiveView(RecoverableView)
+                    '    FaultClosedLabel.Visible = False
+                    '    FaultOpenClosed.Visible = False
+                    '    UnRecoverableSave.Visible = False
+                    '    SaveDefectButton.Visible = True
+                    '    SaveDefectButton.Enabled = True
+                    '    SaveDefectButton.BackColor = Drawing.Color.Yellow
+                    '    FaultPanel.Enabled = True
+                    '    ActPanel.Enabled = False
+                    '    RadioIncident.ClearSelection()
+                    'ElseIf DefectString = UnRecoverableFault Then
+                    '    FaultClosedLabel.Visible = True
+                    '    FaultOpenClosed.Visible = True
+                    '    FaultOpenClosed.ClearSelection()
+                    '    SaveDefectButton.Visible = False
+                    '    UnRecoverableSave.Visible = False
+                    '    'FaultTypeSave.SetActiveView(UnRecoverableView)
+                    '    ActPanel.Enabled = False
+                    '    FaultPanel.Enabled = True
+                    '    RadioIncident.ClearSelection()
+                    'ElseIf DefectString = OtherFault Then
+                    '    RadActC.SetValidation("", "")
+                    '    FaultPanel.Enabled = True
+                    '    ActPanel.Enabled = False
+                    '    FaultClosedLabel.Visible = False
+                    '    FaultOpenClosed.Visible = False
+                    '    FaultOpenClosed.SelectedValue = -1
+                    '    SaveDefectButton.Visible = False
+                    '    UnRecoverableSave.Visible = True
+                    '    UnRecoverableSave.Enabled = True
+                    '    UnRecoverableSave.BackColor = Drawing.Color.Yellow
+                    '    RadioIncident.ClearSelection()
+                    'ElseIf DefectString = "Select" Then
+                    '    ClearsForm()
+                    'Else
+                    '    ClearsForm()
+                    '    RaiseError()
+
+                    'End If
 
                 End If
                 'FaultPanel.Enabled = True
@@ -538,7 +568,8 @@ Partial Class DefectSavePark
                 'Open equivalent of fault
             ElseIf Selected.Equals(FaultAnswerYes) Then
                 'Write equivalent of radreset
-                wcbutton.Text = "Closing Unrecoverable Fault"
+                'wcbutton.Text = "Closing Unrecoverable Fault"
+                wcbutton.Text = "Closing Fault"
                 Application(actionstate) = "Confirm"
                 wctrl.Visible = True
                 ForceFocus(wctext)

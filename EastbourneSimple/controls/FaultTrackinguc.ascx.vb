@@ -14,6 +14,7 @@ Partial Class controls_FaultTrackinguc
     Const CLOSED As String = "Closed"
     Const NEWFAULT As String = "New"
     Const TECH As String = "Tech"
+    Const OPEN As String = "Open"
     Private ConcessionDescriptionChanged As String
     Private ConcessionActionChanged As String
     Private ConcessionCommentChanged As String
@@ -56,12 +57,13 @@ Partial Class controls_FaultTrackinguc
         Application(ParamApplication) = ConcessObject
         SetupStatusTech(ConcessObject.IncidentID)
         Select Case ConcessObject.PresentFaultState
-            Case NEWFAULT
+            Case NEWFAULT, OPEN
                 SetUpOriginalFault(ConcessObject.IncidentID)
                 MultiView_NewFaultConcessionDisplay.SetActiveView(NewFaultView)
             Case CONCESSION
                 ConcessionHistoryuc1.BindConcessionHistoryGrid(ConcessObject.IncidentID)
                 MultiView_NewFaultConcessionDisplay.SetActiveView(ConcessionHistoryView)
+                FaultOptionList.Items.FindByValue("Open").Enabled = False
         End Select
 
 
@@ -69,11 +71,24 @@ Partial Class controls_FaultTrackinguc
         CCommentPanel.Enabled = False
         CActionPanel.Enabled = False
         CDescriptionPanel.Enabled = False
-        Dim appstate As String
-        appstate = Application("LogOnT1")
-        'BindTrackingGridTech(ConcessObject.IncidentID)
+        'Dim appstate As String
+        'appstate = Application("LogOnT1")
+        BindTrackingGrid(ConcessObject.IncidentID)
 
     End Sub
+    Protected Sub BindTrackingGrid(ByVal IncidentID As String)
+        Dim SqlDataSource1 As New SqlDataSource With {
+            .ID = "SqlDataSource1",
+            .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString,
+            .SelectCommand = "select t.TrackingID, t.trackingcomment, t.AssignedTo,  t.LastUpDatedBy, t.LastUpDatedOn from FaultTracking t where t.incidentID=@incidentID order by t.TrackingID asc"
+        }
+
+        SqlDataSource1.SelectParameters.Add("@incidentID", System.Data.SqlDbType.Int)
+        SqlDataSource1.SelectParameters.Add("incidentID", IncidentID)
+        TrackingGrid.DataSource = SqlDataSource1
+        TrackingGrid.DataBind()
+    End Sub
+
     Protected Sub SetUpOriginalFault(ByVal incidentID As String)
         Dim objOriginalFault As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
         CType(objOriginalFault, ManyFaultGriduc).NewFault = True
@@ -144,6 +159,8 @@ Partial Class controls_FaultTrackinguc
         End If
         'Basically puts new selected value into concessparams and Application
         Application(ParamApplication) = ConcessParamsTrial
+        StatusLabel1.Text = updateFaultStatus
+        AssignedToList.Text = "Unassigned"
 
 
     End Sub
@@ -152,7 +169,7 @@ Partial Class controls_FaultTrackinguc
         If SetReset = "Reset" Then
             ConcessiondescriptionBoxC.SetValidation("", "")
             ConcessionActionBox.SetValidation("", "")
-
+            ConcessionCommentBox.SetValidation("", "")
         Else
             Select Case SetReset
 
@@ -161,8 +178,12 @@ Partial Class controls_FaultTrackinguc
                         If CDescriptionPanel.Enabled = True Then
                             ConcessiondescriptionBoxC.SetValidation("faulttracking", "Please Enter a Concession description")
                         End If
-                        ConcessionActionBox.SetValidation("faulttracking", "Please Enter the Corrective Action")
-                End Select
+                    ConcessionActionBox.SetValidation("faulttracking", "Please Enter the Corrective Action")
+                Case "Open"
+                    If CCommentPanel.Enabled = True Then
+                        ConcessionCommentBox.SetValidation("faulttracking", "Please Enter a Comment")
+                    End If
+            End Select
         End If
     End Sub
 
@@ -269,6 +290,7 @@ Partial Class controls_FaultTrackinguc
                         End If
 
                     Else
+                        'Now modified to deal with state of Open fault
                         TRACKINGID = DavesCode.NewFaultHandling.UpdateTracking(ConcessParamsTrial)
 
                         If TRACKINGID = -1 Then
@@ -277,9 +299,15 @@ Partial Class controls_FaultTrackinguc
                             If ConcessParamsTrial.FutureFaultState = "Closed" Then
                                 Application(faultstate) = False
                                 RaiseEvent UpdateClosedDisplays(Machine)
-
+                                RaiseEvent CloseFaultTracking(Machine)
+                            Else
+                                'reset things?
+                                'InitialiseFaultTracking(ConcessParamsTrial)
+                                StatusLabel1.Text = ConcessParamsTrial.FutureFaultState
+                                ConcessionCommentBox.ResetCommentBox(EMPTYSTRING)
+                                BindTrackingGrid(incidentID)
                             End If
-                            RaiseEvent CloseFaultTracking(Machine)
+                            'RaiseEvent CloseFaultTracking(Machine)
                         End If
 
                     End If

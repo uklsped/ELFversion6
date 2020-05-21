@@ -34,10 +34,10 @@
                             <asp:Label ID="StatusLabel1" runat="server" Text=""></asp:Label>
                         </td>
                         <td>
-                            <asp:Label ID="ProblemStatusLabel" runat="server" Text="New Status"></asp:Label><br />
+                            <asp:Label ID="ProblemStatusLabel" runat="server" Text="Set Fault Status"></asp:Label><br />
                             <asp:DropDownList ID="FaultOptionList" AutoPostBack="True" DataValueField="Value" runat="server">
                                 <asp:ListItem Text="Select" Value="Select"></asp:ListItem>
-                                <%--<asp:ListItem Text="Open" Value="Open"></asp:ListItem>--%>
+                                <asp:ListItem Text="Open" Value="Open"></asp:ListItem>
                                 <asp:ListItem Text="Concession" Value="Concession"></asp:ListItem>
                                 <asp:ListItem Text="Closed" Value="Closed"></asp:ListItem>
                             </asp:DropDownList>
@@ -46,10 +46,10 @@
                         <td>
                             <asp:Label ID="AssignedLabel" runat="server" Text="Assigned To"></asp:Label><br />
                             <asp:DropDownList ID="AssignedToList" runat="server">
-                                <asp:ListItem>Unassigned</asp:ListItem>
-                                <asp:ListItem>Engineering</asp:ListItem>
-                                <asp:ListItem>Physics</asp:ListItem>
-                                <asp:ListItem>Software</asp:ListItem>
+                                <asp:ListItem Text="Unassigned" Value="Unassigned"></asp:ListItem>
+                                <asp:ListItem Text="Engineering" Value="Engineering"></asp:ListItem>
+                                <asp:ListItem Text="Physics" Value="Physics"></asp:ListItem>
+                                <asp:ListItem Text="Software" Value="Software"></asp:ListItem>
                             </asp:DropDownList>
                         </td>
 
@@ -83,13 +83,13 @@
                     </tr>
                     <tr>
                         <td>
-                            <asp:Button ID="SaveAFault" runat="server" Text="Save" Enabled="false" CausesValidation="false" />
+                            <asp:Button ID="LogElf" runat="server" Text="Lock Elf/Switch User" CausesValidation="false" />
                         </td>
                         <td>
                             <asp:Button ID="CancelButton" runat="server" Text="Cancel/Close" CausesValidation="false" />
                         </td>
                         <td>
-                            <asp:Button ID="LogElf" runat="server" Text="Lock Elf/Switch User" CausesValidation="false" />
+                            <asp:Button ID="SaveAFault" runat="server" Text="Save" Enabled="false" CausesValidation="false" />
                         </td>
                     </tr>
                 </table>
@@ -102,6 +102,36 @@
                 <asp:MultiView ID="MultiView_NewFaultConcessionDisplay" runat="server">
                     <asp:View ID="NewFaultView" runat="server">
                         <asp:PlaceHolder ID="PlaceHolderFaults" runat="server">This is where the original fault will display</asp:PlaceHolder>
+                                        <asp:Panel ID="Panel7" runat="server" BorderStyle="Solid" BorderColor="Yellow" Width="945px">
+                    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                        <ContentTemplate>
+                            <asp:GridView ID="TrackingGrid" runat="server" AllowPaging="True"
+    AutoGenerateColumns="False" CellPadding="4" DataKeyNames="TrackingID"
+    EnableViewState="False" ForeColor="#333333" GridLines="None">
+    <RowStyle CssClass="grows" />
+    <%-- BackColor="#F7F6F3" ForeColor="#333333" />--%>
+    <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
+    <Columns>
+        <asp:BoundField DataField="TrackingID" HeaderText="TrackingID"
+            InsertVisible="False" ReadOnly="True" SortExpression="TrackingID" Visible="false" />
+        <asp:BoundField DataField="LastupdatedOn" HeaderText="LastupdatedOn"
+            SortExpression="LastupdatedOn" />
+        <asp:BoundField DataField="TrackingComment" HeaderText="Comment"
+            SortExpression="Comment" />
+        <asp:BoundField DataField="AssignedTo" HeaderText="AssignedTo"
+            SortExpression="AssignedTo" />
+        <asp:BoundField DataField="LastupdatedBy" HeaderText="LastupdatedBy"
+            SortExpression="LastupdatedBy" />
+    </Columns>
+    <EditRowStyle BackColor="#99FF33" />
+    <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
+    <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
+    <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
+    <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
+</asp:GridView>
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
+                </asp:Panel>
                     </asp:View>
                     <asp:View ID="ConcessionHistoryView" runat="server">
                         <asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow" Width="945px">
@@ -113,9 +143,8 @@
         </asp:TableRow>
         <asp:TableRow>
             <asp:TableCell>
-                <%--<asp:Panel ID="Panel6" runat="server" BorderStyle="Solid" BorderColor="Yellow" Width="945px">
-                    <uc4:ConcessionHistoryuc ID="ConcessionHistoryuc1" runat="server" />
-                </asp:Panel>--%>
+
+
             </asp:TableCell>
         </asp:TableRow>
     </asp:Table>
