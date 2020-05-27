@@ -67,19 +67,34 @@ Partial Class controls_NewFaultPopUpuc
         'success = ConcessParamsTrial.CreateObject(IncidentID)
         'success = DavesCode.ConcessionParameters.CreateObject(IncidentID, LinacName)
         'If Not IsPostBack Then
-        ConcessParamsTrial = Application(ParamApplication)
+        If Not Application(ParamApplication) Is Nothing Then
+                ConcessParamsTrial = Application(ParamApplication)
+            Else
+                If NewFaultHandling.CheckForOpenFault(LinacName) Then
+
+                    ConcessParamsTrial.Linac = LinacName
+                    ConcessParamsTrial.IncidentID = NewFaultHandling.ReturnNewIncidentID(LinacName)
+                    Application(ParamApplication) = ConcessParamsTrial
+                Else
+                    RaiseError()
+                End If
+
+            End If
+
+
+
             If Not ConcessParamsTrial Is Nothing Then
-                Application(ParamApplication) = ConcessParamsTrial
+                'Application(ParamApplication) = ConcessParamsTrial
 
                 Dim FaultTracking As controls_FaultTrackinguc = CType(FindControl("FaultTrackinguc1"), controls_FaultTrackinguc)
                 FaultTracking.LinacName = ConcessParamsTrial.Linac
-                FaultTracking.IncidentID = ConcessParamsTrial.IncidentID
-                FaultTracking.InitialiseFaultTracking(ConcessParamsTrial)
+            FaultTracking.IncidentID = ConcessParamsTrial.IncidentID
+            FaultTracking.InitialiseFaultTracking(ConcessParamsTrial)
             AddHandler FaultTrackinguc1.UpdateOpenConcessions, AddressOf Update_OpenConcessions
-            AddHandler FaultTrackinguc1.UpdateClosedDisplays, AddressOf Update_ClosedDisplays
-            AddHandler FaultTracking.CloseFaultTracking, AddressOf CloseTracking
+                AddHandler FaultTrackinguc1.UpdateClosedDisplays, AddressOf Update_ClosedDisplays
+                AddHandler FaultTracking.CloseFaultTracking, AddressOf CloseTracking
 
-            Dim MyString As String
+                Dim MyString As String
                 Dim Tabnumber As String
                 MyString = "ModalPopupextendernf"
                 Tabnumber = ParentName
@@ -94,20 +109,20 @@ Partial Class controls_NewFaultPopUpuc
             Else
                 RaiseError()
             End If
-        ' End If
+        'End If
     End Sub
 
     Protected Sub RaiseError()
         Dim strScript As String = "<script>"
-        strScript += "alert('Problem Updating Fault. Please call Engineer');"
+        strScript += "alert('Problem loading Fault. Please call Engineer');"
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(Label1, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
 
-    Protected Function GetNewIncident() As Short
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        Dim IncidentID As Short = 0
-        IncidentID = NewFaultHandling.ReturnNewIncidentID(LinacName, connectionString)
+    Protected Function GetNewIncident() As String
+        'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        Dim IncidentID As String = String.Empty
+        IncidentID = NewFaultHandling.ReturnNewIncidentID(LinacName)
         Return IncidentID
     End Function
 

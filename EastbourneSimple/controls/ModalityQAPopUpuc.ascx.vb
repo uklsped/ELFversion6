@@ -5,7 +5,7 @@ Partial Class controls_ModalityQAPopUpuc
     Dim modalpopupextenderrf As New ModalPopupExtender
     Public Property ParentControl() As String
     Public Property LinacName() As String
-    Private ConcessParamsTrial As ConcessionParameters = New ConcessionParameters()
+    'Private ConcessParamsTrial As ConcessionParameters = New ConcessionParameters()
 
     Public Event CloseModalityQAPopUpTab(ByVal Linac As String)
 

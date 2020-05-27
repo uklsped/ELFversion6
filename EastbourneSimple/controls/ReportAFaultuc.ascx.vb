@@ -26,6 +26,12 @@ Partial Class controls_ReportAFaultuc
         End Set
     End Property
     Protected Sub Page_Load(sender As Object, e As EventArgs) Handles Me.Load
+        'Dim ThereIsAnOpenFault As Boolean = True
+        'If DavesCode.NewFaultHandling.CheckForOpenFault(LinacName) Then
+        '    ReportFaultButton.Enabled = False
+        'Else
+        '    ReportFaultButton.Enabled = True
+        'End If
         Select Case Me.DynamicControlSelection
         '    Case REPEATFAULTSELECTED
             '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
@@ -51,13 +57,8 @@ Partial Class controls_ReportAFaultuc
     Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
         'To bodge a solution this needs to check if there is an open fault already that hasn't been handled because of a problem.
         'Need to load reportfaultpopupuc here to pass comment box
-        Dim ThereIsAnOpenFault As Boolean = True
-        ThereIsAnOpenFault = DavesCode.NewFaultHandling.CheckForOpenFault(LinacName)
-        If ThereIsAnOpenFault Then
-            RaiseError()
-            'do popup
-        Else
-            Dim CommentControl As controls_CommentBoxuc = Parent.FindControl("CommentBox")
+
+        Dim CommentControl As controls_CommentBoxuc = Parent.FindControl("CommentBox")
             Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
             Dim Comment As String = DaTxtBox.Text
             Application("TabComment") = Comment
@@ -73,7 +74,7 @@ Partial Class controls_ReportAFaultuc
             AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
             ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
             objReportFault.SetUpReportFault()
-        End If
+
     End Sub
 
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)

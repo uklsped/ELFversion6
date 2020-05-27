@@ -16,7 +16,7 @@
     <body>
 
     <form id="form1" runat="server" autocomplete="off">
-<asp:ToolkitScriptManager ID="ToolkitScriptManager1" CombineScripts ="true" EnablePageMethods="true" runat="server" EnablePartialRendering="true"></asp:ToolkitScriptManager>
+<asp:ToolkitScriptManager ID="ToolkitScriptManager1" CombineScripts ="true" EnablePageMethods="true" runat="server" EnablePartialRendering="true" AsyncPostBackTimeout="300"></asp:ToolkitScriptManager>
             
           
     <div >

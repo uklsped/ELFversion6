@@ -360,7 +360,7 @@ Partial Class Repairuc
         '    'http://weblogs.asp.net/aghausman/archive/2009/04/15/how-to-pass-parameters-to-the-dynamically-added-user-control.aspx
 
         CommentBox.BoxChanged = BoxChanged
-
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Select Case Me.DynamicControlSelection
 
             Case NEWFAULTSELECTED
@@ -419,7 +419,7 @@ Partial Class Repairuc
         Else
             CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
         End If
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
         ModalityPlaceholder.Controls.Add(Modalities)
         ModalityDisplayPanel.Visible = True
@@ -444,7 +444,7 @@ Partial Class Repairuc
             Dim reader As SqlDataReader
             Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString1)
-            comm = New SqlCommand("select IncidentID from FaultIDTable where Status in ('New') and linac=@linac", conn)
+            comm = New SqlCommand("select IncidentID from FaultIDTable where Status in ('New', 'Open') and linac=@linac", conn)
             comm.Parameters.AddWithValue("@linac", LinacName)
 
             conn.Open()
@@ -477,6 +477,7 @@ Partial Class Repairuc
                     End If
                 Else
 
+                    Application(ParamApplication) = Nothing
                     SetLeavingButtons()
 
                 End If

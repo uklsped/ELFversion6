@@ -510,6 +510,7 @@ Partial Class DefectSavePark
         FaultParams.ConcessionNumber = ConcessionNumber
         FaultParams.RadAct = RadActComment
         FaultParams.RadioIncident = RadioIncident.SelectedItem.Value
+        FaultParams.Activity = ParentControl
 
     End Sub
 

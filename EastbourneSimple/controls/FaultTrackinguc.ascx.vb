@@ -33,9 +33,9 @@ Partial Class controls_FaultTrackinguc
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
 
         AddHandler WriteDatauc3.UserApproved, AddressOf UserApprovedEvent
-        faultstate = "OpenFault" + LinacName
-        actionstate = "ActionState" + LinacName
-        technicalstate = "techstate" + LinacName
+        'faultstate = "OpenFault" + LinacName
+        'actionstate = "ActionState" + LinacName
+        'technicalstate = "techstate" + LinacName
 
     End Sub
 
@@ -44,6 +44,9 @@ Partial Class controls_FaultTrackinguc
         ConcessionActionChanged = "ConcessionAction" + LinacName
         ConcessionCommentChanged = "ConcessionComment" + LinacName
         ParamApplication = "Params" + LinacName
+        faultstate = "OpenFault" + LinacName
+        actionstate = "ActionState" + LinacName
+        technicalstate = "techstate" + LinacName
         ConcessiondescriptionBoxC.BoxChanged = ConcessionDescriptionChanged
         ConcessionActionBox.BoxChanged = ConcessionActionChanged
         ConcessionCommentBox.BoxChanged = ConcessionCommentChanged
@@ -117,6 +120,8 @@ Partial Class controls_FaultTrackinguc
 
         If ConcessParamsTrial.PresentFaultState = NEWFAULT Then
             CancelButton.Enabled = False
+        ElseIf ConcessParamsTrial.PresentFaultState = OPEN Then
+            CancelButton.Enabled = False
         End If
         'LoadFaultTable(incidentID)
         Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
@@ -130,7 +135,7 @@ Partial Class controls_FaultTrackinguc
         Dim incidentid As String
         ConcessParamsTrial = Application(ParamApplication)
         Dim CDescriptionstring As String = ConcessParamsTrial.ConcessionDescription
-
+        Dim AssignedTo As String = String.Empty
         updateFaultStatus = FaultOptionList.SelectedItem.Value
         incidentid = ConcessParamsTrial.IncidentID
 
@@ -139,6 +144,11 @@ Partial Class controls_FaultTrackinguc
             SaveAFault.BackColor = Drawing.Color.Yellow
             CCommentPanel.Enabled = True
             ConcessParamsTrial.FutureFaultState = updateFaultStatus
+            AssignedTo = AssignedToList.SelectedItem.Text
+            If AssignedTo = "Select" Then
+                AssignedTo = "Unassigned"
+            End If
+            ConcessParamsTrial.AssignedTo = AssignedTo
             If updateFaultStatus = "Concession" Then
 
                 CActionPanel.Enabled = True
@@ -160,7 +170,7 @@ Partial Class controls_FaultTrackinguc
         'Basically puts new selected value into concessparams and Application
         Application(ParamApplication) = ConcessParamsTrial
         StatusLabel1.Text = updateFaultStatus
-        AssignedToList.Text = "Unassigned"
+        'AssignedToList.Text = "Unassigned"
 
 
     End Sub
@@ -238,6 +248,9 @@ Partial Class controls_FaultTrackinguc
     End Sub
 
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
+        faultstate = "OpenFault" + LinacName
+        actionstate = "ActionState" + LinacName
+        technicalstate = "techstate" + LinacName
         Dim TRACKINGID As Integer = 0
         Dim Action As String = Application(actionstate)
         Dim incidentID As String
@@ -305,6 +318,7 @@ Partial Class controls_FaultTrackinguc
                                 'InitialiseFaultTracking(ConcessParamsTrial)
                                 StatusLabel1.Text = ConcessParamsTrial.FutureFaultState
                                 ConcessionCommentBox.ResetCommentBox(EMPTYSTRING)
+                                AssignedToList.SelectedIndex = -1
                                 BindTrackingGrid(incidentID)
                             End If
                             'RaiseEvent CloseFaultTracking(Machine)
@@ -315,6 +329,7 @@ Partial Class controls_FaultTrackinguc
                     RaiseError()
                     RaiseEvent CloseFaultTracking(Machine)
                 End If
+                Application(ParamApplication) = Nothing
             End If
         End If
     End Sub
@@ -354,14 +369,14 @@ Partial Class controls_FaultTrackinguc
         End If
 
 
-        AssignedTo = AssignedToList.SelectedItem.Text
-        If AssignedTo = "Select" Then
-            AssignedTo = "Unassigned"
-        End If
+        'AssignedTo = AssignedToList.SelectedItem.Text
+        'If AssignedTo = "Select" Then
+        '    AssignedTo = "Unassigned"
+        'End If
 
         FaultState = FaultOptionList.SelectedItem.Text
         ConcessParamsTrial.UserInfo = UserInfo
-        ConcessParamsTrial.AssignedTo = AssignedTo
+        'ConcessParamsTrial.AssignedTo = AssignedTo
         ConcessParamsTrial.ConcessionAction = ConcessionAction
         ConcessParamsTrial.FutureFaultState = FaultState
         ConcessParamsTrial.ConcessionComment = ConcessionComment

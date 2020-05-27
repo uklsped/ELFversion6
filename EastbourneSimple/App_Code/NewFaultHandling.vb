@@ -56,6 +56,8 @@ Namespace DavesCode
                     incidentfault.Parameters("@OriginalFaultID").Value = -1
                     incidentfault.Parameters.Add("@RadiationIncident", System.Data.SqlDbType.Bit)
                     incidentfault.Parameters("@RadiationIncident").Value = FaultP.RadioIncident
+                    incidentfault.Parameters.Add("@Activity", System.Data.SqlDbType.NVarChar, 3)
+                    incidentfault.Parameters("@Activity").Value = FaultP.Activity
                     incidentfault.ExecuteNonQuery()
                     incidentfault.Parameters.Clear()
 
@@ -412,6 +414,8 @@ Namespace DavesCode
                     incidentfault.Parameters("@OriginalFaultID").Value = 0
                     incidentfault.Parameters.Add("@RadiationIncident", System.Data.SqlDbType.Bit)
                     incidentfault.Parameters("@RadiationIncident").Value = FaultP.RadioIncident
+                    incidentfault.Parameters.Add("@Activity", System.Data.SqlDbType.NVarChar, 3)
+                    incidentfault.Parameters("@Activity").Value = FaultP.Activity
                     incidentfault.ExecuteNonQuery()
 
                     incidentfault.Parameters.Clear()
@@ -603,6 +607,8 @@ Namespace DavesCode
                 incidentfault.Parameters("@OriginalFaultID").Value = ORIGINALFAULTID
                 incidentfault.Parameters.Add("@RadiationIncident", System.Data.SqlDbType.Bit)
                 incidentfault.Parameters("@RadiationIncident").Value = FaultP.RadioIncident
+                incidentfault.Parameters.Add("@Activity", System.Data.SqlDbType.NVarChar, 3)
+                incidentfault.Parameters("@Activity").Value = FaultP.Activity
                 incidentfault.ExecuteNonQuery()
 
                 incidentfault.Parameters.Clear()
@@ -645,22 +651,47 @@ Namespace DavesCode
             Return IncidentID
         End Function
 
-        Public Shared Function ReturnNewIncidentID(ByVal Linacname As String, ByVal connectionString As String) As Integer
-            Dim IncidentID As Short = 0
-            Dim sql As String = "select IncidentID from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
-            Using conn As New SqlConnection(connectionString)
-                Dim cmd As New SqlCommand(sql, conn)
-                cmd.Parameters.Add("@Linac", SqlDbType.VarChar)
-                cmd.Parameters("@Linac").Value = Linacname
-                Try
-                    conn.Open()
-                    IncidentID = Convert.ToInt32(cmd.ExecuteScalar())
-                Catch ex As Exception
-                    LogError(ex)
-                End Try
-            End Using
+        Public Shared Function ReturnNewIncidentID(ByVal Linacname As String) As String
+            Dim IncidentID As Integer = 0
+            'Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            '"connectionstring").ConnectionString
+            'Dim sql As String = "select IncidentID from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New', 'Open')) order by IncidentID desc"
+            'Using conn As New SqlConnection(connectionString)
+            '    Dim cmd As New SqlCommand(sql, conn)
+            '    cmd.Parameters.Add("@Linac", SqlDbType.VarChar)
+            '    cmd.Parameters("@Linac").Value = Linacname
+            '    Try
+            '        conn.Open()
+            '        IncidentID = Convert.ToInt64(cmd.ExecuteScalar())
+            '    Catch ex As Exception
+            '        LogError(ex)
+            '    End Try
+            'End Using
+
+            'Return IncidentID
+
+            Dim conn As SqlConnection
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            "connectionstring").ConnectionString
+            Dim existingfault As SqlCommand
+            Dim LinacStatusID As String = ""
+            Dim reader As SqlDataReader
+            conn = New SqlConnection(connectionString)
+
+            existingfault = New SqlCommand("SELECT TOP(1) [IncidentID] FROM [FaultIDTable] where Linac = @linac and ReportClosed is Null and statusid is not NULL ORDER BY [IncidentID] DESC", conn)
+            existingfault.Parameters.AddWithValue("@linac", Linacname)
+            conn.Open()
+            reader = existingfault.ExecuteReader()
+            If reader.HasRows() Then
+                'Have to now actually read the rows
+                reader.Read()
+                IncidentID = reader.Item("IncidentID").ToString()
+
+                'Application(appstate) = 1
+            End If
 
             Return IncidentID
+
         End Function
 
         Public Shared Function CheckForOpenFault(ByVal machinename As String) As Boolean
@@ -686,6 +717,28 @@ Namespace DavesCode
             End If
 
             Return openfault
+        End Function
+
+        Public Shared Function ReturnFaultActivity(ByVal machinename As String) As String
+            Dim faultActivity As String = String.Empty
+            Dim conn As SqlConnection
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            "connectionstring").ConnectionString
+            Dim existingfault As SqlCommand
+            Dim reader As SqlDataReader
+            conn = New SqlConnection(connectionString)
+
+            existingfault = New SqlCommand("SELECT TOP(1) [Activity] FROM [ReportFault] where Linac = @linac ORDER BY [Activity] DESC", conn)
+            existingfault.Parameters.AddWithValue("@linac", machinename)
+            conn.Open()
+            reader = existingfault.ExecuteReader()
+            If reader.HasRows() Then
+                'Have to now actually read the rows
+                reader.Read()
+                faultActivity = reader.Item("Activity").ToString()
+            End If
+
+            Return faultActivity
         End Function
         Public Shared Sub LogError(ex As Exception)
             Dim message As String = String.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"))

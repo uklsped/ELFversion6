@@ -43,7 +43,7 @@ Partial Class controls_ReportFaultPopUpuc
     End Sub
 
     Public Sub SetUpReportFault()
-        ConcessParamsTrial = Application(ParamApplication)
+        'ConcessParamsTrial = Application(ParamApplication)
 
         If Not LinacName Like "T#" Then
             Dim objDefect As DefectSave = Page.LoadControl("DefectSave.ascx")

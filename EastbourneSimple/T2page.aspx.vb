@@ -226,21 +226,26 @@ Partial Public Class T2page
                     Application(RecoverFault) = True
 
                     Application(appstate) = 0
-                    ParentControl = Application(FaultOriginTab)
+                    If Not Application(FaultOriginTab) Is Nothing Then
+                        ParentControl = Application(FaultOriginTab)
+                    Else
+                        ParentControl = DavesCode.NewFaultHandling.ReturnFaultActivity(EquipmentID)
+                    End If
+
 
                     Application(faultstate) = True
-                    'CreateNewFault(UserInfo, "New", connectionString)
+                        'CreateNewFault(UserInfo, "New", connectionString)
 
-                    Dim returnstring As String = EquipmentID + "page.aspx?pageref=Fault&Tabindex="
-                    Response.Redirect(returnstring & ParentControl & "&comment=" & "")
+                        Dim returnstring As String = EquipmentID + "page.aspx?pageref=Fault&Tabindex="
+                        Response.Redirect(returnstring & ParentControl & "&comment=" & "")
+                    End If
+                    '    If Request.QueryString("OpenFault") Is Nothing Then
+                    '        'Dim HandleFault As Boolean = True
+                    '        'HandleFault = Request.QueryString("OpenFault").ToString
+                    '        'If HandleFault Then
+                    '        WriteRestore()
+                    '        'End If
                 End If
-                '    If Request.QueryString("OpenFault") Is Nothing Then
-                '        'Dim HandleFault As Boolean = True
-                '        'HandleFault = Request.QueryString("OpenFault").ToString
-                '        'If HandleFault Then
-                '        WriteRestore()
-                '        'End If
-            End If
 
 
             'added 16/11/17 to check for end of day
@@ -1366,7 +1371,12 @@ Partial Public Class T2page
                     Application(appstate) = 0
 
                 Else
-                    ParentControl = Application(FaultOriginTab)
+                    If Not Application(FaultOriginTab) Is Nothing Then
+                        ParentControl = Application(FaultOriginTab)
+                    Else
+                        ParentControl = DavesCode.NewFaultHandling.ReturnFaultActivity(EquipmentID)
+                    End If
+
                     returnstring = EquipmentID + "page.aspx?pageref=Fault&OpenFault=False&Tabindex=" + Convert.ToString(activetab)
                     Application(appstate) = 0
                 End If

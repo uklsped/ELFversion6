@@ -2726,7 +2726,7 @@ Namespace DavesCode
                 StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
             Else
                 'This doesn't work it just gets penultimate record irrespective of linac
-                'StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
+                StatusNow = New SqlCommand("SELECT state FROM [LinacStatus] where stateID = (Select (max(stateID)-1) as penultimaterecord from [LinacStatus] where linac=@linac)", conn)
                 'from http://stackoverflow.com/questions/8198962/taking-the-second-last-row-with-only-one-select-in-sql-server
                 StatusNow = New SqlCommand("SELECT TOP 1 * From (select Top 2 * from (select * from [LinacStatus] where linac=@linac) as a ORDER BY a.stateid DESC)  as x ORDER BY x.stateid", conn)
 
@@ -2743,7 +2743,7 @@ Namespace DavesCode
             End If
             reader.Close()
             conn.Close()
-
+            'nowstatus = "Fault"
             Return nowstatus
         End Function
 
