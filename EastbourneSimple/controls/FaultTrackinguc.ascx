@@ -45,7 +45,7 @@
 
                         <td>
                             <asp:Label ID="AssignedLabel" runat="server" Text="Assigned To"></asp:Label><br />
-                            <asp:DropDownList ID="AssignedToList" runat="server">
+                            <asp:DropDownList ID="AssignedToList" AutoPostBack="True" DataValueField="Value" runat="server">
                                 <asp:ListItem Text="Unassigned" Value="Unassigned"></asp:ListItem>
                                 <asp:ListItem Text="Engineering" Value="Engineering"></asp:ListItem>
                                 <asp:ListItem Text="Physics" Value="Physics"></asp:ListItem>
@@ -101,7 +101,7 @@
             <asp:TableCell>
                 <asp:MultiView ID="MultiView_NewFaultConcessionDisplay" runat="server">
                     <asp:View ID="NewFaultView" runat="server">
-                        <asp:PlaceHolder ID="PlaceHolderFaults" runat="server">This is where the original fault will display</asp:PlaceHolder>
+                        <asp:PlaceHolder ID="PlaceHolderFaults" runat="server"></asp:PlaceHolder>
                                         <asp:Panel ID="Panel7" runat="server" BorderStyle="Solid" BorderColor="Yellow" Width="945px">
                     <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                         <ContentTemplate>

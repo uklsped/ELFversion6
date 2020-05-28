@@ -53,6 +53,23 @@ Partial Public Class T2page
     Private RecoverFault As String = "RecoverFaultT2"
     'Public Event DayEnded(ByVal Tab As String, ByVal UserName As String)
 
+
+
+    Protected Overrides Function OnBubbleEvent(sender As Object, e As EventArgs) As Boolean
+
+        If sender.ID Is "FaultTrackinguc1" Then
+            Dim c As CommandEventArgs = TryCast(e, CommandEventArgs)
+            If c IsNot Nothing Then
+                '           Response.Write(sender.GetType().Name & " was " & c.CommandName)
+                '      Else
+                '           Response.Write(sender.GetType().Name & " raised an event, with " & e.GetType().Name & " args)
+            End If
+            Return True ' Cancel the bubbling, so it doesn't go up any further in the hierarchy
+        End If
+        Return False ' Not handled
+   End Function
+
+
     Protected Sub Update_ReturnButtons()
 
         'If EquipmentID = MachineName Then
@@ -219,10 +236,10 @@ Partial Public Class T2page
         If Not IsPostBack Then
             DavesCode.Reuse.ListParameters(EquipmentID, 0)
             If Request.QueryString("pageref") Is Nothing Then
-                'tabref = Request.QueryString("tabref").ToString
-                Dim ThereIsAFaultOpen As Boolean = DavesCode.NewFaultHandling.CheckForOpenFault(EquipmentID)
+    'tabref = Request.QueryString("tabref").ToString
+    Dim ThereIsAFaultOpen As Boolean = DavesCode.NewFaultHandling.CheckForOpenFault(EquipmentID)
 
-                If ThereIsAFaultOpen Then
+    If ThereIsAFaultOpen Then
                     Application(RecoverFault) = True
 
                     Application(appstate) = 0
@@ -239,36 +256,36 @@ Partial Public Class T2page
                         Dim returnstring As String = EquipmentID + "page.aspx?pageref=Fault&Tabindex="
                         Response.Redirect(returnstring & ParentControl & "&comment=" & "")
                     End If
-                    '    If Request.QueryString("OpenFault") Is Nothing Then
-                    '        'Dim HandleFault As Boolean = True
-                    '        'HandleFault = Request.QueryString("OpenFault").ToString
-                    '        'If HandleFault Then
-                    '        WriteRestore()
-                    '        'End If
-                End If
+    '    If Request.QueryString("OpenFault") Is Nothing Then
+    '        'Dim HandleFault As Boolean = True
+    '        'HandleFault = Request.QueryString("OpenFault").ToString
+    '        'If HandleFault Then
+    '        WriteRestore()
+    '        'End If
+    End If
 
 
-            'added 16/11/17 to check for end of day
-            If Not Request.QueryString("loadup") Is Nothing Then
+    'added 16/11/17 to check for end of day
+    If Not Request.QueryString("loadup") Is Nothing Then
 
                 ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
 
                 Select Case ResetDay
-                    Case "Ignore"
+    Case "Ignore"
                         'Ignore
-                    Case "EndDay"
+    Case "EndDay"
                         EndofDayElf(ResetDay)
                     Case "Error"
-                        'Do nothing
-                End Select
-            End If
-            'comment out get ip address as no longer used
-            'Dim userIP As String = DavesCode.Reuse.GetIPAddress()
-            'Label5.Text = userIP
-            'Label5.Text = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
-            ' 20 April handle direct open to repair page
+    'Do nothing
+    End Select
+    End If
+    'comment out get ip address as no longer used
+    'Dim userIP As String = DavesCode.Reuse.GetIPAddress()
+    'Label5.Text = userIP
+    'Label5.Text = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
+    ' 20 April handle direct open to repair page
 
-            If Not Request.QueryString("recovered") Is Nothing Then
+    If Not Request.QueryString("recovered") Is Nothing Then
                 recover = Request.QueryString("recovered").ToString
             End If
             TabPanel0.Enabled = True
@@ -276,7 +293,7 @@ Partial Public Class T2page
             'This is to check if request is coming from tab that doesn't need new sign in and automatically launches tab. Probably incorporate in stuff above
             tabref = Nothing
             Dim tabpicked As String = Nothing
-            If Not Request.QueryString("tabref") Is Nothing Then
+    If Not Request.QueryString("tabref") Is Nothing Then
                 tabref = Request.QueryString("tabref").ToString
                 If tabref = 0 Then
                     tabpicked = Nothing
@@ -284,7 +301,7 @@ Partial Public Class T2page
                     tcl.ActiveTabIndex = tabref
                     tabpicked = tabref
                 End If
-            ElseIf Not Request.QueryString("tabclicked") Is Nothing Then
+    ElseIf Not Request.QueryString("tabclicked") Is Nothing Then
                 tabpicked = Request.QueryString("tabclicked").ToString
                 tcl.ActiveTabIndex = tabpicked
                 If tabpicked = 0 Then
@@ -293,10 +310,10 @@ Partial Public Class T2page
                     'tabpicked = CType(Session.Item("ActiveTabIdx"), Integer)
                     'Session.Item("ActiveTabIdx") = tcl.ActiveTabIndex
                 End If
-            End If
-            If Not tabpicked Is Nothing Then
-                Select Case tabpicked
-                    Case 1
+    End If
+    If Not tabpicked Is Nothing Then
+    Select Case tabpicked
+    Case 1
                         TabPanel2.Enabled = False
                         TabPanel3.Enabled = False
                         TabPanel4.Enabled = "false"
@@ -363,8 +380,8 @@ Partial Public Class T2page
                 End Select
                 LaunchTab()
             Else
-                Select Case lastState
-                    Case "Linac Unauthorised"
+    Select Case lastState
+    Case "Linac Unauthorised"
                         TabPanel1.Enabled = "true"
                         TabPanel2.Enabled = "false"
                         TabPanel3.Enabled = "false"
@@ -415,7 +432,7 @@ Partial Public Class T2page
                             TabPanel8.Enabled = "false"
                         End If
 
-                    Case "Fault"
+    Case "Fault"
                         TabPanel1.Enabled = "false"
                         TabPanel2.Enabled = "false"
                         TabPanel3.Enabled = "false"
@@ -428,20 +445,20 @@ Partial Public Class T2page
                         If Not Request.QueryString("Tabindex") Is Nothing Then
                             tabIndex = Request.QueryString("Tabindex").ToString
                         End If
-                        Select Case tabIndex
-                            Case 1, 4, 5, 6, 7
+    Select Case tabIndex
+    Case 1, 4, 5, 6, 7
                                 LaunchTab()
                             Case 3
-                                If Application(RecoverFault) Then
+    If Application(RecoverFault) Then
                                     LaunchTab()
                                 End If
-                            Case 0 ' Can't record a fault from Tab 0 now so this is redundant
-                                'If Application(appstate) = 1 Then
-                                'LaunchTab()
-                                'End If
-                        End Select
+    Case 0 ' Can't record a fault from Tab 0 now so this is redundant
+    'If Application(appstate) = 1 Then
+    'LaunchTab()
+    'End If
+    End Select
 
-                    Case "Suspended"
+    Case "Suspended"
                         TabPanel1.Enabled = "false"
                         TabPanel2.Enabled = "false"
                         TabPanel3.Enabled = "true"
@@ -454,11 +471,11 @@ Partial Public Class T2page
 
                     Case Else
 
-                End Select
-            End If
+    End Select
+    End If
 
 
-        End If
+    End If
 
     End Sub
 
@@ -1269,17 +1286,17 @@ Partial Public Class T2page
 
                 conn = New SqlConnection(connectionString)
 
-                    conActivity = New SqlCommand("SELECT state, userreason FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+                conActivity = New SqlCommand("SELECT state, userreason FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
 
-                    conActivity.Parameters.AddWithValue("@linac", EquipmentID)
-                    conn.Open()
-                    reader = conActivity.ExecuteReader()
+                conActivity.Parameters.AddWithValue("@linac", EquipmentID)
+                conn.Open()
+                reader = conActivity.ExecuteReader()
 
-                    If reader.Read() Then
-                        Status = reader.Item("State")
-                        Activity = reader.Item("userreason")
-                    End If
-                    reader.Close()
+                If reader.Read() Then
+                    Status = reader.Item("State")
+                    Activity = reader.Item("userreason")
+                End If
+                reader.Close()
                 conn.Close()
                 If Not breakdown Then
                     activetab = Activity

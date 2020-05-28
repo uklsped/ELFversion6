@@ -740,6 +740,7 @@ Namespace DavesCode
 
             Return faultActivity
         End Function
+
         Public Shared Sub LogError(ex As Exception)
             Dim message As String = String.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"))
             message += Environment.NewLine

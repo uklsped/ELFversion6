@@ -145,9 +145,7 @@ Partial Class controls_FaultTrackinguc
             CCommentPanel.Enabled = True
             ConcessParamsTrial.FutureFaultState = updateFaultStatus
             AssignedTo = AssignedToList.SelectedItem.Text
-            If AssignedTo = "Select" Then
-                AssignedTo = "Unassigned"
-            End If
+
             ConcessParamsTrial.AssignedTo = AssignedTo
             If updateFaultStatus = "Concession" Then
 
@@ -173,6 +171,14 @@ Partial Class controls_FaultTrackinguc
         'AssignedToList.Text = "Unassigned"
 
 
+    End Sub
+
+    Protected Sub AssignedToList_SelectedIndexChanged(ByVal sender As Object, ByVal e As EventArgs) Handles AssignedToList.SelectedIndexChanged
+        ConcessParamsTrial = Application(ParamApplication)
+
+        Dim AssignedTo As String = String.Empty
+        AssignedTo = AssignedToList.SelectedItem.Text
+        ConcessParamsTrial.AssignedTo = AssignedTo
     End Sub
 
     Protected Sub SetValidationControls(ByVal SetReset As String)
@@ -290,6 +296,8 @@ Partial Class controls_FaultTrackinguc
                                 RaiseError()
                             Else
                                 Application(faultstate) = False
+                                Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {ReturnState()})
+                                UpdateState(Machine, Userinfo)
                                 RaiseEvent UpdateOpenConcessions(Machine)
                                 RaiseEvent CloseFaultTracking(Machine)
                             End If
@@ -311,6 +319,10 @@ Partial Class controls_FaultTrackinguc
                         Else
                             If ConcessParamsTrial.FutureFaultState = "Closed" Then
                                 Application(faultstate) = False
+                                'introduce new set machine state so display is reset to previous state
+                                'need to know what linac state was when fault was raised too. set lock to true so activity is not stopped
+                                Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {ReturnState()})
+                                UpdateState(Machine, Userinfo)
                                 RaiseEvent UpdateClosedDisplays(Machine)
                                 RaiseEvent CloseFaultTracking(Machine)
                             Else
@@ -320,6 +332,7 @@ Partial Class controls_FaultTrackinguc
                                 ConcessionCommentBox.ResetCommentBox(EMPTYSTRING)
                                 AssignedToList.SelectedIndex = -1
                                 BindTrackingGrid(incidentID)
+                                'RaiseBubbleEvent(Me, New CommandEventArgs("Clicked", Nothing))
                             End If
                             'RaiseEvent CloseFaultTracking(Machine)
                         End If
@@ -332,6 +345,71 @@ Partial Class controls_FaultTrackinguc
                 Application(ParamApplication) = Nothing
             End If
         End If
+    End Sub
+
+    Protected Function ReturnState() As String
+        Dim SuspValue As String
+        Dim Output As String
+        Const SUSPENDED As String = "Suspended"
+        Const UNAUTHORISED As String = "Linac Unauthorised"
+        SuspValue = "Suspended" + LinacName
+
+        If (Not HttpContext.Current.Application(SuspValue) Is Nothing) Then
+            Output = SUSPENDED
+        Else
+            Output = UNAUTHORISED
+        End If
+        Return Output
+    End Function
+
+    Protected Sub UpdateState(ByVal linac As String, ByVal closingName As String)
+
+        Dim time As DateTime
+        time = Now()
+        Const REASON As Integer = 99
+        Dim LinacStatusID As Integer
+        Dim usergroupselected As Integer = DavesCode.Reuse.GetRole(closingName)
+        Dim conn As SqlConnection
+
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        Dim Machinestatus As SqlCommand
+
+        conn = New SqlConnection(connectionString)
+
+
+        Machinestatus = New SqlCommand("INSERT INTO LinacStatus (state, DateTime, usergroup,userreason,linac, UserName ) " &
+                                    "VALUES (@state, @Datetime, @usergroup, @userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
+        Machinestatus.Parameters.Add("@state", System.Data.SqlDbType.NVarChar, 50)
+        Machinestatus.Parameters("@state").Value = ReturnState()
+        Machinestatus.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
+        Machinestatus.Parameters("@DateTime").Value = time
+        Machinestatus.Parameters.Add("@usergroup", System.Data.SqlDbType.Int)
+        Machinestatus.Parameters("@usergroup").Value = usergroupselected
+        Machinestatus.Parameters.Add("@userreason", System.Data.SqlDbType.Int)
+        Machinestatus.Parameters("@userreason").Value = REASON
+        Machinestatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+        Machinestatus.Parameters("@linac").Value = LinacName
+        Machinestatus.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 50)
+        Machinestatus.Parameters("@UserName").Value = closingName
+
+
+        Try
+            'To get the identity of the record just inserted from
+            'http://www.aspsnippets.com/Articles/Return-Identity-Auto-Increment-Column-value-after-record-insert-in-SQL-Server-Database-using-ADONet-with-C-and-VBNet.aspx
+            conn.Open()
+            'commstatus.ExecuteNonQuery()
+
+            Dim obj As Object = Machinestatus.ExecuteScalar()
+            'Dim LinacStatusIDs As String = obj.ToString()
+            LinacStatusID = CInt(obj)
+            conn.Close()
+            'This creates in the Activity table the entry for the start of an activity so long as it is not as a result of switching the user.
+
+        Catch ex As Exception
+            DavesCode.NewFaultHandling.LogError(ex)
+        Finally
+            conn.Close()
+        End Try
     End Sub
 
     Protected Sub RaiseError()

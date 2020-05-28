@@ -81,17 +81,19 @@ Partial Class DefectSavePark
             wctrl.Visible = False
             If Action = "Confirm" Then
                 Result = NewWriteRadReset(Userinfo, ConcessionNumber)
+                'if there is a problem with result then when the Closereportfaultpopup event is raised it will pop up an error box.
                 If Result Then
-
+                    ClearsForm()
+                    RaiseEvent CloseReportFaultPopUp(LinacName, Result)
                     RaiseEvent UpdateViewOpenFaults(LinacName)
                 End If
             Else
                 Result = True
-                'Defect.SelectedIndex = -1
+                'This ensures that the pop up always closes successfully if the save is cancelled
 
             End If
-            ClearsForm()
-            RaiseEvent CloseReportFaultPopUp(LinacName, Result)
+            'ClearsForm()
+            'RaiseEvent CloseReportFaultPopUp(LinacName, Result)
             'Else
             'RaiseError()
 
