@@ -485,7 +485,7 @@ Namespace DavesCode
                             incidentfault.Parameters.Add("@Status", Data.SqlDbType.NVarChar, 50)
                             incidentfault.Parameters("@Status").Value = "Closed"
                             incidentfault.Parameters.Add("@LastupdatedBy", System.Data.SqlDbType.NVarChar, 50)
-                            incidentfault.Parameters("@LastupdatedBy").Value = FaultP.DateInserted
+                            incidentfault.Parameters("@LastupdatedBy").Value = FaultP.UserInfo
                             incidentfault.Parameters.Add("@Lastupdatedon", System.Data.SqlDbType.DateTime)
                             incidentfault.Parameters("@Lastupdatedon").Value = time
                             incidentfault.Parameters.Add("@linacName", System.Data.SqlDbType.NVarChar, 10)
