@@ -202,10 +202,14 @@ Partial Class ClinicalUserControl
         Dim username As String = Userinfo
         'Dim linacstatusid As String = HiddenFieldLinacState.Value
         Dim Result As Boolean = False
+        Dim EndofDay As Boolean = False
 
         If tabused = CLINICAL Or tabused = "Recover" Then
             Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
-            Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams)
+            If Action = "EndofDay" Then
+                EndofDay = True
+            End If
+            Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, username, False, FaultParams, EndofDay)
             If Result Then
                 If Action = "Confirm" Then
                     Dim activity As Integer = 7 'This will always be log off?
@@ -226,6 +230,16 @@ Partial Class ClinicalUserControl
                     Application(LinacFlag) = "Suspended"
                     Response.Redirect(machinelabel)
                     DynamicControlSelection = String.Empty
+                Else
+                    Application(LinacFlag) = "Linac Unauthorised"
+                    Application(suspstate) = 0
+                    Application(appstate) = 0
+                    Application(FaultOriginTab) = Nothing
+                    Application(clinicalstate) = Nothing
+                    Application(RunUpDone) = 0
+                    Application(treatmentstate) = "Yes"
+                    Application(tabstate) = Nothing
+                    Response.Redirect(machinelabel)
                 End If
             Else
                 RaiseLogOffError()
@@ -816,4 +830,19 @@ Partial Class ClinicalUserControl
 
     'End Sub
 
+    Protected Sub EndofDayButton_Click(sender As Object, e As EventArgs) Handles EndofDayButton.Click
+
+        Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc2"), WriteDatauc)
+        Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+        Dim wclabel As Label = CType(wctrl.FindControl("WarningLabel"), Label)
+        Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+
+        Application(actionstate) = "EndofDay"
+
+        wclabel.Text = "Are you sure? This is the End of Day"
+        wcbutton.Text = "End of Day"
+        WriteDatauc2.Visible = True
+        ForceFocus(wctext)
+
+    End Sub
 End Class

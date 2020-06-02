@@ -3,12 +3,12 @@ Imports System.Data.SqlClient
 Imports System.Transactions
 Namespace DavesCode
     Public Class NewCommitClinical
-        Public Shared Function CommitClinical(ByVal LinacName As String, ByVal LogOffName As String, ByVal Fault As Boolean, ByVal FaultParams As DavesCode.FaultParameters) As Boolean
+        Public Shared Function CommitClinical(ByVal LinacName As String, ByVal LogOffName As String, ByVal Fault As Boolean, ByVal FaultParams As DavesCode.FaultParameters, ByVal EndofDay As Boolean) As Boolean
             Dim Successful As Boolean = False
             Try
                 Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                 Using myscope As TransactionScope = New TransactionScope()
-                    CommitClinicalNew(LinacName, LogOffName, Fault, connectionString)
+                    CommitClinicalNew(LinacName, LogOffName, Fault, connectionString, EndofDay)
                     If Fault Then
                         NewFaultHandling.InsertMajorFault(FaultParams, connectionString)
                     End If
@@ -21,7 +21,7 @@ Namespace DavesCode
             Return Successful
 
         End Function
-        Shared Function CommitClinicalNew(ByVal LinacName As String, ByVal LogOutName As String, ByVal Fault As Boolean, ByVal connectionString As String) As String
+        Shared Function CommitClinicalNew(ByVal LinacName As String, ByVal LogOutName As String, ByVal Fault As Boolean, ByVal connectionString As String, ByVal EndofDay As String) As String
             Dim LinacStatusID As Integer
             Dim logInStatusID As Integer
             Dim time As DateTime
@@ -105,7 +105,10 @@ Namespace DavesCode
                 Else
                     LinacStatusID = DavesCode.Reuse.SetStatusNew(LogOutName, "Suspended", 5, 7, LinacName, 3, connectionString)
                 End If
+                If EndofDay Then
+                    LinacStatusID = DavesCode.Reuse.SetStatusNew(LogOutName, "Linac Unauthorised", 5, 102, LinacName, 3, connectionString)
 
+                End If
             End If
             'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
             'This writes the clinicalstatus table

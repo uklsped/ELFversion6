@@ -43,7 +43,7 @@
                 </td>
             </tr>
             <tr style="vertical-align: top">
-                <td colspan="3">
+                <td colspan="4">
                     <table>
                         <tr>
                             <td>
@@ -55,6 +55,10 @@
                             <td>
                                 <asp:Button ID="LogOffButton" runat="server" Text="Log Off" Height="150px"
                                     CausesValidation="false" />
+                            </td>
+                            <td>
+                                <asp:Button ID="EndofDayButton" runat="server" Text="End of Day" Height="150px"
+                                    CausesValidation="false" BackColor="#FF3300" ForeColor="White" />
                             </td>
                             <td>
                                 <asp:UpdatePanel ID="UpdatePanel1" runat="server">

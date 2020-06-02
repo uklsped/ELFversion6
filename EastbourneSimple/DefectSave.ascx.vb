@@ -539,7 +539,7 @@ Partial Class DefectSave
                         Result = DavesCode.NewPreClinRunup.CommitPreClin(LinacName, UserInfo, ParentControlComment, iView, XVI, Valid, True, FaultParams)
 
                     Case 3
-                        Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, UserInfo, True, FaultParams)
+                        Result = DavesCode.NewCommitClinical.CommitClinical(LinacName, UserInfo, True, FaultParams, False)
                         Application(suspstate) = 1
 
                     Case 4, 5, 6, 8
