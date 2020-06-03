@@ -550,8 +550,10 @@ Partial Class ClinicalUserControl
         'WriteClinicalTable()
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc2"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
+        Dim wclabel As Label = CType(wctrl.FindControl("WarningLabel"), Label)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         wcbutton.Text = "Log off Linac"
+        wclabel.Text = String.Empty
         Application(actionstate) = "Confirm"
         WriteDatauc2.Visible = True
         ForceFocus(wctext)

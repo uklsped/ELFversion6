@@ -65,6 +65,7 @@ Partial Class controls_FaultTrackinguc
             Case NEWFAULT, OPEN
                 SetUpOriginalFault(ConcessObject.IncidentID)
                 MultiView_NewFaultConcessionDisplay.SetActiveView(NewFaultView)
+
             Case CONCESSION
                 ConcessionHistoryuc1.BindConcessionHistoryGrid(ConcessObject.IncidentID)
                 MultiView_NewFaultConcessionDisplay.SetActiveView(ConcessionHistoryView)
@@ -99,10 +100,9 @@ Partial Class controls_FaultTrackinguc
         Dim objOriginalFault As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
 
         CType(objOriginalFault, ManyFaultGriduc).NewFault = True
-            'CType(objOriginalFault, ManyFaultGriduc).newfault = True
-            CType(objOriginalFault, ManyFaultGriduc).IncidentID = incidentID
-            'to accomodate Tomo now need to pass equipment name?
-            CType(objOriginalFault, ManyFaultGriduc).LinacName = LinacName
+        CType(objOriginalFault, ManyFaultGriduc).IncidentID = incidentID
+        'to accomodate Tomo now need to pass equipment name?
+        CType(objOriginalFault, ManyFaultGriduc).LinacName = LinacName
             PlaceHolderFaults.Controls.Add(objOriginalFault)
 
 
@@ -169,10 +169,11 @@ Partial Class controls_FaultTrackinguc
             CCommentPanel.Enabled = False
             SaveAFault.Enabled = False
             SaveAFault.BackColor = Drawing.Color.LightGray
+            AssignedToList.SelectedIndex = -1
         End If
         'Basically puts new selected value into concessparams and Application
         Application(ParamApplication) = ConcessParamsTrial
-        StatusLabel1.Text = updateFaultStatus
+        'StatusLabel1.Text = updateFaultStatus
         'AssignedToList.Text = "Unassigned"
 
 
@@ -315,13 +316,14 @@ Partial Class controls_FaultTrackinguc
                                 RaiseEvent CloseFaultTracking(Machine)
                             End If
                         End If
-
+                        Application(ParamApplication) = Nothing
                     Else
                         'Now modified to deal with state of Open fault
                         TRACKINGID = DavesCode.NewFaultHandling.UpdateTracking(ConcessParamsTrial)
 
                         If TRACKINGID = -1 Then
                             RaiseError()
+                            Application(ParamApplication) = Nothing
                         Else
                             If ConcessParamsTrial.FutureFaultState = "Closed" Then
                                 Application(faultstate) = False
@@ -331,16 +333,17 @@ Partial Class controls_FaultTrackinguc
                                 UpdateState(Machine, Userinfo)
                                 RaiseEvent UpdateClosedDisplays(Machine)
                                 RaiseEvent CloseFaultTracking(Machine)
+                                Application(ParamApplication) = Nothing
                             Else
                                 'reset things?
-                                'InitialiseFaultTracking(ConcessParamsTrial)
+
                                 StatusLabel1.Text = ConcessParamsTrial.FutureFaultState
                                 ConcessionCommentBox.ResetCommentBox(EMPTYSTRING)
                                 AssignedToList.SelectedIndex = -1
                                 BindTrackingGrid(incidentID)
-                                'RaiseBubbleEvent(Me, New CommandEventArgs("Clicked", Nothing))
+
                             End If
-                            'RaiseEvent CloseFaultTracking(Machine)
+
                         End If
 
                     End If
@@ -348,7 +351,7 @@ Partial Class controls_FaultTrackinguc
                     RaiseError()
                     RaiseEvent CloseFaultTracking(Machine)
                 End If
-                Application(ParamApplication) = Nothing
+
             End If
         End If
     End Sub
@@ -483,6 +486,8 @@ Partial Class controls_FaultTrackinguc
         ConcessParamsTrial = Application(ParamApplication)
         ConcessionCommentBox.ResetCommentBox(EMPTYSTRING)
         ConcessParamsTrial.ConcessionComment = EMPTYSTRING
+
+
         Application(ParamApplication) = ConcessParamsTrial
 
         ConcessionHistoryuc1.BindConcessionHistoryGrid(ConcessParamsTrial.IncidentID)
