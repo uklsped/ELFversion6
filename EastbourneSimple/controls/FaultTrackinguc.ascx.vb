@@ -541,4 +541,13 @@ Partial Class controls_FaultTrackinguc
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(LogElf, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
+
+    Protected Sub TrackingGrid_PageIndexChanging(ByVal sender As Object, ByVal e As GridViewPageEventArgs) Handles TrackingGrid.PageIndexChanging
+
+        Dim IncidentID As String
+        IncidentID = TrackingGrid.DataKeys(0).Value.ToString
+        TrackingGrid.PageIndex = e.NewPageIndex
+        BindTrackingGrid(IncidentID)
+
+    End Sub
 End Class
