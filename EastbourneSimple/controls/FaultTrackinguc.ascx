@@ -45,7 +45,7 @@
 
                         <td>
                             <asp:Label ID="AssignedLabel" runat="server" Text="Assigned To"></asp:Label><br />
-                            <asp:DropDownList ID="AssignedToList" AutoPostBack="True" DataValueField="Value" runat="server">
+                            <asp:DropDownList ID="AssignedToList" AutoPostBack="False" DataValueField="Value" runat="server">
                                 <asp:ListItem Text="Unassigned" Value="Unassigned"></asp:ListItem>
                                 <asp:ListItem Text="Engineering" Value="Engineering"></asp:ListItem>
                                 <asp:ListItem Text="Physics" Value="Physics"></asp:ListItem>

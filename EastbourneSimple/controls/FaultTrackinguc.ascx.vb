@@ -53,7 +53,9 @@ Partial Class controls_FaultTrackinguc
         Dim wrtctrl3 As WriteDatauc = CType(FindControl("WriteDatauc3"), WriteDatauc)
         wrtctrl3.LinacName = LinacName
 
+
     End Sub
+
 
     Public Sub InitialiseFaultTracking(ByVal ConcessObject As DavesCode.ConcessionParameters)
 
@@ -93,13 +95,16 @@ Partial Class controls_FaultTrackinguc
     End Sub
 
     Protected Sub SetUpOriginalFault(ByVal incidentID As String)
+
         Dim objOriginalFault As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
+
         CType(objOriginalFault, ManyFaultGriduc).NewFault = True
-        'CType(objOriginalFault, ManyFaultGriduc).newfault = True
-        CType(objOriginalFault, ManyFaultGriduc).IncidentID = incidentID
-        'to accomodate Tomo now need to pass equipment name?
-        CType(objOriginalFault, ManyFaultGriduc).LinacName = LinacName
-        PlaceHolderFaults.Controls.Add(objOriginalFault)
+            'CType(objOriginalFault, ManyFaultGriduc).newfault = True
+            CType(objOriginalFault, ManyFaultGriduc).IncidentID = incidentID
+            'to accomodate Tomo now need to pass equipment name?
+            CType(objOriginalFault, ManyFaultGriduc).LinacName = LinacName
+            PlaceHolderFaults.Controls.Add(objOriginalFault)
+
 
     End Sub
 
@@ -179,6 +184,7 @@ Partial Class controls_FaultTrackinguc
         Dim AssignedTo As String = String.Empty
         AssignedTo = AssignedToList.SelectedItem.Text
         ConcessParamsTrial.AssignedTo = AssignedTo
+
     End Sub
 
     Protected Sub SetValidationControls(ByVal SetReset As String)
