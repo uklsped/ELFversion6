@@ -296,7 +296,7 @@ Partial Class ErunupUserControl
                     'If LinacName Like "LA?" Then
                     '    strScript += "alert('No Energies Approved Logging Off');"
                     'Else
-                    strScript += "alert('Not Approved For Clinical Use. Logging Off');"
+                    strScript += "alert('Not Approved For Clinical Use.Logging Off');"
                     'End If
                     strScript += "window.location='"
                     strScript += machinelabel

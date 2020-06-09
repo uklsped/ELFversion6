@@ -446,10 +446,10 @@ Partial Public Class T2page
                             tabIndex = Request.QueryString("Tabindex").ToString
                         End If
     Select Case tabIndex
-    Case 1, 4, 5, 6, 7
+                            Case 1, 4, 5, 6, 7
                                 LaunchTab()
-                            Case 3
-    If Application(RecoverFault) Then
+                            Case 3, 8
+                                If Application(RecoverFault) Then
                                     LaunchTab()
                                 End If
     Case 0 ' Can't record a fault from Tab 0 now so this is redundant
