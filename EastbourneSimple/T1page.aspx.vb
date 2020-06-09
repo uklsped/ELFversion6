@@ -431,7 +431,7 @@ Partial Public Class T1page
                         Select Case tabIndex
                             Case 1, 4, 5, 6, 7
                                 LaunchTab()
-                            Case 3
+                            Case 3, 8
                                 If Application(RecoverFault) Then
                                     LaunchTab()
                                 End If
