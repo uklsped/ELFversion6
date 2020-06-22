@@ -220,17 +220,11 @@ Namespace DavesCode
             Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             conn = New SqlConnection(connectionString)
             Dim trackingID As Integer = 0
-            Dim ConcessionActive As Integer
-            'If ConcessP.FutureFaultState = "Concession" Then
-            ConcessionActive = 1
-            'Else
-            'ConcessionActive = 0
-            'End If
-            'If Status = "Concession" Then
-            '        ConcessionActive = 1
-            '    Else
-            '        ConcessionActive = 0
-            'End If
+            Dim ConcessionActive As Integer = 0
+            If (ConcessP.FutureFaultState = "Closed") AndAlso (ConcessP.PresentFaultState = "Concession") Then
+                ConcessionActive = 1
+            End If
+
             Using (conn)
 
                 Dim incidentfault As New SqlCommand With {

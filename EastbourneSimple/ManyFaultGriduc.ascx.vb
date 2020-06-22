@@ -61,18 +61,18 @@ Partial Class ManyFaultGriduc
             .ID = "SqlDataSource3",
             .ConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
         }
-        If NewFault Then
-            SqlDataSource4.SelectCommand = "select IncidentID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New'))"
-            SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
-            SqlDataSource4.SelectParameters.Add("linac", LinacName)
+        'If NewFault Then
+        '    SqlDataSource4.SelectCommand = "select IncidentID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID in (select IncidentID from FaultIDTable where linac=@linac and Status in ('New'))"
+        '    SqlDataSource4.SelectParameters.Add("@linac", System.Data.SqlDbType.NVarChar)
+        '    SqlDataSource4.SelectParameters.Add("linac", LinacName)
 
-        Else
+        'Else
 
-            SqlDataSource4.SelectCommand = "select IncidentID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID = @IncidentID order by DateReported desc"
+        SqlDataSource4.SelectCommand = "select IncidentID, CASE WHEN RadiationIncident = 1 THEN 'Yes' When RadiationIncident = 0 then 'No' Else 'Not Recorded' END AS RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle from ReportFault where incidentID = @IncidentID order by DateReported desc"
             'SqlDataSource4.SelectCommand = "select IncidentID, FaultID,ConcessionNumber, RadiationIncident, Description, ReportedBy,DateReported,Area,Energy,GantryAngle,CollimatorAngle,Linac from ReportFault where incidentID = @IncidentID order by DateReported desc"
             SqlDataSource4.SelectParameters.Add("@incidentID", SqlDbType.NVarChar)
             SqlDataSource4.SelectParameters.Add("incidentID", IncidentID)
-        End If
+        'End If
 
         GridViewLinac.DataSource = SqlDataSource4
         GridViewLinac.DataBind()

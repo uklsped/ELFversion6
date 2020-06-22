@@ -574,8 +574,13 @@ Partial Class ErunupUserControl
     Protected Sub EngHandoverButton_Click(ByVal sender As Object, ByVal e As EventArgs) Handles engHandoverButton.Click
         Dim strScript As String = "<script>"
         'count if there are unacknowledged rad concessions first
-        Dim Radcount As Boolean
-        Radcount = ConfirmNoRadConcession()
+
+        'Next 4 lines inserted 7/2/20 to allow rads to run up emergency even if open rad concessions
+        Dim Radcount As Boolean = True
+        If UserReason = ENG Then
+            Radcount = ConfirmNoRadConcession()
+        End If
+
         If Radcount Then
             If LinacName Like "T?" Then
                 ConfirmExitEvent()

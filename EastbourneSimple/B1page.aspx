@@ -22,7 +22,7 @@
 <%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc8" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 </asp:Content>
-<asp:Content ID="Contentt2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 
 
 <script type="text/javascript">
@@ -82,8 +82,9 @@
         }
 
     }
-
+ 
   </script>
+    <%--<script type="text/javascript" src="BrowserKill.js"></script>--%>
  <div class="gridheader">
 	
 
@@ -159,8 +160,7 @@
 
 
             
-    <asp:TabContainer ID="tcl" runat="server"  activetabindex="0" 
-          OnClientActiveTabChanged="loadTabPanel"  height="930px" >
+    <asp:TabContainer ID="tcl" runat="server"  activetabindex="0" OnClientActiveTabChanged="loadTabPanel"  height="930px" >
          
 <asp:TabPanel runat="server" HeaderText="B1 Status" ID="TabPanel0"><HeaderTemplate>
 B1 Status
@@ -183,7 +183,7 @@ B1 Status
 
 <%--This is the engineering run up tab--%>
         
-<asp:TabPanel ID="TabPanel1" runat="server" HeaderText="B1 Engineering Runup" DynamicContextKey='Engrunup' CssClass="ajax__tab_header"><ContentTemplate>
+<asp:TabPanel ID="TabPanel1" runat="server" HeaderText="B1 Runup" DynamicContextKey='Engrunup' CssClass="ajax__tab_header"><ContentTemplate>
 <asp:UpdatePanel ID="signin" runat="server"
 ><ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel1" runat="server" >
@@ -212,7 +212,7 @@ B1 Status
 <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePaneln" updatemode ="Conditional"  runat="server">
 <ContentTemplate><asp:Button ID="TabButton2" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
-<asp:Panel ID="TabContenB1" runat="server" Visible="false"
+<asp:Panel ID="TabContent2" runat="server" Visible="false"
 ><uc4:AcceptLinac ID="AcceptLinac2" LinacName="B1" UserReason="2" Tabby="2" runat="server" visible="false"/>
 <uc2:Preclinusercontrol ID="Preclinusercontrol1" LinacName = "B1" DataName="PreData" runat="server"/>
 </asp:Panel>
@@ -296,8 +296,7 @@ B1 Status
 </ContentTemplate>
 </asp:TabPanel>
 
-<asp:TabPanel ID="TabPanel7" runat="server" HeaderText="B1 Emergency Run up">
-    <%--DynamicContextKey='Emerunup' CssClass="ajax__tab_header" hidden="false" Enabled="true">--%>
+<asp:TabPanel ID="TabPanel7" runat="server" HeaderText="B1 Emergency Run up" >
      <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel7" runat="server">
 <ContentTemplate>
@@ -314,6 +313,7 @@ B1 Status
 </asp:UpdatePanel>
 </ContentTemplate>
  </asp:TabPanel>
+
 
 <asp:TabPanel ID="TabPanel8" runat="server" HeaderText="B1 Development/Training" DynamicContextKey='Devel' CssClass="ajax__tab_header"><ContentTemplate>
 <asp:UpdatePanel ID="UpdateDevel" runat="server">

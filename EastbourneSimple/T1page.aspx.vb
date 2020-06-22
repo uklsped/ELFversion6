@@ -371,11 +371,13 @@ Partial Public Class T1page
                         TabPanel4.Enabled = "true"
                         TabPanel5.Enabled = "true"
                         'TabPanel6.Enabled = "true"
-                        'added 9/10/17
-                        'If EquipmentID Like "LA_" Then
-                        TabPanel7.Enabled = "false"
-                        'TabPanel7.HeaderText = EquipmentID + " Emergency Runup"
-                        'End If
+                        'added 10/06/20
+                        If EquipmentID Like "T?" Then
+                            TabPanel7.Enabled = "false"
+                        Else
+                            TabPanel7.Enabled = "True"
+                            TabPanel7.HeaderText = EquipmentID + " Emergency Runup"
+                        End If
                         TabPanel8.Enabled = "True"
 
 
