@@ -41,15 +41,18 @@ Namespace DavesCode
             Dim Activity As String = ""
             Dim userreason As Integer
             conn = New SqlConnection(connectionString)
-
+            'Need to set  tab that function is on for query because of introduction of entry for fault close or concession raised.
 
             'Try
             '    Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             '    Using myscope As TransactionScope = New TransactionScope()
 
             'had to change this because Fault was getting confused with new fault with new popup.
+
             contime = New SqlCommand("SELECT stateID,State,DateTime, UserName FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            contime = New SqlCommand("SELECT DateTime, UserName, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac and userreason=@userreason)", conn)
             contime.Parameters.AddWithValue("@linac", LinacName)
+            contime.Parameters.AddWithValue("@userreason", Tabused)
             conn.Open()
             reader = contime.ExecuteReader()
 
@@ -103,36 +106,43 @@ Namespace DavesCode
             End If
 
             LogOutStatusID = DavesCode.Reuse.SetStatusNew(LogOffName, state, 5, userreason, LinacName, Tabused, connectionString)
+            'modified so not logged out of repair 25/06/20
+            'If Tabused = 5 AndAlso Fault Then
+            'don't want to log out of repair page
+
+            'Else
+
             commpm = New SqlCommand("INSERT INTO AuxTable (Tab,LogInDate, LogOutDate, LogInName, LogOutName, Comment,linac, LogInStatusID, LogOutStatusID ) " &
                                                "VALUES (@Tab, @LogInDate, @LogOutDate, @LogInName, @LogOutName, @Comment,@linac, @LogInStatusID, @LogOutStatusID)", conn)
 
-            commpm.Parameters.Add("@Tab", System.Data.SqlDbType.Int)
-            commpm.Parameters("@Tab").Value = Tabused
-            commpm.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
-            commpm.Parameters("@LogInDate").Value = StartTime
-            commpm.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
-            commpm.Parameters("@LogOutDate").Value = time
-            commpm.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
-            commpm.Parameters("@LogInName").Value = LoginName
-            commpm.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
-            commpm.Parameters("@LogOutName").Value = LogOffName
-            commpm.Parameters.Add("Comment", System.Data.SqlDbType.NVarChar, 250)
-            commpm.Parameters("Comment").Value = comment
-            commpm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
-            commpm.Parameters("@linac").Value = LinacName
-            commpm.Parameters.Add("@LogInStatusID", System.Data.SqlDbType.NVarChar, 10)
-            commpm.Parameters("@LogInStatusID").Value = LoginStatusID
-            commpm.Parameters.Add("@LogOutStatusID", System.Data.SqlDbType.NVarChar, 10)
-            commpm.Parameters("@LogOutStatusID").Value = LogOutStatusID
+                commpm.Parameters.Add("@Tab", System.Data.SqlDbType.Int)
+                commpm.Parameters("@Tab").Value = Tabused
+                commpm.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
+                commpm.Parameters("@LogInDate").Value = StartTime
+                commpm.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
+                commpm.Parameters("@LogOutDate").Value = time
+                commpm.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
+                commpm.Parameters("@LogInName").Value = LoginName
+                commpm.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
+                commpm.Parameters("@LogOutName").Value = LogOffName
+                commpm.Parameters.Add("Comment", System.Data.SqlDbType.NVarChar, 250)
+                commpm.Parameters("Comment").Value = comment
+                commpm.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                commpm.Parameters("@linac").Value = LinacName
+                commpm.Parameters.Add("@LogInStatusID", System.Data.SqlDbType.NVarChar, 10)
+                commpm.Parameters("@LogInStatusID").Value = LoginStatusID
+                commpm.Parameters.Add("@LogOutStatusID", System.Data.SqlDbType.NVarChar, 10)
+                commpm.Parameters("@LogOutStatusID").Value = LogOutStatusID
 
-            conn.Open()
-            commpm.ExecuteNonQuery()
+                conn.Open()
+                commpm.ExecuteNonQuery()
 
-            conn.Close()
+                conn.Close()
 
-            If Not lock Then
-                DavesCode.Reuse.UpdateActivityTable(LinacName, LogOutStatusID, connectionString)
-            End If
+                If Not lock Then
+                    DavesCode.Reuse.UpdateActivityTable(LinacName, LogOutStatusID, connectionString)
+                End If
+            'End If
             'myscope.Complete()
             'End Using
             'Catch ex As Exception

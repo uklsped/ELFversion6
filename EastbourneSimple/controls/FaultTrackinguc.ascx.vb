@@ -303,8 +303,9 @@ Partial Class controls_FaultTrackinguc
                                 RaiseError()
                             Else
                                 Application(faultstate) = False
-                                Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {ReturnState()})
-                                UpdateState(Machine, Userinfo)
+                                Dim Returnstatus As String = ReturnState()
+                                Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {Returnstatus})
+                                UpdateState(Machine, Returnstatus, Userinfo)
                                 RaiseEvent UpdateOpenConcessions(Machine)
                                 RaiseEvent CloseFaultTracking(Machine)
                             End If
@@ -329,8 +330,9 @@ Partial Class controls_FaultTrackinguc
                                 Application(faultstate) = False
                                 'introduce new set machine state so display is reset to previous state
                                 'need to know what linac state was when fault was raised too. set lock to true so activity is not stopped
-                                Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {ReturnState()})
-                                UpdateState(Machine, Userinfo)
+                                Dim Returnstatus As String = ReturnState()
+                                Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {Returnstatus})
+                                UpdateState(Machine, Returnstatus, Userinfo)
                                 RaiseEvent UpdateClosedDisplays(Machine)
                                 RaiseEvent CloseFaultTracking(Machine)
                                 Application(ParamApplication) = Nothing
@@ -362,16 +364,16 @@ Partial Class controls_FaultTrackinguc
         Const SUSPENDED As String = "Suspended"
         Const UNAUTHORISED As String = "Linac Unauthorised"
         SuspValue = "Suspended" + LinacName
-
+        Output = UNAUTHORISED
         If (Not HttpContext.Current.Application(SuspValue) Is Nothing) Then
-            Output = SUSPENDED
-        Else
-            Output = UNAUTHORISED
+            If HttpContext.Current.Application(SuspValue) = 1 Then
+                Output = SUSPENDED
+            End If
         End If
         Return Output
     End Function
 
-    Protected Sub UpdateState(ByVal linac As String, ByVal closingName As String)
+    Protected Sub UpdateState(ByVal linac As String, ByVal ReturnState As String, ByVal closingName As String)
 
         Dim time As DateTime
         time = Now()
@@ -389,7 +391,7 @@ Partial Class controls_FaultTrackinguc
         Machinestatus = New SqlCommand("INSERT INTO LinacStatus (state, DateTime, usergroup,userreason,linac, UserName ) " &
                                     "VALUES (@state, @Datetime, @usergroup, @userreason, @linac, @UserName) SELECT SCOPE_IDENTITY()", conn)
         Machinestatus.Parameters.Add("@state", System.Data.SqlDbType.NVarChar, 50)
-        Machinestatus.Parameters("@state").Value = ReturnState()
+        Machinestatus.Parameters("@state").Value = ReturnState
         Machinestatus.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
         Machinestatus.Parameters("@DateTime").Value = time
         Machinestatus.Parameters.Add("@usergroup", System.Data.SqlDbType.Int)

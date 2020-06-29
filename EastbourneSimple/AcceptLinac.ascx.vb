@@ -129,6 +129,7 @@ Partial Public Class AcceptLinac
                         End Using
 
                         modalidentifier = modalpopupextendergen.ID
+                        textboxUser.Text = String.Empty
                         modalpop.Hide()
                         'moved if to case 3 above
                         'If usergroupselected = 3 Then

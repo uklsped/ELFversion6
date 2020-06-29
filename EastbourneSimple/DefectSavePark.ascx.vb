@@ -457,16 +457,19 @@ Partial Class DefectSavePark
                             'DavesCode.NewWriteAux.WriteAuxTables(LinacName, UserInfo, Comment, RADIO, ParentControl, True, susstate, RunUpBoolean, False)
 
                     End Select
+
                     If Result Then
+                        Application(faultstate) = True
                         Application(appstate) = 0
                         Application(FaultOriginTab) = ParentControl
-                        Application(faultstate) = True
-                        'CreateNewFault(UserInfo, "New", connectionString)
 
-                        Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
-                        Response.Redirect(returnstring & ParentControl & "&comment=" & "")
+                            'CreateNewFault(UserInfo, "New", connectionString)
+
+                            Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
+                            Response.Redirect(returnstring & ParentControl & "&comment=" & "")
                         'Else
                         'Return Result
+
                     End If
                 Case Else
             End Select

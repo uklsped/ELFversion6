@@ -224,7 +224,7 @@ Partial Class ClinicalUserControl
                     Application(treatmentstate) = "Yes"
                     Application(appstate) = Nothing
                     Application(suspstate) = 1
-                    Application(RunUpDone) = Nothing
+                    Application(RunUpDone) = 1
                     StateLabel.Text = "Suspended"
                     ActivityLabel.Text = "Logged Off"
                     Application(LinacFlag) = "Suspended"

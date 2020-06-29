@@ -314,13 +314,13 @@ T1 Status
 </ContentTemplate>
  </asp:TabPanel>
 
-</asp:Panel>
+<%--</asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
 </ContentTemplate>
 </asp:UpdatePanel>
 </ContentTemplate>
- </asp:TabPanel>
+ </asp:TabPanel>--%>
 
 <asp:TabPanel ID="TabPanel8" runat="server" HeaderText="T1 Development/Training" DynamicContextKey='Devel' CssClass="ajax__tab_header"><ContentTemplate>
 <asp:UpdatePanel ID="UpdateDevel" runat="server">

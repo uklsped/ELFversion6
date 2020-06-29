@@ -103,12 +103,19 @@ Namespace DavesCode
             Dim State As String = "Linac Unauthorised" 'default reason
             Dim UserReason As Integer = 7 'most common reason
             'Dim Activity As Integer = 2
-
+            Dim Runup As Integer
+            If tablabel = 1 Then
+                Runup = 1
+            Else
+                Runup = 9
+            End If
             conn = New SqlConnection(ConnectionString)
-
-            contime = New SqlCommand("SELECT DateTime, UserName, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            'Modified this line now to cope with extra entry for fault close or concession create 25/6/20
+            'contime = New SqlCommand("SELECT DateTime, UserName, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            contime = New SqlCommand("SELECT DateTime, UserName, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac and userreason=@tablabel)", conn)
 
             contime.Parameters.AddWithValue("@linac", LinacName)
+            contime.Parameters.AddWithValue("@tablabel", Runup)
             conn.Open()
             reader = contime.ExecuteReader()
 

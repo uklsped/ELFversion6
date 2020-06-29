@@ -1,4 +1,5 @@
-﻿Imports System.Data.SqlClient
+﻿Imports System.ComponentModel
+Imports System.Data.SqlClient
 Imports System.Transactions
 Imports AjaxControlToolkit
 
@@ -112,39 +113,39 @@ Partial Class ErunupUserControl
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
 
         Dim tabcontainer1 As TabContainer
-            Page = Me.Page
-            mpContentPlaceHolder =
-            CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-            If Not mpContentPlaceHolder Is Nothing Then
-                tabcontainer1 = CType(mpContentPlaceHolder.
-                    FindControl("tcl"), TabContainer)
-                If Not tabcontainer1 Is Nothing Then
-                    If UserReason = 1 Then
-                        Dim panelcontrol1 As TabPanel = tabcontainer1.FindControl("TabPanel1")
-                        accontrol1 = panelcontrol1.FindControl("AcceptLinac1")
-                        AddHandler accontrol1.EngRunuploaded, AddressOf EngLogOnEvent
+        Page = Me.Page
+        mpContentPlaceHolder =
+        CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        If Not mpContentPlaceHolder Is Nothing Then
+            tabcontainer1 = CType(mpContentPlaceHolder.
+                FindControl("tcl"), TabContainer)
+            If Not tabcontainer1 Is Nothing Then
+                If UserReason = 1 Then
+                    Dim panelcontrol1 As TabPanel = tabcontainer1.FindControl("TabPanel1")
+                    accontrol1 = panelcontrol1.FindControl("AcceptLinac1")
+                    AddHandler accontrol1.EngRunuploaded, AddressOf EngLogOnEvent
 
-                    Else
-                        Dim panelcontrol7 As TabPanel = tabcontainer1.FindControl("TabPanel7")
-                        accontrol7 = panelcontrol7.FindControl("AcceptLinac7")
-                        AddHandler accontrol7.EngRunuploaded, AddressOf EngLogOnEvent
-                    End If
+                Else
+                    Dim panelcontrol7 As TabPanel = tabcontainer1.FindControl("TabPanel7")
+                    accontrol7 = panelcontrol7.FindControl("AcceptLinac7")
+                    AddHandler accontrol7.EngRunuploaded, AddressOf EngLogOnEvent
                 End If
             End If
-            AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
-            AddHandler ConfirmPage1.ConfirmExit, AddressOf ConfirmExitEvent ' this is if imaging wasn't selected
+        End If
+        AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
+        AddHandler ConfirmPage1.ConfirmExit, AddressOf ConfirmExitEvent ' this is if imaging wasn't selected
 
-            appstate = "LogOn" + LinacName
-            actionstate = "ActionState" + LinacName
-            suspstate = "Suspended" + LinacName
-            FaultOriginTab = "FOT" + LinacName
-            RunUpDone = "rppTab" + LinacName
-            faultviewstate = "Faultsee" + LinacName
-            atlasviewstate = "Atlassee" + LinacName
-            qaviewstate = "QAsee" + LinacName
-            LinacFlag = "State" + LinacName
-            BoxChanged = "EngBoxChanged" + LinacName
-            tabstate = "ActTab" + LinacName
+        appstate = "LogOn" + LinacName
+        actionstate = "ActionState" + LinacName
+        suspstate = "Suspended" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
+        faultviewstate = "Faultsee" + LinacName
+        atlasviewstate = "Atlassee" + LinacName
+        qaviewstate = "QAsee" + LinacName
+        LinacFlag = "State" + LinacName
+        BoxChanged = "EngBoxChanged" + LinacName
+        tabstate = "ActTab" + LinacName
         'EngLoad = "Loaded" + LinacName
 
     End Sub
@@ -576,6 +577,7 @@ Partial Class ErunupUserControl
         'count if there are unacknowledged rad concessions first
 
         'Next 4 lines inserted 7/2/20 to allow rads to run up emergency even if open rad concessions
+
         Dim Radcount As Boolean = True
         If UserReason = ENG Then
             Radcount = ConfirmNoRadConcession()
