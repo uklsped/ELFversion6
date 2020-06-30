@@ -80,7 +80,8 @@ Partial Public Class AcceptLinac
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim Activity As String
         Dim modalidentifier As String
-
+        appstate = "LogOn" + MachineName
+        suspstate = "Suspended" + MachineName
         Dim reload As String
         Dim clinstate As String = "Clinical"
         'LinacObj = Application(LinacName)
@@ -89,7 +90,7 @@ Partial Public Class AcceptLinac
         'from http://spacetech.dk/vb-net-string-compare-not-equal.html
         If Not (reload.Equals(clinstate)) Then
             Dim myAppState As Integer = CInt(Application(appstate))
-
+            'myAppState = 1
             If myAppState <> 1 Then
                 Activity = DavesCode.Reuse.ReturnActivity(Reason)
 
@@ -178,8 +179,12 @@ Partial Public Class AcceptLinac
 
                 End If
             Else
+                textboxUser.Text = ""
+                Application(appstate) = String.Empty
                 modalidentifier = modalpopupextendergen.ID
-                modalpop.Hide()
+                'modalpop.Hide()
+                modalpop.Dispose()
+                modalidentifier = modalpop.ID
             End If
         Else
             Try
@@ -220,14 +225,31 @@ Partial Public Class AcceptLinac
     '    Response.Redirect("faultPage.aspx?val=LA1")
     'End Sub
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
         Dim reload As String
         Dim clinstate As String = "Clinical"
         reload = DavesCode.Reuse.GetLastState(MachineName, 0)
         If reload = Nothing Then
             reload = clinstate
         End If
+
+        appstate = "LogOn" + MachineName
+        suspstate = "Suspended" + MachineName
         'from http://spacetech.dk/vb-net-string-compare-not-equal.html
         If Not (reload.Equals(clinstate)) Then
+            Dim placeholder As PlaceHolder
+
+            Dim modalpop As ModalPopupExtender
+            Dim modalname As String = "Modalpopupextendergen" & Tabby
+            placeholder = CType(FindControl("PlaceHolder1"), PlaceHolder)
+
+            modalpop = CType(placeholder.FindControl(modalname), ModalPopupExtender)
+
+
+
+            If Not modalpop Is Nothing Then
+                Dim id As String = modalpop.ID
+            End If
             WaitButtons("Acknowledge")
             If Application(appstate) <> 1 Then
                 Dim MyString As String
@@ -247,12 +269,18 @@ Partial Public Class AcceptLinac
                 Tabnumber = tablabel
                 MyString = MyString & Tabnumber
                 modalpopupextendergen.ID = MyString
-                modalpopupextendergen.BehaviorID = MyString
+                modalpopupextendergen.BehaviorID = "B" & MyString
                 modalpopupextendergen.TargetControlID = "label1"
                 modalpopupextendergen.PopupControlID = "Panel1"
                 modalpopupextendergen.BackgroundCssClass = "modalBackground"
                 PlaceHolder1.Controls.Add(modalpopupextendergen)
                 modalpopupextendergen.Show()
+                Dim textboxUser As TextBox = FindControl("txtchkUserName")
+                'textboxUser.Text = "restart"
+
+                'placeholder = CType(FindControl("PlaceHolder1"), PlaceHolder)
+
+                'modalpop = CType(placeholder.FindControl(modalname), ModalPopupExtender)
             Else
                 PlaceHolder2.Visible = False
             End If
@@ -270,6 +298,8 @@ Partial Public Class AcceptLinac
     Public Sub Btnchkcancel_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnchkcancel.Click
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         AcceptOK.Visible = False
+        appstate = "LogOn" + MachineName
+        suspstate = "Suspended" + MachineName
         Dim reload As String
         Dim clinstate As String = "Clinical"
         reload = DavesCode.Reuse.GetLastState(MachineName, 0)
@@ -290,6 +320,12 @@ Partial Public Class AcceptLinac
                 End If
                 returnstring = MachineName + "page.aspx"
                 Response.Redirect(returnstring)
+            Else
+                Dim modalpop As ModalPopupExtender
+                Dim modalname As String = "Modalpopupextendergen" & Tabby
+                Dim usergroupname As String = ""
+                modalpop = CType(FindControl(modalname), ModalPopupExtender)
+                modalpop.Hide()
             End If
         Else
             RaiseEvent ClinicalApproved(connectionString)
