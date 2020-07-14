@@ -674,11 +674,11 @@ Partial Public Class B1page
                                     'User = "Engineer/Physicist"
                                     rucontrol.EngLogOnEvent(connectionString)
                                     rucontrol.Visible = True
-                                    Dim panelcontrol As TabPanel = tcl.FindControl("TabPanel5")
-                                    If (Not panelcontrol Is Nothing) Then
-                                        'panelcontrol.Enabled = False
-                                        panelcontrol.Dispose()
-                                    End If
+                                    'Dim panelcontrol As TabPanel = tcl.FindControl("TabPanel5")
+                                    'If (Not panelcontrol Is Nothing) Then
+                                    '    'panelcontrol.Enabled = False
+                                    '    panelcontrol.Dispose()
+                                    'End If
 
                                 Case 2
                                     Activity = "Pre-clinical Run Up"

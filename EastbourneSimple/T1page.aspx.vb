@@ -181,7 +181,7 @@ Partial Public Class T1page
         Dim Reload As Boolean = False
         'Dim panelcontrol As TabPanel
         Dim Fcancel As String = ""
-        AddHandler AcceptLinac1.ShowName, AddressOf SetUser
+        'AddHandler AcceptLinac1.ShowName, AddressOf SetUser '- Add back 14/7
         AddHandler AcceptLinac4.ShowName, AddressOf SetUser
         AddHandler AcceptLinac5.ShowName, AddressOf SetUser
         'AddHandler AcceptLinac6.ShowName, AddressOf SetUser disable because of QA
@@ -654,6 +654,14 @@ Partial Public Class T1page
                                                 If (Not modalid Is Nothing) Then
                                                     modalid.Show()
                                                 End If
+                                            Else 'remove afterwards 14/7
+                                                'Dim objAcceptlinac As AcceptLinac = Page.LoadControl("AcceptLinac.ascx")
+                                                'objAcceptlinac.LinacName = EquipmentID
+                                                'objAcceptlinac.ID = "Acceptlinac1"
+                                                'objAcceptlinac.Visible = False
+                                                'objAcceptlinac.Tabby = 1
+                                                'objAcceptlinac.UserReason = 1
+                                                'AcceptlinacPlaceHolder.Controls.Add(objAcceptlinac)
                                             End If
                                     End Select
                                     'End If
@@ -673,11 +681,11 @@ Partial Public Class T1page
                                     'User = "Engineer/Physicist"
                                     rucontrol.EngLogOnEvent(connectionString)
                                     rucontrol.Visible = True
-                                    Dim panelcontrol As TabPanel = tcl.FindControl("TabPanel5")
-                                    If (Not panelcontrol Is Nothing) Then
-                                        'panelcontrol.Enabled = False
-                                        panelcontrol.Dispose()
-                                    End If
+                                    'Dim panelcontrol As TabPanel = tcl.FindControl("TabPanel5")
+                                    'If (Not panelcontrol Is Nothing) Then
+                                    '    'panelcontrol.Enabled = False
+                                    '    panelcontrol.Dispose()
+                                    'End If
 
                                 Case 2
                                     Activity = "Pre-clinical Run Up"
@@ -1217,8 +1225,7 @@ Partial Public Class T1page
 
     'From http://www.pberblog.com/blog/set-focus-to-a-control-of-a-modalpopupextender-programmatically/
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
-        ctrl.ClientID + "').focus();}, 100);", True)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 
     Private Sub recoverbuttonscript()
@@ -1261,6 +1268,9 @@ Partial Public Class T1page
         Dim mrepcontrol As Repairuc
         Dim mtrainingcontrol As Traininguc
         activetab = Application(activetabstate)
+        Dim app As String = Application(appstate)
+
+
         Try
             Using myscope As TransactionScope = New TransactionScope()
                 breakdown = DavesCode.Reuse.CheckForOpenFault(EquipmentID, connectionString)
@@ -1407,8 +1417,7 @@ Partial Public Class T1page
         Dim Radio As String = "101"
         Dim conn As SqlConnection
         Dim conActivity As SqlCommand
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim mpContentPlaceHolder As ContentPlaceHolder
         Dim grdview As GridView
         Dim breakdown As Boolean = False

@@ -40,7 +40,7 @@
 <%--<%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>--%>
 
 <uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="1" Tabby="1" visible="false" runat="server" />
-
+<asp:PlaceHolder ID="PlaceHolderAcceptLinac" runat="server"></asp:PlaceHolder>
  <asp:GridView ID="DummyGridView" runat="server">
         </asp:GridView>
 <asp:GridView ID="DummyGridViewImaging" runat="server"></asp:GridView>
@@ -91,8 +91,8 @@
         </tr>
         <tr>              
            <td style="width: 182px" >
-              <asp:Button ID="engHandoverButton" runat="server" BackColor="#FFCC00" causesvalidation="false" Height="50px" Text="Approve for Clinical Use" />
-                
+               <asp:Button ID="engHandoverButton" runat="server" BackColor="#FFCC00" causesvalidation="false" Height="50px" Text="Approve for Clinical Use" />
+
            </td>               
         </tr>
           <tr>

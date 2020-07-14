@@ -190,7 +190,8 @@ T1 Status
 <ContentTemplate>
 <asp:Button ID="TabButton1" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent1" runat="server" Visible="False">
-<uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "T1"  Tabby="1" UserReason = "1" visible="false" />
+<%--<uc4:AcceptLinac ID="AcceptLinac1" runat="server" LinacName= "T1"  Tabby="1" UserReason = "1" visible="false" />--%>
+   
     <uc1:ErunupUserControlCommon ID="ErunupUserControl1" LinacName="T1" Tabby = "1" UserReason = "1" DataName="EngData" visible="false" runat="server" />
 
 </asp:Panel>
@@ -303,7 +304,7 @@ T1 Status
 <asp:UpdatePanel ID="UpdatePanelEmergency" runat="server" >
 <ContentTemplate><asp:Button ID="TabButton7" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent7" runat="server" Visible="False">
-<uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "T1"  Tabby="7" UserReason = "9" visible="false" />
+<%--<uc4:AcceptLinac ID="AcceptLinac7" runat="server" LinacName= "T1"  Tabby="7" UserReason = "9" visible="false" />--%>
  <uc1:ErunupUserControlCommon ID="ErunupUserControl2" LinacName="T1" Tabby = "7" UserReason = "9" DataName="EmeData" visible="false" runat="server" />
 
 </asp:Panel>

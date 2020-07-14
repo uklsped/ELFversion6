@@ -111,30 +111,6 @@ Partial Class ErunupUserControl
     End Sub
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
-
-        Dim tabcontainer1 As TabContainer
-        Page = Me.Page
-        mpContentPlaceHolder =
-        CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-        If Not mpContentPlaceHolder Is Nothing Then
-            tabcontainer1 = CType(mpContentPlaceHolder.
-                FindControl("tcl"), TabContainer)
-            If Not tabcontainer1 Is Nothing Then
-                If UserReason = 1 Then
-                    Dim panelcontrol1 As TabPanel = tabcontainer1.FindControl("TabPanel1")
-                    accontrol1 = panelcontrol1.FindControl("AcceptLinac1")
-                    AddHandler accontrol1.EngRunuploaded, AddressOf EngLogOnEvent
-
-                Else
-                    Dim panelcontrol7 As TabPanel = tabcontainer1.FindControl("TabPanel7")
-                    accontrol7 = panelcontrol7.FindControl("AcceptLinac7")
-                    AddHandler accontrol7.EngRunuploaded, AddressOf EngLogOnEvent
-                End If
-            End If
-        End If
-        AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
-        AddHandler ConfirmPage1.ConfirmExit, AddressOf ConfirmExitEvent ' this is if imaging wasn't selected
-
         appstate = "LogOn" + LinacName
         actionstate = "ActionState" + LinacName
         suspstate = "Suspended" + LinacName
@@ -146,12 +122,71 @@ Partial Class ErunupUserControl
         LinacFlag = "State" + LinacName
         BoxChanged = "EngBoxChanged" + LinacName
         tabstate = "ActTab" + LinacName
+        Dim logon As Integer = 0
+        Dim Alreadyrunup As Integer = 0
+        Dim tabcontainer1 As TabContainer
+        Page = Me.Page
+        mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+        If Not mpContentPlaceHolder Is Nothing Then
+            tabcontainer1 = CType(mpContentPlaceHolder.FindControl("tcl"), TabContainer)
+            If Not tabcontainer1 Is Nothing Then
+                If UserReason = 1 Then
+                    'Dim panelcontrol1 As TabPanel = tabcontainer1.FindControl("TabPanel1")
+                    ''accontrol1 = panelcontrol1.FindControl("AcceptLinac1") Removed 14/7
+                    ''AddHandler accontrol1.EngRunuploaded, AddressOf EngLogOnEvent
+
+                    Dim Acceptlinac As AcceptLinac = CType(FindControl("Acceptlinac1"), AcceptLinac)
+                    If Acceptlinac Is Nothing Then
+                        If (Not HttpContext.Current.Application(appstate) Is Nothing) Then
+                            logon = CInt(HttpContext.Current.Application(appstate))
+                        End If
+                        If logon = 0 Then
+                            If (Not HttpContext.Current.Application(RunUpDone) Is Nothing) Then
+                                Alreadyrunup = CInt(HttpContext.Current.Application(RunUpDone))
+                            End If
+                            If Alreadyrunup = 0 Then
+                                Dim ObjAccept As AcceptLinac = Page.LoadControl("AcceptLinac.ascx")
+                                ObjAccept.LinacName = LinacName
+                                ObjAccept.ID = "AcceptLinac1"
+                                ObjAccept.UserReason = 1
+                                ObjAccept.Tabby = 1
+                                AddHandler ObjAccept.CloseAcceptlinac, AddressOf Close_AcceptLinac
+                                PlaceHolderAcceptLinac.Controls.Add(ObjAccept)
+                                ObjAccept.Visible = False
+                                'End If
+                                DavesCode.Reuse.RecordStates(LinacName, 1, "engrunuppageinit", 0)
+                            End If
+                        End If
+                        End If
+                Else
+                        Dim panelcontrol7 As TabPanel = tabcontainer1.FindControl("TabPanel7")
+                    'accontrol7 = panelcontrol7.FindControl("AcceptLinac7")
+                    'AddHandler accontrol7.EngRunuploaded, AddressOf EngLogOnEvent
+                End If
+            End If
+        End If
+        AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
+        AddHandler ConfirmPage1.ConfirmExit, AddressOf ConfirmExitEvent ' this is if imaging wasn't selected
+
+
         'EngLoad = "Loaded" + LinacName
 
     End Sub
 
+    Protected Sub Close_AcceptLinac(ByVal EquipmentId As String)
+        If LinacName = EquipmentId Then
+
+
+            Dim Acceptlinac As AcceptLinac = CType(FindControl("Acceptlinac1"), AcceptLinac)
+            PlaceHolderAcceptLinac.Controls.Remove(Acceptlinac)
+            Acceptlinac = CType(FindControl("Acceptlinac1"), AcceptLinac)
+        End If
+    End Sub
+
     Public Sub EngLogOnEvent(connectionString As String)
         'because B2 is to be added and because LA1 and LA4 are to be treated like B1 etc changed case statement 9/4/19
+        '14/7
+
         If Not LinacName Like "T?" Then
             SetEnergies(connectionString)
             SetImaging(connectionString)
@@ -163,7 +198,8 @@ Partial Class ErunupUserControl
         GridView1.Visible = True
         GridViewImage.Visible = True
         Application(atlasviewstate) = 1
-
+        Dim acceptlinac As AcceptLinac = CType(FindControl("Acceptlinac1"), AcceptLinac)
+        acceptlinac.Visible = True
     End Sub
     'Public Sub SetModalities(ByVal connectionString As String)
     '    'If Application(appstate) Then

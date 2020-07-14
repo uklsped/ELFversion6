@@ -20,6 +20,7 @@ Partial Public Class AcceptLinac
     Public Event PreRunuploaded(ByVal connectionString As String)
     Public Event SetModalities(ByVal connectionString As String)
     Public Event Repairloaded(ByVal connectionString As String)
+    Public Event CloseAcceptlinac(ByVal LinacName As String)
 
 
     'Private LinacObj As LinacState
@@ -91,6 +92,7 @@ Partial Public Class AcceptLinac
         If Not (reload.Equals(clinstate)) Then
             Dim myAppState As Integer = CInt(Application(appstate))
             'myAppState = 1
+            DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptOK", 0)
             If myAppState <> 1 Then
                 Activity = DavesCode.Reuse.ReturnActivity(Reason)
 
@@ -106,8 +108,9 @@ Partial Public Class AcceptLinac
                             DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, Reason, False, connectionString)
                             Select Case Tabby
                                 Case 1, 7
-                                    RaiseEvent EngRunuploaded(connectionString)
+                                    'RaiseEvent EngRunuploaded(connectionString)
                                     'RaiseEvent SetModalities(connectionString)
+
                                 Case 2
                                     RaiseEvent PreRunuploaded(connectionString)
                                 Case 3
@@ -166,6 +169,7 @@ Partial Public Class AcceptLinac
                         '    RaiseEvent ShowName(usergroupselected)
                         'End Select
                         RaiseEvent ShowName(usergroupselected)
+                        RaiseEvent CloseAcceptlinac(MachineName)
                         '    myscope.Complete()
                         'End Using
                     Catch ex As Exception
@@ -175,6 +179,7 @@ Partial Public Class AcceptLinac
                 Else
                     'If it gets to here something has gone wrong with SuccessfulLogin()
                     modalidentifier = modalpopupextendergen.ID
+                    textboxUser.Text = "Round we go"
                     modalpopupextendergen.Show()
 
                 End If
@@ -225,7 +230,7 @@ Partial Public Class AcceptLinac
     '    Response.Redirect("faultPage.aspx?val=LA1")
     'End Sub
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-
+        DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptPageLoad", 0)
         Dim reload As String
         Dim clinstate As String = "Clinical"
         reload = DavesCode.Reuse.GetLastState(MachineName, 0)
