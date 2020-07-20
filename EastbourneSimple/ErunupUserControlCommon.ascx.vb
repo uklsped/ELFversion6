@@ -290,7 +290,7 @@ Partial Class ErunupUserControl
                     'This app sets for repair, maintenance and physics tab to know that run up was done
                     Application(RunUpDone) = 1
                     'Valid = True
-                    Application(appstate) = Nothing
+                    Application(appstate) = 0
                     Application(tabstate) = String.Empty
 
                     CommentBox.ResetCommentBox(String.Empty)
@@ -613,7 +613,7 @@ Partial Class ErunupUserControl
         'count if there are unacknowledged rad concessions first
 
         'Next 4 lines inserted 7/2/20 to allow rads to run up emergency even if open rad concessions
-
+        DavesCode.Reuse.RecordStates(LinacName, 1, "engHandoverButton", 0)
         Dim Radcount As Boolean = True
         If UserReason = ENG Then
             Radcount = ConfirmNoRadConcession()
