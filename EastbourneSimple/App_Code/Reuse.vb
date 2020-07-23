@@ -242,7 +242,9 @@ Namespace DavesCode
         '    End Function
 
         'Used
-        Public Shared Function SuccessfulLogin(ByVal username As String, ByVal userpassword As String, ByVal Need As Integer, ByVal Texbox As TextBox, ByVal pasword As TextBox, ByVal logerror As Label, ByVal modalp As ModalPopupExtender) As Integer
+        'Public Shared Function SuccessfulLogin(ByVal username As String, ByVal userpassword As String, ByVal Need As Integer, ByVal Texbox As TextBox, ByVal pasword As TextBox, ByVal logerror As Label, ByVal modalp As ModalPopupExtender) As Integer
+        Public Shared Function SuccessfulLogin(ByVal username As String, ByVal userpassword As String, ByVal Need As Integer, ByVal Texbox As TextBox, ByVal pasword As TextBox, ByVal logerror As Label) As Integer
+
             'We need to determine if the user is authenticated and set e.Authenticated accordingly
             'Get the values entered by the user
             'If anything is invalid the popup remains until corrected or the cancel button on the popup is selected
@@ -252,7 +254,7 @@ Namespace DavesCode
             Dim textboxUser As TextBox = Texbox
             Dim textboxPass As TextBox = pasword
             Dim LoginErrorDetail As Label = logerror
-            Dim modalpopupident As ModalPopupExtender = modalp
+            'Dim modalpopupident As ModalPopupExtender = modalp
             'First check if user name and password are correct
             If Membership.ValidateUser(loginUsername, loginPassword) Then
                 'Find out which user group user is in
@@ -304,7 +306,7 @@ Namespace DavesCode
                         Else
                             textboxPass.Text = String.Empty
                             LoginErrorDetail.Text = "Your Password is invalid."
-                            modalpopupident.Show()
+                            ' modalpopupident.Show()
 
                         End If
 
@@ -2950,10 +2952,10 @@ Namespace DavesCode
 
 
             If (Not HttpContext.Current.Application(LogOn) Is Nothing) Then
-                AppState = CInt(HttpContext.Current.Application(LogOn))
+                'AppState = CInt(HttpContext.Current.Application(LogOn))
             End If
             If (Not HttpContext.Current.Application(LiveTab) Is Nothing) Then
-                ActiveTab = CInt(HttpContext.Current.Application(LogOn))
+                'ActiveTab = CInt(HttpContext.Current.Application(LogOn))
             End If
             If (Not HttpContext.Current.Application(SuspValue) Is Nothing) Then
                 suspended = CInt(HttpContext.Current.Application(SuspValue))

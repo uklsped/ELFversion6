@@ -52,6 +52,24 @@ Partial Public Class T1page
     Private ParentControl As String
     Private RecoverFault As String = "RecoverFaultT1"
     'Public Event DayEnded(ByVal Tab As String, ByVal UserName As String)
+    Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    Const ACCEPTLINACSELECTED = "CAcceptLinac"
+    Private Property DynamicControlSelection() As String
+        Get
+            Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
+            If result Is Nothing Then
+                'doing things like this lets us access this property without
+                'worrying about this property returning null/Nothing
+                Return String.Empty
+            Else
+                Return result
+            End If
+        End Get
+        Set(ByVal value As String)
+            ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
+        End Set
+    End Property
+
 
     Protected Sub Update_ReturnButtons()
 
@@ -79,7 +97,7 @@ Partial Public Class T1page
     End Sub
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
-
+        DavesCode.Reuse.RecordStates("T1", 0, "T1PageInit", 0)
         mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
         If Not mpContentPlaceHolder Is Nothing Then
             wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
@@ -182,31 +200,45 @@ Partial Public Class T1page
         'Dim panelcontrol As TabPanel
         Dim Fcancel As String = ""
         'AddHandler AcceptLinac1.ShowName, AddressOf SetUser '- Add back 14/7
-        AddHandler AcceptLinac4.ShowName, AddressOf SetUser
-        AddHandler AcceptLinac5.ShowName, AddressOf SetUser
+        'AddHandler AcceptLinac4.ShowName, AddressOf SetUser
+        'AddHandler AcceptLinac5.ShowName, AddressOf SetUser
         'AddHandler AcceptLinac6.ShowName, AddressOf SetUser disable because of QA
-        AddHandler AcceptLinac8.ShowName, AddressOf SetUser
-        AddHandler AcceptLinac3.ClinicalApproved, AddressOf ClinicalApprovedEvent
-        AddHandler AcceptLinac3.AcknowledgeEnergies, AddressOf AcknowledgeEnergies
-        AddHandler AcceptLinac4.UpdateReturnButtons, AddressOf Update_ReturnButtons
-        AddHandler AcceptLinac5.UpdateReturnButtons, AddressOf Update_ReturnButtons
-        AddHandler AcceptLinac8.UpdateReturnButtons, AddressOf Update_ReturnButtons
+        'AddHandler AcceptLinac8.ShowName, AddressOf SetUser
+        'AddHandler AcceptLinac3.ClinicalApproved, AddressOf ClinicalApprovedEvent
+        'AddHandler AcceptLinac3.AcknowledgeEnergies, AddressOf AcknowledgeEnergies
+        'AddHandler AcceptLinac4.UpdateReturnButtons, AddressOf Update_ReturnButtons
+        'AddHandler AcceptLinac5.UpdateReturnButtons, AddressOf Update_ReturnButtons
+        'AddHandler AcceptLinac8.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler LinacStatusuc1.Resetstatus, AddressOf LaunchTab
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
         AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
+        AddHandler ErunupUserControl1.OpenAcceptLinac, AddressOf Launchmodal
         Dim ResetDay As String = Nothing
 
+        Select Case Me.DynamicControlSelection
+
+            Case ACCEPTLINACSELECTED
+
+                Dim ObjAccept As AcceptLinacuc = Page.LoadControl("Controls/AcceptLinacuc.ascx")
+                ObjAccept.LinacName = EquipmentID
+                ObjAccept.ID = "AcceptLinac1"
+                ObjAccept.UserReason = Application(activetabstate)
+                ObjAccept.Tabby = Application(activetabstate)
+                AddHandler ObjAccept.UpdateReturnButtons, AddressOf Update_ReturnButtons
+                AddHandler ObjAccept.ClinicalApproved, AddressOf ClinicalApprovedEvent
+                AddHandler ObjAccept.AcknowledgeEnergies, AddressOf AcknowledgeEnergies
+                AddHandler ObjAccept.ShowName, AddressOf SetUser
+                AcceptLinacPlaceholder.Controls.Add(ObjAccept)
 
 
+            Case Else
+                '        'no dynamic controls need to be loaded...yet
+        End Select
 
-        'Dim EndofDayWait As Button = FindControl("EndOfDay")
-        'If Not FindControl("EndOfDayWait") Is Nothing Then
+
         EndOfDay.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(EndOfDay, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
-        'End If
 
-
-        'If PreviousPage IsNot Nothing Then
         refpage = Nothing
         tabIndex = Nothing
         comment = Nothing
@@ -215,9 +247,10 @@ Partial Public Class T1page
         Dim lastState As String
         lastState = DavesCode.Reuse.GetLastState(EquipmentID, 0)
         Statelabel.Text = lastState
-
+        'DavesCode.Reuse.RecordStates("T1", 0, "T1Pageload1", 0)
         If Not IsPostBack Then
-            DavesCode.Reuse.ListParameters(EquipmentID, 0)
+            DavesCode.Reuse.RecordStates("T1", 0, "T1PageloadPostback", 0)
+            'DavesCode.Reuse.ListParameters(EquipmentID, 0)
             If Request.QueryString("pageref") Is Nothing Then
                 'tabref = Request.QueryString("tabref").ToString
                 Dim ThereIsAFaultOpen As Boolean = DavesCode.NewFaultHandling.CheckForOpenFault(EquipmentID)
@@ -475,17 +508,68 @@ Partial Public Class T1page
         'Get Tab number
         Dim returnstring As String = EquipmentID + "page.aspx?tabclicked=" + TabString.Substring(9)
         'This is important. Session("ActiveTabIdx") is not updated when clicking on Tab 0. Used particularly for reporting fault
+        Dim ActiveTab As String = TabString.Substring(9)
         If TabString.Substring(9) <> 0 Then
             Application(activetabstate) = tcl.ActiveTabIndex
             'Dim field1 As Integer = Application(activetabstate)
             'Session("ActiveTabIdx") = tcl.ActiveTabIndex
             'Dim field1 As Integer = CType(Session.Item("ActiveTabIdx"), Integer)
             'Label2.Text = field1
-            Response.Redirect(returnstring)
+
+            Page = Me.Page
+            mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+            'If Not mpContentPlaceHolder Is Nothing Then
+            '    Dim AcceptLinacControl As AcceptLinacuc = CType(mpContentPlaceHolder.FindControl("AcceptLinacuc1"), AcceptLinacuc)
+            '    Dim AcceptLinacControlPopup As ModalPopupExtender = CType(AcceptLinacControl.FindControl("AcceptLinacModalPopup"), ModalPopupExtender)
+            'AcceptLinacModalPopup.Show()
+            'End If
+            'Response.Redirect(returnstring)
+            Launchmodal(ActiveTab)
         Else
             LaunchTab()
         End If
     End Sub
+
+    Protected Sub Launchmodal(ByVal ActiveTab As String)
+        'Dim AcceptLinacControl As AcceptLinacuc
+        'AcceptLinacControl =
+        'If AcceptLinacControl Is Nothing Then
+        AcceptLinacModalPopup.Hide()
+        Dim UserReason As Integer = 0
+        UserReason = CInt(ActiveTab)
+        If UserReason = 9 Then
+            UserReason = 7
+        End If
+        Dim logon As Integer = 0
+        Dim Alreadyrunup As Integer = 0
+        If (Not HttpContext.Current.Application(appstate) Is Nothing) Then
+            logon = CInt(HttpContext.Current.Application(appstate))
+        End If
+        If logon = 0 Then
+            If (Not HttpContext.Current.Application(RunUpDone) Is Nothing) Then
+                Alreadyrunup = CInt(HttpContext.Current.Application(RunUpDone))
+            End If
+            If Alreadyrunup = 1 And (ActiveTab = 1 Or ActiveTab = 9) Then
+                'return to sender
+            Else
+                Dim ObjAccept As AcceptLinacuc = Page.LoadControl("Controls/AcceptLinacuc.ascx")
+                ObjAccept.LinacName = EquipmentID
+                ObjAccept.ID = "AcceptLinac1"
+                ObjAccept.UserReason = UserReason
+                ObjAccept.Tabby = ActiveTab
+                AddHandler ObjAccept.UpdateReturnButtons, AddressOf Update_ReturnButtons
+                AddHandler ObjAccept.ClinicalApproved, AddressOf ClinicalApprovedEvent
+                AddHandler ObjAccept.AcknowledgeEnergies, AddressOf AcknowledgeEnergies
+                AddHandler ObjAccept.ShowName, AddressOf SetUser
+                AcceptLinacPlaceholder.Controls.Add(ObjAccept)
+                'DavesCode.Reuse.RecordStates(EquipmentID, 1, "englogonevent", 0)
+                DynamicControlSelection = ACCEPTLINACSELECTED
+                AcceptLinacModalPopup.Show()
+            End If
+        End If
+
+    End Sub
+
 
     Public Sub LaunchTab()
         Dim Reload As Boolean = False
@@ -498,6 +582,7 @@ Partial Public Class T1page
         Dim lastState As String = ""
         Dim lastuser As String = ""
         Dim lastusergroup As Integer = 0
+
         'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Page = Me.Page
         mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
@@ -681,11 +766,11 @@ Partial Public Class T1page
                                     'User = "Engineer/Physicist"
                                     rucontrol.EngLogOnEvent(connectionString)
                                     rucontrol.Visible = True
-                                    'Dim panelcontrol As TabPanel = tcl.FindControl("TabPanel5")
-                                    'If (Not panelcontrol Is Nothing) Then
-                                    '    'panelcontrol.Enabled = False
-                                    '    panelcontrol.Dispose()
-                                    'End If
+                                    logcontrol = rucontrol.FindControl(logcontrolId)
+                                    AcceptLinacModalPopup.Hide()
+                                    DynamicControlSelection = String.Empty
+                                    Application(appstate) = 1
+
 
                                 Case 2
                                     Activity = "Pre-clinical Run Up"
@@ -700,17 +785,25 @@ Partial Public Class T1page
                                     clincontrol.Visible = True
                                     Dim output As String = "Clinical"
                                     Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
-                                    Dim outputn As String = Application(appstate)
-                                    If outputn = 1 Then
-                                        'should have a transaction
-                                        'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-                                        clinicalcontrol.ClinicalApprovedEvent(connectionString)
-                                    End If
+                                    AcceptLinacModalPopup.Hide()
+                                    DynamicControlSelection = String.Empty
+
+                                    Application(appstate) = 1
+                                    clinicalcontrol.ClinicalApprovedEvent(connectionString)
+                                    'Dim outputn As String = Application(appstate)
+                                    'If outputn = 1 Then
+                                    '    'should have a transaction
+                                    '    'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+                                    '    clinicalcontrol.ClinicalApprovedEvent(connectionString)
+                                    'End If
 
                                 Case 4
                                     Activity = "Planned Maintenance"
                                     DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
                                     SetUser(lastusergroup)
+                                    AcceptLinacModalPopup.Hide()
+                                    DynamicControlSelection = String.Empty
+                                    Application(appstate) = 1
                                     plancontrol.Visible = True
 
                                     If Not Application(suspstate) = 1 Then
@@ -728,6 +821,9 @@ Partial Public Class T1page
                                     DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
                                     SetUser(lastusergroup)
                                     repcontrol.Visible = True
+                                    AcceptLinacModalPopup.Hide()
+                                    DynamicControlSelection = String.Empty
+                                    Application(appstate) = 1
                                     If Not DavesCode.Reuse.CheckForOpenFault(EquipmentID, connectionString) Then
 
                                         'If Application(faultstate) <> True Then
@@ -768,14 +864,18 @@ Partial Public Class T1page
                                     Activity = "Emergency Run Up"
                                     UserGroupLabel.Text = "Radiographer"
                                     emergencycontrol.Visible = True
-
+                                    AcceptLinacModalPopup.Hide()
+                                    DynamicControlSelection = String.Empty
+                                    Application(appstate) = 1
                                 Case 8
                                     Activity = "Training/Development"
                                     DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
                                     SetUser(lastusergroup)
                                     trainingcontrol.Visible = True
                                     Update_ReturnButtons()
-
+                                    AcceptLinacModalPopup.Hide()
+                                    DynamicControlSelection = String.Empty
+                                    Application(appstate) = 1
                                     If Not Application(suspstate) = 1 Then
                                         If Application(RunUpDone) = 1 Then
                                             Statelabel.Text = "Engineering Approved"
@@ -1582,5 +1682,6 @@ Partial Public Class T1page
             'pop up error message here
         End Try
     End Sub
+
 
 End Class

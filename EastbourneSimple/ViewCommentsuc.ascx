@@ -30,7 +30,7 @@
   <div style="background-color: #FFFFCC; border: thin solid #FFFF00">    
        Start Date:
         <asp:TextBox ID="txtStartDate" runat="server" ></asp:TextBox>&nbsp;&nbsp;
-<asp:RequiredFieldValidator ID="RequiredFieldValidatorstart" runat="server" ErrorMessage="Please Enter Start Date" Display="Dynamic" ControlToValidate="txtStartDate"></asp:RequiredFieldValidator>
+<asp:RequiredFieldValidator ID="RequiredFieldValidatorstart" runat="server" ErrorMessage="Please Enter Start Date" Display="Dynamic" ControlToValidate="txtStartDate" ValidationGroup="CommentDates"></asp:RequiredFieldValidator>
         <asp:CalendarExtender ID="ceStartDate" TargetControlID="txtStartDate" 
 
                  PopupPosition="BottomRight" 
@@ -42,7 +42,7 @@
         Stop Date:
 
         <asp:TextBox ID="StopBox1" runat="server" ></asp:TextBox>
-<asp:RequiredFieldValidator ID="RequiredFieldValidatorstop" runat="server" ErrorMessage="Please Enter End Date" Display="Dynamic" ControlToValidate="StopBox1"></asp:RequiredFieldValidator>
+<asp:RequiredFieldValidator ID="RequiredFieldValidatorstop" runat="server" ErrorMessage="Please Enter End Date" Display="Dynamic" ControlToValidate="StopBox1" ValidationGroup="CommentDates"></asp:RequiredFieldValidator>
 
         <asp:CalendarExtender ID="CalendarExtender2" Format="dd/MM/yyyy"
 
@@ -53,7 +53,7 @@
         </asp:CalendarExtender>
         <asp:CompareValidator ID="CompareValidator1" runat="server" ControlToCompare="txtStartDate"
         ControlToValidate="StopBox1" ErrorMessage="Start Date must be before Stop Date"
-        Operator="GreaterThanEqual" Type="Date"></asp:CompareValidator>
+        Operator="GreaterThanEqual" Type="Date" ValidationGroup="CommentDates"></asp:CompareValidator>
 
     <asp:Button ID="submitButton" runat="server" Text="View History" 
             OnClientClick='"submitButton_Click"' CausesValidation="false" />

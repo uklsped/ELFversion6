@@ -123,8 +123,8 @@ Partial Class WriteDatauc
         'Dim Pager As Page = SPage
 
         Dim modalidentifier As String
-
-        If DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox, modalpop) <> 0 Then
+        'If DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox, modalpop) <> 0 Then
+        If DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox) <> 0 Then
             If modalpop IsNot Nothing Then
                 'modalpop.Dispose()
                 resetLogInscreen()

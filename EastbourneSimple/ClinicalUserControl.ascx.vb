@@ -133,8 +133,8 @@ Partial Class ClinicalUserControl
                 FindControl("tcl"), TabContainer)
             If Not tabcontainer1 Is Nothing Then
                 Dim panelcontrol As TabPanel = tabcontainer1.FindControl("TabPanel3")
-                accontrol = panelcontrol.FindControl("AcceptLinac3")
-                AddHandler accontrol.ClinicalApproved, AddressOf ClinicalApprovedEvent
+                'accontrol = panelcontrol.FindControl("AcceptLinac3")
+                'AddHandler accontrol.ClinicalApproved, AddressOf ClinicalApprovedEvent
             End If
         End If
 
@@ -173,7 +173,7 @@ Partial Class ClinicalUserControl
         BindComments()
         BindRunUpComments(connectionString)
         Application(suspstate) = Nothing
-        ModalityDisplays(connectionString)
+        'ModalityDisplays(connectionString)
         'Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
         'CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
         'CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"

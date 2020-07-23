@@ -50,7 +50,9 @@ Partial Public Class LockElfuc
         Activity = DavesCode.Reuse.ReturnActivity(UserReason)
 
         'When tidying up don't now need to pass linac name to successful logon
-        Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox, modalpop)
+        'Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox, modalpop)
+
+        Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox)
         If usergroupselected <> Nothing Then
             '    'what happens if machinestate fails?
             resetLogInscreen()

@@ -40,7 +40,9 @@ Partial Class ViewCommentsuc
         Dim comm As SqlCommand
         'have to have validate on date fields
         'Reads start and stop date from page
-        If RequiredFieldValidatorstart.IsValid And RequiredFieldValidatorstop.IsValid Then
+        'If RequiredFieldValidatorstart.IsValid And RequiredFieldValidatorstop.IsValid Then
+        Page.Validate("CommentDates")
+        If Page.IsValid Then
             If UpdatePanel1.Visible Then
                 submitButton.Text = "View History"
                 UpdatePanel1.Visible = False
@@ -62,7 +64,7 @@ Partial Class ViewCommentsuc
 
                 StopDate = StopDate.AddDays(1)
 
-                Dim connectionString As String = ConfigurationManager.ConnectionStrings( _
+                Dim connectionString As String = ConfigurationManager.ConnectionStrings(
                 "connectionstring").ConnectionString
 
                 conn = New SqlConnection(connectionString)

@@ -64,8 +64,8 @@ Partial Class Preclinusercontrol
                 FindControl("tcl"), TabContainer)
             If Not tabcontainer1 Is Nothing Then
                 Dim panelcontrol As TabPanel = tabcontainer1.FindControl("TabPanel2")
-                accontrol = panelcontrol.FindControl("AcceptLinac2")
-                AddHandler accontrol.PreRunuploaded, AddressOf Preclinloaded
+                'accontrol = panelcontrol.FindControl("AcceptLinac2")
+                'AddHandler accontrol.PreRunuploaded, AddressOf Preclinloaded
 
             End If
         End If

@@ -3,7 +3,7 @@ Imports System.Data.SqlClient
 Imports System.Data
 Imports System.Transactions
 
-Partial Public Class AcceptLinac
+Partial Public Class AcceptLinacuc
     Inherits System.Web.UI.UserControl
     Public Event AcceptHandler As EventHandler
     Private MachineName As String
@@ -70,17 +70,17 @@ Partial Public Class AcceptLinac
         Dim textboxUser As TextBox = FindControl("txtchkUserName") 'This gets username textbox to pass to login
         Dim passwordUser As TextBox = FindControl("txtchkPWD")  'This gets password textbox to pass to login
         Dim logerrorbox As Label = FindControl("LoginErrordetails") 'This gets error label to pass to login
-        Dim modalpop As ModalPopupExtender
-        Dim modalname As String = "Modalpopupextendergen" & Tabby
+        'Dim modalpop As ModalPopupExtender
+        'Dim modalname As String = "Modalpopupextendergen" & Tabby
         Dim usergroupname As String = ""
-        modalpop = CType(FindControl(modalname), ModalPopupExtender)
+        'modalpop = CType(FindControl(modalname), ModalPopupExtender)
         'We need to determine if the user is authenticated
         'Get the values entered by the user
         Dim loginUsername As String = username
         Dim loginPassword As String = Userpassword
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim Activity As String
-        Dim modalidentifier As String
+        'Dim modalidentifier As String
         appstate = "LogOn" + MachineName
         suspstate = "Suspended" + MachineName
         Dim reload As String
@@ -92,7 +92,7 @@ Partial Public Class AcceptLinac
         If Not (reload.Equals(clinstate)) Then
             Dim myAppState As Integer = CInt(Application(appstate))
             'myAppState = 1
-            DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptOK", 0)
+            'DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptOK", 0)
             If myAppState <> 1 Then
                 Activity = DavesCode.Reuse.ReturnActivity(Reason)
 
@@ -115,17 +115,17 @@ Partial Public Class AcceptLinac
                                 Case 2
                                     RaiseEvent PreRunuploaded(connectionString)
                                 Case 3
-                                    Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
+                                    'Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
                                     output = "Clinical"
-                                    Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+                                    'Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
 
-                                    RaiseEvent ClinicalApproved(connectionString)
+                                    'RaiseEvent ClinicalApproved(connectionString)
                                     'RaiseEvent SetModalities(connectionString)
                                 Case 4, 8
                                     RaiseEvent UpdateReturnButtons()
                                     'RaiseEvent ShowName(usergroupselected)
                                 Case 5
-                                    RaiseEvent Repairloaded(connectionString)
+                                    'RaiseEvent Repairloaded(connectionString)
                                     'RaiseEvent Repairloaded(connectionString)
                             End Select
                             output = connectionString
@@ -133,18 +133,18 @@ Partial Public Class AcceptLinac
                             myscope.Complete()
                         End Using
 
-                        modalidentifier = modalpopupextendergen.ID
+                        'modalidentifier = modalpopupextendergen.ID
                         textboxUser.Text = String.Empty
-                        modalpop.Hide()
+                        'modalpop.Hide()
                         'moved if to case 3 above
                         'If usergroupselected = 3 Then
                         '    Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
                         'End If
 
-                        Application.Lock()
-                        Application(appstate) = 1
-                        Application.UnLock()
-                        output = Application(appstate)
+                        'Application.Lock()
+                        'Application(appstate) = 1
+                        'Application.UnLock()
+                        'output = Application(appstate)
                         'eg from http://dotnetbites.wordpress.com/2014/02/15/call-parent-page-method-from-user-control-using-reflection/
                         ' this is an instrumentation field that displays application number ie 0 or 1
                         'Me.Page.GetType.InvokeMember("UpdateHiddenLAField", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
@@ -170,7 +170,9 @@ Partial Public Class AcceptLinac
                         '    RaiseEvent ShowName(usergroupselected)
                         'End Select
                         RaiseEvent ShowName(usergroupselected)
-                        RaiseEvent CloseAcceptlinac(MachineName)
+                        'RaiseEvent CloseAcceptlinac(MachineName)
+                        Dim returnstring As String = MachineName + "page.aspx?tabclicked=" + Tabby
+                        Response.Redirect(returnstring, False)
                         '    myscope.Complete()
                         'End Using
                     Catch ex As Exception
@@ -179,18 +181,18 @@ Partial Public Class AcceptLinac
                     End Try
                 Else
                     'If it gets to here something has gone wrong with SuccessfulLogin()
-                    modalidentifier = modalpopupextendergen.ID
+                    'modalidentifier = modalpopupextendergen.ID
                     textboxUser.Text = "Round we go"
-                    modalpopupextendergen.Show()
+                    'modalpopupextendergen.Show()
 
                 End If
             Else
                 textboxUser.Text = ""
-                Application(appstate) = String.Empty
-                modalidentifier = modalpopupextendergen.ID
+                Application(appstate) = 0
+                'modalidentifier = modalpopupextendergen.ID
                 'modalpop.Hide()
-                modalpop.Dispose()
-                modalidentifier = modalpop.ID
+                'modalpop.Dispose()
+                'modalidentifier = modalpop.ID
             End If
         Else
             Try
@@ -199,8 +201,8 @@ Partial Public Class AcceptLinac
                         RaiseEvent ClinicalApproved(connectionString)
                         output = "Clinical"
                         Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
-                        modalidentifier = modalpopupextendergen.ID
-                        modalpop.Hide()
+                        'modalidentifier = modalpopupextendergen.ID
+                        'modalpop.Hide()
                         myscope.Complete()
                     End Using
                 End If
@@ -230,71 +232,70 @@ Partial Public Class AcceptLinac
     'Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
     '    Response.Redirect("faultPage.aspx?val=LA1")
     'End Sub
-
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptPageLoad", 0)
-        Dim reload As String
-        Dim clinstate As String = "Clinical"
-        reload = DavesCode.Reuse.GetLastState(MachineName, 0)
-        If reload = Nothing Then
-            reload = clinstate
-        End If
+        ' DavesCode.Reuse.RecordStates("T1", "1", "AcceptucPageLoad", 0)
+        'Dim reload As String
+        'Dim clinstate As String = "Clinical"
+        'reload = DavesCode.Reuse.GetLastState(MachineName, 0)
+        'If reload = Nothing Then
+        '    reload = clinstate
+        'End If
 
-        appstate = "LogOn" + MachineName
-        suspstate = "Suspended" + MachineName
-        'from http://spacetech.dk/vb-net-string-compare-not-equal.html
-        If Not (reload.Equals(clinstate)) Then
-            Dim placeholder As PlaceHolder
+        'appstate = "LogOn" + MachineName
+        'suspstate = "Suspended" + MachineName
+        ''from http://spacetech.dk/vb-net-string-compare-not-equal.html
+        'If Not (reload.Equals(clinstate)) Then
+        '    Dim placeholder As PlaceHolder
 
-            Dim modalpop As ModalPopupExtender
-            Dim modalname As String = "Modalpopupextendergen" & Tabby
-            placeholder = CType(FindControl("PlaceHolder1"), PlaceHolder)
+        '    Dim modalpop As ModalPopupExtender
+        '    Dim modalname As String = "Modalpopupextendergen" & Tabby
+        '    placeholder = CType(FindControl("PlaceHolder1"), PlaceHolder)
 
-            modalpop = CType(placeholder.FindControl(modalname), ModalPopupExtender)
+        '    modalpop = CType(placeholder.FindControl(modalname), ModalPopupExtender)
 
 
 
-            If Not modalpop Is Nothing Then
-                Dim id As String = modalpop.ID
-            End If
-            WaitButtons("Acknowledge")
-            If Application(appstate) <> 1 Then
-                Dim MyString As String
-                Dim Tabnumber As String
-                If Tabby = 3 Then
-                    If Not MachineName Like "T#" Then
-                        Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
-                        CType(objCon, EnergyDisplayuc).LinacName = MachineName
-                        PlaceHolder2.Controls.Add(objCon)
-                        'PlaceHolder2.Visible = True
-                        Panel1.Width = 1000
-                        Panel1.Height = 200
-                        AcceptOK.Text = "Acknowledge Energies and Accept Linac"
-                    End If
+        '    If Not modalpop Is Nothing Then
+        '        Dim id As String = modalpop.ID
+        '    End If
+        WaitButtons("Acknowledge")
+        If Application(appstate) <> 1 Then
+            Dim MyString As String
+            Dim Tabnumber As String
+            If Tabby = 3 Then
+                If Not MachineName Like "T#" Then
+                    Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
+                    CType(objCon, EnergyDisplayuc).LinacName = MachineName
+                    PlaceHolder2.Controls.Add(objCon)
+                    'PlaceHolder2.Visible = True
+                    AcceptLinacDisplay.Width = 1000
+                    AcceptLinacDisplay.Height = 200
+                    AcceptOK.Text = "Acknowledge Energies and Accept Linac"
                 End If
-                MyString = "ModalPopupextendergen"
-                Tabnumber = tablabel
-                MyString = MyString & Tabnumber
-                modalpopupextendergen.ID = MyString
-                modalpopupextendergen.BehaviorID = "B" & MyString
-                modalpopupextendergen.TargetControlID = "label1"
-                modalpopupextendergen.PopupControlID = "Panel1"
-                modalpopupextendergen.BackgroundCssClass = "modalBackground"
-                PlaceHolder1.Controls.Add(modalpopupextendergen)
-                modalpopupextendergen.Show()
-                Dim textboxUser As TextBox = FindControl("txtchkUserName")
-                If Tabnumber = 1 Then
-                    textboxUser.Text = Tabnumber
-                    AcceptOK.Text = "Why the fuck doesn't this work"
-                End If
-                'placeholder = CType(FindControl("PlaceHolder1"), PlaceHolder)
-
-                'modalpop = CType(placeholder.FindControl(modalname), ModalPopupExtender)
-            Else
-                PlaceHolder2.Visible = False
             End If
-        Else
-            PlaceHolder2.Visible = False
+            '        MyString = "ModalPopupextendergen"
+            '        Tabnumber = tablabel
+            '        MyString = MyString & Tabnumber
+            '        modalpopupextendergen.ID = MyString
+            '        modalpopupextendergen.BehaviorID = "B" & MyString
+            '        modalpopupextendergen.TargetControlID = "label1"
+            '        modalpopupextendergen.PopupControlID = "Panel1"
+            '        modalpopupextendergen.BackgroundCssClass = "modalBackground"
+            '        PlaceHolder1.Controls.Add(modalpopupextendergen)
+            '        modalpopupextendergen.Show()
+            '        Dim textboxUser As TextBox = FindControl("txtchkUserName")
+            '        If Tabnumber = 1 Then
+            '            textboxUser.Text = Tabnumber
+            '            AcceptOK.Text = "Why the fuck doesn't this work"
+            '        End If
+            '        'placeholder = CType(FindControl("PlaceHolder1"), PlaceHolder)
+
+            '        'modalpop = CType(placeholder.FindControl(modalname), ModalPopupExtender)
+            '    Else
+            '        PlaceHolder2.Visible = False
+            '    End If
+            'Else
+            '    PlaceHolder2.Visible = False
         End If
 
 
@@ -330,11 +331,11 @@ Partial Public Class AcceptLinac
                 returnstring = MachineName + "page.aspx"
                 Response.Redirect(returnstring)
             Else
-                Dim modalpop As ModalPopupExtender
-                Dim modalname As String = "Modalpopupextendergen" & Tabby
-                Dim usergroupname As String = ""
-                modalpop = CType(FindControl(modalname), ModalPopupExtender)
-                modalpop.Hide()
+                'Dim modalpop As ModalPopupExtender
+                'Dim modalname As String = "Modalpopupextendergen" & Tabby
+                'Dim usergroupname As String = ""
+                'modalpop = CType(FindControl(modalname), ModalPopupExtender)
+                'modalpop.Hide()
             End If
         Else
             RaiseEvent ClinicalApproved(connectionString)

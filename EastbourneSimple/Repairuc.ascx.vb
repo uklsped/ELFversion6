@@ -142,8 +142,8 @@ Partial Class Repairuc
                 FindControl("tcl"), TabContainer)
             If Not tabcontainer1 Is Nothing Then
                 Dim panelcontrol1 As TabPanel = tabcontainer1.FindControl("TabPanel5")
-                accontrol1 = panelcontrol1.FindControl("AcceptLinac5")
-                AddHandler accontrol1.Repairloaded, AddressOf Repairlogon
+                'accontrol1 = panelcontrol1.FindControl("AcceptLinac5")
+                'AddHandler accontrol1.Repairloaded, AddressOf Repairlogon
 
             End If
         End If

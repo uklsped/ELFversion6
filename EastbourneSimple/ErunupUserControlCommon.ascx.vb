@@ -16,29 +16,19 @@ Partial Class ErunupUserControl
     Private atlasviewstate As String
     Private qaviewstate As String
     Private LinacFlag As String
-    'Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
     Private TodaydefectPark As DefectSavePark
     Private MainFaultPanel As controls_MainFaultDisplayuc
     Private BoxChanged As String
     Public Event BlankGroup(ByVal BlankUser As Integer)
     Private tabstate As String
-    'Private Objcon As ViewOpenFaults
-    'Private EngLoad As String
     Dim accontrol1 As AcceptLinac
     Dim accontrol7 As AcceptLinac
-    'Dim ObjComment As controls_CommentBoxuc
     Dim comment As String
     Private Obpage As Page
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
     Const ENG As String = "1"
     Const RAD As String = "7"
-    'Public ReadOnly Property CurrentComment() As String
-    '    Get
-    '        Return CommentBoxuc1.Text
-    '    End Get
-    'End Property
-
     Public Property DataName() As String
     Public Property LinacName() As String
     'Dim Property Tabby() As String
@@ -47,6 +37,7 @@ Partial Class ErunupUserControl
     Const QASELECTED As String = "ModalityQApopupselected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Private Modalities As controls_ModalityDisplayuc
+    Public Event OpenAcceptlinac(ByVal ClinicalTab As String)
 
     Private Property DynamicControlSelection() As String
         Get
@@ -63,15 +54,6 @@ Partial Class ErunupUserControl
             ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
         End Set
     End Property
-
-    'Protected Sub Close_ReportFaultPopUp(ByVal EquipmentId As String)
-    '    If LinacName = EquipmentId Then
-    '        DynamicControlSelection = String.Empty
-    '        Dim ReportFault As controls_ReportFaultPopUpuc = CType(FindControl("ReportFaultPopupuc"), controls_ReportFaultPopUpuc)
-    '        'ReportFaultPopupPlaceHolder.Controls.Remove(ReportFault)
-    '    End If
-
-    'End Sub
 
     Protected Sub Close_ModalityQAPopUp(ByVal EquipmentId As String)
         If LinacName = EquipmentId Then
@@ -122,125 +104,40 @@ Partial Class ErunupUserControl
         LinacFlag = "State" + LinacName
         BoxChanged = "EngBoxChanged" + LinacName
         tabstate = "ActTab" + LinacName
-        Dim logon As Integer = 0
-        Dim Alreadyrunup As Integer = 0
-        Dim tabcontainer1 As TabContainer
-        Page = Me.Page
-        mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-        If Not mpContentPlaceHolder Is Nothing Then
-            tabcontainer1 = CType(mpContentPlaceHolder.FindControl("tcl"), TabContainer)
-            If Not tabcontainer1 Is Nothing Then
-                If UserReason = 1 Then
-                    'Dim panelcontrol1 As TabPanel = tabcontainer1.FindControl("TabPanel1")
-                    ''accontrol1 = panelcontrol1.FindControl("AcceptLinac1") Removed 14/7
-                    ''AddHandler accontrol1.EngRunuploaded, AddressOf EngLogOnEvent
 
-                    Dim Acceptlinac As AcceptLinac = CType(FindControl("Acceptlinac1"), AcceptLinac)
-                    If Acceptlinac Is Nothing Then
-                        If (Not HttpContext.Current.Application(appstate) Is Nothing) Then
-                            logon = CInt(HttpContext.Current.Application(appstate))
-                        End If
-                        If logon = 0 Then
-                            If (Not HttpContext.Current.Application(RunUpDone) Is Nothing) Then
-                                Alreadyrunup = CInt(HttpContext.Current.Application(RunUpDone))
-                            End If
-                            If Alreadyrunup = 0 Then
-                                Dim ObjAccept As AcceptLinac = Page.LoadControl("AcceptLinac.ascx")
-                                ObjAccept.LinacName = LinacName
-                                ObjAccept.ID = "AcceptLinac1"
-                                ObjAccept.UserReason = 1
-                                ObjAccept.Tabby = 1
-                                AddHandler ObjAccept.CloseAcceptlinac, AddressOf Close_AcceptLinac
-                                PlaceHolderAcceptLinac.Controls.Add(ObjAccept)
-                                ObjAccept.Visible = False
-                                'End If
-                                DavesCode.Reuse.RecordStates(LinacName, 1, "engrunuppageinit", 0)
-                            End If
-                        End If
-                        End If
-                Else
-                        Dim panelcontrol7 As TabPanel = tabcontainer1.FindControl("TabPanel7")
-                    'accontrol7 = panelcontrol7.FindControl("AcceptLinac7")
-                    'AddHandler accontrol7.EngRunuploaded, AddressOf EngLogOnEvent
-                End If
-            End If
-        End If
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
         AddHandler ConfirmPage1.ConfirmExit, AddressOf ConfirmExitEvent ' this is if imaging wasn't selected
 
-
-        'EngLoad = "Loaded" + LinacName
-
-    End Sub
-
-    Protected Sub Close_AcceptLinac(ByVal EquipmentId As String)
-        If LinacName = EquipmentId Then
-
-
-            Dim Acceptlinac As AcceptLinac = CType(FindControl("Acceptlinac1"), AcceptLinac)
-            PlaceHolderAcceptLinac.Controls.Remove(Acceptlinac)
-            Acceptlinac = CType(FindControl("Acceptlinac1"), AcceptLinac)
-        End If
     End Sub
 
     Public Sub EngLogOnEvent(connectionString As String)
         'because B2 is to be added and because LA1 and LA4 are to be treated like B1 etc changed case statement 9/4/19
         '14/7
+        appstate = "LogOn" + LinacName
+        actionstate = "ActionState" + LinacName
+        suspstate = "Suspended" + LinacName
+        FaultOriginTab = "FOT" + LinacName
+        RunUpDone = "rppTab" + LinacName
+        faultviewstate = "Faultsee" + LinacName
+        atlasviewstate = "Atlassee" + LinacName
+        qaviewstate = "QAsee" + LinacName
+        LinacFlag = "State" + LinacName
+        BoxChanged = "EngBoxChanged" + LinacName
+        tabstate = "ActTab" + LinacName
 
         If Not LinacName Like "T?" Then
             SetEnergies(connectionString)
             SetImaging(connectionString)
-            'SetModalities(connectionString)
             PhysicsQA.Visible = True
-            'SetModalityDisplay()
         End If
 
         GridView1.Visible = True
         GridViewImage.Visible = True
         Application(atlasviewstate) = 1
-        Dim acceptlinac As AcceptLinac = CType(FindControl("Acceptlinac1"), AcceptLinac)
-        acceptlinac.Visible = True
+
+
     End Sub
-    'Public Sub SetModalities(ByVal connectionString As String)
-    '    'If Application(appstate) Then
-    '    Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
-    '    CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
-    '    CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
-    '    CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
-    '    CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
-    '    ModalityPlaceholder.Controls.Add(Modalities)
-    '    ModalityDisplayPanel.Visible = True
-    '    'End If
 
-    'End Sub
-    'Private Sub SetModalityDisplay()
-    '    'Dim tabcontainer1 As TabContainer
-    '    Dim DisplayPanel As Panel
-    '    Page = Me.Page
-    '    mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-    '    If Not mpContentPlaceHolder Is Nothing Then
-    '        DisplayPanel = CType(mpContentPlaceHolder.FindControl("ModalityDisplayPanel"), Panel)
-    '        If Not DisplayPanel Is Nothing Then
-    '            DisplayPanel.Visible = True
-    '        End If
-    '    End If
-    'End Sub
-    'this updates defect dropdown list because a concession has been closed perhaps rename
-    'Protected Sub Update_FaultClosedDisplays(ByVal EquipmentID As String, ByVal incidentID As String)
-
-    'If LinacName = EquipmentID Then
-
-    '    'Dim todayfault As TodayClosedFault = PlaceHolderTodaysclosedfaults.FindControl("Todaysfaults")
-    '    'todayfault.SetGrid()
-    '    If LinacName Like "T?" Then
-    '            TodaydefectPark = PlaceHolderDefectSave.FindControl("DefectDisplay")
-    '            TodaydefectPark.ResetDefectDropDown(incidentID)
-    '        Else
-    '            Todaydefect = PlaceHolderDefectSave.FindControl("DefectDisplay")
-    '            Todaydefect.ResetDefectDropDown(incidentID)
-    '        End If
-    '    End If
-    'End Sub
     ' This updates the defect display on defectsave etc when repeat fault from defectsave
     Protected Sub Update_DefectDailyDisplay(ByVal EquipmentID As String)
         If LinacName = EquipmentID Then
@@ -266,7 +163,7 @@ Partial Class ErunupUserControl
     End Sub
 
     Public Sub UserApprovedEvent(ByVal Tabset As String, ByVal Userinfo As String)
-
+        Dim ClinicalTab As String = "3"
         'If Tabset = "1" Or "7" Then what about 7?
         If (Tabset = "1") Or (Tabset = "666") Or (Tabset = "7") Then
             Dim Action As String = Application(actionstate)
@@ -289,27 +186,21 @@ Partial Class ErunupUserControl
                 If Successful Then
                     'This app sets for repair, maintenance and physics tab to know that run up was done
                     Application(RunUpDone) = 1
-                    'Valid = True
                     Application(appstate) = 0
                     Application(tabstate) = String.Empty
 
                     CommentBox.ResetCommentBox(String.Empty)
-                    'Moved dal to newengrunup 19/9/18 to aid error handling
-                    'Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabby, username, Comment, Valid, False, False)
-                    'If Successful Then
-                    'Behaviour the same for all linacs and Tomo now 9/4/19
-                    'If LinacName Like "LA?" Then
-                    '    Application(LinacFlag) = "Engineering Approved"
-                    '    strScript += "window.location='"
-                    '    strScript += machinelabel
-                    '    strScript += "</script>"
-                    '    ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
-                    'Else
-                    Application(LinacFlag) = "Clinical"
-                    Dim returnstring As String = LinacName + "page.aspx?tabref=3"
+                    'Application(LinacFlag) = "Clinical"
+                    Application(LinacFlag) = "Suspended"
+                    'Dim returnstring As String = LinacName + "page.aspx?tabref=3"
+                    Dim returnstring As String = LinacName + "page.aspx"
+                    'Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
                     Application(suspstate) = 1
+                    'RaiseEvent OpenAcceptlinac(ClinicalTab)
                     Response.Redirect(returnstring)
                     'End If
+
+
                 Else
                     RaiseError("WriteEnergies")
                 End If
@@ -638,23 +529,23 @@ Partial Class ErunupUserControl
                         'Else
                         'Inserted imaging check from preclinicaluser control
                         Dim icounter As Integer = 0
-                            'Dim tclcontainer As TabContainer
-                            For Each grv As GridViewRow In GridViewImage.Rows
+                        'Dim tclcontainer As TabContainer
+                        For Each grv As GridViewRow In GridViewImage.Rows
 
-                                Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBoxImage"), CheckBox)
-                                If checktick.Checked = True Then
-                                    icounter = icounter + 1
-                                End If
-                            Next
-                            If icounter <> 0 Then
-                                ConfirmExitEvent()
-                            Else
-                                Dim cptrl As ConfirmPage = CType(FindControl("ConfirmPage1"), ConfirmPage)
-                                Dim cpbutton As Button = CType(cptrl.FindControl("AcceptOK"), Button)
-                                cpbutton.Text = "Confirm No Imaging"
-                                ConfirmPage1.Visible = True
-
+                            Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBoxImage"), CheckBox)
+                            If checktick.Checked = True Then
+                                icounter = icounter + 1
                             End If
+                        Next
+                        If icounter <> 0 Then
+                            ConfirmExitEvent()
+                        Else
+                            Dim cptrl As ConfirmPage = CType(FindControl("ConfirmPage1"), ConfirmPage)
+                            Dim cpbutton As Button = CType(cptrl.FindControl("AcceptOK"), Button)
+                            cpbutton.Text = "Confirm No Imaging"
+                            ConfirmPage1.Visible = True
+
+                        End If
 
                         'End If
 
@@ -759,7 +650,7 @@ Partial Class ErunupUserControl
 
     '15 April Comment added as a result of Bug 6
     Private Sub ForceFocus(ByVal ctrl As Control)
-        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" + _
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
         ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
     Private Sub WaitButtons(ByVal WaitType As String)
@@ -822,37 +713,10 @@ Partial Class ErunupUserControl
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        'no need for if behaviours the same now 9/4/19
-        'If LinacName Like "LA?" Then
-        '    wcbutton.Text = "Confirm Energies"
-        'Else
         wcbutton.Text = "Confirm for Clinical Use"
-        'End If
-
         Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
         WriteDatauc1.Visible = True
         ForceFocus(wctext)
     End Sub
-
-    'Protected Sub ReportFaultButton_Click(sender As Object, e As EventArgs) Handles ReportFaultButton.Click
-    '    'Need to load reportfaultpopupuc here to pass comment box
-    '    Dim CommentControl As controls_CommentBoxuc = FindControl("CommentBox")
-    '    Dim DaTxtBox As TextBox = CommentControl.FindControl("TextBox")
-    '    Dim Comment As String = DaTxtBox.Text
-    '    Application("TabComment") = Comment
-
-    '    Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-    '    objReportFault.LinacName = LinacName
-    '    objReportFault.ID = "ReportFaultPopupuc"
-    '    objReportFault.ParentControl = ENG
-    '    DynamicControlSelection = FAULTPOPUPSELECTED
-
-    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-    '    AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
-    '    ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
-
-    'End Sub
-
 
 End Class
