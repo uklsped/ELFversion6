@@ -188,7 +188,7 @@ Partial Class ErunupUserControl
                     'This app sets for repair, maintenance and physics tab to know that run up was done
                     Application(RunUpDone) = 1
                     Application(appstate) = 0
-                    Application(tabstate) = String.Empty
+                    Application(tabstate) = 0
 
                     CommentBox.ResetCommentBox(String.Empty)
                     'Application(LinacFlag) = "Clinical"
@@ -215,9 +215,9 @@ Partial Class ErunupUserControl
                 Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, comment, Valid, False, False, FaultParams)
                 If Successful Then
                     Application(LinacFlag) = "Linac Unauthorised"
-                    Application(RunUpDone) = Nothing
-                    Application(appstate) = Nothing
-                    Application(tabstate) = String.Empty
+                    Application(RunUpDone) = 0
+                    Application(appstate) = 0
+                    Application(tabstate) = 0
                     If Not Userinfo = "Restored" Then
                         CommentBox.ResetCommentBox(String.Empty)
                     End If
