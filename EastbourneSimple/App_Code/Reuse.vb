@@ -2952,10 +2952,10 @@ Namespace DavesCode
 
 
             If (Not HttpContext.Current.Application(LogOn) Is Nothing) Then
-                'AppState = CInt(HttpContext.Current.Application(LogOn))
+                AppState = CInt(HttpContext.Current.Application(LogOn))
             End If
             If (Not HttpContext.Current.Application(LiveTab) Is Nothing) Then
-                'ActiveTab = CInt(HttpContext.Current.Application(LogOn))
+                ActiveTab = CInt(HttpContext.Current.Application(LogOn))
             End If
             If (Not HttpContext.Current.Application(SuspValue) Is Nothing) Then
                 suspended = CInt(HttpContext.Current.Application(SuspValue))

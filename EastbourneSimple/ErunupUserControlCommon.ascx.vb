@@ -163,6 +163,7 @@ Partial Class ErunupUserControl
     End Sub
 
     Public Sub UserApprovedEvent(ByVal Tabset As String, ByVal Userinfo As String)
+        DavesCode.Reuse.RecordStates(LinacName, Tabset, "Eng userapproved event", 0)
         Dim ClinicalTab As String = "3"
         'If Tabset = "1" Or "7" Then what about 7?
         If (Tabset = "1") Or (Tabset = "666") Or (Tabset = "7") Then
@@ -509,7 +510,7 @@ Partial Class ErunupUserControl
         If UserReason = ENG Then
             Radcount = ConfirmNoRadConcession()
         End If
-
+        DavesCode.Reuse.RecordStates(LinacName, 1, "Handover button", 0)
         If Radcount Then
             If LinacName Like "T?" Then
                 ConfirmExitEvent()
@@ -600,7 +601,7 @@ Partial Class ErunupUserControl
 
 
     Protected Sub LogOff_Click(ByVal sender As Object, ByVal e As EventArgs) Handles LogOffButton.Click
-
+        DavesCode.Reuse.RecordStates(LinacName, 1, "Log off click", 0)
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
