@@ -344,8 +344,7 @@ T1 Status
    <asp:Panel ID="AcceptLinacPopup" runat="server" style="display:none" CssClass="modalPopup" Height="150px" 
             Width="350px" Font-Underline="False" >
         
-        fuck
-        <asp:UpdatePanel ID="UpdatePanel10" runat="server" >
+            <asp:UpdatePanel ID="UpdatePanel10" runat="server" >
             <ContentTemplate>
                 <asp:PlaceHolder ID="AcceptLinacPlaceholder" runat="server"></asp:PlaceHolder>
             </ContentTemplate>

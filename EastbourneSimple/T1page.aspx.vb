@@ -531,9 +531,7 @@ Partial Public Class T1page
     End Sub
 
     Protected Sub Launchmodal(ByVal ActiveTab As String)
-        'Dim AcceptLinacControl As AcceptLinacuc
-        'AcceptLinacControl =
-        'If AcceptLinacControl Is Nothing Then
+
         AcceptLinacModalPopup.Hide()
         Dim UserReason As Integer = 0
         UserReason = CInt(ActiveTab)
