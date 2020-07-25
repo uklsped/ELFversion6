@@ -222,7 +222,7 @@ Partial Class ClinicalUserControl
                     End If
                     CommentBox.ResetCommentBox(String.Empty)
                     Application(treatmentstate) = "Yes"
-                    Application(appstate) = Nothing
+                    Application(appstate) = 0
                     Application(suspstate) = 1
                     Application(RunUpDone) = 1
                     StateLabel.Text = "Suspended"
