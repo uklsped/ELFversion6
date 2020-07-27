@@ -34,8 +34,34 @@ Partial Class WriteDatauc
         actionstate = "ActionState" + LinacName
         Dim logerrorbox As Label = FindControl("LoginErrordetails")
         logerrorbox.Text = Nothing
+        Dim Tabb As Integer = -1
+        Dim Tabbie As String = Tabby
+        If Integer.TryParse(Tabbie, Tabb) Then
+            Tabb = Integer.Parse(Tabby)
+        End If
+
+        If Tabbie = "EndOfDay" Then
+            Tabb = 102
+        ElseIf Tabbie = "Admin" Then
+            Tabb = 0
+        ElseIf Tabbie = "Report" Then
+            Tabb = 103
+        ElseIf Tabbie = "UpdateFault" Then
+            Tabb = 104
+        ElseIf Tabbie = "Defect" Then
+            Tabb = 105
+        ElseIf Tabbie = "Major" Then
+            Tabb = 106
+        ElseIf Tabbie = "Incident" Then
+            Tabb = 107
+        ElseIf Tabbie = "recover" Then
+            Tabb = 108
+        ElseIf Tabbie = "image" Then
+            Tabb = 109
+        End If
+        DavesCode.Reuse.RecordStates(LinacName, Tabb, "writedatauc", 0)
         'Reference to defect removed 23/11/16 Added back in 26/03/18
-        'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Report" Or tablabel = "handover" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "Defect" Or tablabel = "recover" Or tablabel = "Image" Or tablabel = "Major" Then
+        'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Repor"rect" Or tablabel = "handover" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "Defect" Or tablabel = "recover" Or tablabel = "Image" Or tablabel = "Major" Then
         If Application(appstate) = 1 Or Tabby = "3" Or Tabby = "Report" Or Tabby = "EndDay" Or Tabby = "Admin" Or Tabby = "Updatefault" Or Tabby = "incident" Or Tabby = "0" Or Tabby = "Defect" Or Tabby = "recover" Or Tabby = "Image" Or Tabby = "Major" Then
             'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Report" Or tablabel = "handover" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "recover" Or tablabel = "Image" Then
 

@@ -2794,8 +2794,7 @@ Namespace DavesCode
             Dim nowstatus As String = "Error"
             Dim linacName As String = linac
             Dim conn As SqlConnection
-            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
-            "connectionstring").ConnectionString
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
             'Dim Machinestatus As SqlCommand
             Dim StatusNow As SqlCommand
             Dim ResetDayCom As SqlCommand
@@ -2805,7 +2804,7 @@ Namespace DavesCode
             Dim oldDayofyear As Integer
             Dim newDayofyear As Integer
             Dim Status As String = ""
-            Dim AppState As Integer = 100 ' this is set to 100 to detect if Appstate is null later.
+            Dim AppState As Integer = 200 ' this is set to 100 to detect if Appstate is null later.
             Dim LogOn As String
             Dim LiveTab As String
             Dim SuspValue As String
@@ -2818,13 +2817,13 @@ Namespace DavesCode
 
             conn = New SqlConnection(connectionString)
 
-
+            DavesCode.Reuse.RecordStates(linacName, 0, "getlasttime1", 0)
 
             If (Not HttpContext.Current.Application(LogOn) Is Nothing) Then
                 AppState = CInt(HttpContext.Current.Application(LogOn))
             End If
 
-
+            DavesCode.Reuse.RecordStates(linacName, 0, "getlasttime2", 0)
 
             If PreviousState = 0 Then
 
@@ -2871,7 +2870,7 @@ Namespace DavesCode
             'This line checks to see if Appstate was null, if it was it will still be 100 from the start of the sub.
             'If it is null then the application states are reset depending on the last entry in the database.
             If nowstatus IsNot "Error" Then
-                If AppState = 100 Then
+                If AppState = 200 Then
                     Select Case activity
                         Case 101, 102, 7, 103
                             HttpContext.Current.Application(LogOn) = 0
@@ -2888,7 +2887,7 @@ Namespace DavesCode
 
                     End Select
                 End If
-
+                DavesCode.Reuse.RecordStates(linacName, 0, "getlasttime3", 0)
 
                 'this an instrumentation table it could be removed at a later update.
                 If nowstatus = "EndDay" Then
@@ -2934,7 +2933,8 @@ Namespace DavesCode
             Dim activity As Integer = 0
             Dim StateID As Integer = 0
             Dim Status As String = ""
-            Dim AppState As Integer = 100 ' this is set to 100 to detect if Appstate is null later.
+            Dim AppState As Integer = 99 ' this is set to 100 to detect if Appstate is null later.
+            'Dim Appstate As Integer
             Dim LogOn As String
             Dim LiveTab As String
             Dim SuspValue As String
@@ -2953,6 +2953,8 @@ Namespace DavesCode
 
             If (Not HttpContext.Current.Application(LogOn) Is Nothing) Then
                 AppState = CInt(HttpContext.Current.Application(LogOn))
+            Else
+                AppState = HttpContext.Current.Application(LogOn)
             End If
             If (Not HttpContext.Current.Application(LiveTab) Is Nothing) Then
                 ActiveTab = CInt(HttpContext.Current.Application(LogOn))
