@@ -115,11 +115,11 @@ Partial Public Class B2page
                             Case Else
                                 DavesCode.Reuse.SetStatus(Userinfo, "Linac Unauthorised", 5, 102, EquipmentID, 0)
                                 Application(LinacFlag) = "Linac Unauthorised"
-                                Application(suspstate) = Nothing
-                                Application(appstate) = Nothing
+                                Application(suspstate) = 0
+                                Application(appstate) = 0
                                 Application(FaultOriginTab) = Nothing
                                 Application(clinicalstate) = Nothing
-                                Application(RunUpDone) = Nothing
+                                Application(RunUpDone) = 0
                                 Application(treatmentstate) = "Yes"
                                 Application(activetabstate) = Nothing
                         End Select
@@ -486,7 +486,7 @@ Partial Public Class B2page
 
         If Not IsPostBack Then
 
-            If Application(appstate) <> 1 Then
+            If Application(appstate) = 0 Then
                 Reload = True
 
             ElseIf Application(appstate) = 1 Then
@@ -560,7 +560,7 @@ Partial Public Class B2page
                                 clincontrol.Visible = False
                             End If
 
-                            If Application(appstate) <> 1 Then
+                            If Application(appstate) = 0 Then
                                 Dim failingstate As String = Application(FaultOriginTab)
                                 If (refpage = "Fault") Then
                                     Select Case failingstate
@@ -1146,11 +1146,11 @@ Partial Public Class B2page
             End If
         End If
         If Not Breakdown Then
-            Application(suspstate) = Nothing
-            Application(appstate) = Nothing
+            Application(suspstate) = 0
+            Application(appstate) = 0
             Application(FaultOriginTab) = Nothing
             Application(clinicalstate) = Nothing
-            Application(RunUpDone) = Nothing
+            Application(RunUpDone) = 0
             Application(treatmentstate) = "Yes"
             Application(activetabstate) = Nothing
             Response.Redirect(returnstring)
@@ -1335,12 +1335,12 @@ Partial Public Class B2page
             Case Else
                 'This caters for when the system is already idling as it were.
                 returnstring = EquipmentID + "page.aspx"
-                Application(appstate) = Nothing
-                Response.Redirect(returnstring)
+                        Application(appstate) = 0
+                        Response.Redirect(returnstring)
         End Select
         returnstring = EquipmentID + "page.aspx?tabref=" + Convert.ToString(activetab) + "&recovered=1"
         Application(technicalstate) = Nothing
-        Application(appstate) = Nothing
+                Application(appstate) = 0
 
 
                 myscope.Complete()

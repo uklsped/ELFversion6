@@ -58,7 +58,7 @@ Partial Public Class AcceptLinacuc
             Dim myAppState As Integer = CInt(Application(appstate))
             'myAppState = 1
             'DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptOK", 0)
-            If myAppState <> 1 Then
+            If myAppState = 0 Then
                 Activity = DavesCode.Reuse.ReturnActivity(UserReason)
 
                 'This can only return here if there is a valid log in
@@ -167,9 +167,9 @@ Partial Public Class AcceptLinacuc
         'If Not (reload.Equals(clinstate)) Then
 
         WaitButtons("Acknowledge")
-        If Application(appstate) <> 1 Then
+        If Application(appstate) = 0 Then
 
-            AcceptTablabel.text = "Log on to " & DavesCode.Reuse.ReturnActivity(UserReason)
+            AcceptTabLabel.Text = "Log on to " & DavesCode.Reuse.ReturnActivity(UserReason)
 
             If Tabby = 3 Then
                 If Not LinacName Like "T#" Then
@@ -200,10 +200,10 @@ Partial Public Class AcceptLinacuc
         If Not (reload.Equals(clinstate)) Then
             Dim myAppState As Integer = CInt(Application(appstate))
 
-            If myAppState <> 1 Then
+            If myAppState = 0 Then
                 Dim loginUsername As String = Username
                 Dim returnstring As String
-                Application(appstate) = 0
+                'Application(appstate) = 0
 
                 If Tabby = 3 Then
                     Application(suspstate) = 1

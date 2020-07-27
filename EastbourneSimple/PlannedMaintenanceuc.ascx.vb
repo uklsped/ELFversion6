@@ -162,13 +162,13 @@ Partial Class Planned_Maintenanceuc
                     Select Case Radioselect
                         Case 1
                             Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = Nothing
-                            Application(suspstate) = Nothing
+                            Application(RunUpDone) = 0
+                            Application(suspstate) = 0
                             Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
                             'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             Response.Redirect(returnstring)
                         Case 2
-                            Application(suspstate) = Nothing
+                            Application(suspstate) = 0
                             Application(FaultOriginTab) = Nothing
                             Application(RunUpDone) = 1
                             'DavesCode.Reuse.ReturnApplicationState(Tabused)
@@ -188,8 +188,8 @@ Partial Class Planned_Maintenanceuc
                             Response.Redirect(returnstring)
                         Case 102
                             Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = Nothing
-                            Application(suspstate) = Nothing
+                            Application(RunUpDone) = 0
+                            Application(suspstate) = 0
                             'DavesCode.Reuse.ReturnApplicationState(Tabused)
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                         Case 8

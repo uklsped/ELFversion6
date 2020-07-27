@@ -93,7 +93,7 @@ Partial Public Class AcceptLinac
             Dim myAppState As Integer = CInt(Application(appstate))
             'myAppState = 1
             DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptOK", 0)
-            If myAppState <> 1 Then
+            If myAppState = 0 Then
                 Activity = DavesCode.Reuse.ReturnActivity(Reason)
 
                 'This can only return here if there is a valid log in
@@ -186,7 +186,7 @@ Partial Public Class AcceptLinac
                 End If
             Else
                 textboxUser.Text = ""
-                Application(appstate) = String.Empty
+                Application(appstate) = 0
                 modalidentifier = modalpopupextendergen.ID
                 'modalpop.Hide()
                 modalpop.Dispose()
@@ -258,7 +258,7 @@ Partial Public Class AcceptLinac
                 Dim id As String = modalpop.ID
             End If
             WaitButtons("Acknowledge")
-            If Application(appstate) <> 1 Then
+            If Application(appstate) = 0 Then
                 Dim MyString As String
                 Dim Tabnumber As String
                 If Tabby = 3 Then
@@ -316,7 +316,7 @@ Partial Public Class AcceptLinac
         If Not (reload.Equals(clinstate)) Then
             Dim myAppState As Integer = CInt(Application(appstate))
 
-            If myAppState <> 1 Then
+            If myAppState = 0 Then
                 Dim loginUsername As String = username
                 Dim returnstring As String
                 Application(appstate) = 0

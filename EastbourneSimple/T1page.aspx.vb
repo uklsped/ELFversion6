@@ -609,7 +609,7 @@ Partial Public Class T1page
 
         If Not IsPostBack Then
 
-            If Application(appstate) <> 1 Then
+            If Application(appstate) = 0 Then
                 Reload = True
 
             ElseIf Application(appstate) = 1 Then
@@ -684,10 +684,11 @@ Partial Public Class T1page
                                 clincontrol.Visible = False
                             End If
 
-                            If Application(appstate) <> 1 Then
+                            If Application(appstate) = 0 Then
                                 Dim failingstate As String = Application(FaultOriginTab)
                                 If (refpage = "Fault") Then
                                     If Application(RecoverFault) Then
+                                        'Check why this is this value
                                         failingstate = 100
                                         Application(RecoverFault) = False
 

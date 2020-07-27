@@ -241,8 +241,8 @@ Partial Class ErunupUserControl
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Application(LinacFlag) = "Linac Unauthorised"
-        Application(RunUpDone) = Nothing
-        Application(appstate) = Nothing
+        Application(RunUpDone) = 0
+        Application(appstate) = 0
         HttpContext.Current.Application(BoxChanged) = Nothing
         Application(tabstate) = String.Empty
         Dim strScript As String = "<script>"
@@ -266,8 +266,8 @@ Partial Class ErunupUserControl
         Dim strScript As String = "<script>"
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Application(LinacFlag) = "Linac Unauthorised"
-        Application(RunUpDone) = Nothing
-        Application(appstate) = Nothing
+        Application(RunUpDone) = 0
+        Application(appstate) = 0
         'CommentBox.ResetCommentBox(String.Empty)
         Application(tabstate) = String.Empty
         strScript += message

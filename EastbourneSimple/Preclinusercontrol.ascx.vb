@@ -207,7 +207,7 @@ Partial Class Preclinusercontrol
             Dim grdviewI As GridView = FindControl("GridViewImage")
             Dim FaultP As DavesCode.FaultParameters = New DavesCode.FaultParameters()
             'this changed 21 aug to allow to move on to other states so suspstate is made to be suspended
-            Application(appstate) = Nothing
+            Application(appstate) = 0
 
             If Action = "Confirm" Then
                 Application(LinacFlag) = "Clinical"
@@ -250,7 +250,7 @@ Partial Class Preclinusercontrol
         Dim strScript As String = "<script>"
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Application(LinacFlag) = "Linac Unauthorised"
-        Application(appstate) = Nothing
+        Application(appstate) = 0
         CommentBox.ResetCommentBox(String.Empty)
         Application(tabstate) = String.Empty
         strScript += message
@@ -372,7 +372,7 @@ Partial Class Preclinusercontrol
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
 
-        Application(appstate) = Nothing
+        Application(appstate) = 0
         HttpContext.Current.Application(BoxChanged) = Nothing
         Application(tabstate) = String.Empty
         Dim strScript As String = "<script>"

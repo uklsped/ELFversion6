@@ -227,8 +227,8 @@ Partial Class Repairuc
 
                         Case 1
                             Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = Nothing
-                            Application(suspstate) = Nothing
+                            Application(RunUpDone) = 0
+                            Application(suspstate) = 0
                             Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
                             Response.Redirect(returnstring)
 
@@ -247,8 +247,8 @@ Partial Class Repairuc
                             Response.Redirect(returnstring)
                         Case 102
                             Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = Nothing
-                            Application(suspstate) = Nothing
+                            Application(RunUpDone) = 0
+                            Application(suspstate) = 0
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                         Case 8
                             Application(FaultOriginTab) = Nothing

@@ -171,15 +171,15 @@ Partial Class Traininguc
             If result Then
                 If Action = "Confirm" Then
 
-                    Application(appstate) = Nothing
+                    Application(appstate) = 0
                     Application(tabstate) = String.Empty
                     CommentBox.ResetCommentBox(String.Empty)
                     Select Case Radioselect
                         Case 1
 
                             Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = Nothing
-                            Application(suspstate) = Nothing
+                            Application(RunUpDone) = 0
+                            Application(suspstate) = 0
                             If lastusergroup <> 3 Then
                                 Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
                                 Response.Redirect(returnstring)
@@ -223,8 +223,8 @@ Partial Class Traininguc
                         Case 102
 
                             Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = Nothing
-                            Application(suspstate) = Nothing
+                            Application(RunUpDone) = 0
+                            Application(suspstate) = 0
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                     End Select
 
