@@ -52,14 +52,14 @@ Partial Class Traininguc
     'Public Sub UpdateTrainingHandler(ByVal EquipmentID As String)
     Public Sub UpdateReturnButtonsHandler()
         'removed reference to LA 9/4/19
-        If Not IsPostBack Then
-            RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
-            RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
-            RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
-            RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
-            RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
-            'End If
-        End If
+        'If Not IsPostBack Then
+        '    RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+        '    RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+        '    RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
+        '    RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
+        '    RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
+        '    'End If
+        'End If
 
         DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
         If Application(suspstate) = 1 Then
@@ -261,6 +261,11 @@ Partial Class Traininguc
             Application(faultviewstate) = 1
             Application(atlasviewstate) = 1
             Application(qaviewstate) = 1
+            RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+            RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+            RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
+            RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
+            RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
         End If
 
     End Sub

@@ -86,7 +86,7 @@ Partial Public Class AcceptLinacuc
                                     'RaiseEvent ClinicalApproved(connectionString)
                                     'RaiseEvent SetModalities(connectionString)
                                 Case 4, 8
-                                    RaiseEvent UpdateReturnButtons()
+                                    'RaiseEvent UpdateReturnButtons()
                                     'RaiseEvent ShowName(usergroupselected)
                                 Case 5
                                     'RaiseEvent Repairloaded(connectionString)
@@ -165,7 +165,7 @@ Partial Public Class AcceptLinacuc
 
         ''from http://spacetech.dk/vb-net-string-compare-not-equal.html
         'If Not (reload.Equals(clinstate)) Then
-
+        ForceFocus(txtchkUserName)
         WaitButtons("Acknowledge")
         If Application(appstate) = 0 Then
 
@@ -272,6 +272,10 @@ Partial Public Class AcceptLinacuc
 
         End Select
 
+    End Sub
+    Private Sub ForceFocus(ByVal ctrl As Control)
+        ScriptManager.RegisterStartupScript(Me, Me.[GetType](), "FocusScript", "setTimeout(function(){$get('" +
+        ctrl.ClientID + "').focus();}, 100);", True)
     End Sub
 
 End Class

@@ -15,7 +15,7 @@ Partial Public Class T3page
     Private comment As String
     Private mpContentPlaceHolder As ContentPlaceHolder
     Private wctrl As WriteDatauc
-    Private cusctrl As AcceptLinac
+    'Private cusctrl As AcceptLinac
     Private LinacFlag As String = "StateT3"
     Private appstate As String = "LogOnT3"
     Private suspstate As String = "SuspendedT3"
@@ -164,11 +164,11 @@ Partial Public Class T3page
         Dim ClinicalUserControlid As String = "ClinicalUserControl1"
         Dim panel As Panel = tcl.ActiveTab.FindControl(containerID)
         Dim clincontrol As UserControl = tcl.ActiveTab.FindControl(ClinicalUserControlid)
-        Dim Acceptcontrolid As String = "AcceptLinac3"
-        Dim acceptcontrol As AcceptLinac = tcl.ActiveTab.FindControl(Acceptcontrolid)
+        'Dim Acceptcontrolid As String = "AcceptLinac3"
+        'Dim acceptcontrol As AcceptLinac = tcl.ActiveTab.FindControl(Acceptcontrolid)
         If (Not panel Is Nothing) Then
             clincontrol.Visible = True
-            acceptcontrol.Visible = False
+            'acceptcontrol.Visible = False
         End If
 
     End Sub
@@ -662,12 +662,12 @@ Partial Public Class T3page
                         End If
                         Dim containerId As String = "TabContent" & tabActive
                         Application(activetabstate) = tabActive
-                        Dim logcontrolId As String = "AcceptLinac" & tcl.ActiveTabIndex
+                        'Dim logcontrolId As String = "AcceptLinac" & tcl.ActiveTabIndex
                         Dim panel As Panel = tcl.ActiveTab.FindControl(containerId)
                         Dim modalpopupextendername As String = "modalpopupextendergen"
                         modalpopupextendername = modalpopupextendername & tabActive
 
-                        Dim logcontrol As AcceptLinac = tcl.ActiveTab.FindControl(logcontrolId)
+                        'Dim logcontrol As AcceptLinac = tcl.ActiveTab.FindControl(logcontrolId)
                         Dim rucontrol As ErunupUserControl = tcl.ActiveTab.FindControl(runupcontrolId)
                         Dim preccontrol As Preclinusercontrol = tcl.ActiveTab.FindControl(preclincontrolID)
                         Dim clincontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
@@ -695,22 +695,22 @@ Partial Public Class T3page
                                     End If
                                     Select Case failingstate
                                         Case 1, 4, 5, 6
-                                            logcontrol.Visible = False
+                                            'logcontrol.Visible = False
                                             AcceptOKnosigpass(5, lastuser, lastusergroup, connectionString)
                                             repcontrol.Repairlogon(connectionString)
 
                                         Case Else
-                                            If (Not logcontrol Is Nothing) Then
-                                                Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
-                                                Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
-                                                logcontrol.Visible = True
-                                                'added 50416
-                                                ForceFocus(textboxmodal)
-                                                If (Not modalid Is Nothing) Then
-                                                    modalid.Show()
+                                            'If (Not logcontrol Is Nothing) Then
+                                            '    Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
+                                            '    Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
+                                            '    logcontrol.Visible = True
+                                            '    'added 50416
+                                            '    ForceFocus(textboxmodal)
+                                            '    If (Not modalid Is Nothing) Then
+                                            '        modalid.Show()
 
-                                                End If
-                                            End If
+                                            '    End If
+                                            'End If
                                     End Select
 
                                 Else
@@ -729,24 +729,24 @@ Partial Public Class T3page
                                         Case 3
 
                                         Case Else
-                                            If (Not logcontrol Is Nothing) Then
-                                                Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
-                                                Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
-                                                logcontrol.Visible = True
-                                                'added 50416
-                                                ForceFocus(textboxmodal)
-                                                If (Not modalid Is Nothing) Then
-                                                    modalid.Show()
-                                                End If
-                                            Else 'remove afterwards 14/7
-                                                'Dim objAcceptlinac As AcceptLinac = Page.LoadControl("AcceptLinac.ascx")
-                                                'objAcceptlinac.LinacName = EquipmentID
-                                                'objAcceptlinac.ID = "Acceptlinac1"
-                                                'objAcceptlinac.Visible = False
-                                                'objAcceptlinac.Tabby = 1
-                                                'objAcceptlinac.UserReason = 1
-                                                'AcceptlinacPlaceHolder.Controls.Add(objAcceptlinac)
-                                            End If
+                                            'If (Not logcontrol Is Nothing) Then
+                                            '    Dim modalid As ModalPopupExtender = logcontrol.FindControl(modalpopupextendername)
+                                            '    Dim textboxmodal As TextBox = logcontrol.FindControl("txtchkUserName")
+                                            '    logcontrol.Visible = True
+                                            '    'added 50416
+                                            '    ForceFocus(textboxmodal)
+                                            '    If (Not modalid Is Nothing) Then
+                                            '        modalid.Show()
+                                            '    End If
+                                            'Else 'remove afterwards 14/7
+                                            '    'Dim objAcceptlinac As AcceptLinac = Page.LoadControl("AcceptLinac.ascx")
+                                            '    'objAcceptlinac.LinacName = EquipmentID
+                                            '    'objAcceptlinac.ID = "Acceptlinac1"
+                                            '    'objAcceptlinac.Visible = False
+                                            '    'objAcceptlinac.Tabby = 1
+                                            '    'objAcceptlinac.UserReason = 1
+                                            '    'AcceptlinacPlaceHolder.Controls.Add(objAcceptlinac)
+                                            'End If
                                     End Select
                                     'End If
                                 End If
@@ -765,7 +765,7 @@ Partial Public Class T3page
                                     'User = "Engineer/Physicist"
                                     rucontrol.EngLogOnEvent(connectionString)
                                     rucontrol.Visible = True
-                                    logcontrol = rucontrol.FindControl(logcontrolId)
+                                    'logcontrol = rucontrol.FindControl(logcontrolId)
                                     AcceptLinacModalPopup.Hide()
                                     DynamicControlSelection = String.Empty
                                     Application(appstate) = 1
@@ -819,10 +819,7 @@ Partial Public Class T3page
                                     Activity = "Repair"
                                     DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
                                     SetUser(lastusergroup)
-                                    repcontrol.Visible = True
-                                    AcceptLinacModalPopup.Hide()
-                                    DynamicControlSelection = String.Empty
-                                    Application(appstate) = 1
+
                                     If Not DavesCode.Reuse.CheckForOpenFault(EquipmentID, connectionString) Then
 
                                         'If Application(faultstate) <> True Then
@@ -841,9 +838,14 @@ Partial Public Class T3page
                                         'added GetlastTech because for a fault this is not called earlier so statelabel and set user are blank
                                         DavesCode.Reuse.GetLastTechNew(EquipmentID, 0, lastState, lastuser, lastusergroup, connectionString)
                                         Statelabel.Text = lastState
+                                        repcontrol.Repairlogon(connectionString)
                                         'repcontrol.Repairlogon(connectionString)
 
                                     End If
+                                    repcontrol.Visible = True
+                                    AcceptLinacModalPopup.Hide()
+                                    DynamicControlSelection = String.Empty
+                                    Application(appstate) = 1
 
                                 Case 6
                                     Activity = "Physics QA"
@@ -1102,6 +1104,7 @@ Partial Public Class T3page
         'If HoursSinceMidnight < 3 Then
         '    EndofDayElf("Timer")
         'End If
+        DavesCode.Reuse.RecordStates(EquipmentID, 0, "Tick1", 0)
         Dim ResetDay As String = Nothing
         ResetDay = DavesCode.Reuse.GetLastTime(EquipmentID, 0)
 
@@ -1113,6 +1116,7 @@ Partial Public Class T3page
             Case "Error"
                 'Do nothing
         End Select
+        DavesCode.Reuse.RecordStates(EquipmentID, 0, "Tick2", 0)
     End Sub
 
     Protected Sub EndofDayElf(ByVal Caller As String)

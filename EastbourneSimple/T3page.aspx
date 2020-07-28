@@ -5,7 +5,7 @@
 <%@ Register src="Preclinusercontrol.ascx" tagname="Preclinusercontrol" tagprefix="uc2" %>
 <%@ Register src="ClinicalUserControl.ascx" tagname="ClinicalUserControl" tagprefix="uc3" %>
 
-<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc4" %>
+<%--<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc4" %>--%>
 
 <%@ Register src="LinacStatusuc.ascx" tagname="LinacStatusuc" tagprefix="uc5" %>
 

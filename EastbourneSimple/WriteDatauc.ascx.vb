@@ -59,7 +59,7 @@ Partial Class WriteDatauc
         ElseIf Tabbie = "image" Then
             Tabb = 109
         End If
-        DavesCode.Reuse.RecordStates(LinacName, Tabb, "writedatauc", 0)
+        'DavesCode.Reuse.RecordStates(LinacName, Tabb, "writedatauc", 0)
         'Reference to defect removed 23/11/16 Added back in 26/03/18
         'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Repor"rect" Or tablabel = "handover" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "Defect" Or tablabel = "recover" Or tablabel = "Image" Or tablabel = "Major" Then
         If Application(appstate) = 1 Or Tabby = "3" Or Tabby = "Report" Or Tabby = "EndDay" Or Tabby = "Admin" Or Tabby = "Updatefault" Or Tabby = "incident" Or Tabby = "0" Or Tabby = "Defect" Or Tabby = "recover" Or Tabby = "Image" Or Tabby = "Major" Then
