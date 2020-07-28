@@ -78,6 +78,7 @@ sender._textbox.set_Value(sender._selectedDate.format(sender._format))
 <asp:ListItem>B2</asp:ListItem>
 <asp:ListItem>T1</asp:ListItem>
 <asp:ListItem>T2</asp:ListItem>
+<asp:ListItem>T3</asp:ListItem>
 </asp:DropDownList>  
     
 </fieldset>

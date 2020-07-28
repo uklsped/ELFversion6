@@ -203,6 +203,10 @@ Partial Class ErunupUserControl
 
 
                 Else
+                    Application(LinacFlag) = "Linac Unauthorised"
+                    Application(RunUpDone) = 0
+                    Application(appstate) = 0
+                    Application(tabstate) = 0
                     RaiseError("WriteEnergies")
                 End If
 
@@ -232,7 +236,12 @@ Partial Class ErunupUserControl
                     strScript += "</script>"
                     ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                 Else
+                    Application(LinacFlag) = "Linac Unauthorised"
+                    Application(RunUpDone) = 0
+                    Application(appstate) = 0
+                    Application(tabstate) = 0
                     RaiseError("WriteEnergies")
+
                 End If
             End If
 

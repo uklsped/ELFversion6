@@ -2741,7 +2741,7 @@ Namespace DavesCode
                 nowstatus = reader.Item("state").ToString()
             Else
                 'added for problem of when new linac so no previous state 6/7/17
-                nowstatus = Nothing
+                nowstatus = "Linac Unauthorised"
             End If
             reader.Close()
             conn.Close()
