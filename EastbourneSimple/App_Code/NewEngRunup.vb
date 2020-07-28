@@ -309,7 +309,7 @@ Namespace DavesCode
                             comm.Parameters.Add("@MeV20", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MeV20").Value = False
 
-                        Case "T1", "T2"
+                        Case "T1", "T2", "T3"
                             comm.Parameters.Add("@MV6", System.Data.SqlDbType.Bit)
                             comm.Parameters("@MV6").Value = False
                             comm.Parameters.Add("@MV6FFF", System.Data.SqlDbType.Bit)
