@@ -968,7 +968,7 @@ Partial Public Class T1page
     End Sub
 
     Protected Sub Navigate(ByVal sender As Object, ByVal e As HistoryEventArgs)
-        tcl.ActiveTabIndex = Convert.ToInT12(e.State("ActiveTabIndex"))
+        tcl.ActiveTabIndex = Convert.ToInt32(e.State("ActiveTabIndex"))
     End Sub
 
 

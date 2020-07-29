@@ -237,7 +237,7 @@ T2 Status
 <ContentTemplate><asp:UpdatePanel ID="UpdatePanelClinical" Updatemode="Conditional" runat="server">
 <ContentTemplate>
 <asp:Button ID="TabButton3" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
-<asp:Panel ID="TabContenT2" runat="server" Visible="false">
+<asp:Panel ID="TabContent3" runat="server" Visible="false">
 <%--<uc4:AcceptLinac ID="AcceptLinac3" LinacName="T2" UserReason="3" Tabby="3" runat="server"  />--%>
 <uc3:ClinicalUserControl ID="ClinicalUserControl1"  LinacName="T2" DataName="ClinData" runat="server" visible="false"/>
 </asp:Panel>
