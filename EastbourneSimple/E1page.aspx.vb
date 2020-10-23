@@ -110,10 +110,10 @@ Partial Public Class E1page
                         Select Case lastState
                             Case "Repair", "Fault"
                                 'This should be Fault because that's the only state that should be allowed to not be reset
-                                DavesCode.Reuse.SetStatus("No User", "Fault", 5, 7, EquipmentID, 0)
+                                DavesCode.Reuse.SetStatus("No User", "Fault", 5, 7, EquipmentID, 0, False)
                                 Application(LinacFlag) = lastState
                             Case Else
-                                DavesCode.Reuse.SetStatus(Userinfo, "Linac Unauthorised", 5, 102, EquipmentID, 0)
+                                DavesCode.Reuse.SetStatus(Userinfo, "Linac Unauthorised", 5, 102, EquipmentID, 0, False)
                                 Application(LinacFlag) = "Linac Unauthorised"
                                 Application(suspstate) = 0
                                 Application(appstate) = 0
@@ -189,7 +189,7 @@ Partial Public Class E1page
         AddHandler AcceptLinac4.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler AcceptLinac5.UpdateReturnButtons, AddressOf Update_ReturnButtons
         AddHandler AcceptLinac8.UpdateReturnButtons, AddressOf Update_ReturnButtons
-        AddHandler LinacStatusuc1.Resetstatus, AddressOf LaunchTab
+        'AddHandler LinacStatusuc1.Resetstatus, AddressOf LaunchTab
         AddHandler PlannedMaintenanceuc1.BlankGroup, AddressOf SetUser
         AddHandler Repairuc1.BlankGroup, AddressOf SetUser
         AddHandler ErunupUserControl1.BlankGroup, AddressOf SetUser
@@ -772,7 +772,7 @@ Partial Public Class E1page
         'Check how this works 21/02/20
         'laststate = DavesCode.Reuse.GetLastState(EquipmentID, 0)
         'If laststate = "Fault" And Application(FaultOriginTab) = 5 Then
-        DavesCode.Reuse.MachineStateNew(user, usergroup, EquipmentID, Task, False, connectionString)
+        DavesCode.Reuse.MachineStateNew(user, usergroup, EquipmentID, Task, False, True, connectionString)
         'Else
         'DavesCode.Reuse.MachineStateNew(user, usergroup, EquipmentID, Task, False, connectionString)
         'End If
@@ -928,9 +928,9 @@ Partial Public Class E1page
             lastState = DavesCode.Reuse.GetLastState("E1", 0)
             Select Case lastState
                 Case "Repair", "Fault"
-                    DavesCode.Reuse.SetStatus("No User", "Repair", 5, 7, "E1", 0)
+                    DavesCode.Reuse.SetStatus("No User", "Repair", 5, 7, "E1", 0, False)
                 Case Else
-                    DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, "E1", 0)
+                    DavesCode.Reuse.SetStatus("No User", "Linac Unauthorised", 5, 7, "E1", 0, False)
             End Select
         Finally
 
@@ -1141,7 +1141,7 @@ Partial Public Class E1page
                 'this is to make sure that equivalent of end of day happens
                 'Only want this to happen if RunUpDone or suspended but no one is logged on.
                 If Application(suspstate) = 1 Or Application(RunUpDone) = 1 Then
-                    DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 10)
+                    DavesCode.Reuse.SetStatus(Logoffuser, "Linac Unauthorised", 5, 102, EquipmentID, 10, False)
                 End If
             End If
         End If

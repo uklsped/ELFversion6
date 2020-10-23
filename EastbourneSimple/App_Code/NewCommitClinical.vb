@@ -16,7 +16,7 @@ Namespace DavesCode
                     Successful = True
                 End Using
             Catch ex As Exception
-                DavesCode.NewFaultHandling.LogError(ex)
+                NewFaultHandling.LogError(ex)
             End Try
             Return Successful
 
@@ -97,18 +97,13 @@ Namespace DavesCode
 
             'This is here because this sub is also called from the fault page in order to write the linacstatus and to write clinicalhandover table
             If breakdown Then
-                LinacStatusID = DavesCode.Reuse.SetStatusNew(LogOutName, "Fault", 5, 103, LinacName, -1, connectionString)
-
-            Else 'not a breakdown so if approved set clinical - not treating or back to engineering approved
-                If LogOutName = "System" Then
-                    LinacStatusID = DavesCode.Reuse.SetStatusNew(LogOutName, "Linac Unauthorised", 5, 102, LinacName, 3, connectionString)
-                Else
-                    LinacStatusID = DavesCode.Reuse.SetStatusNew(LogOutName, "Suspended", 5, 7, LinacName, 3, connectionString)
-                End If
-                If EndofDay Then
-                    LinacStatusID = DavesCode.Reuse.SetStatusNew(LogOutName, "Linac Unauthorised", 5, 102, LinacName, 3, connectionString)
-
-                End If
+                LinacStatusID = Reuse.SetStatusNew(LogOutName, "Fault", 5, 103, LinacName, -1, False, connectionString)
+            ElseIf LogOutName = "System" Then 'not a breakdown so if approved set clinical - not treating or back to engineering approved
+                LinacStatusID = Reuse.SetStatusNew(LogOutName, "Linac Unauthorised", 5, 102, LinacName, 3, False, connectionString)
+            ElseIf EndofDay Then
+                LinacStatusID = Reuse.SetStatusNew(LogOutName, "Linac Unauthorised", 5, 102, LinacName, 3, False, connectionString)
+            Else
+                LinacStatusID = Reuse.SetStatusNew(LogOutName, "Suspended", 5, 7, LinacName, 3, False, connectionString)
             End If
             'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
             'This writes the clinicalstatus table
@@ -117,29 +112,29 @@ Namespace DavesCode
             commaccept = New SqlCommand("INSERT INTO ClinicalStatus ( PClinID, LogInDate, LogOutDate, linac, Duration, LogInName, LogOutName,LogOutStatusID, logInStatusID) " &
                                                 "VALUES (@PClinID, @LogInDate, @LogOutDate, @linac, @Duration,@LogInName, @LogOutName, @LogOutStatusID, @logInStatusID)", conn)
 
-            commaccept.Parameters.Add("@PClinID", Data.SqlDbType.Int)
+            commaccept.Parameters.Add("@PClinID", SqlDbType.Int)
             commaccept.Parameters("@PClinID").Value = CHID
-            commaccept.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
+            commaccept.Parameters.Add("@LogInDate", SqlDbType.DateTime)
             commaccept.Parameters("@LogInDate").Value = StartTime
-            commaccept.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
+            commaccept.Parameters.Add("@LogOutDate", SqlDbType.DateTime)
             commaccept.Parameters("@LogOutDate").Value = time
-            commaccept.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            commaccept.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
             commaccept.Parameters("@linac").Value = LinacName
-            commaccept.Parameters.Add("@Duration", System.Data.SqlDbType.Decimal)
+            commaccept.Parameters.Add("@Duration", SqlDbType.Decimal)
             commaccept.Parameters("@Duration").Value = minutesDuration
-            commaccept.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
+            commaccept.Parameters.Add("@LogInName", SqlDbType.NVarChar, 50)
             commaccept.Parameters("@LogInName").Value = logInName
-            commaccept.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
+            commaccept.Parameters.Add("@LogOutName", SqlDbType.NVarChar, 50)
             commaccept.Parameters("@LogOutName").Value = LogOutName
-            commaccept.Parameters.Add("@LogOutStatusID", Data.SqlDbType.Int)
+            commaccept.Parameters.Add("@LogOutStatusID", SqlDbType.Int)
             commaccept.Parameters("@LogOutStatusID").Value = LinacStatusID
-            commaccept.Parameters.Add("@logInStatusID", Data.SqlDbType.Int)
+            commaccept.Parameters.Add("@logInStatusID", SqlDbType.Int)
             commaccept.Parameters("@logInStatusID").Value = logInStatusID
             conn.Open()
             commaccept.ExecuteNonQuery()
 
             conn.Close()
-            DavesCode.Reuse.UpdateActivityTable(LinacName, LinacStatusID, connectionString)
+            Reuse.UpdateActivityTable(LinacName, LinacStatusID, connectionString)
 
             Return LinacStatusID
         End Function
@@ -158,19 +153,19 @@ Namespace DavesCode
                 commstatus = New SqlCommand("INSERT INTO TreatmentTable ( TreatmentStartTime, LinacStatusId,linac) " &
                                             "VALUES ( @TreatmentStartTime, @LinacStatusID, @linac)", conn)
 
-                commstatus.Parameters.Add("@TreatmentStartTime", System.Data.SqlDbType.DateTime)
+                commstatus.Parameters.Add("@TreatmentStartTime", SqlDbType.DateTime)
                 commstatus.Parameters("@TreatmentStartTime").Value = time
-                commstatus.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.NVarChar, 10)
+                commstatus.Parameters.Add("@LinacStatusID", SqlDbType.NVarChar, 10)
                 commstatus.Parameters("@LinacStatusId").Value = linacstate
-                commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                commstatus.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
                 commstatus.Parameters("@linac").Value = linacid
             Else
                 'Update command changed 12 April because it should update last row not all rows with same LinacStatusId
                 'commstatus = New SqlCommand("UPDATE  TreatmentTable SET TreatmentStopTime = @TreatmentStopTime where LinacStatusid = @LinacStatusID", conn)
                 commstatus = New SqlCommand("UPDATE  TreatmentTable SET TreatmentStopTime = @TreatmentStopTime where TreatmentID  = (Select max(treatmentID) as lastrecord from treatmenttable where linac=@linac)", conn)
-                commstatus.Parameters.Add("@TreatmentStopTime", System.Data.SqlDbType.DateTime)
+                commstatus.Parameters.Add("@TreatmentStopTime", SqlDbType.DateTime)
                 commstatus.Parameters("@TreatmentStopTime").Value = time
-                commstatus.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                commstatus.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
                 commstatus.Parameters("@linac").Value = linacid
 
             End If
@@ -202,7 +197,7 @@ Namespace DavesCode
             conn = New SqlConnection(connectionString)
 
             commCAuthID = New SqlCommand("Select CHandID, LogOutStatusID from ClinicalHandover where CHandID  = (Select max(CHandID) as lastrecord from ClinicalHandover where linac=@linac)", conn)
-            commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            commCAuthID.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
             commCAuthID.Parameters("@linac").Value = LinacName
             conn.Open()
             CID = 0
@@ -216,7 +211,7 @@ Namespace DavesCode
             If Not CID = 0 Then
                 'Remove user name as this is not the correct name anyway
                 commCAuthID = New SqlCommand("Select StateID from LinacStatus where StateID  = (Select max(StateID) as lastrecord from LinacStatus where linac=@linac)", conn)
-                commCAuthID.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                commCAuthID.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
                 commCAuthID.Parameters("@linac").Value = LinacName
                 conn.Open()
                 reader = commCAuthID.ExecuteReader()
@@ -230,17 +225,17 @@ Namespace DavesCode
                 commclin = New SqlCommand("INSERT INTO ClinicalTable (PreClinID,LinacStatusID, clinComment,linac, DateTime, Username) " &
                                     "VALUES ( @PreclinID, @LinacStatusID,@clincomment, @linac, @DateTime, @UserName)", conn)
 
-                commclin.Parameters.Add("@PreClinID", System.Data.SqlDbType.Int)
+                commclin.Parameters.Add("@PreClinID", SqlDbType.Int)
                 commclin.Parameters("@PreclinID").Value = CID
-                commclin.Parameters.Add("@LinacStatusID", System.Data.SqlDbType.Int)
+                commclin.Parameters.Add("@LinacStatusID", SqlDbType.Int)
                 commclin.Parameters("@LinacStatusID").Value = StatusID
-                commclin.Parameters.Add("@clinComment", System.Data.SqlDbType.NVarChar, 250)
+                commclin.Parameters.Add("@clinComment", SqlDbType.NVarChar, 250)
                 commclin.Parameters("@clinComment").Value = Clinicalcomment
-                commclin.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+                commclin.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
                 commclin.Parameters("@linac").Value = LinacName
-                commclin.Parameters.Add("@DateTime", System.Data.SqlDbType.DateTime)
+                commclin.Parameters.Add("@DateTime", SqlDbType.DateTime)
                 commclin.Parameters("@DateTime").Value = time
-                commclin.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar, 25)
+                commclin.Parameters.Add("@UserName", SqlDbType.NVarChar, 25)
                 commclin.Parameters("@UserName").Value = String.Empty
 
                 conn.Open()

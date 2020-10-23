@@ -3,6 +3,8 @@
 <%@ Register src="../WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc1" %>
 <%@ Register src="CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
 
+ <%@ Register src="UnLockElfuc.ascx" tagname="UnLockElfuc" tagprefix="uc3" %>
+
  <%--<%@ Register src="OriginalReportedfaultuc.ascx" tagname="OriginalReportedfaultuc" tagprefix="uc3" %>--%>
 
  <%--<%@ Register src="DeviceReportedfaultuc.ascx" tagname="DeviceReportedfaultuc" tagprefix="uc3" %>--%>
@@ -13,7 +15,7 @@
 <asp:Panel ID="Panel2" runat="server" BorderColor="#33CC33"
     BorderStyle="Solid" Style="margin-bottom: 5px" Width="960px">
     <uc1:WriteDatauc ID="WriteDatauc3" LinacName="" UserReason="4" Tabby="incident" WriteName="incident" Visible="false" runat="server" />
-    <uc5:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="99" Visible="false" runat="server" />
+    <%--<uc5:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="99" Visible="false" runat="server" />--%>
     <asp:Table ID="Table1" runat="server" Width="682px">
         <asp:TableRow>
             <asp:TableCell>
@@ -151,19 +153,21 @@
     <asp:ValidationSummary ID="ValidationSummarydefect" ForeColor="Red" HeaderText="Please correct the errors in the following fields:" ValidationGroup="faulttracking" ShowMessageBox="True" ShowSummary="True" EnableClientScript="false" runat="server" />
 
 </asp:Panel>
+<asp:Label ID="TargetControl" runat="server" style="display:none" causesvalidation="false" Visible="true" ></asp:Label>
+    <asp:ModalPopupExtender ID="LockELFModalPopup" runat="server"
+                TargetControlID = "TargetControl"
+                PopupControlID = "LockELFPopup"
+                BackgroundCssClass = "modalBackground"
+                >
+</asp:ModalPopupExtender>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   <asp:Panel ID="LockELFPopup" runat="server" style="display:none" CssClass="modalPopup" Height="150px" 
+            Width="350px" Font-Underline="False" >
+        
+            <asp:UpdatePanel ID="UpdatePanel10" runat="server" >
+            <ContentTemplate>
+                <asp:PlaceHolder ID="LockELFPlaceholder" runat="server"></asp:PlaceHolder>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+       
+    </asp:Panel>

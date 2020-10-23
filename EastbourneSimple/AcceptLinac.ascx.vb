@@ -1,14 +1,9 @@
 ﻿Imports AjaxControlToolkit
-Imports System.Data.SqlClient
-Imports System.Data
 Imports System.Transactions
 
 Partial Public Class AcceptLinac
     Inherits System.Web.UI.UserControl
     Public Event AcceptHandler As EventHandler
-    Private MachineName As String
-    Private Reason As Integer
-    Private tablabel As String
     Private appstate As String
     Private suspstate As String
     Dim modalpopupextendergen As New ModalPopupExtender
@@ -21,40 +16,13 @@ Partial Public Class AcceptLinac
     Public Event SetModalities(ByVal connectionString As String)
     Public Event Repairloaded(ByVal connectionString As String)
     Public Event CloseAcceptlinac(ByVal LinacName As String)
-
-
-    'Private LinacObj As LinacState
-
     Public Property Tabby() As String
-        Get
-            Return tablabel
-        End Get
-        Set(ByVal value As String)
-            tablabel = value
-        End Set
-    End Property
     Public Property UserReason() As Integer
-
-        Get
-            Return Reason
-        End Get
-        Set(ByVal value As Integer)
-            Reason = value
-        End Set
-    End Property
-
     Public Property LinacName() As String
+    'Private LinacObj As LinacState
+    Public ReadOnly Property Username() As String
         Get
-            Return MachineName
-        End Get
-        Set(ByVal value As String)
-            MachineName = value
-        End Set
-    End Property
-
-    Public ReadOnly Property username() As String
-        Get
-            username = txtchkUserName.Text.Trim()
+            Username = txtchkUserName.Text.Trim()
         End Get
 
     End Property
@@ -76,29 +44,29 @@ Partial Public Class AcceptLinac
         modalpop = CType(FindControl(modalname), ModalPopupExtender)
         'We need to determine if the user is authenticated
         'Get the values entered by the user
-        Dim loginUsername As String = username
+        Dim loginUsername As String = Username
         Dim loginPassword As String = Userpassword
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim Activity As String
         Dim modalidentifier As String
-        appstate = "LogOn" + MachineName
-        suspstate = "Suspended" + MachineName
+        appstate = "LogOn" + LinacName
+        suspstate = "Suspended" + LinacName
         Dim reload As String
         Dim clinstate As String = "Clinical"
         'LinacObj = Application(LinacName)
         'reload = LinacObj.LinacStatus
-        reload = DavesCode.Reuse.GetLastState(MachineName, 0)
+        reload = DavesCode.Reuse.GetLastState(LinacName, 0)
         'from http://spacetech.dk/vb-net-string-compare-not-equal.html
         If Not (reload.Equals(clinstate)) Then
             Dim myAppState As Integer = CInt(Application(appstate))
             'myAppState = 1
             DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptOK", 0)
             If myAppState = 0 Then
-                Activity = DavesCode.Reuse.ReturnActivity(Reason)
+                Activity = DavesCode.Reuse.ReturnActivity(UserReason)
 
                 'This can only return here if there is a valid log in
                 'Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, Reason, textboxUser, passwordUser, logerrorbox, modalpop)
-                Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, Reason, textboxUser, passwordUser, logerrorbox)
+                Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox)
 
                 If usergroupselected <> Nothing Then
 
@@ -106,7 +74,7 @@ Partial Public Class AcceptLinac
                         'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
                         Using myscope As TransactionScope = New TransactionScope()
                             'DavesCode.Reuse.MachineState(loginUsername, usergroupselected, MachineName, Reason, False)
-                            DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, Reason, False, connectionString)
+                            DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, UserReason, False, True, connectionString)
                             Select Case Tabby
                                 Case 1, 7
                                     'RaiseEvent EngRunuploaded(connectionString)
@@ -170,7 +138,7 @@ Partial Public Class AcceptLinac
                         '    RaiseEvent ShowName(usergroupselected)
                         'End Select
                         RaiseEvent ShowName(usergroupselected)
-                        RaiseEvent CloseAcceptlinac(MachineName)
+                        RaiseEvent CloseAcceptlinac(LinacName)
                         '    myscope.Complete()
                         'End Using
                     Catch ex As Exception
@@ -223,8 +191,8 @@ Partial Public Class AcceptLinac
     Public Event LaunchControl(ByVal Control As Integer)
     Protected Sub Page_init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
         'AddHandler AcceptLinac.AcceptHandler, AddressOf BlankTabs
-        appstate = "LogOn" + MachineName
-        suspstate = "Suspended" + MachineName
+        appstate = "LogOn" + LinacName
+        suspstate = "Suspended" + LinacName
 
     End Sub
     'Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
@@ -235,13 +203,13 @@ Partial Public Class AcceptLinac
         DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptPageLoad", 0)
         Dim reload As String
         Dim clinstate As String = "Clinical"
-        reload = DavesCode.Reuse.GetLastState(MachineName, 0)
+        reload = DavesCode.Reuse.GetLastState(LinacName, 0)
         If reload = Nothing Then
             reload = clinstate
         End If
 
-        appstate = "LogOn" + MachineName
-        suspstate = "Suspended" + MachineName
+        appstate = "LogOn" + LinacName
+        suspstate = "Suspended" + LinacName
         'from http://spacetech.dk/vb-net-string-compare-not-equal.html
         If Not (reload.Equals(clinstate)) Then
             Dim placeholder As PlaceHolder
@@ -262,9 +230,9 @@ Partial Public Class AcceptLinac
                 Dim MyString As String
                 Dim Tabnumber As String
                 If Tabby = 3 Then
-                    If Not MachineName Like "T#" Then
+                    If Not LinacName Like "T#" Then
                         Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
-                        CType(objCon, EnergyDisplayuc).LinacName = MachineName
+                        CType(objCon, EnergyDisplayuc).LinacName = LinacName
                         PlaceHolder2.Controls.Add(objCon)
                         'PlaceHolder2.Visible = True
                         Panel1.Width = 1000
@@ -273,7 +241,7 @@ Partial Public Class AcceptLinac
                     End If
                 End If
                 MyString = "ModalPopupextendergen"
-                Tabnumber = tablabel
+                Tabnumber = Tabby
                 MyString = MyString & Tabnumber
                 modalpopupextendergen.ID = MyString
                 modalpopupextendergen.BehaviorID = "B" & MyString
@@ -307,17 +275,17 @@ Partial Public Class AcceptLinac
     Public Sub Btnchkcancel_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnchkcancel.Click
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         AcceptOK.Visible = False
-        appstate = "LogOn" + MachineName
-        suspstate = "Suspended" + MachineName
+        appstate = "LogOn" + LinacName
+        suspstate = "Suspended" + LinacName
         Dim reload As String
         Dim clinstate As String = "Clinical"
-        reload = DavesCode.Reuse.GetLastState(MachineName, 0)
+        reload = DavesCode.Reuse.GetLastState(LinacName, 0)
         'from http://spacetech.dk/vb-net-string-compare-not-equal.html
         If Not (reload.Equals(clinstate)) Then
             Dim myAppState As Integer = CInt(Application(appstate))
 
             If myAppState = 0 Then
-                Dim loginUsername As String = username
+                Dim loginUsername As String = Username
                 Dim returnstring As String
                 Application(appstate) = 0
                 'If Application(suspstate) = 1 Then
@@ -327,7 +295,7 @@ Partial Public Class AcceptLinac
                 If Tabby = 3 Then
                     Application(suspstate) = 1
                 End If
-                returnstring = MachineName + "page.aspx"
+                returnstring = LinacName + "page.aspx"
                 Response.Redirect(returnstring)
             Else
                 Dim modalpop As ModalPopupExtender

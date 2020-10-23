@@ -16,7 +16,7 @@ Namespace DavesCode
                     Successful = True
                 End Using
             Catch ex As Exception
-                DavesCode.NewFaultHandling.LogError(ex)
+                NewFaultHandling.LogError(ex)
             End Try
             Return Successful
         End Function
@@ -44,10 +44,10 @@ Namespace DavesCode
             Dim State As String = "Linac Unauthorised" 'default reason
             Dim UserReason As Integer = 7 'most common reason
             Dim Tab As Integer = 2 'most common tab
-
+            Dim FaultState As String = String.Empty
             conn = New SqlConnection(connectionString)
             'This will get the time the linac was accepted for the pre-clinical
-            contime = New SqlCommand("SELECT DateTime, username, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+            contime = New SqlCommand("SELECT DateTime, username, stateID, State FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
 
             contime.Parameters.AddWithValue("@linac", LinacName)
             conn.Open()
@@ -57,6 +57,7 @@ Namespace DavesCode
                 StartTime = reader.Item("DateTime")
                 logInName = reader.Item("username")
                 LogInStatusID = reader.Item("stateID")
+                FaultState = reader.Item("State")
             End If
             reader.Close()
             conn.Close()
@@ -101,6 +102,9 @@ Namespace DavesCode
                     If logOutName = "System" Then
                         UserReason = 102
                     ElseIf logOutName = "Restored" Then
+                        If FaultState = "Fault" Then
+                            State = "Fault"
+                        End If
                         'Defaults ok
                     Else
                         'added for E1 and E2. Modified 9/4/19 because linac behaviour the same now and B2 included
@@ -114,7 +118,7 @@ Namespace DavesCode
 
                 End If
             End If
-            LogOutStatusID = DavesCode.Reuse.SetStatusNew(logOutName, State, 5, UserReason, LinacName, Tab, connectionString)
+            LogOutStatusID = Reuse.SetStatusNew(logOutName, State, 5, UserReason, LinacName, Tab, False, connectionString)
             'http://www.mikesdotnetting.com/Article/53/Saving-a-user%27s-CheckBoxList-selection-and-re-populating-the-CheckBoxList-from-saved-data - used for imaging
 
             'This writes the clinicalhandover table - doesn't have the user in it
@@ -122,31 +126,31 @@ Namespace DavesCode
             Dim commaccept As SqlCommand
             commaccept = New SqlCommand("INSERT INTO ClinicalHandover ( CComment,Ehandid, LogOutDate, linac, LogInDate, Duration, iView, XVI, LogOutStatusID, Approved, LogInName, LogOutName, LogInStatusID) " &
                                         "VALUES (@CComment,@Ehandid, @LogOutDate, @linac, @LogInDate, @Duration, @iView, @XVI, @LogOutStatusID, @Approved, @LogInName, @LogOutName, @LogInStatusID)", conn)
-            commaccept.Parameters.Add("@CComment", System.Data.SqlDbType.NVarChar, 250)
+            commaccept.Parameters.Add("@CComment", SqlDbType.NVarChar, 250)
             commaccept.Parameters("@CComment").Value = textbox
-            commaccept.Parameters.Add("@Ehandid", Data.SqlDbType.Int)
+            commaccept.Parameters.Add("@Ehandid", SqlDbType.Int)
             commaccept.Parameters("@Ehandid").Value = EHID
-            commaccept.Parameters.Add("@LogOutDate", System.Data.SqlDbType.DateTime)
+            commaccept.Parameters.Add("@LogOutDate", SqlDbType.DateTime)
             commaccept.Parameters("@LogOutDate").Value = time
-            commaccept.Parameters.Add("@linac", System.Data.SqlDbType.NVarChar, 10)
+            commaccept.Parameters.Add("@linac", SqlDbType.NVarChar, 10)
             commaccept.Parameters("@linac").Value = LinacName
-            commaccept.Parameters.Add("@LogInDate", System.Data.SqlDbType.DateTime)
+            commaccept.Parameters.Add("@LogInDate", SqlDbType.DateTime)
             commaccept.Parameters("@LogInDate").Value = StartTime
-            commaccept.Parameters.Add("@Duration", System.Data.SqlDbType.Decimal)
+            commaccept.Parameters.Add("@Duration", SqlDbType.Decimal)
             commaccept.Parameters("@Duration").Value = minutesDuration
-            commaccept.Parameters.Add("@iView", System.Data.SqlDbType.Bit)
+            commaccept.Parameters.Add("@iView", SqlDbType.Bit)
             commaccept.Parameters("@iView").Value = iView
-            commaccept.Parameters.Add("@XVI", System.Data.SqlDbType.Bit)
+            commaccept.Parameters.Add("@XVI", SqlDbType.Bit)
             commaccept.Parameters("@XVI").Value = XVI
-            commaccept.Parameters.Add("@LogOutStatusID", Data.SqlDbType.Int)
+            commaccept.Parameters.Add("@LogOutStatusID", SqlDbType.Int)
             commaccept.Parameters("@LogOutStatusID").Value = LogOutStatusID
-            commaccept.Parameters.Add("@Approved", Data.SqlDbType.Bit)
+            commaccept.Parameters.Add("@Approved", SqlDbType.Bit)
             commaccept.Parameters("@Approved").Value = Approved
-            commaccept.Parameters.Add("@LogInName", System.Data.SqlDbType.NVarChar, 50)
+            commaccept.Parameters.Add("@LogInName", SqlDbType.NVarChar, 50)
             commaccept.Parameters("@LogInName").Value = logInName
-            commaccept.Parameters.Add("@LogOutName", System.Data.SqlDbType.NVarChar, 50)
+            commaccept.Parameters.Add("@LogOutName", SqlDbType.NVarChar, 50)
             commaccept.Parameters("@LogOutName").Value = logOutName
-            commaccept.Parameters.Add("@LogInStatusID", Data.SqlDbType.Int)
+            commaccept.Parameters.Add("@LogInStatusID", SqlDbType.Int)
             commaccept.Parameters("@LogInStatusID").Value = LogInStatusID
 
 
@@ -161,7 +165,7 @@ Namespace DavesCode
 
             'Finally
             conn.Close()
-            DavesCode.Reuse.UpdateActivityTable(LinacName, LogOutStatusID, connectionString)
+            Reuse.UpdateActivityTable(LinacName, LogOutStatusID, connectionString)
             'End Try
             Return LogOutStatusID
 

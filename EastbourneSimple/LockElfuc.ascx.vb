@@ -1,21 +1,21 @@
 ﻿Imports AjaxControlToolkit
-Imports System.Data.SqlClient
-Imports System.Data
+Imports DavesCode
 
 Partial Public Class LockElfuc
     Inherits System.Web.UI.UserControl
-    Public Event AcceptHandler As EventHandler
-    Private appstate As String
-    Private suspstate As String
-    Private isFault As Boolean
-    Private RunUpDone As String
-    Private faultstate As String
+    'Public Event AcceptHandler As EventHandler
+    'Private appstate As String
+    'Private suspstate As String
+    'Private isFault As Boolean
+    'Private RunUpDone As String
+    'Private faultstate As String
     Dim modalpopupextenderLock As New ModalPopupExtender
     'Public Event ClinicalApproved(ByVal sender As Object, ByVal e As CommandEventArgs)
-    Public Event ClinicalApproved()
+    'Public Event ClinicalApproved()
     Public Property Tabby() As String
     Public Property UserReason() As Integer
     Public Property LinacName() As String
+    Dim usergroupselected As Integer = Nothing
 
     Public ReadOnly Property username() As String
         Get
@@ -44,21 +44,21 @@ Partial Public Class LockElfuc
         Dim loginUsername As String = username
         Dim loginPassword As String = userpassword
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        Dim Activity As String
-        Dim su As String = Application(suspstate)
-        Dim en As String = Application(RunUpDone)
-        Activity = DavesCode.Reuse.ReturnActivity(UserReason)
+        'Dim Activity As String
+        'Dim su As String = Application(suspstate)
+        'Dim en As String = Application(RunUpDone)
+        'Activity = DavesCode.Reuse.ReturnActivity(UserReason)
 
         'When tidying up don't now need to pass linac name to successful logon
         'Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox, modalpop)
 
-        Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox)
+        usergroupselected = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox)
         If usergroupselected <> Nothing Then
             '    'what happens if machinestate fails?
             resetLogInscreen()
-            DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, UserReason, True, connectionString)
+            DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, UserReason, True, True, connectionString)
             'DavesCode.Reuse.MachineState(loginUsername, usergroupselected, LinacName, UserReason, True)
-            modalpop.Hide()
+            'modalpop.Hide()
             'DavesCode.Reuse.ReturnApplicationState(Activity)
             Dim lockoff As LockElfuc = CType(Me.Parent.FindControl("lockElfuc1"), LockElfuc)
             lockoff.Visible = False
@@ -66,7 +66,11 @@ Partial Public Class LockElfuc
             Me.Page.GetType.InvokeMember("UpdateUserDisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {usergroupselected})
             Me.Page.GetType.InvokeMember("UpdateButtons", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
 
-            'Else
+        Else
+            Dim lockoff As LockElfuc = CType(Me.Parent.FindControl("lockElfuc1"), LockElfuc)
+            lockoff.LinacName = LinacName
+
+            lockoff.Visible = True
             '    'If it gets to here something has gone wrong with SuccessfulLogin()
             '    modalidentifier = modalpopupextendergen.ID
             '    modalpopupextendergen.Show()
@@ -74,22 +78,29 @@ Partial Public Class LockElfuc
 
     End Sub
 
-    Public Event LaunchControl(ByVal Control As Integer)
-    Protected Sub page_init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
-        'AddHandler AcceptLinac.AcceptHandler, AddressOf BlankTabs
+    'Public Event LaunchControl(ByVal Control As Integer)
+    'Protected Sub page_init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
+    ''AddHandler AcceptLinac.AcceptHandler, AddressOf BlankTabs
 
-    End Sub
+    'End Sub
     'Protected Sub BlankTabs(ByVal sender As Object, ByVal e As System.EventArgs)
     '    Response.Redirect("faultPage.aspx?val=LA1")
     'End Sub
     Protected Sub page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        Dim Accept As Button = FindControl("UnlockElf")
+        'Dim Cancel As Button = FindControl("btnchkcancel")
+        If Not FindControl("UnlockElf") Is Nothing Then
+            Accept.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(Accept, "") & ";this.value='Wait...';this.disabled = true; this.style.display='block';")
+        End If
+
         Dim button As Button = FindControl("UnlockElf")
-        button.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(button, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
-        appstate = "LogOn" + LinacName
-        suspstate = "Suspended" + LinacName
-        RunUpDone = "rppTab" + LinacName
-        faultstate = "OpenFault" + LinacName
-        If Application(appstate) = 1 Then
+        button.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(button, "") + ";this.value='Wait...';this.disabled = 'true; this.style.display='block';")
+        'appstate = "LogOn" + LinacName
+        'suspstate = "Suspended" + LinacName
+        'RunUpDone = "rppTab" + LinacName
+        'faultstate = "OpenFault" + LinacName
+        If GetApplication.GetApplicationState(LinacName, 0) Then
+
             Dim MyString As String
             Dim Tabnumber As String
             MyString = "ModalPopupextenderLock"

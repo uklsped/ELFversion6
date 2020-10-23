@@ -1,17 +1,10 @@
-﻿
+﻿Imports DavesCode
+Imports GlobalConstants
 Partial Class Planned_Maintenanceuc
     Inherits System.Web.UI.UserControl
 
     Private SelectCount As Boolean
     Private Radioselect As Integer
-    Private appstate As String
-    Private suspstate As String
-    Private actionstate As String
-    Private FaultOriginTab As String
-    Private RunUpDone As String
-    Private faultviewstate As String
-    Private atlasviewstate As String
-    Private qaviewstate As String
     Private objconToday As TodayClosedFault
     Private Todaydefect As DefectSave
     Private Todaydefectpark As DefectSavePark
@@ -33,8 +26,12 @@ Partial Class Planned_Maintenanceuc
     Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
     Const QASELECTED As String = "ModalityQApopupselected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+
     Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
     Dim Modalities As controls_ModalityDisplayuc
+    Const ENDOFDAY102 As Integer = 102
+    Const RECOVERY101 As Integer = 101
+    Const LOCKELFSELECTED As String = "LockELFSelected"
 
     Private Property DynamicControlSelection() As String
         Get
@@ -85,7 +82,7 @@ Partial Class Planned_Maintenanceuc
     Public Sub UpdateReturnButtonsHandler()
 
         'getlasttech returns laststate by ref!!!!
-        DavesCode.Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
+        Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
 
         StateTextBox.Text = laststate
 
@@ -95,33 +92,21 @@ Partial Class Planned_Maintenanceuc
 
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
         AddHandler AutoApproved, AddressOf UserApprovedEvent
-        'AddHandler ReportFaultPopUp1.
 
-        appstate = "LogOn" + LinacName
-        actionstate = "ActionState" + LinacName
-        suspstate = "Suspended" + LinacName
-        FaultOriginTab = "FOT" + LinacName
-        RunUpDone = "rppTab" + LinacName
-        faultviewstate = "Faultsee" + LinacName
-        atlasviewstate = "Atlassee" + LinacName
-        qaviewstate = "QAsee" + LinacName
         BoxChanged = "PMBoxChanged" + LinacName
-        tabstate = "ActTab" + LinacName
+
 
     End Sub
-    Public Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
+    Public Sub UserApprovedEvent(ByVal TabSet As String, ByVal Userinfo As String)
         Dim machinelabel As String = LinacName & "Page.aspx';"
         Dim username As String = Userinfo
         Dim LinacStateID As String = ""
-        Dim suspendvalue As String = Nothing
-        Dim RunUpBoolean As String = Nothing
-        Dim EndofDay As Integer = 102
-        Dim Recovery As Integer = 101
+
         Dim result As Boolean = False
         'This is here to cater for when system is recovering at end of day so no tab is actually loaded.
-        Dim actionstate As String = "ActionState" + LinacName
-        If Tabused = PM Then
-            'Dim Textboxcomment As TextBox = FindControl("CommentBox")
+
+        If TabSet = PM Then
+
             If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
                 comment = HttpContext.Current.Application(BoxChanged).ToString
             Else
@@ -133,77 +118,59 @@ Partial Class Planned_Maintenanceuc
             strScript += "</script>"
             Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
             wctrl.Visible = False
-            Dim Action As String = Application(actionstate)
-            suspendvalue = Application(suspstate)
-            RunUpBoolean = Application(RunUpDone)
-            If Action = "EndOfDay" Then
-                Radioselect = EndofDay
+            Dim Action As String = HttpContext.Current.Session("Actionstate").ToString
+            HttpContext.Current.Session.Remove("Actionstate")
+
+            If Action = ENDOFDAY Then
+                Radioselect = ENDOFDAY102 'local constant = 102
                 Action = "Confirm"
 
-            ElseIf Action = "False" Then
-                Radioselect = Recovery
+            ElseIf Action = "Recover" Then
+                Radioselect = RECOVERY101 'local constant = 101
             Else
                 Radioselect = RadioButtonList1.SelectedItem.Value
             End If
 
-            result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
+            result = NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, TabSet, False, False, FaultParams)
             If result Then
                 If Action = "Confirm" Then
 
-                    'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                    'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-                    'Dim comment As String = Textboxcomment.Text
-
-
-                    'result = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
-                    Application(tabstate) = String.Empty
-                    Application(appstate) = 0
                     CommentBox.ResetCommentBox(String.Empty)
                     Select Case Radioselect
                         Case 1
-                            Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = 0
-                            Application(suspstate) = 0
-                            Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+
+                            Dim returnstring As String = LinacName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
+
                             Response.Redirect(returnstring)
-                        Case 2
-                            Application(suspstate) = 0
-                            Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = 1
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
-                            ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                            'Case 2
+
                         Case 3
-                            Application(suspstate) = 1
-                            Application(FaultOriginTab) = Nothing
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                         Case 5
-                            Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            Dim returnstring As String = LinacName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
+
                             Response.Redirect(returnstring)
                         Case 6
-                            Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            Dim returnstring As String = LinacName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
+
                             Response.Redirect(returnstring)
                         Case 102
-                            Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = 0
-                            Application(suspstate) = 0
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                         Case 8
-                            Dim returnstring As String = LinacName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
-                            'DavesCode.Reuse.ReturnApplicationState(Tabused)
+                            Dim returnstring As String = LinacName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
+
                             Response.Redirect(returnstring)
                     End Select
                     LogOffButton.BackColor = Drawing.Color.AntiqueWhite
                     RadioButtonList1.SelectedIndex = -1
 
                 Else
-                    'Nothing needs to be done here now. This is called from end of day and recovery 
-                    'And they reset all of the application states when this returns to them.
 
+                    'Dim returnstring As String = LinacName + "page.aspx?TabAction=Recovered&NextTab=" & TabSet
+                    Dim returnstring As String = LinacName + "page.aspx"
+                    Response.Redirect(returnstring, False)
                 End If
             Else
                 RaiseLogOffError()
@@ -220,6 +187,7 @@ Partial Class Planned_Maintenanceuc
     End Sub
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        laststate = Reuse.GetLastState(LinacName, 0)
         WaitButtons("Tech")
         CommentBox.BoxChanged = BoxChanged
 
@@ -228,13 +196,12 @@ Partial Class Planned_Maintenanceuc
         CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
         CType(objMFG, controls_MainFaultDisplayuc).ParentControl = PM
         AddHandler objMFG.Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_FaultClosedDisplays
-        'AddHandler objMFG.Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_ClosedFaultDisplay
+
         PlaceHolderFaults.Controls.Add(objMFG)
 
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName
-        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
-        lockctrl.LinacName = LinacName
+
         Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
         ReportFault.LinacName = LinacName
         ReportFault.ParentControl = PM
@@ -244,7 +211,7 @@ Partial Class Planned_Maintenanceuc
         Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
         CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
         CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
-        If Application(suspstate) = 1 Then
+        If laststate = SUSPENDED Then
             CType(Modalities, controls_ModalityDisplayuc).Mode = "Suspended"
         Else
             CType(Modalities, controls_ModalityDisplayuc).Mode = "Linac Unauthorised"
@@ -254,21 +221,17 @@ Partial Class Planned_Maintenanceuc
         ModalityDisplayPanel.Visible = True
 
         Select Case Me.DynamicControlSelection
-        '    Case REPEATFAULTSELECTED
-            '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
-            Case FAULTPOPUPSELECTED
-                '        'LoadFaultTable(Label2.Text)
-                'ReloadConcessionPopUp()
 
-                'Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-                'objReportFault.LinacName = LinacName
-                'objReportFault.ID = "ReportFaultPopupuc"
-                'objReportFault.ParentControl = PM
-                ''objReportFault.Visible = False
-                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUp, AddressOf Close_ReportFaultPopUp
-                'ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+            Case LOCKELFSELECTED
+                Dim ObjLock As controls_UnLockElfuc = Page.LoadControl("controls\UnLockElfuc.ascx")
+
+                ObjLock.LinacName = LinacName
+                ObjLock.UserReason = PM
+                AddHandler ObjLock.HideUnlockPopUp, AddressOf HideUnlockElf
+                'ObjLock.ID = "LockElf1"
+
+                LockELFPlaceholder.Controls.Add(ObjLock)
+                LockELFModalPopup.Show()
             Case QASELECTED
                 Dim ObjQA As controls_ModalityQAPopUpuc = Page.LoadControl("controls\ModalityQAPopUpuc.ascx")
                 ObjQA.LinacName = LinacName
@@ -291,75 +254,60 @@ Partial Class Planned_Maintenanceuc
             RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", True))
             RadioButtonList1.Items.Add(New ListItem("Go To Training/Development", "8", True))
             RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
-            'End If
-
-            Application(faultviewstate) = 1
-            Application(atlasviewstate) = 1
-            Application(qaviewstate) = 1
 
             StateTextBox.Text = "Linac Unauthorised"
-            If Application(suspstate) = 1 Then
-                'remove la option
-                'If LinacName Like "LA?" Then
-                '    RadioButtonList1.Items.FindByValue(2).Enabled = True
-                'End If
+
+            If laststate = SUSPENDED Then
                 RadioButtonList1.Items.FindByValue(3).Enabled = True
                 StateTextBox.Text = "Suspended"
-
-                'ElseIf Application(RunUpDone) = 1 Then
-                '    If LinacName Like "LA?" Then
-                '        RadioButtonList1.Items.FindByValue(2).Enabled = True
-                '        StateTextBox.Text = "Engineering Approved"
-                '    End If
             End If
 
         End If
 
     End Sub
 
+    Public Sub HideUnlockElf(ByVal Hide As Boolean)
+        If Hide Then
+            LockELFModalPopup.Hide()
+            DynamicControlSelection = String.Empty
+        Else
+            LockELFModalPopup.Show()
+            DynamicControlSelection = LOCKELFSELECTED
+        End If
+    End Sub
     Protected Sub LogOffButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LogOffButton.Click
         Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wclabel As Label = CType(wctrl.FindControl("WarningLabel"), Label)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
-        Dim laststate As String = ""
-        Dim lastusername As String = ""
+        Dim laststate As String = String.Empty
+        Dim lastusername As String = String.Empty
         Dim lastusergroup As Integer
-
-        DavesCode.Reuse.GetLastTech(LinacName, 0, laststate, lastusername, lastusergroup)
-
+        Dim LogOffUser As String = "AutoLog"
         Radioselect = RadioButtonList1.SelectedItem.Value
-        Application(actionstate) = "Confirm"
+        Reuse.GetLastTech(LinacName, 0, laststate, lastusername, lastusergroup)
+        Session.Add("name", LogOffUser)
+        Session.Add("usergroup", lastusergroup)
+        Session.Add("userreason", Radioselect)
+        Session.Add("Actionstate", "Confirm")
+
         Select Case Radioselect
-            Case 1
-                wcbutton.Text = "Go To Engineering Run up"
-                RaiseEvent AutoApproved(PM, lastusername)
+            Case 1, 5, 8
+
+                UserApprovedEvent(PM, LogOffUser)
             'Case 2
-            '    wcbutton.Text = "Needs Pre-clinical Run up"
-            '    WriteDatauc1.Visible = True
-            '    ForceFocus(wctext)
+
             Case 3
                 wcbutton.Text = "Return to clinical"
                 WriteDatauc1.Visible = True
                 ForceFocus(wctext)
-            Case 5
-                wcbutton.Text = "Go To Repair"
-                RaiseEvent AutoApproved(PM, lastusername)
-            Case 6
-                If lastusergroup = 4 Then
-                    RaiseEvent AutoApproved(PM, lastusername)
-                Else
-                    WriteDatauc1.Visible = True
-                    ForceFocus(wctext)
-                End If
+
             Case 102
                 wclabel.Text = "Are you sure? This is the End of Day"
                 wcbutton.Text = "End of Day"
                 WriteDatauc1.Visible = True
                 ForceFocus(wctext)
-            Case 8
-                wcbutton.Text = "Go To Training/Development"
-                RaiseEvent AutoApproved(PM, lastusername)
+
         End Select
 
     End Sub
@@ -382,34 +330,34 @@ Partial Class Planned_Maintenanceuc
         PlaceHolderModalities.Controls.Add(ObjQA)
 
     End Sub
+    Protected Sub LockElf_Click(sender As Object, e As EventArgs) Handles LockElf.Click
 
-    Protected Sub LockElf_Click(sender As Object, e As System.EventArgs) Handles LockElf.Click
-        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
-        Dim lockctrltext As TextBox = CType(lockctrl.FindControl("txtchkUserName"), TextBox)
-        Dim suspendvalue As String
-        Dim RunUpBoolean As String
-        Dim username As String = "Lockuser"
-        'Dim Textboxcomment As TextBox = FindControl("CommentBox")
-        Dim comment As String
         comment = CommentBox.Currentcomment
-        suspendvalue = Application(suspstate)
-        RunUpBoolean = Application(RunUpDone)
-        Dim tabused As Integer = 4
-        Dim radioselect As Integer = 101
+        DynamicControlSelection = String.Empty
+        LockELFModalPopup.Hide()
+        Dim tabused = PM
+        Dim radioselect As Integer = 7
         Dim success As Boolean = False
+        Dim username As String = "Lockuser"
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        'has to be tablable to cope with either tab 1 or 7 control
-        success = DavesCode.NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, False, suspendvalue, RunUpBoolean, True, FaultParams)
+        success = NewWriteAux.WriteAuxTables(LinacName, username, comment, radioselect, tabused, False, True, FaultParams)
 
         If success Then
             RaiseEvent BlankGroup(0)
-            lockctrl.Visible = True
-            ForceFocus(lockctrltext)
+            Dim ObjLock As controls_UnLockElfuc = Page.LoadControl("controls\UnLockElfuc.ascx")
+            ObjLock.LinacName = LinacName
+            ObjLock.UserReason = PM
+            AddHandler ObjLock.HideUnlockPopUp, AddressOf HideUnlockElf
+            LockELFPlaceholder.Controls.Add(ObjLock)
+            DynamicControlSelection = LOCKELFSELECTED
+            LockELFModalPopup.Show()
+
         Else
             RaiseLockError()
         End If
 
     End Sub
+
     Protected Sub RaiseLockError()
         Dim strScript As String = "<script>"
 

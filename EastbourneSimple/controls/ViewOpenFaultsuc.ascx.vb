@@ -59,20 +59,12 @@ Partial Class controls_ViewOpenFaultsuc
     Public Property LinacName() As String
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
 
-        suspstate = "Suspended" + LinacName
-        FaultOriginTab = "FOT" + LinacName
-        actionstate = "ActionState" + LinacName
-        RunUpDone = "rppTab" + LinacName
-        laststate = "previousstate" + LinacName
-        faultviewstate = "Faultsee" + LinacName
-        technicalstate = "techstate" + LinacName
-        faultstate = "OpenFault" + LinacName
         ConcessionDescriptionChanged = "ConcessionDescription" + LinacName
         ConcessionActionChanged = "ConcessionAction" + LinacName
         ConcessionCommentChanged = "ConcessionComment" + LinacName
         ParamApplication = "Params" + LinacName
         FaultApplication = "FaultParams" + LinacName
-        'Application(techstate) = False
+
 
 
     End Sub
@@ -99,19 +91,7 @@ Partial Class controls_ViewOpenFaultsuc
                 ConcessionPopupPlaceHolder.Controls.Add(ConcessionPopup)
                 ConcessionPopup.SetUpFaultTracking()
 
-            Case VIEWFAULTSELECTED
-                'Dim objCon As UserControl = Page.LoadControl("ManyFaultGriduc.ascx")
-                'CType(objCon, ManyFaultGriduc).NewFault = False
-                'CType(objCon, ManyFaultGriduc).IncidentID = IncidentID
-                ''to accomodate Tomo now need to pass equipment name?
-                'CType(objCon, ManyFaultGriduc).LinacName = LinacName
-                'PlaceHolderFaults.Controls.Add(objCon)
-                'UpdatePanel2.Visible = True
-                'MultiView1.SetActiveView(View2)
-                'ConcessionGrid.Enabled = False
-                'Hidefaults.Visible = True
-                'HideFaultsclinicalview.Visible = True
-                'ConcessionSelectionPanel.Visible = False
+
             Case Else
                 '        'no dynamic controls need to be loaded...yet
         End Select
@@ -170,7 +150,7 @@ Partial Class controls_ViewOpenFaultsuc
             Dim Concession As String = Server.HtmlDecode(row.Cells(1).Text)
             Dim Region As String
             Region = ""
-            'SetViewFault(False)
+
             ' If multiple buttons are used in a GridView control, use the
             ' CommandName property to determine which button was clicked.
             Select Case e.CommandName
@@ -178,7 +158,7 @@ Partial Class controls_ViewOpenFaultsuc
                     Select Case ParentControl
                         Case "1", "4", "5"
                             success = ConcessParamsTrial.CreateObject(IncidentID)
-                            'success = DavesCode.ConcessionParameters.CreateObject(IncidentID, LinacName)
+
                             If success Then
                                 Application(ParamApplication) = ConcessParamsTrial
 
@@ -293,11 +273,10 @@ Partial Class controls_ViewOpenFaultsuc
         ConcessionGrid.Visible = True
         ConcessionGrid.Enabled = True
         ConcessionGrid.SelectedIndex = -1
-        'UpdatePanel2.Visible = False
         Hidefaults.Visible = False
         HideFaultsclinicalview.Visible = False
         ConcessionSelectionPanel.Visible = True
-        'SetViewFault(True)
+
     End Sub
 
     'delete 3/7/18
@@ -308,9 +287,7 @@ Partial Class controls_ViewOpenFaultsuc
     Protected Sub Cancel()
 
         ConcessionGrid.Enabled = True
-        'UpdatePanelRepeatFault.Visible = False
         ConcessionSelectionPanel.Visible = True
-        'SetViewFault(True)
         Me.DynamicControlSelection = String.Empty
         Page_Load(Page, EventArgs.Empty)
     End Sub

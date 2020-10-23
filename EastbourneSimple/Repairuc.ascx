@@ -4,11 +4,12 @@
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc2" %>
 <%@ Register src="AtlasEnergyViewuc.ascx" tagname="AtlasEnergyViewuc" tagprefix="uc3" %>
 <%@ Register src="controls/Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc4" %>
-<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc5" %>
+<%@ Register src="controls/UnLockElfuc.ascx" tagname="UnLockElfuc" tagprefix="uc5" %>
+<%--<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc5" %>--%>
 <%--<%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc5" %>--%>
 <%@ Register src="ViewCommentsuc.ascx" tagname="ViewCommentsuc" tagprefix="uc6" %>
 <%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc7" %>
-<%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>
+<%--<%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>--%>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc10" %>
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc11" %>
 
@@ -27,7 +28,7 @@
 <%@ Register src="controls/ModalityDisplayuc.ascx" tagname="ModalityDisplayuc" tagprefix="uc17" %>
 
 <uc2:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="5"  Tabby="5"  WriteName="Repair" visible="false" runat="server" />
-<uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="5" visible="false" runat="server" />
+<%--<uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="5" Tabby="5" visible="false" runat="server" />--%>
 
 <div class="clear" style="width:1863px">
     <asp:UpdatePanel ID="NewFaultPopUpUpdatePanel" runat="server">
@@ -120,6 +121,8 @@
     </asp:UpdatePanel>
 </div>
                
+   
+               
 </div>
 <div id="left">
 
@@ -132,7 +135,24 @@
 <div id="right"></div>
 
 <uc6:ViewCommentsuc ID="ViewCommentsuc1" LinacName="" CommentSort="rp" runat="server" />
+<asp:Label ID="TargetControl" runat="server" style="display:none" causesvalidation="false" Visible="true" ></asp:Label>
+    <asp:ModalPopupExtender ID="LockELFModalPopup" runat="server"
+                TargetControlID = "TargetControl"
+                PopupControlID = "LockELFPopup"
+                BackgroundCssClass = "modalBackground"
+                >
+</asp:ModalPopupExtender>
 
+   <asp:Panel ID="LockELFPopup" runat="server" style="display:none" CssClass="modalPopup" Height="150px" 
+            Width="350px" Font-Underline="False" >
+        
+            <asp:UpdatePanel ID="UpdatePanel10" runat="server" >
+            <ContentTemplate>
+                <asp:PlaceHolder ID="LockELFPlaceholder" runat="server"></asp:PlaceHolder>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+       
+    </asp:Panel>
 
 
 

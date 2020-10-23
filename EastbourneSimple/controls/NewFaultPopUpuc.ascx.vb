@@ -21,21 +21,7 @@ Partial Class controls_NewFaultPopUpuc
         FaultParamsApplication = "FaultParams" + LinacName
     End Sub
 
-    'Private Property DynamicControlSelection() As String - Do THIS On WEDNESDAY MORNING
-    '    Get
-    '        Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
-    '        If result Is Nothing Then
-    '            'doing things like this lets us access this property without
-    '            'worrying about this property returning null/Nothing
-    '            Return String.Empty
-    '        Else
-    '            Return result
-    '        End If
-    '    End Get
-    '    Set(ByVal value As String)
-    '        ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
-    '    End Set
-    'End Property
+
     Private Sub CloseTracking(ByVal LinacName As String)
         RaiseEvent CloseFaultTracking(LinacName)
     End Sub
@@ -48,25 +34,14 @@ Partial Class controls_NewFaultPopUpuc
         RaiseEvent UpdateClosedDisplays(LinacName)
     End Sub
 
-    'Private Sub CloseDisplays(ByVal LinacName As String, ByVal IncidentID As String)
-    '    RaiseEvent UpdateClosedDisplays(LinacName, IncidentID)
-    'End Sub
+
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        'WaitButtons("Acknowledge")
-        'appstate = "LogOn" + MachineName
-        'actionstate = "ActionState" + MachineName
+
         Dim success As Boolean = False
         Dim logerrorbox As Label = FindControl("LoginErrordetails")
         logerrorbox.Text = Nothing
 
-        'Reference to defect removed 23/11/16 Added back in 26/03/18
-        'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Report" Or tablabel = "handover" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "Defect" Or tablabel = "recover" Or tablabel = "Image" Or tablabel = "Major" Then
-        'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Report" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "Defect" Or tablabel = "recover" Or tablabel = "Image" Or tablabel = "Major" Then
-        'If Application(appstate) = 1 Or tablabel = "3" Or tablabel = "Report" Or tablabel = "handover" Or tablabel = "EndDay" Or tablabel = "Admin" Or tablabel = "Updatefault" Or tablabel = "incident" Or tablabel = "0" Or tablabel = "recover" Or tablabel = "Image" Then
-        'IncidentID = Application(FaultParamsApplication)
-        'success = ConcessParamsTrial.CreateObject(IncidentID)
-        'success = DavesCode.ConcessionParameters.CreateObject(IncidentID, LinacName)
-        'If Not IsPostBack Then
+
         If Not Application(ParamApplication) Is Nothing Then
                 ConcessParamsTrial = Application(ParamApplication)
             Else
@@ -82,13 +57,12 @@ Partial Class controls_NewFaultPopUpuc
             End If
 
 
+        If Not ConcessParamsTrial Is Nothing Then
 
-            If Not ConcessParamsTrial Is Nothing Then
-                'Application(ParamApplication) = ConcessParamsTrial
-
-                Dim FaultTracking As controls_FaultTrackinguc = CType(FindControl("FaultTrackinguc1"), controls_FaultTrackinguc)
+            Dim FaultTracking As controls_FaultTrackinguc = CType(FindControl("FaultTrackinguc1"), controls_FaultTrackinguc)
                 FaultTracking.LinacName = ConcessParamsTrial.Linac
             FaultTracking.IncidentID = ConcessParamsTrial.IncidentID
+            FaultTracking.ParentControl = ParentName
             FaultTracking.InitialiseFaultTracking(ConcessParamsTrial)
             AddHandler FaultTrackinguc1.UpdateOpenConcessions, AddressOf Update_OpenConcessions
                 AddHandler FaultTrackinguc1.UpdateClosedDisplays, AddressOf Update_ClosedDisplays
@@ -109,7 +83,7 @@ Partial Class controls_NewFaultPopUpuc
             Else
                 RaiseError()
             End If
-        'End If
+
     End Sub
 
     Protected Sub RaiseError()
@@ -120,7 +94,7 @@ Partial Class controls_NewFaultPopUpuc
     End Sub
 
     Protected Function GetNewIncident() As String
-        'Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+
         Dim IncidentID As String = String.Empty
         IncidentID = NewFaultHandling.ReturnNewIncidentID(LinacName)
         Return IncidentID

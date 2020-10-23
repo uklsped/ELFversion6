@@ -1,43 +1,29 @@
-﻿Imports System.ComponentModel
-Imports System.Data.SqlClient
-Imports System.Transactions
-Imports AjaxControlToolkit
+﻿Imports System.Data.SqlClient
 
 Partial Class ErunupUserControl
     Inherits UserControl
 
     Private mpContentPlaceHolder As ContentPlaceHolder
-    Private appstate As String
-    Private suspstate As String
-    Private actionstate As String
-    Private FaultOriginTab As String
-    Private RunUpDone As String
-    Private faultviewstate As String
-    Private atlasviewstate As String
-    Private qaviewstate As String
-    Private LinacFlag As String
     Private Todaydefect As DefectSave
     Private TodaydefectPark As DefectSavePark
     Private MainFaultPanel As controls_MainFaultDisplayuc
     Private BoxChanged As String
     Public Event BlankGroup(ByVal BlankUser As Integer)
-    Private tabstate As String
-    Dim accontrol1 As AcceptLinac
-    Dim accontrol7 As AcceptLinac
     Dim comment As String
     Private Obpage As Page
     Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
     Const ENG As String = "1"
-    Const RAD As String = "7"
+    Const RAD As String = "9"
+    Const ENDOFDAY As String = "EndofDay"
     Public Property DataName() As String
     Public Property LinacName() As String
-    'Dim Property Tabby() As String
     Public Property UserReason() As Integer
     Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
     Const QASELECTED As String = "ModalityQApopupselected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    Const LOCKELFSELECTED As String = "LockELFSelected"
     Private Modalities As controls_ModalityDisplayuc
-    Public Event OpenAcceptlinac(ByVal ClinicalTab As String)
+
 
     Private Property DynamicControlSelection() As String
         Get
@@ -93,17 +79,8 @@ Partial Class ErunupUserControl
     End Sub
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
-        appstate = "LogOn" + LinacName
-        actionstate = "ActionState" + LinacName
-        suspstate = "Suspended" + LinacName
-        FaultOriginTab = "FOT" + LinacName
-        RunUpDone = "rppTab" + LinacName
-        faultviewstate = "Faultsee" + LinacName
-        atlasviewstate = "Atlassee" + LinacName
-        qaviewstate = "QAsee" + LinacName
-        LinacFlag = "State" + LinacName
-        BoxChanged = "EngBoxChanged" + LinacName
-        tabstate = "ActTab" + LinacName
+
+        BoxChanged = "EngBoxChanged" + LinacName ' used but leave for now
 
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
         AddHandler ConfirmPage1.ConfirmExit, AddressOf ConfirmExitEvent ' this is if imaging wasn't selected
@@ -111,19 +88,9 @@ Partial Class ErunupUserControl
     End Sub
 
     Public Sub EngLogOnEvent(connectionString As String)
-        'because B2 is to be added and because LA1 and LA4 are to be treated like B1 etc changed case statement 9/4/19
-        '14/7
-        appstate = "LogOn" + LinacName
-        actionstate = "ActionState" + LinacName
-        suspstate = "Suspended" + LinacName
-        FaultOriginTab = "FOT" + LinacName
-        RunUpDone = "rppTab" + LinacName
-        faultviewstate = "Faultsee" + LinacName
-        atlasviewstate = "Atlassee" + LinacName
-        qaviewstate = "QAsee" + LinacName
-        LinacFlag = "State" + LinacName
+
         BoxChanged = "EngBoxChanged" + LinacName
-        tabstate = "ActTab" + LinacName
+
 
         If Not LinacName Like "T?" Then
             SetEnergies(connectionString)
@@ -133,8 +100,6 @@ Partial Class ErunupUserControl
 
         GridView1.Visible = True
         GridViewImage.Visible = True
-        Application(atlasviewstate) = 1
-
 
     End Sub
 
@@ -163,11 +128,13 @@ Partial Class ErunupUserControl
     End Sub
 
     Public Sub UserApprovedEvent(ByVal Tabset As String, ByVal Userinfo As String)
-        DavesCode.Reuse.RecordStates(LinacName, Tabset, "Eng userapproved event", 0)
+
         Dim ClinicalTab As String = "3"
-        'If Tabset = "1" Or "7" Then what about 7?
-        If (Tabset = "1") Or (Tabset = "666") Or (Tabset = "7") Then
-            Dim Action As String = Application(actionstate)
+
+        If (Tabset = ENG) Or (Tabset = "666") Or (Tabset = RAD) Then
+
+            Dim Action As String = HttpContext.Current.Session("Actionstate").ToString
+            HttpContext.Current.Session.Remove("Actionstate")
             Dim machinelabel As String = LinacName & "Page.aspx';"
             Dim Valid As Boolean = False
             Dim strScript As String = "<script>"
@@ -185,28 +152,10 @@ Partial Class ErunupUserControl
                 Valid = True
                 Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, comment, Valid, False, False, FaultParams)
                 If Successful Then
-                    'This app sets for repair, maintenance and physics tab to know that run up was done
-                    Application(RunUpDone) = 1
-                    Application(appstate) = 0
-                    Application(tabstate) = 0
-
                     CommentBox.ResetCommentBox(String.Empty)
-                    'Application(LinacFlag) = "Clinical"
-                    Application(LinacFlag) = "Suspended"
-                    'Dim returnstring As String = LinacName + "page.aspx?tabref=3"
                     Dim returnstring As String = LinacName + "page.aspx"
-                    'Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
-                    Application(suspstate) = 1
-                    'RaiseEvent OpenAcceptlinac(ClinicalTab)
                     Response.Redirect(returnstring)
-                    'End If
-
-
                 Else
-                    Application(LinacFlag) = "Linac Unauthorised"
-                    Application(RunUpDone) = 0
-                    Application(appstate) = 0
-                    Application(tabstate) = 0
                     RaiseError("WriteEnergies")
                 End If
 
@@ -218,42 +167,32 @@ Partial Class ErunupUserControl
                 End If
                 Successful = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, Tabset, Userinfo, comment, Valid, False, False, FaultParams)
                 If Successful Then
-                    Application(LinacFlag) = "Linac Unauthorised"
-                    Application(RunUpDone) = 0
-                    Application(appstate) = 0
-                    Application(tabstate) = 0
+
                     If Not Userinfo = "Restored" Then
                         CommentBox.ResetCommentBox(String.Empty)
+                        strScript += "alert('Not Approved For Clinical Use.Logging Off');"
+                        strScript += "window.location='"
+                        strScript += machinelabel
+                        strScript += "</script>"
+                        ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
+                    Else
+                        'Dim returnstring As String = LinacName + "page.aspx?TabAction=Recovered&NextTab=" & Tabset
+                        Dim returnstring As String = LinacName + "page.aspx"
+                        Response.Redirect(returnstring, False)
+                        Context.ApplicationInstance.CompleteRequest()
                     End If
-                    'same behaviour for all machines now 9/4/19
-                    'If LinacName Like "LA?" Then
-                    '    strScript += "alert('No Energies Approved Logging Off');"
-                    'Else
-                    strScript += "alert('Not Approved For Clinical Use.Logging Off');"
-                    'End If
-                    strScript += "window.location='"
-                    strScript += machinelabel
-                    strScript += "</script>"
-                    ScriptManager.RegisterStartupScript(engHandoverButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                 Else
-                    Application(LinacFlag) = "Linac Unauthorised"
-                    Application(RunUpDone) = 0
-                    Application(appstate) = 0
-                    Application(tabstate) = 0
                     RaiseError("WriteEnergies")
-
                 End If
             End If
-
         End If
+
     End Sub
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
-        Application(LinacFlag) = "Linac Unauthorised"
-        Application(RunUpDone) = 0
-        Application(appstate) = 0
+
         HttpContext.Current.Application(BoxChanged) = Nothing
-        Application(tabstate) = String.Empty
+
         Dim strScript As String = "<script>"
         strScript += "alert('Problem Loading Values. Please call Engineer');"
         strScript += "window.location='"
@@ -274,11 +213,7 @@ Partial Class ErunupUserControl
 
         Dim strScript As String = "<script>"
         Dim machinelabel As String = LinacName & "Page.aspx';"
-        Application(LinacFlag) = "Linac Unauthorised"
-        Application(RunUpDone) = 0
-        Application(appstate) = 0
-        'CommentBox.ResetCommentBox(String.Empty)
-        Application(tabstate) = String.Empty
+
         strScript += message
         strScript += "window.location='"
         strScript += machinelabel
@@ -305,14 +240,11 @@ Partial Class ErunupUserControl
         CType(objMFG, controls_MainFaultDisplayuc).ID = "MainFaultDisplay"
         AddHandler objMFG.Mainfaultdisplay_UpdateClosedFaultDisplay, AddressOf Update_ClosedFaultDisplay
 
-        'Dim strScript As String = "<script>"
         'Sets up user comments
         Dim Vctrl As ViewCommentsuc = CType(FindControl("ViewCommentsuc1"), ViewCommentsuc)
         Vctrl.LinacName = LinacName
-
         'Sets up view open faults and Lock Elf
 
-        'Objcon = Page.LoadControl("ViewOpenFaults.ascx")
         If UserReason = 1 Then
             CType(objMFG, controls_MainFaultDisplayuc).ParentControl = ENG
 
@@ -323,29 +255,26 @@ Partial Class ErunupUserControl
 
         End If
         PlaceHolderFaults.Controls.Add(objMFG)
-        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
-        lockctrl.LinacName = LinacName
 
         Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
         ReportFault.LinacName = LinacName
         ReportFault.ParentControl = ENG
         AddHandler ReportFault.ReportAFault_UpdateDailyDefectDisplay, AddressOf Update_DefectDailyDisplay
         AddHandler ReportFault.ReportAFault_UpDateViewOpenFaults, AddressOf Update_ViewOpenFaults
-        'AddHandler 
-        Select Case Me.DynamicControlSelection
-        '    Case REPEATFAULTSELECTED
-            '        LoadRepeatFaultTable(HiddenIncidentID.Value, HiddenConcessionNumber.Value)
-            Case FAULTPOPUPSELECTED
 
-                'Dim objReportFault As controls_ReportFaultPopUpuc = Page.LoadControl("controls\ReportFaultPopUpuc.ascx")
-                'objReportFault.LinacName = LinacName
-                'objReportFault.ID = "ReportFaultPopupuc"
-                'objReportFault.ParentControl = ENG
-                ''objReportFault.Visible = False
-                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpDateDefectDailyDisplay, AddressOf Update_DefectDailyDisplay
-                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).UpdateViewOpenFaults, AddressOf Update_ViewOpenFaults
-                'AddHandler CType(objReportFault, controls_ReportFaultPopUpuc).CloseReportFaultPopUpTab, AddressOf Close_ReportFaultPopUp
-                'ReportFaultPopupPlaceHolder.Controls.Add(objReportFault)
+        Select Case Me.DynamicControlSelection
+
+            Case LOCKELFSELECTED
+                Dim ObjLock As controls_UnLockElfuc = Page.LoadControl("controls\UnLockElfuc.ascx")
+
+                ObjLock.LinacName = LinacName
+                ObjLock.UserReason = ENG
+                AddHandler ObjLock.HideUnlockPopUp, AddressOf HideUnlockElf
+                'ObjLock.ID = "LockElf1"
+
+                LockELFPlaceholder.Controls.Add(ObjLock)
+                LockELFModalPopup.Show()
+
             Case QASELECTED
                 Dim ObjQA As controls_ModalityQAPopUpuc = Page.LoadControl("controls\ModalityQAPopUpuc.ascx")
                 ObjQA.LinacName = LinacName
@@ -374,7 +303,15 @@ Partial Class ErunupUserControl
 
         CommentBox.BoxChanged = BoxChanged
 
-
+    End Sub
+    Public Sub HideUnlockElf(ByVal Hide As Boolean)
+        If Hide Then
+            LockELFModalPopup.Hide()
+            DynamicControlSelection = String.Empty
+        Else
+            LockELFModalPopup.Show()
+            DynamicControlSelection = LOCKELFSELECTED
+        End If
     End Sub
     Protected Sub SetEnergies(ByVal connectionString As String)
         Dim SelCommand As String = ""
@@ -401,7 +338,7 @@ Partial Class ErunupUserControl
         Dim comm As SqlCommand
         Dim reader As SqlDataReader
         Dim count As Integer = 0
-        'Dim connectionString1 As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+
         conn = New SqlConnection(connectionString)
         If UserReason = ENG Then
             'added imaging
@@ -411,7 +348,7 @@ Partial Class ErunupUserControl
         End If
         comm.Parameters.Add("@linac", Data.SqlDbType.NVarChar, 10)
         comm.Parameters("@linac").Value = LinacName
-        'Try
+
         conn.Open()
         reader = comm.ExecuteReader()
         While reader.Read()
@@ -514,12 +451,12 @@ Partial Class ErunupUserControl
         'count if there are unacknowledged rad concessions first
 
         'Next 4 lines inserted 7/2/20 to allow rads to run up emergency even if open rad concessions
-        DavesCode.Reuse.RecordStates(LinacName, 1, "engHandoverButton", 0)
+
         Dim Radcount As Boolean = True
         If UserReason = ENG Then
             Radcount = ConfirmNoRadConcession()
         End If
-        DavesCode.Reuse.RecordStates(LinacName, 1, "Handover button", 0)
+
         If Radcount Then
             If LinacName Like "T?" Then
                 ConfirmExitEvent()
@@ -533,13 +470,9 @@ Partial Class ErunupUserControl
                 Next
                 Select Case counter
                     Case Is <> 0
-                        'if unnecessary now as linacs have the same behaviour
-                        'If LinacName Like "LA?" Then
-                        '    ConfirmExitEvent()
-                        'Else
-                        'Inserted imaging check from preclinicaluser control
+
                         Dim icounter As Integer = 0
-                        'Dim tclcontainer As TabContainer
+
                         For Each grv As GridViewRow In GridViewImage.Rows
 
                             Dim checktick As CheckBox = CType(grv.FindControl("RowlevelCheckBoxImage"), CheckBox)
@@ -556,8 +489,6 @@ Partial Class ErunupUserControl
                             ConfirmPage1.Visible = True
 
                         End If
-
-                        'End If
 
                     Case Else
                         strScript += "alert('Select at least one energy');"
@@ -615,7 +546,7 @@ Partial Class ErunupUserControl
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         wcbutton.Text = "Log Off"
-        Application(actionstate) = "Cancel"
+        Session.Add("ActionState", "Cancel")
         WriteDatauc1.Visible = True
         ForceFocus(wctext)
 
@@ -624,22 +555,29 @@ Partial Class ErunupUserControl
 
     '15 April Added this control as a result of Bug 11
     Protected Sub LockElf_Click(sender As Object, e As EventArgs) Handles LockElf.Click
-        '15 April test mod next 6 lines
-        Dim lockctrl As LockElfuc = CType(FindControl("LockElfuc1"), LockElfuc)
-        Dim lockctrltext As TextBox = CType(lockctrl.FindControl("txtchkUserName"), TextBox)
+
         Dim grdview As GridView = FindControl("Gridview1")
         Dim grdviewI As GridView = FindControl("GridViewImage")
         comment = CommentBox.Currentcomment
-
+        DynamicControlSelection = String.Empty
+        LockELFModalPopup.Hide()
         Dim success As Boolean = False
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        'has to be tablable to cope with either tab 1 or 7 control
+        'has to be able to cope with either tab 1 or 7 control
         success = DavesCode.NewEngRunup.CommitRunup(grdview, grdviewI, LinacName, ENG, "Lockuser", comment, False, False, True, FaultParams)
 
         If success Then
             RaiseEvent BlankGroup(0)
-            lockctrl.Visible = True
-            ForceFocus(lockctrltext)
+
+            Dim ObjLock As controls_UnLockElfuc = Page.LoadControl("controls\UnLockElfuc.ascx")
+            ObjLock.LinacName = LinacName
+            ObjLock.UserReason = ENG
+            AddHandler ObjLock.HideUnlockPopUp, AddressOf HideUnlockElf
+
+            LockELFPlaceholder.Controls.Add(ObjLock)
+            DynamicControlSelection = LOCKELFSELECTED
+            LockELFModalPopup.Show()
+
         Else
             RaiseLockError()
         End If
@@ -724,7 +662,7 @@ Partial Class ErunupUserControl
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
         wcbutton.Text = "Confirm for Clinical Use"
-        Application(actionstate) = "Confirm" 'This should only happen if log in is ok move to writedatauc
+        Session.Add("ActionState", "Confirm")
         WriteDatauc1.Visible = True
         ForceFocus(wctext)
     End Sub

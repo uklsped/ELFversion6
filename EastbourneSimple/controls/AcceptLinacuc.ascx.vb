@@ -1,21 +1,6 @@
-﻿Imports System.Transactions
-
-Partial Public Class AcceptLinacuc
+﻿Partial Public Class AcceptLinacuc
     Inherits System.Web.UI.UserControl
-    Public Event AcceptHandler As EventHandler
-    Private appstate As String
-    Private suspstate As String
-    'Dim modalpopupextendergen As New ModalPopupExtender
-    Public Event ClinicalApproved(ByVal connectionString As String)
-    Public Event AcknowledgeEnergies()
-    Public Event UpdateReturnButtons()
-    Public Event ShowName(ByVal LastUserGroup As Integer)
-    'Public Event EngRunuploaded(ByVal connectionString As String)
-    'Public Event PreRunuploaded(ByVal connectionString As String)
-    'Public Event SetModalities(ByVal connectionString As String)
-    Public Event Repairloaded(ByVal connectionString As String)
-
-    Public Property Tabby() As String
+    Dim usergroupselected As Integer = Nothing
     Public Property UserReason() As Integer
     Public Property LinacName() As String
 
@@ -32,115 +17,35 @@ Partial Public Class AcceptLinacuc
     End Property
 
     Public Sub AcceptOK_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles AcceptOK.Click
-        Dim output As String
-        Dim strScript As String = "<script>"
+
         Dim textboxUser As TextBox = FindControl("txtchkUserName") 'This gets username textbox to pass to login
         Dim passwordUser As TextBox = FindControl("txtchkPWD")  'This gets password textbox to pass to login
         Dim logerrorbox As Label = FindControl("LoginErrordetails") 'This gets error label to pass to login
 
-        Dim usergroupname As String = String.Empty
+        usergroupselected = DavesCode.Reuse.SuccessfulLogin(Username, Userpassword, UserReason, textboxUser, passwordUser, logerrorbox)
 
-        'We need to determine if the user is authenticated
-        'Get the values entered by the user
-        Dim loginUsername As String = Username
-        Dim loginPassword As String = Userpassword
-        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
-        Dim Activity As String
+        If usergroupselected <> Nothing Then
 
-        appstate = "LogOn" & LinacName
-        suspstate = "Suspended" & LinacName
-        Dim reload As String
-        Dim clinstate As String = "Clinical"
-
-        reload = DavesCode.Reuse.GetLastState(LinacName, 0)
-        'from http://spacetech.dk/vb-net-string-compare-not-equal.html
-        If Not (reload.Equals(clinstate)) Then
-            Dim myAppState As Integer = CInt(Application(appstate))
-            'myAppState = 1
-            'DavesCode.Reuse.RecordStates(LinacName, Tabby, "AcceptOK", 0)
-            If myAppState = 0 Then
-                Activity = DavesCode.Reuse.ReturnActivity(UserReason)
-
-                'This can only return here if there is a valid log in
-                'Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, Reason, textboxUser, passwordUser, logerrorbox, modalpop)
-                Dim usergroupselected As Integer = DavesCode.Reuse.SuccessfulLogin(loginUsername, loginPassword, UserReason, textboxUser, passwordUser, logerrorbox)
-
-                If usergroupselected <> Nothing Then
-
-                    Try
-                        Using myscope As TransactionScope = New TransactionScope()
-
-                            DavesCode.Reuse.MachineStateNew(loginUsername, usergroupselected, LinacName, UserReason, False, connectionString)
-                            Select Case Tabby
-                                Case 1, 7
-                                    'RaiseEvent EngRunuploaded(connectionString)
-                                    'RaiseEvent SetModalities(connectionString)
-
-                                Case 2
-                                    'RaiseEvent PreRunuploaded(connectionString)
-                                Case 3
-                                    'Me.Page.GetType.InvokeMember("LaunchTab", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
-                                    output = "Clinical"
-                                    'Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
-
-                                    'RaiseEvent ClinicalApproved(connectionString)
-                                    'RaiseEvent SetModalities(connectionString)
-                                Case 4, 8
-                                    'RaiseEvent UpdateReturnButtons()
-                                    'RaiseEvent ShowName(usergroupselected)
-                                Case 5
-                                    'RaiseEvent Repairloaded(connectionString)
-                                    'RaiseEvent Repairloaded(connectionString)
-                            End Select
-                            output = connectionString
-                            myscope.Complete()
-                        End Using
-
-                        textboxUser.Text = String.Empty
-
-                        'eg from http://dotnetbites.wordpress.com/2014/02/15/call-parent-page-method-from-user-control-using-reflection/
-                        ' this is an instrumentation field that displays application number ie 0 or 1
-                        'Me.Page.GetType.InvokeMember("UpdateHiddenLAField", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
-                        Me.Page.GetType.InvokeMember("UpdateDisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {Activity})
-                        'this is instrumentation code that displays current username
-                        'Me.Page.GetType.InvokeMember("Updateuserlabel", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {loginUsername})
-
-                        RaiseEvent ShowName(usergroupselected)
-
-                        Dim returnstring As String = LinacName & "page.aspx?tabclicked=" & Tabby
-                        Response.Redirect(returnstring, False)
-
-                    Catch ex As Exception
-                        DavesCode.NewFaultHandling.LogError(ex)
-                        RaiseLoadError()
-                    End Try
-                Else
-
-                    textboxUser.Text = String.Empty
-
-
-                End If
-            Else
-                textboxUser.Text = String.Empty
-                Application(appstate) = 0
-
-            End If
-        Else
             Try
-                If Tabby = 3 Then
-                    Using myscope As TransactionScope = New TransactionScope()
-                        RaiseEvent ClinicalApproved(connectionString)
-                        output = "Clinical"
-                        Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {output})
+                AddDataToSession()
+                textboxUser.Text = String.Empty
+                Dim returnstring As String = LinacName & "page.aspx?TabAction=Clicked&NextTab=" & UserReason
+                Response.Redirect(returnstring, False)
 
-                        myscope.Complete()
-                    End Using
-                End If
             Catch ex As Exception
                 DavesCode.NewFaultHandling.LogError(ex)
                 RaiseLoadError()
             End Try
+        Else
+            textboxUser.Text = String.Empty
+
         End If
+
+    End Sub
+    Protected Sub AddDataToSession()
+        Session.Add("name", Username)
+        Session.Add("usergroup", usergroupselected)
+        Session.Add("userreason", UserReason)
     End Sub
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
@@ -152,70 +57,34 @@ Partial Public Class AcceptLinacuc
         ScriptManager.RegisterStartupScript(AcceptOK, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
 
-
-    Protected Sub Page_init(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Init
-
-        appstate = "LogOn" & LinacName
-        suspstate = "Suspended" & LinacName
-
-    End Sub
-
     Protected Sub Page_load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' DavesCode.Reuse.RecordStates("T1", "1", "AcceptucPageLoad", 0)
 
-        ''from http://spacetech.dk/vb-net-string-compare-not-equal.html
-        'If Not (reload.Equals(clinstate)) Then
         ForceFocus(txtchkUserName)
         WaitButtons("Acknowledge")
-        If Application(appstate) = 0 Then
 
-            AcceptTabLabel.Text = "Log on to " & DavesCode.Reuse.ReturnActivity(UserReason)
+        AcceptTabLabel.Text = "Log on to " & DavesCode.Reuse.ReturnActivity(UserReason)
 
-            If Tabby = 3 Then
-                If Not LinacName Like "T#" Then
-                    Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
-                    CType(objCon, EnergyDisplayuc).LinacName = LinacName
-                    PlaceHolder2.Controls.Add(objCon)
-                    'PlaceHolder2.Visible = True
-                    AcceptLinacDisplay.Width = 1000
-                    AcceptLinacDisplay.Height = 200
-                    AcceptOK.Text = "Acknowledge Energies and Accept Linac"
-                End If
+        If UserReason = 3 Then
+            If Not LinacName Like "T#" Then
+                Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
+                CType(objCon, EnergyDisplayuc).LinacName = LinacName
+                PlaceHolder2.Controls.Add(objCon)
+                AcceptLinacDisplay.Width = 1000
+                AcceptLinacDisplay.Height = 200
+                AcceptOK.Text = "Acknowledge Energies and Accept Linac"
             End If
-
         End If
-
 
     End Sub
 
     Public Sub Btnchkcancel_click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnchkcancel.Click
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         AcceptOK.Visible = False
-        appstate = "LogOn" & LinacName
-        suspstate = "Suspended" & LinacName
-        Dim reload As String
-        Dim clinstate As String = "Clinical"
-        reload = DavesCode.Reuse.GetLastState(LinacName, 0)
-        'from http://spacetech.dk/vb-net-string-compare-not-equal.html
-        If Not (reload.Equals(clinstate)) Then
-            Dim myAppState As Integer = CInt(Application(appstate))
 
-            If myAppState = 0 Then
-                Dim loginUsername As String = Username
-                Dim returnstring As String
-                'Application(appstate) = 0
+        Dim returnstring As String
+        returnstring = LinacName & "page.aspx"
+        Response.Redirect(returnstring)
 
-                If Tabby = 3 Then
-                    Application(suspstate) = 1
-                End If
-                returnstring = LinacName & "page.aspx"
-                Response.Redirect(returnstring)
-            Else
-                'Write and error?
-            End If
-        Else
-            RaiseEvent ClinicalApproved(connectionString)
-        End If
     End Sub
     Private Sub WaitButtons(ByVal WaitType As String)
 

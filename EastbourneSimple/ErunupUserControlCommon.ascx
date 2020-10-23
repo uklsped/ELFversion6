@@ -11,13 +11,21 @@
 
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc7" %>
 
-<%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>
+
+
+<%@ Register src="controls/UnLockElfuc.ascx" tagname="UnLockElfuc" tagprefix="uc9" %>
+
+
+
+<%--<%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc9" %>--%>
 
 <%@ Register src="controls/Modalitiesuc.ascx" tagname="Modalitiesuc" tagprefix="uc10" %>
 
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc11" %>
 
-<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc12" %>
+
+
+<%--<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc12" %>--%>
 
 <%@ Register src="WriteDatauc.ascx" tagname="WriteDatauc" tagprefix="uc4" %>
 
@@ -39,8 +47,8 @@
 
 <%--<%@ Register src="ViewOpenFaults.ascx" tagname="ViewOpenFaults" tagprefix="uc1" %>--%>
 
-<uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="1" Tabby="1" visible="false" runat="server" />
-<asp:PlaceHolder ID="PlaceHolderAcceptLinac" runat="server"></asp:PlaceHolder>
+<%--<uc9:LockElfuc ID="LockElfuc1" LinacName="" UserReason="1" Tabby="1" visible="false" runat="server" />--%>
+<%--<asp:PlaceHolder ID="PlaceHolderAcceptLinac" runat="server"></asp:PlaceHolder>--%>
  <asp:GridView ID="DummyGridView" runat="server">
         </asp:GridView>
 <asp:GridView ID="DummyGridViewImaging" runat="server"></asp:GridView>
@@ -110,6 +118,7 @@
               <td style="width: 182px" >
             
           </tr>
+              
         <tr>          
            <td colspan="2" style="height: 92px">
                <table>
@@ -157,6 +166,8 @@
             </asp:UpdatePanel>
        </div>
 
+    
+
 </div>
 
 <div class="clear"></div>
@@ -197,6 +208,29 @@
         
             <uc1:ConfirmPage ID="ConfirmPage1" Visible="false" runat="server" />
          </asp:PlaceHolder>
+ <asp:Label ID="TargetControl" runat="server" style="display:none" causesvalidation="false" Visible="true" ></asp:Label>
+    <asp:ModalPopupExtender ID="LockELFModalPopup" runat="server"
+                TargetControlID = "TargetControl"
+                PopupControlID = "LockELFPopup"
+                BackgroundCssClass = "modalBackground"
+                >
+</asp:ModalPopupExtender>
+
+   <asp:Panel ID="LockELFPopup" runat="server" style="display:none" CssClass="modalPopup" Height="150px" 
+            Width="350px" Font-Underline="False" >
+        
+            <asp:UpdatePanel ID="UpdatePanel10" runat="server" >
+            <ContentTemplate>
+                <asp:PlaceHolder ID="LockELFPlaceholder" runat="server"></asp:PlaceHolder>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+       
+    </asp:Panel>
+
+
+   
+
+
 
 
    

@@ -1,18 +1,8 @@
-﻿Imports AjaxControlToolkit
-Imports System.Data.SqlClient
-Partial Class Traininguc
+﻿Partial Class Traininguc
     Inherits System.Web.UI.UserControl
     Private MachineName As String
     Private SelectCount As Boolean
     Private Radioselect As Integer
-    Private appstate As String
-    Private suspstate As String
-    Private actionstate As String
-    Private FaultOriginTab As String
-    Private RunUpDone As String
-    Private faultviewstate As String
-    Private atlasviewstate As String
-    Private qaviewstate As String
     Private laststate As String
     Private lastuser As String
     Private lastusergroup As String
@@ -25,6 +15,7 @@ Partial Class Traininguc
     Const TRAINING As String = "8"
     Const FAULTPOPUPSELECTED As String = "faultpopupupselected"
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+
     Private Property DynamicControlSelection() As String
         Get
             Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
@@ -49,20 +40,20 @@ Partial Class Traininguc
         End Set
     End Property
 
-    'Public Sub UpdateTrainingHandler(ByVal EquipmentID As String)
+
     Public Sub UpdateReturnButtonsHandler()
         'removed reference to LA 9/4/19
-        'If Not IsPostBack Then
-        '    RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
-        '    RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
-        '    RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
-        '    RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
-        '    RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
-        '    'End If
-        'End If
+        If Not IsPostBack Then
+            RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
+            RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
+            RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
+            RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
+            RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
+            'End If
+        End If
 
         DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
-        If Application(suspstate) = 1 Then
+        If laststate = GlobalConstants.SUSPENDED Then
             RadioButtonList1.Items.FindByValue(3).Enabled = True
             If (lastusergroup = 2) Or (lastusergroup = 4) Then
                 RadioButtonList1.Items.FindByValue(4).Enabled = True
@@ -72,18 +63,13 @@ Partial Class Traininguc
             End If
             '5 caters for autosign from last tab
         Else
-            If ((lastusergroup = 2) Or (lastusergroup = 4) Or (lastusergroup = 5)) And (laststate = "Linac Unauthorised") Then
+
+            If ((lastusergroup = 2) Or (lastusergroup = 4) Or (lastusergroup = 5)) Then
                 RadioButtonList1.Items.FindByValue(1).Enabled = True
                 RadioButtonList1.Items.FindByValue(4).Enabled = True
                 RadioButtonList1.Items.FindByValue(5).Enabled = True
 
-            ElseIf (laststate = "Engineering Approved") Then
 
-                If (lastusergroup = 2) Or (lastusergroup = 4) Then
-                    RadioButtonList1.Items.FindByValue(4).Enabled = True
-                    RadioButtonList1.Items.FindByValue(5).Enabled = True
-
-                End If
             End If
         End If
         StateTextBox.Text = laststate
@@ -115,91 +101,75 @@ Partial Class Traininguc
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
 
         AddHandler WriteDatauc1.UserApproved, AddressOf UserApprovedEvent
-        AddHandler AutoApproved, AddressOf UserApprovedEvent
 
-        appstate = "LogOn" + MachineName
-        actionstate = "ActionState" + MachineName
-        suspstate = "Suspended" + MachineName
-        FaultOriginTab = "FOT" + MachineName
-        RunUpDone = "rppTab" + MachineName
-        faultviewstate = "Faultsee" + MachineName
-        atlasviewstate = "Atlassee" + MachineName
-        qaviewstate = "QAsee" + MachineName
         BoxChanged = "TABoxChanged" + MachineName
-        tabstate = "ActTab" + MachineName
+
     End Sub
 
-    Public Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
+    Public Sub UserApprovedEvent(ByVal TabSet As String, ByVal Userinfo As String)
         Dim machinelabel As String = MachineName & "Page.aspx';"
         Dim username As String = Userinfo
         Dim LinacStateID As String = ""
-        Dim suspendvalue As String
-        Dim RunUpBoolean As String
+
+
         Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
         Dim EndofDay As Integer = 102
         Dim Recovery As Integer = 101
 
-        If Tabused = TRAINING Then
+        If TabSet = TRAINING Then
             Dim strScript As String = "<script>"
             strScript += "window.location='"
             strScript += machinelabel
             strScript += "</script>"
             Dim wctrl As WriteDatauc = CType(FindControl("Writedatauc1"), WriteDatauc)
             wctrl.Visible = False
-            Dim Action As String = Application(actionstate)
-            Dim result As Boolean = False
 
-            suspendvalue = Application(suspstate)
-            RunUpBoolean = Application(RunUpDone)
+            Dim result As Boolean = False
+            Dim Action As String = HttpContext.Current.Session("Actionstate").ToString
+            HttpContext.Current.Session.Remove("Actionstate")
+
             If (Not HttpContext.Current.Application(BoxChanged) Is Nothing) Then
                 comment = HttpContext.Current.Application(BoxChanged).ToString
             Else
                 comment = String.Empty
             End If
-            If Action = "EndOfDay" Then
-                Radioselect = EndofDay
+            If Action = GlobalConstants.ENDOFDAY Then
+                Radioselect = EndofDay 'local constant
                 Action = "Confirm"
-                Userinfo = "System"
-            ElseIf Action = "False" Then
+
+            ElseIf Action = "Recover" Then
                 Radioselect = Recovery
             Else
                 Radioselect = RadioButtonList1.SelectedItem.Value
             End If
 
-            result = DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, Tabused, False, suspendvalue, RunUpBoolean, False, FaultParams)
+            result = DavesCode.NewWriteAux.WriteAuxTables(MachineName, username, comment, Radioselect, TabSet, False, False, FaultParams)
 
             If result Then
                 If Action = "Confirm" Then
-
-                    Application(appstate) = 0
-                    Application(tabstate) = String.Empty
                     CommentBox.ResetCommentBox(String.Empty)
                     Select Case Radioselect
                         Case 1
 
-                            Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = 0
-                            Application(suspstate) = 0
                             If lastusergroup <> 3 Then
-                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Dim returnstring As String = MachineName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
                                 Response.Redirect(returnstring)
                             Else
                                 ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                             End If
 
                         Case 3
-                            Application(suspstate) = 1
-                            Application(FaultOriginTab) = Nothing
 
                             If lastusergroup = 3 Then
-                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Dim returnstring As String = MachineName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
                                 Response.Redirect(returnstring)
                             Else
                                 ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                             End If
                         Case 4
                             If lastusergroup <> 3 Then
-                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Dim returnstring As String = MachineName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
+
                                 Response.Redirect(returnstring)
                             Else
                                 ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
@@ -207,7 +177,7 @@ Partial Class Traininguc
                         Case 5
 
                             If lastusergroup <> 3 Then
-                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Dim returnstring As String = MachineName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
                                 Response.Redirect(returnstring)
                             Else
                                 ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
@@ -215,21 +185,23 @@ Partial Class Traininguc
                         Case 6
 
                             If lastusergroup <> 3 Then
-                                Dim returnstring As String = MachineName + "page.aspx?tabref=" + Convert.ToString(Radioselect)
+                                Dim returnstring As String = MachineName + "page.aspx?TabAction=Autoclicked&NextTab=" & Convert.ToString(Radioselect)
                                 Response.Redirect(returnstring)
                             Else
                                 ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                             End If
                         Case 102
 
-                            Application(FaultOriginTab) = Nothing
-                            Application(RunUpDone) = 0
-                            Application(suspstate) = 0
                             ScriptManager.RegisterStartupScript(LogOffButton, Me.GetType(), "JSCR", strScript.ToString(), False)
                     End Select
 
                     RadioButtonList1.SelectedIndex = -1
                     LogOffButton.BackColor = Drawing.Color.AntiqueWhite
+                Else
+
+                    Dim returnstring As String = LinacName + "page.aspx?TabAction=Recovered&NextTab=" & TabSet
+                    Response.Redirect(returnstring, False)
+
 
                 End If
             End If
@@ -258,15 +230,40 @@ Partial Class Traininguc
         wctrl.LinacName = MachineName
 
         If Not IsPostBack Then
-            Application(faultviewstate) = 1
-            Application(atlasviewstate) = 1
-            Application(qaviewstate) = 1
+
             RadioButtonList1.Items.Add(New ListItem("Go To Engineering Run up", "1", False))
             RadioButtonList1.Items.Add(New ListItem("Hand Back to Clinical", "3", False))
             RadioButtonList1.Items.Add(New ListItem("Go to Planned Maintenance", "4", False))
             RadioButtonList1.Items.Add(New ListItem("Go To Repair", "5", False))
             RadioButtonList1.Items.Add(New ListItem("End of Day", "102", True))
         End If
+        DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
+
+        If laststate = GlobalConstants.SUSPENDED Then
+            RadioButtonList1.Items.FindByValue(3).Enabled = True
+            If (lastusergroup = 2) Or (lastusergroup = 4) Then
+                RadioButtonList1.Items.FindByValue(4).Enabled = True
+                RadioButtonList1.Items.FindByValue(5).Enabled = True
+
+
+            End If
+            '5 caters for autosign from last tab
+        Else
+            If ((lastusergroup = 2) Or (lastusergroup = 4) Or (lastusergroup = 5)) And (laststate = "Linac Unauthorised") Then
+                RadioButtonList1.Items.FindByValue(1).Enabled = True
+                RadioButtonList1.Items.FindByValue(4).Enabled = True
+                RadioButtonList1.Items.FindByValue(5).Enabled = True
+
+            ElseIf (laststate = "Engineering Approved") Then
+
+                If (lastusergroup = 2) Or (lastusergroup = 4) Then
+                    RadioButtonList1.Items.FindByValue(4).Enabled = True
+                    RadioButtonList1.Items.FindByValue(5).Enabled = True
+
+                End If
+            End If
+        End If
+        StateTextBox.Text = laststate
 
     End Sub
 
@@ -275,49 +272,54 @@ Partial Class Traininguc
         Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
         Dim wclabel As Label = CType(wctrl.FindControl("WarningLabel"), Label)
         Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
+        Dim LogOffUser As String = "AutoLog"
         DavesCode.Reuse.GetLastTech(MachineName, 0, laststate, lastuser, lastusergroup)
         Radioselect = RadioButtonList1.SelectedItem.Value
-        Application(actionstate) = "Confirm"
+        Session.Add("name", LogOffUser)
+        Session.Add("usergroup", lastusergroup)
+        Session.Add("userreason", Radioselect)
+        Session.Add("Actionstate", "Confirm")
+
         Select Case Radioselect
             Case 1
-                wcbutton.Text = "Go To Engineering Run up"
+
                 If lastusergroup <> 3 Then
-                    RaiseEvent AutoApproved(TRAINING, lastuser)
+                    UserApprovedEvent(TRAINING, lastuser)
                 Else
+                    wcbutton.Text = "Go To Engineering Run up"
                     WriteDatauc1.Visible = True
                     ForceFocus(wctext)
                 End If
 
             Case 3
-                wcbutton.Text = "Return to clinical"
+
                 If lastusergroup = 3 Then
-                    RaiseEvent AutoApproved(TRAINING, lastuser)
+                    UserApprovedEvent(TRAINING, lastuser)
                 Else
+                    wcbutton.Text = "Return to clinical"
                     WriteDatauc1.Visible = True
                     ForceFocus(wctext)
                 End If
 
             Case 4
-                wcbutton.Text = "Go To Planned Maintenance"
+
                 If lastusergroup <> 3 Then
-                    RaiseEvent AutoApproved(TRAINING, lastuser)
+                    UserApprovedEvent(TRAINING, lastuser)
+                Else
+                    wcbutton.Text = "Go To PM"
+                    WriteDatauc1.Visible = True
+                    ForceFocus(wctext)
                 End If
             Case 5
-                wcbutton.Text = "Go To Repair"
+
                 If lastusergroup <> 3 Then
-                    RaiseEvent AutoApproved(TRAINING, lastuser)
+                    UserApprovedEvent(TRAINING, lastuser)
                 Else
+                    wcbutton.Text = "Go To Repair"
                     WriteDatauc1.Visible = True
                     ForceFocus(wctext)
                 End If
-            Case 6
-                wcbutton.Text = "Go To Physics QA"
-                If lastusergroup <> 3 Then
-                    RaiseEvent AutoApproved(TRAINING, lastuser)
-                Else
-                    WriteDatauc1.Visible = True
-                    ForceFocus(wctext)
-                End If
+
             Case 102
                 wclabel.Text = "Are you sure? This is the End of Day"
                 wcbutton.Text = "End of Day"

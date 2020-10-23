@@ -24,7 +24,7 @@ Namespace DavesCode
         Public Shared Function CommitRunup(ByVal GridviewE As GridView, ByVal grdviewI As GridView, ByVal LinacName As String, ByVal tabby As String, ByVal LogOffName As String, ByVal TextBoxc As String, ByVal Valid As Boolean, ByVal Fault As Boolean, ByVal lock As Boolean, ByVal FaultParams As DavesCode.FaultParameters) As Boolean
             Dim usergroupselected As Integer = 2
             Dim Reason As Integer = 2
-            If tabby = 7 Then
+            If tabby = 9 Then
                 usergroupselected = 3
                 Reason = 9
             End If
@@ -42,11 +42,11 @@ Namespace DavesCode
                         'Else
                         If LinacName Like "T?" Then
                                 CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, lock, connectionString)
-                                Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, lock, connectionString)
-                            Else
+                            Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, lock, True, connectionString)
+                        Else
                                 CommitRunupNew(GridviewE, LinacName, tabby, LogOffName, TextBoxc, Valid, Fault, False, connectionString)
-                                Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, lock, connectionString)
-                                Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
+                            Reuse.MachineStateNew(LogOffName, usergroupselected, LinacName, Reason, lock, True, connectionString)
+                            Reuse.ReturnImaging(iView, XVI, grdviewI, LinacName)
                             End If
 
                             NewPreClinRunup.CommitPreClinNew(LinacName, LogOffName, "", iView, XVI, Valid, Fault, connectionString)
@@ -101,6 +101,7 @@ Namespace DavesCode
             Dim breakdown As Boolean = Fault
             Dim contime As SqlCommand
             Dim State As String = "Linac Unauthorised" 'default reason
+            Dim FaultState As String = String.Empty 'For recovery
             Dim UserReason As Integer = 7 'most common reason
             'Dim Activity As Integer = 2
             Dim Runup As Integer
@@ -112,7 +113,7 @@ Namespace DavesCode
             conn = New SqlConnection(ConnectionString)
             'Modified this line now to cope with extra entry for fault close or concession create 25/6/20
             'contime = New SqlCommand("SELECT DateTime, UserName, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
-            contime = New SqlCommand("SELECT DateTime, UserName, stateID FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac and userreason=@tablabel)", conn)
+            contime = New SqlCommand("SELECT DateTime, UserName, stateID, State FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac and userreason=@tablabel)", conn)
 
             contime.Parameters.AddWithValue("@linac", LinacName)
             contime.Parameters.AddWithValue("@tablabel", Runup)
@@ -123,6 +124,7 @@ Namespace DavesCode
                 StartTime = reader.Item("DateTime")
                 LogInName = reader.Item("UserName")
                 LogOnStateID = reader.Item("stateID")
+                FaultState = reader.Item("State")
             End If
             reader.Close()
             conn.Close()
@@ -144,12 +146,14 @@ Namespace DavesCode
                     'added 5/6/16 to set reason to end of day for midnight reset
                     If commitusername = "System" Then
                         UserReason = 102
+                    ElseIf FaultState = "Fault" Then
+                        State = "Fault"
                     End If
 
                 End If
 
             End If
-            LogOffStateID = Reuse.SetStatusNew(commitusername, State, 5, UserReason, machinename, 1, ConnectionString)
+            LogOffStateID = Reuse.SetStatusNew(commitusername, State, 5, UserReason, machinename, 1, False, ConnectionString)
             If Not lock Then
                 Reuse.UpdateActivityTable(machinename, LogOffStateID, ConnectionString)
             End If

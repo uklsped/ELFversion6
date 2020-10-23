@@ -50,8 +50,9 @@ Partial Class controls_ConcessionPopUpuc
                 Dim FaultTracking As controls_FaultTrackinguc = Page.LoadControl("controls\FaultTrackinguc.ascx")
                 CType(FaultTracking, controls_FaultTrackinguc).LinacName = ConcessParamsTrial.Linac
             FaultTracking.IncidentID = ConcessParamsTrial.IncidentID
+            FaultTracking.ParentControl = ParentName
             FaultTracking.InitialiseFaultTracking(ConcessParamsTrial)
-                AddHandler FaultTracking.CloseFaultTracking, AddressOf CloseTracking
+            AddHandler FaultTracking.CloseFaultTracking, AddressOf CloseTracking
             AddHandler FaultTracking.UpdateClosedDisplays, AddressOf CloseDisplays
             FaultTrackingPlaceHolder.Controls.Add(FaultTracking)
             End If

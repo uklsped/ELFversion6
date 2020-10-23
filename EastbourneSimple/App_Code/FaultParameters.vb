@@ -4,7 +4,7 @@ Imports System.Data.SqlClient
 Namespace DavesCode
 
     Public Class FaultParameters
-
+        'auto-implemented properties https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/procedures/auto-implemented-properties
         Public SelectedIncident As Integer = 0
         Public Linac As String = String.Empty
         Public DateInserted As DateTime
@@ -19,6 +19,7 @@ Namespace DavesCode
         Public ConcessionNumber As String = String.Empty
         Public RadioIncident As String = String.Empty
         Public Activity As String = String.Empty
+        Public LastState As String = String.Empty
         'Added activity to store Parent control ie tab where fault was reported
         'This is not used and refers to physicsenergydev
 

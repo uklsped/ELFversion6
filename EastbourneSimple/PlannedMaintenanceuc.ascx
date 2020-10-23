@@ -1,6 +1,7 @@
 ﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="PlannedMaintenanceuc.ascx.vb" Inherits="Planned_Maintenanceuc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
-<%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc1" %>
+<%@ Register src="controls/UnLockElfuc.ascx" tagname="UnLockElfuc" tagprefix="uc1" %>
+<%--<%@ Register src="LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc1" %>--%>
 <%@ Register src="DefectSavePark.ascx" tagname="DefectSavePark" tagprefix="uc10" %>
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc3" %>
@@ -108,7 +109,7 @@
     </div>
 </div>
         <uc3:WriteDatauc ID="WriteDatauc1" LinacName="" UserReason="4" Tabby="4" Visible="false" runat="server" />
-        <uc1:LockElfuc ID="LockElfuc1" LinacName="" UserReason="4" Tabby="4"  visible="false" runat="server" />
+       <%-- <uc1:lockelfuc ID="LockElfuc1" LinacName="" UserReason="4" Tabby="4"  visible="false" runat="server" />--%>
 <%--<div id="left">--%>
     <%--<asp:UpdatePanel ID="UpdatePanelAtlas" runat="server" Visible="false" UpdateMode="Conditional">
         <ContentTemplate>
@@ -124,6 +125,25 @@
 <div id="right">
 </div>--%>
 <div>
+    
 <uc7:ViewCommentsuc ID="ViewCommentsuc1" LinacName="" CommentSort="pm" runat="server" />
 </div>
+ <asp:Label ID="TargetControl" runat="server" style="display:none" causesvalidation="false" Visible="true" ></asp:Label>
+    <asp:ModalPopupExtender ID="LockELFModalPopup" runat="server"
+                TargetControlID = "TargetControl"
+                PopupControlID = "LockELFPopup"
+                BackgroundCssClass = "modalBackground"
+                >
+</asp:ModalPopupExtender>
+
+   <asp:Panel ID="LockELFPopup" runat="server" style="display:none" CssClass="modalPopup" Height="150px" 
+            Width="350px" Font-Underline="False" >
+        
+            <asp:UpdatePanel ID="UpdatePanel10" runat="server" >
+            <ContentTemplate>
+                <asp:PlaceHolder ID="LockELFPlaceholder" runat="server"></asp:PlaceHolder>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+       
+    </asp:Panel>
 

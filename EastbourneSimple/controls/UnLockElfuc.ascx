@@ -1,4 +1,4 @@
-﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="LockElfuc.ascx.vb" Inherits="LockElfuc" %>
+﻿<%@ Control Language="VB" AutoEventWireup="false" CodeFile="UnLockElfuc.ascx.vb" Inherits="controls_UnLockElfuc" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
@@ -10,7 +10,8 @@
 
 <ContentTemplate>
         <%--This is the log in popup panel  --%>
-            <asp:Panel ID="Panel1" runat="server"  style="display:none" DefaultButton="UnlockElf" CssClass="modalPopup" Height="150px" Width="200px" >
+    
+            <asp:Panel ID="Panel1" runat="server"   DefaultButton="UnlockElf"  Height="150px" Width="350px" >
                 <div>
                     <table>
                         <tr>

@@ -1,8 +1,6 @@
 ﻿Imports System.Data
 Imports System.Data.SqlClient
-Imports System.Diagnostics
 Imports System.IO
-Imports System.Net.Mail
 
 Namespace DavesCode
 
@@ -58,6 +56,8 @@ Namespace DavesCode
                     incidentfault.Parameters("@RadiationIncident").Value = FaultP.RadioIncident
                     incidentfault.Parameters.Add("@Activity", System.Data.SqlDbType.NVarChar, 3)
                     incidentfault.Parameters("@Activity").Value = FaultP.Activity
+                    incidentfault.Parameters.Add("@LastState", System.Data.SqlDbType.NVarChar, 25)
+                    incidentfault.Parameters("@LastState").Value = FaultP.LastState
                     incidentfault.ExecuteNonQuery()
                     incidentfault.Parameters.Clear()
 
@@ -330,6 +330,7 @@ Namespace DavesCode
             Dim logInStatusID As Integer = 0
             Dim constateid As SqlCommand
             constateid = New SqlCommand("SELECT stateid FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+
             constateid.Parameters.AddWithValue("@linac", FaultP.Linac)
             Dim readers As SqlDataReader
             conn.Open()
@@ -410,6 +411,8 @@ Namespace DavesCode
                     incidentfault.Parameters("@RadiationIncident").Value = FaultP.RadioIncident
                     incidentfault.Parameters.Add("@Activity", System.Data.SqlDbType.NVarChar, 3)
                     incidentfault.Parameters("@Activity").Value = FaultP.Activity
+                    incidentfault.Parameters.Add("@LastState", System.Data.SqlDbType.NVarChar, 25)
+                    incidentfault.Parameters("@LastState").Value = FaultP.LastState
                     incidentfault.ExecuteNonQuery()
 
                     incidentfault.Parameters.Clear()
@@ -521,8 +524,10 @@ Namespace DavesCode
             'Dim incidentfault As SqlCommand
             'Const CONCESSIONNUMBER = ""
             Dim logInStatusID As Integer = 0
+
             Dim constateid As SqlCommand
             constateid = New SqlCommand("SELECT stateid FROM [LinacStatus] where stateID = (Select max(stateID) as lastrecord from [LinacStatus] where linac=@linac)", conn)
+
             constateid.Parameters.AddWithValue("@linac", FaultP.Linac)
             Dim readers As SqlDataReader
             conn.Open()
@@ -530,6 +535,7 @@ Namespace DavesCode
 
             If readers.Read() Then
                 logInStatusID = readers.Item("stateid")
+
             End If
             readers.Close()
             conn.Close()
@@ -603,6 +609,8 @@ Namespace DavesCode
                 incidentfault.Parameters("@RadiationIncident").Value = FaultP.RadioIncident
                 incidentfault.Parameters.Add("@Activity", System.Data.SqlDbType.NVarChar, 3)
                 incidentfault.Parameters("@Activity").Value = FaultP.Activity
+                incidentfault.Parameters.Add("@LastState", System.Data.SqlDbType.NVarChar, 25)
+                incidentfault.Parameters("@LastState").Value = FaultP.LastState
                 incidentfault.ExecuteNonQuery()
 
                 incidentfault.Parameters.Clear()
@@ -681,7 +689,6 @@ Namespace DavesCode
                 reader.Read()
                 IncidentID = reader.Item("IncidentID").ToString()
 
-                'Application(appstate) = 1
             End If
 
             Return IncidentID
@@ -707,7 +714,7 @@ Namespace DavesCode
                 reader.Read()
                 LinacStatusID = reader.Item("StatusID").ToString()
                 openfault = True
-                'Application(appstate) = 1
+
             End If
 
             Return openfault
@@ -722,7 +729,7 @@ Namespace DavesCode
             Dim reader As SqlDataReader
             conn = New SqlConnection(connectionString)
 
-            existingfault = New SqlCommand("SELECT TOP(1) [Activity] FROM [ReportFault] where Linac = @linac ORDER BY [Activity] DESC", conn)
+            existingfault = New SqlCommand("SELECT TOP(1)[FaultID], [Activity] FROM [ReportFault] where Linac = @linac ORDER BY [FaultID] DESC", conn)
             existingfault.Parameters.AddWithValue("@linac", machinename)
             conn.Open()
             reader = existingfault.ExecuteReader()
@@ -734,7 +741,81 @@ Namespace DavesCode
 
             Return faultActivity
         End Function
+        Public Shared Sub UpdateLastNonFaultState(ByVal Linac As String)
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            "connectionstring").ConnectionString
+            Dim conn As SqlConnection
+            Dim Faultid As String = String.Empty
+            Dim existingfault As SqlCommand
+            Dim LastState As String = "Linac Unauthorised"
+            Dim reader As SqlDataReader
+            conn = New SqlConnection(connectionString)
+            existingfault = New SqlCommand("SELECT TOP(1) [FaultID] FROM [ReportFault] where Linac = @Linac ORDER BY [FaultID] DESC", conn)
+            existingfault.Parameters.AddWithValue("@Linac", Linac)
+            conn.Open()
+            reader = existingfault.ExecuteReader()
+            If reader.HasRows() Then
+                'Have to now actually read the rows
+                reader.Read()
+                Faultid = reader.Item("FaultID").ToString()
+            End If
+            conn.Close()
+            conn.Open()
+            existingfault = New SqlCommand("Update [ReportFault] SET LastState=@LastState WHERE FaultID=@FaultID", conn)
+            existingfault.Parameters.AddWithValue("@LastState", LastState)
+            existingfault.Parameters.AddWithValue("@FaultID", Faultid)
 
+            existingfault.ExecuteNonQuery()
+
+            conn.Close()
+        End Sub
+        Public Shared Function ReturnLastNonFaultState(ByVal incidentid As String) As String
+            Dim LastNonFaultState As String = String.Empty
+            Dim conn As SqlConnection
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            "connectionstring").ConnectionString
+            Dim existingfault As SqlCommand
+            Dim reader As SqlDataReader
+            conn = New SqlConnection(connectionString)
+
+            existingfault = New SqlCommand("SELECT [LastState] FROM [ReportFault] where incidentid = @incidentid", conn)
+            existingfault.Parameters.AddWithValue("@incidentID", incidentid)
+            conn.Open()
+            reader = existingfault.ExecuteReader()
+            If reader.HasRows() Then
+                'Have to now actually read the rows
+                reader.Read()
+                LastNonFaultState = reader.Item("LastState").ToString()
+            End If
+            If LastNonFaultState = "Clinical" Then
+                LastNonFaultState = "Suspended"
+            End If
+            Return LastNonFaultState
+        End Function
+
+        Public Shared Function RecoverLastNonFaultState(ByVal Linac As String) As String
+            Dim LastNonFaultState As String = String.Empty
+            Dim conn As SqlConnection
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings(
+            "connectionstring").ConnectionString
+            Dim existingfault As SqlCommand
+            Dim reader As SqlDataReader
+            conn = New SqlConnection(connectionString)
+
+            existingfault = New SqlCommand("SELECT TOP(1) [LastState] FROM [ReportFault] where Linac = @Linac ORDER BY [FaultID] DESC", conn)
+            existingfault.Parameters.AddWithValue("@Linac", Linac)
+            conn.Open()
+            reader = existingfault.ExecuteReader()
+            If reader.HasRows() Then
+                'Have to now actually read the rows
+                reader.Read()
+                LastNonFaultState = reader.Item("LastState").ToString()
+            End If
+            If LastNonFaultState = "Clinical" Then
+                LastNonFaultState = "Suspended"
+            End If
+            Return LastNonFaultState
+        End Function
         Public Shared Sub LogError(ex As Exception)
             Dim message As String = String.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"))
             message += Environment.NewLine

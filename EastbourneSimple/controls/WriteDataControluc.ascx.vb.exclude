@@ -1,5 +1,5 @@
 ﻿Imports AjaxControlToolkit
-Partial Class WriteDatauc
+Partial Class WriteDataControluc
     Inherits System.Web.UI.UserControl
     Private Action As String
     Private actionstate As String
