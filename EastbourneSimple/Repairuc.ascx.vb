@@ -522,32 +522,32 @@ Partial Class Repairuc
             'Repairlist.Items(4).Selected = False
             'This next if check if got here via clinical suspend
             StateTextBox.Text = "Linac Unauthorised"
-            Dim ParentControl As String = DavesCode.NewFaultHandling.ReturnFaultActivity(LinacName)
-            If ParentControl IsNot Nothing Then
-                Select Case ParentControl
-                    'Case 0
-                    '    If Application(RunUpDone) = 1 Then
-                    '        RadioButtonList1.Items.FindByValue(3).Enabled = True
-                    '        StateTextBox.Text = "Clinical - Not Treating"
-                    '    End If
+            'Dim ParentControl As String = DavesCode.NewFaultHandling.ReturnFaultActivity(LinacName)
+            'If ParentControl IsNot Nothing Then
+            '    Select Case ParentControl
+            '        'Case 0
+            '        '    If Application(RunUpDone) = 1 Then
+            '        '        RadioButtonList1.Items.FindByValue(3).Enabled = True
+            '        '        StateTextBox.Text = "Clinical - Not Treating"
+            '        '    End If
 
-                    Case 3
+            '        Case 3
 
-                        RadioButtonList1.Items.FindByValue(3).Enabled = True
-                        StateTextBox.Text = "Clinical - Not Treating"
-                    Case 4, 5, 8
-                        If laststate = GlobalConstants.SUSPENDED Then
-                            RadioButtonList1.Items.FindByValue(3).Enabled = True
-                            StateTextBox.Text = GlobalConstants.SUSPENDED
-                            'ElseIf Application(RunUpDone) = 1 Then
-                            '    RadioButtonList1.Items.FindByValue(3).Enabled = True
-                            '    StateTextBox.Text = "Clinical - Not Treating"
-                        End If
-                    Case Else
-                        'StateTextBox.Text = "Linac Unauthorised"
-                End Select
+            '            RadioButtonList1.Items.FindByValue(3).Enabled = True
+            '            StateTextBox.Text = "Clinical - Not Treating"
+            '        Case 4, 5, 8
+            '            If laststate = GlobalConstants.SUSPENDED Then
+            '                RadioButtonList1.Items.FindByValue(3).Enabled = True
+            '                StateTextBox.Text = GlobalConstants.SUSPENDED
+            '                'ElseIf Application(RunUpDone) = 1 Then
+            '                '    RadioButtonList1.Items.FindByValue(3).Enabled = True
+            '                '    StateTextBox.Text = "Clinical - Not Treating"
+            '            End If
+            '        Case Else
+            '            'StateTextBox.Text = "Linac Unauthorised"
+            '    End Select
 
-            ElseIf laststate = GlobalConstants.SUSPENDED Then
+            If laststate = GlobalConstants.SUSPENDED Then
                 RadioButtonList1.Items.FindByValue(3).Enabled = True
                 StateTextBox.Text = GlobalConstants.SUSPENDED
                 '    Dim rtab As String = Application(RunUpDone)
