@@ -12,7 +12,7 @@
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
 
             
- <asp:Panel ID="AcceptLinacDisplay" runat="server" DefaultButton="AcceptOK"  Height="150px" Width="350px" Font-Underline="False">
+ <asp:Panel ID="AcceptLinacDisplay" runat="server" DefaultButton="AcceptOK" cssclass="modalPopup" Height="150px" Width="350px" Font-Underline="False">
                 <div>
                     <asp:Label ID="AcceptTabLabel" runat="server" Text=""></asp:Label>
                     <table>

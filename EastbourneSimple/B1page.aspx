@@ -281,8 +281,7 @@ B1 Status
                 >
 </asp:ModalPopupExtender>
 
-   <asp:Panel ID="AcceptLinacPopup" runat="server" style="display:none" CssClass="modalPopup" Height="150px" 
-            Width="350px" Font-Underline="False" >
+   <asp:Panel ID="AcceptLinacPopup" runat="server" style="display:none"  Font-Underline="False" >
         
             <asp:UpdatePanel ID="UpdatePanel10" runat="server" >
             <ContentTemplate>

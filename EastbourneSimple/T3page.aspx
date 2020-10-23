@@ -281,7 +281,7 @@ T3 Status
                 >
 </asp:ModalPopupExtender>
 
-   <asp:Panel ID="AcceptLinacPopup" runat="server" style="display:none" CssClass="modalPopup" Height="150px" 
+   <asp:Panel ID="AcceptLinacPopup" runat="server" style="display:none" Height="150px" 
             Width="350px" Font-Underline="False" >
         
             <asp:UpdatePanel ID="UpdatePanel10" runat="server" >

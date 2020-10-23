@@ -31,7 +31,7 @@
 
 <link href="App_Themes/Blue/Elf.css" rel="stylesheet" type="text/css" />
 <%--<%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc1" %>--%>
-
+<asp:HiddenField ID="HiddenFieldModalityVisible" Value="False" runat="server" />
 <div class="grid">
     <div class="col100 grey">
         <table id="HandoverTable">

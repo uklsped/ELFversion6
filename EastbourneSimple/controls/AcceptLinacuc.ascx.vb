@@ -69,8 +69,8 @@
                 Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
                 CType(objCon, EnergyDisplayuc).LinacName = LinacName
                 PlaceHolder2.Controls.Add(objCon)
-                AcceptLinacDisplay.Width = 1000
-                AcceptLinacDisplay.Height = 200
+                AcceptLinacDisplay.Width = 950
+                AcceptLinacDisplay.Height = 210
                 AcceptOK.Text = "Acknowledge Energies and Accept Linac"
             End If
         End If

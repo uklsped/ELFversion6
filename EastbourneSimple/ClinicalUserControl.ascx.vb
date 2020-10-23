@@ -133,13 +133,14 @@ Partial Class ClinicalUserControl
         End If
         BindComments()
         BindRunUpComments(connectionString)
-
+        'ModalityDisplays(connectionString)
+        HiddenFieldModalityVisible.Value = True
     End Sub
 
     Protected Sub ModalityDisplays(ByVal connectionString As String)
         Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
         CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
-        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplay"
+        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplayClinical"
         CType(Modalities, controls_ModalityDisplayuc).Mode = "Clinical"
         CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
         ModalityPlaceholder.Controls.Add(Modalities)
@@ -187,12 +188,12 @@ Partial Class ClinicalUserControl
         SaveText.Attributes.Add("onclick", Page.ClientScript.GetPostBackEventReference(SaveText, "") + ";this.value='Wait...';this.disabled = true; this.style.display='block';")
         WaitButtons("Rad")
 
-        Select Case Me.DynamicControlSelection
+        'Select Case Me.DynamicControlSelection
 
-            Case MODALITYDISPLAY
-                ModalityDisplays(connectionString)
-            Case Else
-        End Select
+        '    Case MODALITYDISPLAY
+        '        ModalityDisplays(connectionString)
+        '    Case Else
+        'End Select
 
         Dim ReportFault As controls_ReportAFaultuc = CType(FindControl("ReportAFaultuc1"), controls_ReportAFaultuc)
         ReportFault.LinacName = LinacName
@@ -212,12 +213,25 @@ Partial Class ClinicalUserControl
         CommentBox.BoxChanged = BoxChanged
         RunUpCommentBox.BoxChanged = RunupBoxChanged
         Dim conn As SqlConnection
-        Dim connectionString1 As String = ConfigurationManager.ConnectionStrings(
-        "connectionstring").ConnectionString
-        conn = New SqlConnection(connectionString1)
-        If Not IsPostBack Then
-
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
+        conn = New SqlConnection(connectionString)
+        Modalities = Page.LoadControl("controls/ModalityDisplayuc.ascx")
+        CType(Modalities, controls_ModalityDisplayuc).LinacName = LinacName
+        CType(Modalities, controls_ModalityDisplayuc).ID = "ModalityDisplayClinical"
+        CType(Modalities, controls_ModalityDisplayuc).Mode = "Clinical"
+        CType(Modalities, controls_ModalityDisplayuc).ConnectionString = connectionString
+        ModalityPlaceholder.Controls.Add(Modalities)
+        If HiddenFieldModalityVisible.Value Then
+            ModalityDisplayPanel.Visible = True
         End If
+        'If Not IsPostBack Then
+        '    Select Case Me.DynamicControlSelection
+
+        '        Case MODALITYDISPLAY
+        '            ModalityDisplays(connectionString)
+        '        Case Else
+        '    End Select
+        'End If
 
     End Sub
     Protected Sub BindRunUpComments(ByVal connectionString As String)

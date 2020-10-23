@@ -223,9 +223,10 @@ Partial Public Class B1page
                         End If
                     Else
                         ParentControl = NewFaultHandling.ReturnFaultActivity(EquipmentID)
+                        Session.Add("RecoverFault", True)
                         Dim returnstring As String = EquipmentID + "page.aspx?TabAction=Fault&NextTab="
                         Response.Redirect(returnstring & ParentControl & "&comment=" & "")
-                        'Session.Add("RecoverFault", True)
+                        '
                         'ParentControl = NewFaultHandling.ReturnFaultActivity(EquipmentID)
                         'Dim returnstring As String = EquipmentID + "page.aspx?TabAction=Reloaded&NextTab="
                         'Response.Redirect(returnstring & ParentControl & "&comment=" & "")

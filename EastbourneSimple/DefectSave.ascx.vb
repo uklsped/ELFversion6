@@ -8,7 +8,7 @@ Partial Class DefectSave
     Private actionstate As String
     Const RADRESET = -21
     Const MAJORFAULT = -24
-
+    Const REPAIR As Integer = 5
     Public Event UpdateViewOpenFaults(ByVal EquipmentName As String)
     Public Property ParentControl() As String
     Public Property LinacName() As String
@@ -24,24 +24,24 @@ Partial Class DefectSave
     Private FaultApplication As String
     Public Event UpDateDefectDailyDisplay(ByVal EquipmentName As String)
     Public Event CloseReportFaultPopUp(ByVal EquipmentName As String, ByVal ErrorStatus As Boolean)
-    Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
+    'Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
     Private FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters
 
-    Private Property DynamicControlSelection() As String
-        Get
-            Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
-            If result Is Nothing Then
-                'doing things like this lets us access this property without
-                'worrying about this property returning null/Nothing
-                Return String.Empty
-            Else
-                Return result
-            End If
-        End Get
-        Set(ByVal value As String)
-            ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
-        End Set
-    End Property
+    'Private Property DynamicControlSelection() As String
+    '    Get
+    '        Dim result As String = ViewState.Item(VIEWSTATEKEY_DYNCONTROL)
+    '        If result Is Nothing Then
+    '            'doing things like this lets us access this property without
+    '            'worrying about this property returning null/Nothing
+    '            Return String.Empty
+    '        Else
+    '            Return result
+    '        End If
+    '    End Get
+    '    Set(ByVal value As String)
+    '        ViewState.Item(VIEWSTATEKEY_DYNCONTROL) = value
+    '    End Set
+    'End Property
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
         'Remove reference to this as no longer used after March 2016 done on 23/11/16
@@ -57,7 +57,8 @@ Partial Class DefectSave
 
 
     Protected Sub UserApprovedEvent(ByVal Tabused As String, ByVal Userinfo As String)
-        Dim Action As String = Application(actionstate)
+        Dim Action As String = HttpContext.Current.Session("Actionstate").ToString
+        HttpContext.Current.Session.Remove("Actionstate")
         Dim connectionString As String = ConfigurationManager.ConnectionStrings("connectionstring").ConnectionString
         Dim Success As Boolean = False
         ConcessionNumber = Defect.SelectedItem.ToString
@@ -125,7 +126,7 @@ Partial Class DefectSave
                 Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
                 Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
                 wcbutton.Text = "Saving RAD RESET"
-                Application(actionstate) = "Confirm"
+                Session.Add("ActionState", "Confirm")
                 wctrl.Visible = True
                 ForceFocus(wctext)
             ElseIf Defect.SelectedItem.Value = MAJORFAULT Then
@@ -133,11 +134,11 @@ Partial Class DefectSave
                 Dim wcbutton As Button = CType(wctrl.FindControl("AcceptOK"), Button)
                 Dim wctext As TextBox = CType(wctrl.FindControl("txtchkUserName"), TextBox)
                 wcbutton.Text = "Saving Major Fault"
-                Application(actionstate) = "Confirm"
+                Session.Add("ActionState", "Confirm")
                 wctrl.Visible = True
                 ForceFocus(wctext)
             Else
-                Application(actionstate) = "Confirm"
+                Session.Add("ActionState", "Confirm")
                 UserApprovedEvent("Defect", "")
             End If
             'reset the validation controls
@@ -396,7 +397,7 @@ Partial Class DefectSave
         Dim Concession As String = "Concession"
         Dim Status As String = EMPTYSTRING
         Dim Result As Boolean = False
-
+        Dim usergroupselected As Integer = 0
         SelectedIncident = SelectedIncidentID.Value
         CreateFaultParams(UserInfo, FaultParams)
         Select Case SelectedIncident
@@ -442,7 +443,7 @@ Partial Class DefectSave
 
                     Case Else
                         'Put up error message
-
+                        Result = False
 
                 End Select
 
@@ -451,10 +452,13 @@ Partial Class DefectSave
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir
 
                     Comment = String.Empty
+                    Session.Add("name", UserInfo)
+                    Session.Add("usergroup", usergroupselected)
+                    Session.Add("userreason", REPAIR)
+                    Dim returnstring As String = LinacName + "page.aspx?TabAction=Fault&NextTab="
+                    Response.Redirect(returnstring & ParentControl & "&comment=" & "")
 
 
-                    Dim returnstring As String = LinacName + "page.aspx?pageref=Fault&Tabindex="
-                    Response.Redirect(returnstring & ParentControl & "&comment=" & ParentControlComment)
 
                 End If
             Case Else
@@ -490,6 +494,7 @@ Partial Class DefectSave
     End Sub
 
     Protected Sub CreateFaultParams(ByVal UserInfo As String, ByRef FaultParams As DavesCode.FaultParameters)
+        Dim laststate As String = String.Empty
         If (Not HttpContext.Current.Application(FaultDescriptionChanged) Is Nothing) Then
             Comment = HttpContext.Current.Application(FaultDescriptionChanged).ToString
         Else
@@ -506,6 +511,11 @@ Partial Class DefectSave
         If Energy = "Select" Then
             Energy = ""
         End If
+        laststate = DavesCode.Reuse.GetLastState(LinacName, 0)
+
+        If laststate = "Clinical" Then
+            laststate = "Suspended"
+        End If
         FaultParams.SelectedIncident = SelectedIncident
         FaultParams.Linac = LinacName
         FaultParams.DateInserted = DateTime.Parse(TimeFaultSelected.Value)
@@ -519,6 +529,8 @@ Partial Class DefectSave
         FaultParams.ConcessionNumber = ConcessionNumber
         FaultParams.RadAct = RadActComment
         FaultParams.RadioIncident = RadioIncident.SelectedItem.Value
+        FaultParams.Activity = ParentControl
+        FaultParams.LastState = laststate
 
     End Sub
 
