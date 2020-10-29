@@ -6,7 +6,7 @@ Imports DavesCode
 Partial Public Class T2page
     Inherits System.Web.UI.Page
     Private EquipmentID As String = "T2"
-    'Private Reg As String
+
     Private tabclicked As String
     Private comment As String
     Private mpContentPlaceHolder As ContentPlaceHolder
@@ -25,7 +25,6 @@ Partial Public Class T2page
     Private TodayPM As Planned_Maintenanceuc
     Private TodayRep As Repairuc
 
-    'Private RegistrationState As String = "regstateT2"
 
     Private ParentControl As String
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"
@@ -55,28 +54,28 @@ Partial Public Class T2page
     End Property
 
 
-    Protected Sub Update_ReturnButtons()
+    'Protected Sub Update_ReturnButtons()
 
-        Dim tabActive As Integer
-        tabActive = tcl.ActiveTabIndex
-        Dim containerID As String = "TabContent" & tabActive
-        Dim panel As Panel = tcl.ActiveTab.FindControl(containerID)
-        If (Not panel Is Nothing) Then
-            Select Case tabActive
-                Case 4
-                    TodayPM = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
-                    TodayPM.UpdateReturnButtonsHandler()
-                Case 5
-                    TodayRep = tcl.ActiveTab.FindControl(repcontrolId)
-                    TodayRep.UpdateReturnButtonsHandler()
-                Case 8
-                    TodayTraining = tcl.ActiveTab.FindControl(trainingcontrolID)
-                    TodayTraining.UpdateReturnButtonsHandler()
-            End Select
+    '    Dim tabActive As Integer
+    '    tabActive = tcl.ActiveTabIndex
+    '    Dim containerID As String = "TabContent" & tabActive
+    '    Dim panel As Panel = tcl.ActiveTab.FindControl(containerID)
+    '    If (Not panel Is Nothing) Then
+    '        Select Case tabActive
+    '            Case 4
+    '                TodayPM = tcl.ActiveTab.FindControl(PlannedMaintenanceControlID)
+    '                TodayPM.UpdateReturnButtonsHandler()
+    '            Case 5
+    '                TodayRep = tcl.ActiveTab.FindControl(repcontrolId)
+    '                TodayRep.UpdateReturnButtonsHandler()
+    '            Case 8
+    '                TodayTraining = tcl.ActiveTab.FindControl(trainingcontrolID)
+    '                TodayTraining.UpdateReturnButtonsHandler()
+    '        End Select
 
-        End If
+    '    End If
 
-    End Sub
+    'End Sub
 
     Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
 
@@ -92,14 +91,14 @@ Partial Public Class T2page
     Protected Sub UserApprovedEvent(ByVal Tabset As String, ByVal Userinfo As String)
 
         If Tabset = ENDOFDAY Then
-                Dim Action As String = HttpContext.Current.Session("Actionstate").ToString
-                mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-                If Not mpContentPlaceHolder Is Nothing Then
-                    wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
-                    wctrl.Visible = False
-                    If Action = "Confirm" Then
-                        Try
-                            Dim lastState As String
+            Dim Action As String = HttpContext.Current.Session("Actionstate").ToString
+            mpContentPlaceHolder = CType(Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+            If Not mpContentPlaceHolder Is Nothing Then
+                wctrl = CType(mpContentPlaceHolder.FindControl("Writedatauc1"), WriteDatauc)
+                wctrl.Visible = False
+                If Action = "Confirm" Then
+                    Try
+                        Dim lastState As String
                         'tick looks at fault table make these consistent
                         lastState = Reuse.GetLastState(EquipmentID, 0)
                         Statelabel.Text = lastState
@@ -129,11 +128,9 @@ Partial Public Class T2page
         Dim ClinicalUserControlid As String = "ClinicalUserControl1"
         Dim panel As Panel = tcl.ActiveTab.FindControl(containerID)
         Dim clincontrol As UserControl = tcl.ActiveTab.FindControl(ClinicalUserControlid)
-        'Dim Acceptcontrolid As String = "AcceptLinac3"
-        'Dim acceptcontrol As AcceptLinac = tcl.ActiveTab.FindControl(Acceptcontrolid)
         If (Not panel Is Nothing) Then
             clincontrol.Visible = True
-            'acceptcontrol.Visible = False
+
         End If
 
     End Sub
@@ -172,7 +169,8 @@ Partial Public Class T2page
                 Dim ObjAccept As AcceptLinacuc = Page.LoadControl("Controls/AcceptLinacuc.ascx")
                 ObjAccept.LinacName = EquipmentID
                 ObjAccept.ID = "AcceptLinac1"
-                ObjAccept.UserReason = tcl.ActiveTabIndex
+                ObjAccept.UserReason = tcl.ActiveTab.ID.Substring(8)
+                'ObjAccept.ActivePanel = tcl.ActiveTabIndex
                 AcceptLinacPlaceholder.Controls.Add(ObjAccept)
 
             Case Else
@@ -217,7 +215,7 @@ Partial Public Class T2page
                             Dim returnstring As String = EquipmentID + "page.aspx?TabAction=Fault&NextTab="
                             Response.Redirect(returnstring & ParentControl & "&comment=" & "")
                         Else
-                            'WriteRestore("RecoverFault")
+
                             Dim returnstring As String = EquipmentID + "page.aspx?TabAction=Fault&NextTab="
                             Response.Redirect(returnstring & ParentControl & "&comment=" & "")
                         End If
@@ -226,10 +224,7 @@ Partial Public Class T2page
                         Session.Add("RecoverFault", True)
                         Dim returnstring As String = EquipmentID + "page.aspx?TabAction=Fault&NextTab="
                         Response.Redirect(returnstring & ParentControl & "&comment=" & "")
-                        'Session.Add("RecoverFault", True)
-                        'ParentControl = NewFaultHandling.ReturnFaultActivity(EquipmentID)
-                        'Dim returnstring As String = EquipmentID + "page.aspx?TabAction=Reloaded&NextTab="
-                        'Response.Redirect(returnstring & ParentControl & "&comment=" & "")
+
                     End If
 
                 ElseIf LoggedOn Then
@@ -296,50 +291,27 @@ Partial Public Class T2page
                 Select Case lastState
                     Case UNAUTHORISED
                         TabPanel1.Enabled = "true"
-                        TabPanel2.Enabled = "false"
                         TabPanel3.Enabled = "false"
                         TabPanel4.Enabled = "true"
                         TabPanel5.Enabled = "true"
                         TabPanel8.Enabled = "True"
-                        If EquipmentID Like "T?" Then
-                            TabPanel9.Enabled = "false"
-                        Else
-                            TabPanel9.Enabled = "True"
-                            TabPanel9.HeaderText = EquipmentID + " Emergency Runup"
-                        End If
+
 
                     Case "Fault"
                         TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = "false"
                         TabPanel3.Enabled = "false"
                         TabPanel4.Enabled = "false"
                         TabPanel5.Enabled = "true"
                         TabPanel8.Enabled = "false"
-                        TabPanel9.Enabled = "false"
-                        'EndOfDay.Visible = False
-                        'If Not Request.QueryString("Tabindex") Is Nothing Then
-                        '    tabIndex = Request.QueryString("Tabindex").ToString
-                        'End If
-                        'If GetApplication.GetApplicationState(EquipmentID, 0) Then
-                        'Select Case faulttab
-                        '        Case 1, 4, 5, 9
-                        '            LaunchTab(Tabaction, faulttab)
-                        '        Case 3, 8
-                        '        If Session("RecoverFault") Then
-                        '            LaunchTab(Tabaction, faulttab)
-                        '        End If
-                        '    Case 0 ' Can't record a fault from Tab 0 now so this is redundant
 
-                        '    End Select
-                        'End If
+
                     Case SUSPENDED
                         TabPanel1.Enabled = "false"
-                        TabPanel2.Enabled = "false"
                         TabPanel3.Enabled = "true"
                         TabPanel4.Enabled = "true"
                         TabPanel5.Enabled = "true"
                         TabPanel8.Enabled = "true"
-                        TabPanel9.Enabled = "false"
+
 
                     Case Else
 
@@ -364,6 +336,31 @@ Partial Public Class T2page
         strScript += "</script>"
         ScriptManager.RegisterStartupScript(RestoreButton, Me.GetType(), "JSCR", strScript.ToString(), False)
     End Sub
+    'Protected Sub LoadTab(ByVal SetActiveTab As String)
+    '    Dim container As TabContainer
+    '    Dim TabId As String = "TabPanel" & SetActiveTab
+
+    '    mpContentPlaceHolder = CType(Page.Master.FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
+    '    If Not mpContentPlaceHolder Is Nothing Then
+    '        container = CType(mpContentPlaceHolder.FindControl("tcl"), TabContainer)
+    '        If Not container Is Nothing Then
+    '            For Each obj As Object In container.Controls
+    '                If TypeOf obj Is TabPanel Then
+    '                    Dim tabPanel As TabPanel = CType(obj, TabPanel)
+    '                    Select Case tabPanel.ID
+    '                        Case TabId,
+    '                            tabPanel.Visible = True
+    '                        Case Else
+    '                            tabPanel.Enabled = False
+    '                    End Select
+
+    '                End If
+    '            Next obj
+    '        End If
+    '    End If
+
+
+    'End Sub
     Protected Sub SetActiveTab(ByVal SetActiveTab As String)
         Dim container As TabContainer
         Dim TabId As String = "TabPanel" & SetActiveTab
@@ -390,34 +387,38 @@ Partial Public Class T2page
     End Sub
 
     Protected Sub TabButton_Click(ByVal sender As Object, ByVal e As EventArgs)
-        DealWithClick()
+        'This is now panel click
+        Launchmodal()
+
     End Sub
-    Protected Sub DealWithClick()
-        Dim ActiveTab As Integer = tcl.ActiveTabIndex
-        Session.Add("userreason", ActiveTab)
-        If ActiveTab <> 0 Then
-            Launchmodal()
-        Else
-            'LaunchTab(CLICKED, ActiveTab)
-        End If
-    End Sub
+    'Protected Sub DealWithClick()
+    '    Dim ActivePanelId As String = tcl.ActiveTab.ID.Substring(8)
+    '    'Dim ActiveTab As Integer = tcl.ActiveTabIndex
+    '    'Session.Add("userreason", ActiveTab)
+    '    If ActivePanelId <> 0 Then
+    '        Launchmodal()
+    '    Else
+    '        'LaunchTab(CLICKED, ActiveTab)
+    '    End If
+    'End Sub
 
     Protected Sub Launchmodal()
 
         AcceptLinacModalPopup.Hide()
-        Dim UserReason As Integer = tcl.ActiveTabIndex
+        Dim UserReason As Integer = tcl.ActiveTab.ID.Substring(8)
 
-        If Not GetApplication.GetApplicationState(EquipmentID, 0) Then
+        If UserReason <> 0 Then
+            If Not GetApplication.GetApplicationState(EquipmentID, 0) Then
 
-            Dim ObjAccept As AcceptLinacuc = Page.LoadControl("Controls/AcceptLinacuc.ascx")
-            ObjAccept.LinacName = EquipmentID
-            ObjAccept.ID = "AcceptLinac1"
-            ObjAccept.UserReason = UserReason
-            AcceptLinacPlaceholder.Controls.Add(ObjAccept)
-            DynamicControlSelection = ACCEPTLINACSELECTED
-            AcceptLinacModalPopup.Show()
-        Else
-            WriteRestore("LogonClick")
+                Dim ObjAccept As AcceptLinacuc = Page.LoadControl("Controls/AcceptLinacuc.ascx")
+                ObjAccept.LinacName = EquipmentID
+                ObjAccept.ID = "AcceptLinac1"
+                ObjAccept.UserReason = UserReason
+                AcceptLinacPlaceholder.Controls.Add(ObjAccept)
+                DynamicControlSelection = ACCEPTLINACSELECTED
+                AcceptLinacModalPopup.Show()
+
+            End If
         End If
 
     End Sub
@@ -430,7 +431,7 @@ Partial Public Class T2page
         Dim lastuser As String = String.Empty
         Dim lastusergroup As Integer = 0
         Dim LoggedOn As Boolean = False
-
+        Dim ActivePanel As String = String.Empty
         If Not IsPostBack Then
             LoggedOn = GetApplication.GetApplicationState(EquipmentID, 0)
             If Not LoggedOn Then
@@ -446,7 +447,7 @@ Partial Public Class T2page
                 Else
                     'This should autorecover
                     WriteRestore("when does here get to")
-                    End If
+                End If
 
             End If
 
@@ -473,18 +474,22 @@ Partial Public Class T2page
                                         'Do nothing for clinical, training or rad run up
                                 End Select
                                 'Now change active tab to repair
+                                ActivePanel = Reuse.ReturnActivePanel(REPAIR)
                                 LiveTab = REPAIR
                             Else
                                 lastState = Reuse.SetMachineState(EquipmentID, False, True, connectionString)
-
+                                ActivePanel = Reuse.ReturnActivePanel(LiveTab)
                             End If
                         Else
                             If TabAction = FAULT Then
+                                ActivePanel = Reuse.ReturnActivePanel(REPAIR)
                                 LiveTab = REPAIR
+                            Else
+                                ActivePanel = Reuse.ReturnActivePanel(LiveTab)
                             End If
                             lastState = Reuse.GetLastState(EquipmentID, 0)
                         End If
-                        tcl.ActiveTabIndex = LiveTab
+                        tcl.ActiveTabIndex = ActivePanel
                         Dim containerId As String = "TabContent" & LiveTab
 
                         Dim panel As Panel = tcl.ActiveTab.FindControl(containerId)
@@ -493,6 +498,7 @@ Partial Public Class T2page
 
                             Dim Activity As String = String.Empty
                             Dim User As String = String.Empty
+                            'LoadTab(LiveTab)
                             Select Case LiveTab
                                 Case 0
 
@@ -525,6 +531,7 @@ Partial Public Class T2page
 
                                 Case 9
                                     Dim emergencycontrol As ErunupUserControl = tcl.ActiveTab.FindControl(emergencycontrolID)
+                                    emergencycontrol.EngLogOnEvent(connectionString)
                                     emergencycontrol.Visible = True
                                     AcceptLinacModalPopup.Hide()
                                     DynamicControlSelection = String.Empty
@@ -638,7 +645,7 @@ Partial Public Class T2page
         ActivityLabel.Text = message
     End Sub
     Public Sub UpdateButtons()
-        Update_ReturnButtons()
+        'Update_ReturnButtons()
     End Sub
     'instrumentation code
     Public Sub Updateuserlabel(ByVal message As String)

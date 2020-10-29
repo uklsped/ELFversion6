@@ -295,12 +295,7 @@ Partial Public Class B2page
                         TabPanel4.Enabled = "true"
                         TabPanel5.Enabled = "true"
                         TabPanel8.Enabled = "True"
-                        If EquipmentID Like "T?" Then
-                            TabPanel9.Enabled = "false"
-                        Else
-                            TabPanel9.Enabled = "True"
-                            TabPanel9.HeaderText = EquipmentID + " Emergency Runup"
-                        End If
+                        TabPanel9.Enabled = "True"
 
                     Case "Fault"
                         TabPanel1.Enabled = "false"
