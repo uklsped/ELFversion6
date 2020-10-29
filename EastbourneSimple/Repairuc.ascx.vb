@@ -59,14 +59,14 @@ Partial Class Repairuc
         Dim ThereIsAFaultOpen As Boolean = NewFaultHandling.CheckForOpenFault(LinacName)
 
         If ThereIsAFaultOpen Then
-                Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
-                '    If (lastusergroup = 4) Then
-                '        RadioButtonList1.Items.FindByValue(6).Enabled = True
-                '    Else
-                '        RadioButtonList1.Items.FindByValue(6).Enabled = False
-                '    End If
-                StateTextBox.Text = laststate
-            End If
+            Reuse.GetLastTech(LinacName, 0, laststate, lastuser, lastusergroup)
+            '    If (lastusergroup = 4) Then
+            '        RadioButtonList1.Items.FindByValue(6).Enabled = True
+            '    Else
+            '        RadioButtonList1.Items.FindByValue(6).Enabled = False
+            '    End If
+            StateTextBox.Text = laststate
+        End If
     End Sub
 
     Public Sub Repairlogon(ByVal connectionString As String)

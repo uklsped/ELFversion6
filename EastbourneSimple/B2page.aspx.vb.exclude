@@ -3,9 +3,9 @@ Imports AjaxControlToolkit
 Imports System.Transactions
 Imports GlobalConstants
 Imports DavesCode
-Partial Public Class E1page
+Partial Public Class B2page
     Inherits System.Web.UI.Page
-    Private EquipmentID As String = "E1"
+    Private EquipmentID As String = "B2"
     'Private Reg As String
     Private tabclicked As String
     Private comment As String
@@ -25,7 +25,7 @@ Partial Public Class E1page
     Private TodayPM As Planned_Maintenanceuc
     Private TodayRep As Repairuc
 
-    'Private RegistrationState As String = "regstateE1"
+    'Private RegistrationState As String = "regstateB2"
 
     Private ParentControl As String
     Const VIEWSTATEKEY_DYNCONTROL As String = "DynamicControlSelection"

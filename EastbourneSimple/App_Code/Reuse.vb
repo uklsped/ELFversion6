@@ -60,7 +60,18 @@ Namespace DavesCode
             Return Activitydictionary.Item(activity)
 
         End Function
-
+        Public Shared Function ReturnActivePanel(ByVal userreason As String) As String
+            Dim ActivePanelDictionary As New Dictionary(Of Integer, Integer) From {
+                {0, 0},
+                {1, 1},
+                {3, 2},
+                {4, 3},
+                {5, 4},
+                {8, 5},
+                {9, 6}
+            }
+            Return ActivePanelDictionary.Item(userreason)
+        End Function
 
 
         Public Shared Sub writeLogFile(ByVal useage As Integer, ByVal user As String, ByVal onoff As Boolean)
@@ -1014,21 +1025,26 @@ Namespace DavesCode
                 activity = reader.Item("userreason")
                 StatusID = reader.Item("stateid")
                 Status = reader.Item("state")
-                LoggedOn = reader.Item("LoggedOn")
+                If Not Convert.IsDBNull(reader.Item("LoggedOn")) Then
+                    LoggedOn = reader.Item("LoggedOn")
+                Else
+                    LoggedOn = False
+                End If
+
                 'oldtime = oldtime.Date.AddDays(-1) 'test line
                 oldDayofyear = oldtime.DayOfYear
-                newDayofyear = time.DayOfYear
+                    newDayofyear = time.DayOfYear
 
 
-                If activity = "102" Then
-                    nowstatus = "Ignore"
-                ElseIf Not newDayofyear = oldDayofyear Then
-                    nowstatus = ENDOFDAY
-                ElseIf newDayofyear = oldDayofyear Then
-                    nowstatus = "Ignore"
-                End If
-            Else
-                nowstatus = "Error"
+                    If activity = "102" Then
+                        nowstatus = "Ignore"
+                    ElseIf Not newDayofyear = oldDayofyear Then
+                        nowstatus = ENDOFDAY
+                    ElseIf newDayofyear = oldDayofyear Then
+                        nowstatus = "Ignore"
+                    End If
+                Else
+                    nowstatus = "Error"
             End If
             reader.Close()
             conn.Close()

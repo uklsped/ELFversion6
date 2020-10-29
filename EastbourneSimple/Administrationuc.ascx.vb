@@ -30,8 +30,7 @@ Partial Class Administrationuc
         If Not PlaceHolder Is Nothing Then
             wctrl = CType(PlaceHolder2.FindControl("Writedatauc1"), WriteDatauc)
             AddHandler wctrl.UserApproved, AddressOf UserApprovedEvent
-            'cusctrl = CType(mpContentPlaceHolder.FindControl("AcceptLinac3"), AcceptLinac)
-            'AddHandler cusctrl.ClinicalApproved, AddressOf ClinicalApprovedEvent
+
         End If
 
 
@@ -44,9 +43,7 @@ Partial Class Administrationuc
         Dim Action As String = Application(actionstate)
         If tabcontrol = "Admin" Then
 
-            'mpContentPlaceHolder = _
-            '    CType(FindControl("ContentPlaceHolder1"), ContentPlaceHolder)
-            'If Not mpContentPlaceHolder Is Nothing Then
+
             wctrl = CType(PlaceHolder2.FindControl("Writedatauc1"), WriteDatauc)
             wctrl.Visible = False
             If Action = "Confirm" Then

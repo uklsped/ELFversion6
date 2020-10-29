@@ -25,7 +25,7 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 
-    <script type="text/javascript" src="TabLoading.js"></script>
+  <%--  <script type="text/javascript" src="TabLoading.js"></script>--%>
   
     
  <div class="gridheader">
@@ -105,8 +105,7 @@
 
 
             
-    <asp:TabContainer ID="tcl" runat="server"  activetabindex="0" OnClientActiveTabChanged="loadTabPanel" Ondemandmode="Once"  height="930px" >
-         
+  <asp:TabContainer ID="tcl" runat="server" AutoPostback="true" activetabindex="0" OnActiveTabChanged="TabButton_Click" Ondemandmode="Once"  height="930px" >    
 <asp:TabPanel runat="server" HeaderText="B1 Status" ID="TabPanel0"><HeaderTemplate>
 B1 Status
 </HeaderTemplate>
@@ -152,14 +151,14 @@ B1 Status
 <%--  This is the Pre-clinical tab  --%>    
         
         
-<asp:TabPanel ID="TabPanel2" runat="server" hidden="true" Enabled="false">
+<%--<asp:TabPanel ID="TabPanel2" runat="server" hidden="true" Enabled="false">
         <ContentTemplate>
 <asp:UpdatePanel ID="updatemod2" runat="server" >
 <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePaneln" updatemode ="Conditional"  runat="server">
 <ContentTemplate><asp:Button ID="TabButton2" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent2" runat="server" Visible="false">
-<%--<uc4:AcceptLinac ID="AcceptLinac2" LinacName="B1" UserReason="2" Tabby="2" runat="server" visible="false"/>--%>
+<%--<uc4:AcceptLinac ID="AcceptLinac2" LinacName="B1" UserReason="2" Tabby="2" runat="server" visible="false"/>
 <uc2:Preclinusercontrol ID="Preclinusercontrol1" LinacName = "B1" DataName="PreData" runat="server"/>
 </asp:Panel>
 </ContentTemplate>
@@ -167,7 +166,7 @@ B1 Status
 </ContentTemplate>
 </asp:UpdatePanel>
 </ContentTemplate>
-</asp:TabPanel>
+</asp:TabPanel>--%>
 
 <%-- This is the Clinical Tab --%>
         
@@ -225,14 +224,14 @@ B1 Status
 </ContentTemplate>
 </asp:TabPanel>
 
- <asp:TabPanel ID="TabPanel6" runat="server" hidden="true" enabled="false" >
+ <%--<asp:TabPanel ID="TabPanel6" runat="server" hidden="true" enabled="false" >
         <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel6" runat="server" >
 <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePhysicsQA" runat="server">
 <ContentTemplate>
 <asp:Button ID="Button1" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
-<%--<asp:Panel ID="TabContent6" runat="server" Visible="false"><uc4:AcceptLinac ID="AcceptLinac6" LinacName="B1" UserReason="6" Tabby="6" runat="server" visible="false"/></asp:Panel>--%>
+<asp:Panel ID="TabContent6" runat="server" Visible="false"><uc4:AcceptLinac ID="AcceptLinac6" LinacName="B1" UserReason="6" Tabby="6" runat="server" visible="false"/></asp:Panel>
 
  
  </ContentTemplate>
@@ -240,9 +239,24 @@ B1 Status
  </ContentTemplate>
  </asp:UpdatePanel>
 </ContentTemplate>
-</asp:TabPanel>
+</asp:TabPanel>--%>
 
-<asp:TabPanel ID="TabPanel9" runat="server" DynamicContextKey='Emerunup' HeaderText="B1 Emergency Runup">
+
+
+
+<asp:TabPanel ID="TabPanel8" runat="server" HeaderText="B1 Development/Training" DynamicContextKey='Devel' tabindex="8" CssClass="ajax__tab_header"><ContentTemplate>
+<asp:UpdatePanel ID="UpdateDevel" runat="server">
+<ContentTemplate>
+<asp:Button ID="TabButton8" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
+<asp:Panel ID="TabContent8" runat="server" Visible="False">
+<%--<uc4:AcceptLinac ID="AcceptLinac8" runat="server" LinacName= "B1"  Tabby="8" UserReason = "8" visible="false" />--%>
+<uc12:Traininguc ID="Traininguc1" LinacName = "B1" Tabby="8" UserReason="8" Visible="false" runat="server" />
+</asp:Panel>
+</ContentTemplate>
+</asp:UpdatePanel>
+</ContentTemplate>
+</asp:TabPanel> 
+        <asp:TabPanel ID="TabPanel9" runat="server" DynamicContextKey='Emerunup' HeaderText="B1 Emergency Runup" enabled="false"  TabIndex="7">
      <ContentTemplate>
 <asp:UpdatePanel ID="UpdatePanel9" runat="server">
 <ContentTemplate>
@@ -259,19 +273,6 @@ B1 Status
 </asp:UpdatePanel>
 </ContentTemplate>
  </asp:TabPanel>
-
-<asp:TabPanel ID="TabPanel8" runat="server" HeaderText="B1 Development/Training" DynamicContextKey='Devel' CssClass="ajax__tab_header"><ContentTemplate>
-<asp:UpdatePanel ID="UpdateDevel" runat="server">
-<ContentTemplate>
-<asp:Button ID="TabButton8" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
-<asp:Panel ID="TabContent8" runat="server" Visible="False">
-<%--<uc4:AcceptLinac ID="AcceptLinac8" runat="server" LinacName= "B1"  Tabby="8" UserReason = "8" visible="false" />--%>
-<uc12:Traininguc ID="Traininguc1" LinacName = "B1" Tabby="8" UserReason="8" Visible="false" runat="server" />
-</asp:Panel>
-</ContentTemplate>
-</asp:UpdatePanel>
-</ContentTemplate>
-</asp:TabPanel>      
     </asp:TabContainer>
     <asp:Label ID="TargetControl" runat="server" style="display:none" causesvalidation="false" Visible="true" ></asp:Label>
     <asp:ModalPopupExtender ID="AcceptLinacModalPopup" runat="server"

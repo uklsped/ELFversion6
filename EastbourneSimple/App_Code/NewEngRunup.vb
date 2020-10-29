@@ -342,7 +342,7 @@ Namespace DavesCode
                         Case Else
                     End Select
 
-                Case 7
+                Case 9
                     Select Case machinename
                         Case "E1", "E2", "B1", "B2"
                             cb = CType(GridView1.Rows(0).FindControl("RowLevelCheckBox"), CheckBox)

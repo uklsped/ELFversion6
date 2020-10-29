@@ -31,7 +31,7 @@ function loadTabPanel(sender, e) {
 
         // check to see if we've already loaded
         //
-        if (findControl(activeTab.get_element(), "div", "TabContent" + tabContainer.get_activeTabIndex())) return;
+        //if (findControl(activeTab.get_element(), "div", "TabContent" + tabContainer.get_activeTabIndex())) return;
 
 
         var updateControl = findControl(activeTab.get_element(), "input", updateControlId);

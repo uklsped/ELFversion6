@@ -64,7 +64,7 @@ Partial Public Class LockElfuc
             lockoff.Visible = False
             '    'eg from http://dotnetbites.wordpress.com/2014/02/15/call-parent-page-method-from-user-control-using-reflection/
             Me.Page.GetType.InvokeMember("UpdateUserDisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {usergroupselected})
-            Me.Page.GetType.InvokeMember("UpdateButtons", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
+            'Me.Page.GetType.InvokeMember("UpdateButtons", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {})
 
         Else
             Dim lockoff As LockElfuc = CType(Me.Parent.FindControl("lockElfuc1"), LockElfuc)

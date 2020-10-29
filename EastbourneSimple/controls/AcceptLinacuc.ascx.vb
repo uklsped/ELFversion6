@@ -45,7 +45,7 @@
     Protected Sub AddDataToSession()
         Session.Add("name", Username)
         Session.Add("usergroup", usergroupselected)
-        Session.Add("userreason", UserReason)
+        'Session.Add("userreason", UserReason)
     End Sub
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"
@@ -65,6 +65,7 @@
         AcceptTabLabel.Text = "Log on to " & DavesCode.Reuse.ReturnActivity(UserReason)
 
         If UserReason = 3 Then
+
             If Not LinacName Like "T#" Then
                 Dim objCon As UserControl = Page.LoadControl("EnergyDisplayuc.ascx")
                 CType(objCon, EnergyDisplayuc).LinacName = LinacName
