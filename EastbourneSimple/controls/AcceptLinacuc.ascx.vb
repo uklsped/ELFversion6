@@ -45,7 +45,7 @@
     Protected Sub AddDataToSession()
         Session.Add("name", Username)
         Session.Add("usergroup", usergroupselected)
-        'Session.Add("userreason", UserReason)
+        Session.Add("userreason", UserReason)
     End Sub
     Protected Sub RaiseLoadError()
         Dim machinelabel As String = LinacName & "Page.aspx';"

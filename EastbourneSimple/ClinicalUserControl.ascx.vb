@@ -27,7 +27,7 @@ Partial Class ClinicalUserControl
     Private TodaydefectPark As DefectSavePark
     Dim BoxChanged As String
     Dim RunupBoxChanged As String
-    Dim accontrol As AcceptLinac
+    'Dim accontrol As AcceptLinac
     Private tabstate As String
     Private TodayComment As controls_CommentBoxuc
     Const CLINICAL As String = "3"

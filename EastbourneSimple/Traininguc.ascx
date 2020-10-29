@@ -7,7 +7,7 @@
 <%@ Register Src="Modalitiesuc.ascx" TagName="Modalitiesuc" TagPrefix="uc5" %>
 <%@ Register Src="ViewOpenFaults.ascx" TagName="ViewOpenFaults" TagPrefix="uc6" %>--%>
 <%@ Register Src="ViewCommentsuc.ascx" TagName="ViewCommentsuc" TagPrefix="uc7" %>
-<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>
+<%--<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc8" %>--%>
 <%--<%@ Register src="DefectSave.ascx" tagname="DefectSave" tagprefix="uc9" %>
 <%@ Register src="TodayClosedFault.ascx" tagname="TodayClosedFault" tagprefix="uc10" %>--%>
 <%@ Register src="controls/CommentBoxuc.ascx" tagname="CommentBoxuc" tagprefix="uc2" %>

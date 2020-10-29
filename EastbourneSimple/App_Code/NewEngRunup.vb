@@ -26,7 +26,7 @@ Namespace DavesCode
             Dim Reason As Integer = 2
             If tabby = 9 Then
                 usergroupselected = 3
-                Reason = 9
+
             End If
             Dim iView As Boolean = False
             Dim XVI As Boolean = False

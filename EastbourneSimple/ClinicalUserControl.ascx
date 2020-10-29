@@ -2,7 +2,7 @@
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <%@ Register Src="WriteDatauc.ascx" TagName="WriteDatauc" TagPrefix="uc2" %>
 
-<%@ Register Src="AcceptLinac.ascx" TagName="AcceptLinac" TagPrefix="uc3" %>
+<%--<%@ Register Src="AcceptLinac.ascx" TagName="AcceptLinac" TagPrefix="uc3" %>--%>
 
 <%@ Register Src="ViewCommentsuc.ascx" TagName="ViewCommentsuc" TagPrefix="uc4" %>
 

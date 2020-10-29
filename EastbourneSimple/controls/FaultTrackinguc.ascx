@@ -9,7 +9,7 @@
 
  <%--<%@ Register src="DeviceReportedfaultuc.ascx" tagname="DeviceReportedfaultuc" tagprefix="uc3" %>--%>
   <%@ Register src="ConcessionHistoryuc.ascx" tagname="ConcessionHistoryuc" tagprefix="uc4" %>
-  <%@ Register src="../LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc5" %>
+  <%--<%@ Register src="../LockElfuc.ascx" tagname="LockElfuc" tagprefix="uc5" %>--%>
   <%@ Register src="../ManyFaultGriduc.ascx" tagname="ManyFaultGriduc" tagprefix="uc6" %>
 
 <asp:Panel ID="Panel2" runat="server" BorderColor="#33CC33"

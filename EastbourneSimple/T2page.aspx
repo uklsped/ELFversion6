@@ -2,7 +2,7 @@
 <%@ MasterType VirtualPath="~/Elf.master" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 <%@ Register src="ErunupUserControlCommon.ascx" tagname="ErunupUserControlCommon" tagprefix="uc1" %>
-<%@ Register src="Preclinusercontrol.ascx" tagname="Preclinusercontrol" tagprefix="uc2" %>
+<%--<%@ Register src="Preclinusercontrol.ascx" tagname="Preclinusercontrol" tagprefix="uc2" %>--%>
 <%@ Register src="ClinicalUserControl.ascx" tagname="ClinicalUserControl" tagprefix="uc3" %>
 
 <%--<%@ Register src="AcceptLinac.ascx" tagname="AcceptLinac" tagprefix="uc4" %>--%>
@@ -160,7 +160,7 @@ T2 Status
 <ContentTemplate><asp:Button ID="TabButton2" runat="server"  OnClick="TabButton_Click"  style="display:none;" CausesValidation="false"/>
 <asp:Panel ID="TabContent2" runat="server" Visible="false">
 <%--<uc4:AcceptLinac ID="AcceptLinac2" LinacName="T2" UserReason="2" Tabby="2" runat="server" visible="false"/>--%>
-<uc2:Preclinusercontrol ID="Preclinusercontrol1" LinacName = "T2" DataName="PreData" runat="server"/>
+<%--<uc2:Preclinusercontrol ID="Preclinusercontrol1" LinacName = "T2" DataName="PreData" runat="server"/>--%>
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
