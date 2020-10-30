@@ -406,7 +406,7 @@ Partial Public Class E1page
 
         AcceptLinacModalPopup.Hide()
         Dim UserReason As Integer = tcl.ActiveTab.ID.Substring(8)
-
+        Dim returnstring As String = String.Empty
         If UserReason <> 0 Then
             If Not GetApplication.GetApplicationState(EquipmentID, 0) Then
 
@@ -417,8 +417,20 @@ Partial Public Class E1page
                 AcceptLinacPlaceholder.Controls.Add(ObjAccept)
                 DynamicControlSelection = ACCEPTLINACSELECTED
                 AcceptLinacModalPopup.Show()
+            Else
+                Dim ReturnfromStatus As Boolean = HttpContext.Current.Session("returnFromLinacStatus")
+                If ReturnfromStatus Then
+                    Dim tab As String = GetApplication.Returnlastuserreason(EquipmentID, 0).ToString
+                    'HttpContext.Current.Session.Remove("returnFromLinacStatus")
+                    returnstring = EquipmentID + "page.aspx?TabAction=Clicked&NextTab=" + tab
+                    Response.Redirect(returnstring)
+                Else
+                    'returnstring = EquipmentID + "Page.aspx"
+                End If
 
             End If
+        Else
+            Session.Add("returnFromLinacStatus", True)
         End If
 
     End Sub

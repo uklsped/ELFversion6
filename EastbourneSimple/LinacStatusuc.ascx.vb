@@ -44,7 +44,7 @@ Partial Class LinacStatusuc
 
 
         If GetApplication.GetApplicationState(LinacName, 0) Then
-            Session.Add("returnFromLinacStatus", True)
+            'Session.Add("returnFromLinacStatus", True)
             Dim tab As String = GetApplication.Returnlastuserreason(LinacName, 0).ToString
             returnstring = LinacName + "page.aspx?TabAction=Clicked&NextTab=" + tab
 

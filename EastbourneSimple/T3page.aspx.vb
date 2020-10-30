@@ -33,7 +33,7 @@ Partial Public Class T3page
     Private Tabaction As String = String.Empty
     Public Const CLICKED As String = "Clicked"
     Public Const AUTOCLICKED As String = "Autoclicked"
-
+    Const CLINICALLOADED As String = "ClinicalLoaded"
     Const REPAIR As String = "5"
 
 
@@ -173,6 +173,14 @@ Partial Public Class T3page
                 'ObjAccept.ActivePanel = tcl.ActiveTabIndex
                 AcceptLinacPlaceholder.Controls.Add(ObjAccept)
 
+                'Case CLINICALLOADED
+                '    Dim clinicalcontrol As ClinicalUserControl = Page.LoadControl("ClinicalUserControl.ascx")
+                '    CType(clinicalcontrol, ClinicalUserControl).LinacName = EquipmentID
+                '    CType(clinicalcontrol, ClinicalUserControl).ID = "ClinicalUserControl1"
+                '    ClinicalPlaceholder.Controls.Add(clinicalcontrol)
+                '    clinicalcontrol.Visible = True
+                '    DynamicControlSelection = CLINICALLOADED
+                '    clinicalcontrol.ClinicalApprovedEvent(connectionString)
             Case Else
                 '        'no dynamic controls need to be loaded...yet
         End Select
@@ -406,7 +414,7 @@ Partial Public Class T3page
 
         AcceptLinacModalPopup.Hide()
         Dim UserReason As Integer = tcl.ActiveTab.ID.Substring(8)
-
+        Dim returnstring As String = String.Empty
         If UserReason <> 0 Then
             If Not GetApplication.GetApplicationState(EquipmentID, 0) Then
 
@@ -417,8 +425,20 @@ Partial Public Class T3page
                 AcceptLinacPlaceholder.Controls.Add(ObjAccept)
                 DynamicControlSelection = ACCEPTLINACSELECTED
                 AcceptLinacModalPopup.Show()
+            Else
+                Dim ReturnfromStatus As Boolean = HttpContext.Current.Session("returnFromLinacStatus")
+                If ReturnfromStatus Then
+                    Dim tab As String = GetApplication.Returnlastuserreason(EquipmentID, 0).ToString
+                    'HttpContext.Current.Session.Remove("returnFromLinacStatus")
+                    returnstring = EquipmentID + "page.aspx?TabAction=Clicked&NextTab=" + tab
+                    Response.Redirect(returnstring)
+                Else
+                    'returnstring = EquipmentID + "Page.aspx"
+                End If
 
             End If
+        Else
+            Session.Add("returnFromLinacStatus", True)
         End If
 
     End Sub
@@ -510,6 +530,11 @@ Partial Public Class T3page
                                     DynamicControlSelection = String.Empty
 
                                 Case 3
+                                    'Dim clinicalcontrol As ClinicalUserControl = Page.LoadControl("ClinicalUserControl.ascx")
+                                    'CType(clinicalcontrol, ClinicalUserControl).LinacName = EquipmentID
+                                    'CType(clinicalcontrol, ClinicalUserControl).ID = "ClinicalUserControl1"
+
+                                    'ClinicalPlaceholder.Controls.Add(clinicalcontrol)
                                     Dim clinicalcontrol As ClinicalUserControl = tcl.ActiveTab.FindControl(ClinicalUserControlID)
                                     clinicalcontrol.Visible = True
                                     AcceptLinacModalPopup.Hide()

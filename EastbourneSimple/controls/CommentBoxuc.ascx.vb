@@ -19,10 +19,10 @@ Partial Class controls_CommentBoxuc
         If Not IsPostBack Then
 
             If Not HttpContext.Current.Application(BoxChanged) Is Nothing Then
-                Currentcomment = HttpContext.Current.Application(BoxChanged).ToString
-                TextBox.Text = Currentcomment
+                    Currentcomment = HttpContext.Current.Application(BoxChanged).ToString
+                    TextBox.Text = Currentcomment
 
-            End If
+                End If
 
         End If
         If NoWrite Then

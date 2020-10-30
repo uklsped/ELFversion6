@@ -142,8 +142,7 @@ T3 Status
 <ContentTemplate>
 <asp:Button ID="TabButton3" runat="server" OnClick="TabButton_click" Style="Display: none" CausesValidation="false"/>
 <asp:Panel ID="TabContent3" runat="server" Visible="false">
-
-<uc3:ClinicalUserControl ID="ClinicalUserControl1"  LinacName="T3" DataName="ClinData" runat="server" visible="false"/>
+    <uc3:ClinicalUserControl ID="ClinicalUserControl1"  LinacName="T3" DataName="ClinData" runat="server" visible="false"/>
 </asp:Panel>
 </ContentTemplate>
 </asp:UpdatePanel>
