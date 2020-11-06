@@ -73,6 +73,9 @@ Namespace DavesCode
 
 
             Select Case Radioselect
+                Case 1 'going back to run up should always reset state to unauthorised
+                    userreason = 7
+                    state = "Linac Unauthorised"
                 Case 101, 103
                     userreason = Radioselect
                 Case 102
