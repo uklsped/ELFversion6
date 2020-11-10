@@ -78,26 +78,26 @@ Partial Class WriteDatauc
         If wctrl IsNot Nothing Then
             wctrl.Visible = False
             'added to deal with clearing defect form if wrong user type 19/03/18
-            If (Tabby = "Admin") Or (Tabby = "Defect") Then
-                Application(actionstate) = "Cancel"
-                RaiseEvent UserApproved(Tabby, "dummy")
-            End If
+            '    If (Tabby = "Admin") Or (Tabby = "Defect") Then
+            '        Session.Add("ActionState", "Cancel")
+            '        RaiseEvent UserApproved(Tabby, "dummy")
+            '    End If
         End If
         Dim wctrl1 As WriteDatauc = CType(Me.Parent.FindControl("Writedatauc2"), WriteDatauc)
         If wctrl1 IsNot Nothing Then
             wctrl1.Visible = False
             If Tabby = "Major" Then
-                Application(actionstate) = "Cancel"
+                Session.Add("ActionState", "Cancel")
                 RaiseEvent UserApproved(Tabby, "dummy")
             End If
         End If
         Dim wctrl2 As WriteDatauc = CType(Me.Parent.FindControl("Writedatauc3"), WriteDatauc)
         If wctrl2 IsNot Nothing Then
             wctrl2.Visible = False
-            If Tabby = "incident" Then
-                Application(actionstate) = "Cancel"
-                RaiseEvent UserApproved(Tabby, "dummy")
-            End If
+            'If Tabby = "incident" Then
+            '    Session.Add("ActionState", "Cancel")
+            '    RaiseEvent UserApproved(Tabby, "dummy")
+            'End If
         End If
     End Sub
     Protected Sub resetLogInscreen()

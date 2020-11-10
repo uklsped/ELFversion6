@@ -52,7 +52,7 @@
 												  
                      ImageUrl="~/Images/if_elf_62126.png" Width="100px" />
 								  
-                 <asp:Label ID="SoftwareVersion" runat="server" Text="Software Version 6.0"></asp:Label></td>
+                 <asp:Label ID="SoftwareVersion" runat="server" Text="Software Version 6.1"></asp:Label></td>
             </tr>
            
         </table>
