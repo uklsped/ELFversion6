@@ -155,9 +155,10 @@ Partial Class ClinicalUserControl
 
         Dim Result As Boolean = False
         Dim EndofDay As Boolean = False
-        Dim Action As String = HttpContext.Current.Session("Actionstate").ToString
-        HttpContext.Current.Session.Remove("Actionstate")
+
         If TabSet = CLINICAL Or TabSet = "Recover" Then
+            Dim Action As String = HttpContext.Current.Session("Actionstate").ToString
+            HttpContext.Current.Session.Remove("Actionstate")
             Dim FaultParams As DavesCode.FaultParameters = New DavesCode.FaultParameters()
             If Action = "EndofDay" Then
                 EndofDay = True
