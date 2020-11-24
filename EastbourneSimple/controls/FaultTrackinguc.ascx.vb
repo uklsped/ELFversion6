@@ -345,12 +345,13 @@ Partial Class controls_FaultTrackinguc
                         Else
                             If ConcessParamsTrial.FutureFaultState = "Closed" Then
                                 'Application(faultstate) = False
-                                'introduce new set machine state so display is reset to previous state
+                                'introduce new set machine state so display is reset to previous state but only if not previously concession
                                 'need to know what linac state was when fault was raised too. set lock to true so activity is not stopped
-
-                                Dim Returnstatus As String = DavesCode.NewFaultHandling.ReturnLastNonFaultState(incidentID)
-                                Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {Returnstatus})
-                                UpdateState(Machine, Returnstatus, ParentControl, Userinfo)
+                                If Not ConcessParamsTrial.PresentFaultState = "Concession" Then
+                                    Dim Returnstatus As String = DavesCode.NewFaultHandling.ReturnLastNonFaultState(incidentID)
+                                    Me.Page.GetType.InvokeMember("Updatestatedisplay", System.Reflection.BindingFlags.InvokeMethod, Nothing, Me.Page, New Object() {Returnstatus})
+                                    UpdateState(Machine, Returnstatus, ParentControl, Userinfo)
+                                End If
                                 RaiseEvent UpdateClosedDisplays(Machine)
                                 RaiseEvent CloseFaultTracking(Machine)
                                 Application(ParamApplication) = Nothing

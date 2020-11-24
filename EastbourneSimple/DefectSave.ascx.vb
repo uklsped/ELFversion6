@@ -81,6 +81,7 @@ Partial Class DefectSave
                 SelectedIncident = SelectedIncidentID.Value
                 If SelectedIncident = RADRESET Then
                     RaiseEvent UpdateViewOpenFaults(LinacName)
+                    RaiseEvent UpDateDefectDailyDisplay(LinacName)
                 Else
                     RaiseEvent UpDateDefectDailyDisplay(LinacName)
                 End If
@@ -400,6 +401,7 @@ Partial Class DefectSave
         Dim usergroupselected As Integer = 0
         SelectedIncident = SelectedIncidentID.Value
         CreateFaultParams(UserInfo, FaultParams)
+
         Select Case SelectedIncident
             Case RADRESET
                 Result = DavesCode.NewFaultHandling.InsertNewFault("Concession", FaultParams)
@@ -419,8 +421,8 @@ Partial Class DefectSave
                 'Dim ParentCommentControl As controls_CommentBoxuc = Me.Parent.FindControl("CommentBox")
                 'Dim DaTxtBox As TextBox = ParentCommentControl.FindControl("TextBox")
                 'Dim CommentControl As HiddenField = Me.Parent.FindControl("ParentTabComment")
-                Dim ParentControlComment As String = Application("TabComment")
 
+                Dim ParentControlComment As String = Application("TabComment")
                 Dim GridViewE As GridView = Me.Parent.FindControl("Gridview1")
                 Dim grdviewI As GridView = Me.Parent.FindControl("GridViewImage")
                 Dim iView As Boolean = False
@@ -450,7 +452,7 @@ Partial Class DefectSave
                 If Result Then
 
                     'https://support.microsoft.com/en-us/help/312629/prb-threadabortexception-occurs-if-you-use-response-end-response-redir
-
+                    usergroupselected = DavesCode.Reuse.GetRole(UserInfo)
                     Comment = String.Empty
                     Session.Add("name", UserInfo)
                     Session.Add("usergroup", usergroupselected)
